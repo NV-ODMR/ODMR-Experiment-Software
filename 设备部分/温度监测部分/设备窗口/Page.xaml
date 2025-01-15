@@ -1,0 +1,70 @@
+﻿<odmr_lab:PageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab" x:Class="ODMR_Lab.温度监测部分.DevicePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      >
+    <Grid.RowDefinitions>
+        <RowDefinition Height="80"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="200"/>
+        <ColumnDefinition Width="100"/>
+        <ColumnDefinition Width="100"/>
+        <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Label Content="已连接设备" Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" Width="82" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+    <Label Content="开关状态" Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" Width="82" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
+    <control:AutoScrollViewer Name="autoscrollviewer" Grid.Row="1" Grid.Column="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF2E2E2E">
+        <control:AutoScrollViewer.Content>
+            <WrapPanel Name="ConnectedDevices" ItemWidth="{Binding ElementName=autoscrollviewer,Path=ActualWidth}" Width="{Binding ElementName=autoscrollviewer,Path=ActualWidth}">
+                <control:DecoratedButton Name="ConnectedDeviceTemplateBtn" Visibility="Collapsed" CornerRadius="5" Margin="5" FontSize="15" Text="1111" FontWeight="Bold" Width="60" Height="50" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF008DFF" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+            </WrapPanel>
+        </control:AutoScrollViewer.Content>
+    </control:AutoScrollViewer>
+    <control:AutoScrollViewer Name="autoscrollviewer1" Grid.Row="1" Grid.Column="1" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF2E2E2E">
+        <control:AutoScrollViewer.Content>
+            <WrapPanel Name="DevicesStates" Orientation="Vertical" Width="{Binding ElementName=autoscrollviewer1,Path=ActualWidth}" ItemWidth="{Binding ElementName=autoscrollviewer1,Path=ActualWidth}">
+
+            </WrapPanel>
+        </control:AutoScrollViewer.Content>
+    </control:AutoScrollViewer>
+    <Grid Grid.Row="1" Grid.Column="2">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <control:DecoratedButton Name="MenuTemplateBtn" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="NewConnect" Text="新建连接" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="CloseConnect" Text="断开连接" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="ClearConnect" Text="清空连接" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+    </Grid>
+    <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Content="通道列表" Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" Width="82" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        <Label Content="选中的数据采集通道" Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        <control:DecoratedButton Visibility="Collapsed" Background="#FF177200" Name="SensorButtonTemplate" Text="111" FontWeight="Bold" Height="50" Width="195" CornerRadius="10" MoveInColor="#FF00A301" PressedColor="#FF007E01" Foreground="#FFFAECFA" MoveInForeground="#FFFAECFA" PressedForeground="#FFFAECFA"/>
+        <control:DecoratedButton Name="OutputbtnTemplate" Visibility="Collapsed" Background="#FFC88E00" Text="111" FontWeight="Bold" Height="50" Width="195" CornerRadius="10" MoveInColor="#FFE5AB1F" PressedColor="#FFC08800" Foreground="#FFFAECFA" MoveInForeground="#FFFAECFA" PressedForeground="#FFFAECFA"/>
+        <control:AutoScrollViewer Name="viewer1" Margin="10" Grid.Row="1" Grid.Column="0" Background="#FF2E2E2E">
+            <control:AutoScrollViewer.Content>
+                <WrapPanel Name="Channels" ItemWidth="{Binding ElementName=viewer1, Path=ActualWidth}" Width="{Binding ElementName=viewer1, Path=ActualWidth}"/>
+            </control:AutoScrollViewer.Content>
+        </control:AutoScrollViewer>
+        <control:AutoScrollViewer Name="viewer2" Grid.Row="1" Margin="10" Grid.Column="1" Background="#FF2E2E2E">
+            <control:AutoScrollViewer.Content>
+                <WrapPanel Name="SelectedChannel" ItemWidth="{Binding ElementName=viewer1, Path=ActualWidth}" Width="{Binding ElementName=viewer1, Path=ActualWidth}"/>
+            </control:AutoScrollViewer.Content>
+        </control:AutoScrollViewer>
+    </Grid>
+</odmr_lab:PageBase>

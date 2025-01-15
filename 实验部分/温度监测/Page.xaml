@@ -1,0 +1,77 @@
+﻿<odmr_lab:PageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab" x:Class="ODMR_Lab.温度监测部分.TemperaturePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      >
+    <Grid.RowDefinitions>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal">
+        <Label Content="采样间隔(s):" Margin="100,5,5,5" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Canvas.Left="603" Height="48" Canvas.Top="187" Width="88" RenderTransformOrigin="0.614,0.437" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBox x:Name="SampleTimeText" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <control:DecoratedButton  Margin="5" Click="SetSampleTime" Text="设置" FontWeight="Thin" FontSize="14" Height="20" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <control:DecoratedButton  Margin="30,5,5,5" Click="ExportClick" Text="导出选项" FontWeight="Thin" FontSize="14" Height="20" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+    </StackPanel>
+    <Grid Grid.Row="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.5*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
+            <control:DecoratedButton Click="ShowNumric" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="数值视图" CornerRadius="10,0,0,10" FontSize="22" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF1F1F1F" Foreground="LightGray" MoveInColor="#FF498ACD" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="235" BorderBrush="#FFE0E0E0"/>
+            <control:DecoratedButton Click="ShowPlot" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="图表视图" CornerRadius="10,0,0,10" FontSize="22" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF1F1F1F" Foreground="LightGray" MoveInColor="#FF55AAFF" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="417" BorderBrush="#FFE0E0E0" BorderMoveColor="Black"/>
+        </Grid>
+        <Grid Name="PlotView" Visibility="Visible" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <chart:ChartControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Name="PlotChart" LegendFontsize="13" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="11" MouseMove="PlotChart_MouseMove" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" ZoomY="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" AxisForeground="#FFFAFAFA" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA">
+            </chart:ChartControl>
+            <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="通道列表" Grid.Row="0" HorizontalContentAlignment="Center" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+                <control:AutoScrollViewer x:Name="autoScrollViewer1" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <control:AutoScrollViewer.Content>
+                        <WrapPanel Name="LegendContent"  Orientation="Vertical" Width="{Binding ActualWidth, ElementName=autoScrollViewer1, Mode=OneWay}">
+                        </WrapPanel>
+                    </control:AutoScrollViewer.Content>
+                </control:AutoScrollViewer>
+                <control:DecoratedButton Margin="5" Click="ResizePlot" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/resize.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <control:DecoratedButton Margin="5" Click="SnapPlot" Grid.Row="2" Grid.Column="1" IconMargin="4" TextAreaRatio="0" ToolTip="截取图表至剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/snap.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </Grid>
+        </Grid>
+        <Grid Name="NumricView" Visibility="Hidden" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+            <control:AutoScrollViewer x:Name="autoScrollViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <control:AutoScrollViewer.Content>
+                    <WrapPanel Name="NumricPanel" Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=autoScrollViewer, Mode=OneWay}"/>
+                </control:AutoScrollViewer.Content>
+            </control:AutoScrollViewer>
+        </Grid>
+    </Grid>
+</odmr_lab:PageBase>

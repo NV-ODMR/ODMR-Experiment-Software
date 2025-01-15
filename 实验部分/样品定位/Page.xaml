@@ -1,0 +1,111 @@
+﻿<odmr_lab:PageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab" x:Class="ODMR_Lab.样品定位.DisplayPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      mc:Ignorable="d" 
+      xmlns:image="clr-namespace:ODMR_Lab.基本控件"
+      d:DesignHeight="600" d:DesignWidth="800" Margin="10"
+      >
+    <Grid.RowDefinitions>
+        <RowDefinition Height="5"/>
+        <RowDefinition Height="50"/>
+        <RowDefinition Height="50"/>
+        <RowDefinition/>
+        <RowDefinition Height="50"/>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="120"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+    <control:AutoScrollViewer Name="paramsPanel" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <control:AutoScrollViewer.Content>
+            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Name="OffsetX" Text="偏移量X:" Foreground="White" Margin="15"/>
+                <TextBlock Name="OffsetY" Text="偏移量Y:" Foreground="White" Margin="15"/>
+                <TextBlock Name="Zoom" Text="缩放比例:" Foreground="White" Margin="15"/>
+                <TextBlock Name="RotateAngle" Text="旋转角:" Foreground="White" Margin="15"/>
+                <TextBlock Name="XPre" Text="位移台X预测值:" Foreground="White" Margin="15"/>
+                <TextBlock Name="YPre" Text="位移台Y预测值:" Foreground="White" Margin="15"/>
+                <control:DecoratedButton Width="40" Margin="5" Click="ShowInformation" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" FontWeight="Thin" FontSize="14" Background="#FF1A1A1A" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/information.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </WrapPanel>
+        </control:AutoScrollViewer.Content>
+    </control:AutoScrollViewer>
+    <TextBlock Name="SourceName" Text="源图片" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" FontSize="13" FontWeight="Bold" Foreground="#FFFAFAFA"/>
+    <TextBlock Name="TargetName" Text="目标图片" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" FontSize="13" FontWeight="Bold" Foreground="#FFFAFAFA"/>
+    <image:LabeledImage x:Name="SourceImage" PointLocChanged="SourcePointLocChanged" Background="#FF2E2E2E" Focusable="True" KeyDown="SourceImage_KeyDown" OnlySelectionMove="True" PreviewMouseLeftButtonUp="AddSourceCursor" MouseMove="RefreshPredectPoint" MouseRightButtonUp="SourceImageSelected" Resizeable="True" Grid.Column="0" Grid.Row="3" ClipToBounds="True">
+    </image:LabeledImage>
+    <image:LabeledImage x:Name="TargetImage" PointLocChanged="TargetPointLocChanged" Background="#FF2E2E2E" Focusable="True" KeyDown="TargetImage_KeyDown" OnlySelectionMove="True" PreviewMouseLeftButtonUp="AddTargetCursor"  MouseRightButtonUp="TargetImageSelected" Resizeable="True" Grid.Column="1" Grid.Row="3" ClipToBounds="True">
+    </image:LabeledImage>
+    <Grid Grid.Column="0" Grid.Row="4" Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <control:DecoratedButton Margin="5" Name="BtnTemplate" Click="ResizeSourcePlot" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/resize.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <control:DecoratedButton Margin="5" Click="OpenSourceImage" Grid.Row="2" Grid.Column="1" IconMargin="4" TextAreaRatio="0" ToolTip="打开图片" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/directory.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+    </Grid>
+    <Grid Grid.Column="1" Grid.Row="4" Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <control:DecoratedButton Margin="5" Click="ResizeTargetPlot" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/resize.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <control:DecoratedButton Margin="5" Click="OpenTargetImage" Grid.Row="2" Grid.Column="1" IconMargin="4" TextAreaRatio="0" ToolTip="打开图片" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/directory.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+    </Grid>
+    <Grid Name="grid" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="源X(像素)" Grid.Column="0" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+        <Label Content="源Y(像素)" Grid.Column="1" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+        <Label Content="目标X(像素)" Grid.Column="2" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+        <Label Content="目标Y(像素)" Grid.Column="3" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+        <Label Content="目标X(位移台值)" Grid.Column="4" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+        <Label Content="目标Y(位移台值)" Grid.Column="5" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <control:Chooser Width="40" Name="ReverseXChooser" Grid.Column="1" Height="20"/>
+            <control:Chooser Width="40" Name="ReverseYChooser" Grid.Row="1" Grid.Column="1" Height="20"/>
+            <control:DecoratedButton Margin="5" Grid.Row="0" Grid.Column="2" Click="ShowReverseInformation" Grid.RowSpan="2" TextAreaRatio="0" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="计算" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/information.png"/>
+            <control:DecoratedButton Margin="5" Grid.Row="2" Grid.ColumnSpan="3" Click="Calculate" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="计算" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <Label Content="反转X" Grid.Column="0" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+            <Label Content="反转Y" Grid.Column="0" Grid.Row="1" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
+        </Grid>
+        <control:AutoScrollViewer Name="scr" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6" MinWidth="200">
+            <control:AutoScrollViewer.Content>
+                <WrapPanel Name="PointPanel" MinWidth="200" Width="{Binding ElementName=scr,Path=ActualWidth}" ItemWidth="{Binding ElementName=scr,Path=ActualWidth}">
+                    <control:FontChangeText Visibility="Collapsed" BorderThickness="0,1,0,1" Name="template" Height="39" Width="152" FixedFontsize="True">
+                        <control:FontChangeText.InnerTextBox>
+                            <TextBox Text="111" Background="{x:Null}" BorderThickness="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" BorderBrush="{x:Null}" Foreground="White" CaretBrush="White"/>
+                        </control:FontChangeText.InnerTextBox>
+                    </control:FontChangeText>
+                </WrapPanel>
+            </control:AutoScrollViewer.Content>
+        </control:AutoScrollViewer>
+    </Grid>
+    <control:DecoratedButton Name="btnTemplate" Margin="5" Click="AddCorrelatePoint" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="添加关联点 " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+    <control:DecoratedButton Name="PredictBtn" Margin="5" Click="PredictLoc" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="位置预测 " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+</odmr_lab:PageBase>

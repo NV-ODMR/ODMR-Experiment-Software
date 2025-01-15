@@ -1,0 +1,12 @@
+﻿<Window x:Class="ODMR_Lab.Windows.TimeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="SnapTip" Height="120" Width="400" ShowInTaskbar="False" Background="Transparent" AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize">
+    <Border x:Name="border" BorderThickness="1" BorderBrush="Gray" CornerRadius="20" Background="#FF1A1A1A">
+        <Label Name="Content" FontSize="30" FontWeight="Bold" Foreground="#FFD0D0D0" Content="截图已复制到剪切板" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+    </Border>
+</Window>
+

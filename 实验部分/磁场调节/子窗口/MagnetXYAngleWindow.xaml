@@ -1,0 +1,84 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:Controls;assembly=Controls" x:Class="ODMR_Lab.磁场调节.MagnetXYAngleWindow"
+        xmlns:Chart="clr-namespace:Controls.Charts;assembly=Controls"
+        mc:Ignorable="d"
+        Title="MagnetXYZWindow" Height="651" Loaded="Window_Loaded" Width="1266" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="0" x:Name="WindowTitle" IsHitTestVisible="False" Grid.ColumnSpan="3" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
+        <Controls:DecoratedButton Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Close" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <Controls:DecoratedButton Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Minimize" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/minimize.png" />
+        <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Name="BvCheck" Content="垂直磁场" Checked="ChangeLineCheck" Unchecked="ChangeLineCheck" IsChecked="True" FontSize="14" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+                <CheckBox Name="BpCheck" Content="沿轴磁场" Checked="ChangeLineCheck" Unchecked="ChangeLineCheck" IsChecked="True" FontSize="14" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+                <CheckBox Name="BCheck" Content="总磁场" Checked="ChangeLineCheck" Unchecked="ChangeLineCheck" IsChecked="True" FontSize="14" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Name="CW1" Content="CW谱1" Checked="ChangeCWPlot" Unchecked="ChangeCWPlot" IsChecked="True" FontSize="14" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+                <CheckBox Name="CW2" Content="CW谱2" Checked="ChangeCWPlot" Unchecked="ChangeCWPlot" IsChecked="True" FontSize="14" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+            </Grid>
+            <TextBlock Grid.Row="1" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" TextWrapping="Wrap"><Run Text="扫"/><LineBreak/><Run Text="描"/><LineBreak/><Run Text="结"/><LineBreak/><Run Text="果"/></TextBlock>
+            <TextBlock Grid.Row="3" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" TextWrapping="Wrap"><Run Text="C"/><LineBreak/><Run Text="W"/><LineBreak/><Run Text="结"/><LineBreak/><Run Text="果"/></TextBlock>
+            <Chart:ChartControl Name="Chart" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Grid.RowSpan="1" LegendFontsize="13" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="11" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanX="False" PanY="False" MinorGridThickness="0" ZoomX="False"  ZoomY="False" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" AxisForeground="#FFFAFAFA" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
+            <Chart:ChartControl Name="CWChart" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="3" Grid.Column="1" Grid.RowSpan="1" LegendFontsize="13" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="11" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanX="False" PanY="False" MinorGridThickness="0" ZoomX="False"  ZoomY="False" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" AxisForeground="#FFFAFAFA" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
+            <Controls:AutoScrollViewer Grid.Column="3" Grid.Row="0" Grid.RowSpan="4">
+                <Controls:AutoScrollViewer.Content>
+                    <WrapPanel Orientation="Vertical">
+                        <StackPanel Name="TagStack" Orientation="Horizontal">
+                            <Label Content="位置" HorizontalContentAlignment="Center" Width="100" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="15"/>
+                            <Label Content="CW1" HorizontalContentAlignment="Center" Width="100" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="15"/>
+                            <Label Content="CW2" HorizontalContentAlignment="Center" Width="100" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="15"/>
+                            <Label Content="Bv" HorizontalContentAlignment="Center" Width="100" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="15"/>
+                            <Label Content="Bp" HorizontalContentAlignment="Center" Width="100" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="15"/>
+                        </StackPanel>
+                        <WrapPanel Name="DataViewer" Orientation="Vertical" ItemWidth="{Binding ElementName=TagStack,Path=ActualWidth}">
+                        </WrapPanel>
+                    </WrapPanel>
+                </Controls:AutoScrollViewer.Content>
+            </Controls:AutoScrollViewer>
+            <Grid Grid.Row="1" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Controls:DecoratedButton Grid.Row="0" Click="FitWithCurve" Margin="10" IconMargin="4" TextAreaRatio="0" ToolTip="拟合" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
+                <Controls:DecoratedButton Name="BtnTemplate" Grid.Row="1" Click="SnapPlot" Margin="10" IconMargin="4" TextAreaRatio="0" ToolTip="截取图表至剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/fit.png"/>
+            </Grid>
+            <Controls:DecoratedButton Click="SnapPlotCW" Margin="10" Grid.Row="3" Grid.Column="2" IconMargin="4" TextAreaRatio="0" ToolTip="截取图表至剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
+        </Grid>
+    </Grid>
+</Window>
