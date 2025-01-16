@@ -167,6 +167,7 @@ namespace ODMR_Lab.基本控件
 
                 Dispatcher.Invoke(() =>
                 {
+                    if (SelectedXdata == null) return;
                     chart.XAxisName = SelectedXdata.Name;
 
                     ApplyChartStyle(StyleParam);
