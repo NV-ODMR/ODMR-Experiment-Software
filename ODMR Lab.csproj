@@ -47,6 +47,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
+    <Reference Include="DataBaseLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\C#Codes\DataBaseLib\DataBaseLib1\bin\Debug\DataBaseLib.dll</HintPath>
+    </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
