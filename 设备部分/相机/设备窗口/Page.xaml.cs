@@ -78,104 +78,75 @@ namespace ODMR_Lab.相机
             }
         }
 
-        private DecoratedButton CreateCameraBar(CameraInfo device)
+        public void RefreshPanels()
         {
-            DecoratedButton pbtn = new DecoratedButton();
-            pbtn.Height = 40;
-            pbtn.Text = device.Device.ProductName;
-            pbtn.Tag = device;
-            ContextMenu menu = new ContextMenu();
-            menu.PanelMinWidth = 200;
-            menu.ItemHeight = 40;
-            DecoratedButton btn = new DecoratedButton()
+            DeviceList.ClearItems();
+            foreach (var item in Cameras)
             {
-                Text = "关闭设备"
-            };
-            btn.Tag = device;
-            TemplateBtn.CloneStyleTo(btn);
-            btn.Click += CloseDevice;
-            menu.Items.Add(btn);
-
-            btn = new DecoratedButton()
-            {
-                Text = "在独立窗口中打开"
-            };
-            btn.Tag = device;
-            TemplateBtn.CloneStyleTo(btn);
-            btn.Click += OpenInWindow;
-            menu.Items.Add(btn);
-
-            btn = new DecoratedButton()
-            {
-                Text = "参数设置"
-            };
-            btn.Tag = device;
-            TemplateBtn.CloneStyleTo(btn);
-            TemplateBtn.CloneStyleTo(pbtn);
-            btn.Click += OpenParamWindow;
-            menu.Items.Add(btn);
-
-            menu.ApplyToControl(pbtn);
-
-            return pbtn;
+                DeviceList.AddItem(item, item.Device.ProductName);
+            }
         }
 
         /// <summary>
-        /// 在独立窗口中打开
+        /// 显示摄像头窗口
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        private void OpenInWindow(object sender, RoutedEventArgs e)
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        private void ShowCameraWindow(int arg1, object arg2)
         {
-            CameraInfo info = ((sender as DecoratedButton).Tag as CameraInfo);
+            CameraInfo info = arg2 as CameraInfo;
             if (info.DisplayWindow != null)
             {
-                info.DisplayWindow.Show();
-            }
-            else
-            {
-                CameraWindow window = new CameraWindow(info);
-                info.DisplayWindow = window;
-                window.Show();
+                info.DisplayWindow.Topmost = true;
+                info.DisplayWindow.Topmost = false;
             }
         }
 
-        public void RefreshPanels()
+        /// <summary>
+        /// 右键菜单事件
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        private void ContextMenuEvent(int arg1, int arg2, object arg3)
         {
-            CameraList.Children.Clear();
-            foreach (var item in Cameras)
+            CameraInfo inf = arg3 as CameraInfo;
+            #region 关闭设备
+            if (arg1 == 0)
             {
-                DecoratedButton btn = CreateCameraBar(item);
-                btn.Click += new RoutedEventHandler((sender, e) =>
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
                 {
-                    if ((btn.Tag as CameraInfo).DisplayWindow != null)
-                    {
-                        (btn.Tag as CameraInfo).DisplayWindow.Topmost = true;
-                        (btn.Tag as CameraInfo).DisplayWindow.Topmost = false;
-                    }
-                });
-                CameraList.Children.Add(btn);
+                    inf.CloseDeviceInfoAndSaveParams(out bool result);
+                    if (result == false) return;
+                    Cameras.Remove(inf);
+                    RefreshPanels();
+                }
             }
-        }
+            #endregion
 
-        private void OpenParamWindow(object sender, RoutedEventArgs e)
-        {
-            CameraInfo obj = (sender as DecoratedButton).Tag as CameraInfo;
-            ParameterWindow window = new ParameterWindow(obj.Device.AvailableParameterNames());
-            window.ShowDialog();
-        }
-
-        private void CloseDevice(object sender, RoutedEventArgs e)
-        {
-            if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+            #region 在独立窗口中显示
+            if (arg1 == 1)
             {
-                CameraInfo camera = (sender as DecoratedButton).Tag as CameraInfo;
-                camera.CloseDeviceInfoAndSaveParams(out bool result);
-                if (result == false) return;
-                Cameras.Remove(camera);
-                RefreshPanels();
+                if (inf.DisplayWindow != null)
+                {
+                    inf.DisplayWindow.Show();
+                }
+                else
+                {
+                    CameraWindow window = new CameraWindow(inf);
+                    inf.DisplayWindow = window;
+                    window.Show();
+                }
             }
+            #endregion
+
+            #region 参数设置
+            if (arg1 == 2)
+            {
+                ParameterWindow window = new ParameterWindow(inf.Device.AvailableParameterNames());
+                window.ShowDialog();
+            }
+            #endregion
         }
     }
 }

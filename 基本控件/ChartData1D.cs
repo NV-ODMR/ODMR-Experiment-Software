@@ -17,6 +17,11 @@ namespace ODMR_Lab.基本控件
 
         public bool IsSelectedAsX { get; set; } = false;
 
+        /// <summary>
+        /// 是否显示在数据栏中
+        /// </summary>
+        public bool IsInDataDisplay { get; set; } = false;
+
         public int GetCount()
         {
             if(this is NumricChartData1D)

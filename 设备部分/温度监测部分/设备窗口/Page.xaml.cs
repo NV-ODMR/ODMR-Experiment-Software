@@ -219,78 +219,32 @@ namespace ODMR_Lab.温度监测部分
 
         public void RefreshConnectedControllers()
         {
-            ConnectedDevices.Children.Clear();
-            DevicesStates.Children.Clear();
+            DeviceList.ClearItems();
             foreach (var item in TemperatureControllers)
             {
-                DecoratedButton btn = new DecoratedButton();
-                ConnectedDeviceTemplateBtn.CloneStyleTo(btn);
-                btn.Height = 50;
-                btn.Text = item.Device.ProductName;
-                btn.Click += SelectControllerBtn;
-                Chooser choo = new Chooser();
-                choo.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                choo.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-                choo.Height = 20;
-                choo.Width = 40;
-                choo.Margin = new Thickness(0, 15, 0, 15);
-                choo.IsSelected = item.Device.OutputEnable;
-                choo.Selected += OpenController;
-                choo.UnSelected += CloseController;
-                Grid g = new Grid();
-                g.Children.Add(choo);
-                g.Height = 50;
-                ConnectedDevices.Children.Add(btn);
-                DevicesStates.Children.Add(g);
+                DeviceList.AddItem(item, item.Device.ProductName, item.Device.OutputEnable);
             }
         }
 
-        private void CloseController(object sender, RoutedEventArgs e)
+        private void ChangeControllerOutput(int arg1, int arg2, object arg3)
         {
-            Chooser choo = sender as Chooser;
-            TemperatureControllerInfo info = DeviceDispatcher.TryGetTemperatureDevice(DevicesStates.Children.IndexOf(choo.Parent as Grid), OperationMode.Write, true, true);
-            info.Device.OutputEnable = false;
+            TemperatureControllerInfo inf = DeviceList.GetTag(arg1) as TemperatureControllerInfo;
+            TemperatureControllerInfo info = DeviceDispatcher.TryGetTemperatureDevice(inf, OperationMode.Write, true, true);
+            info.Device.OutputEnable = (bool)arg3;
         }
 
-        private void OpenController(object sender, RoutedEventArgs e)
+        private void CloseDevice(int arg1, int arg2, object arg3)
         {
-            Chooser choo = sender as Chooser;
-            TemperatureControllerInfo info = DeviceDispatcher.TryGetTemperatureDevice(DevicesStates.Children.IndexOf(choo.Parent as Grid), OperationMode.Write, true, true);
-            info.Device.OutputEnable = true;
-        }
-
-        private void SelectControllerBtn(object sender, RoutedEventArgs e)
-        {
-            DecoratedButton btn = sender as DecoratedButton;
-            foreach (var item in ConnectedDevices.Children)
-            {
-                (item as DecoratedButton).KeepPressed = false;
-            }
-            btn.KeepPressed = true;
-        }
-
-        /// <summary>
-        /// 关闭连接
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CloseConnect(object sender, RoutedEventArgs e)
-        {
+            if (arg3 == null) return;
+            TemperatureControllerInfo dev = arg3 as TemperatureControllerInfo;
             if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
             {
-                foreach (var item in ConnectedDevices.Children)
-                {
-                    if ((item as DecoratedButton).KeepPressed)
-                    {
-                        TemperatureControllerInfo controller = TemperatureControllers[ConnectedDevices.Children.IndexOf(item as DecoratedButton)];
-                        controller.CloseDeviceInfoAndSaveParams(out bool result);
-                        if (result == false) return;
-                        TemperatureControllers.Remove(controller);
-                        RefreshConnectedControllers();
-                        RefreshChannelBtns();
-                        return;
-                    }
-                }
+                dev.CloseDeviceInfoAndSaveParams(out bool result);
+                if (result == false) return;
+                TemperatureControllers.Remove(dev);
+                RefreshConnectedControllers();
+                RefreshChannelBtns();
+                return;
             }
         }
 
@@ -303,11 +257,12 @@ namespace ODMR_Lab.温度监测部分
         {
             if (MessageWindow.ShowMessageBox("提示", "确定要关闭所有设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
             {
-                foreach (var item in ConnectedDevices.Children)
+                for (int i = 0; i < TemperatureControllers.Count; i++)
                 {
-                    TemperatureControllers[ConnectedDevices.Children.IndexOf(item as DecoratedButton)].CloseDeviceInfoAndSaveParams(out bool result);
+                    TemperatureControllers[i].CloseDeviceInfoAndSaveParams(out bool result);
                     if (result == false) continue;
-                    TemperatureControllers.RemoveAt(ConnectedDevices.Children.IndexOf(item as DecoratedButton));
+                    TemperatureControllers.Remove(TemperatureControllers[i]);
+                    i--;
                 }
                 RefreshChannelBtns();
                 RefreshConnectedControllers();

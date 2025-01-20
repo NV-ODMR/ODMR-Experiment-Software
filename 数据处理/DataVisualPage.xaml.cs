@@ -231,17 +231,10 @@ namespace ODMR_Lab.数据处理
         /// </summary>
         private void UpdateInformationPanel(DataVisualSource source)
         {
-            InformationPanel.Children.Clear();
+            ExpInformation.ClearItems();
             foreach (var item in source.Params)
             {
-                TextBlock tb = new TextBlock();
-                tb.Margin = new Thickness(5, 20, 5, 20);
-                tb.TextAlignment = TextAlignment.Center;
-                tb.Text = item.Key + " : " + item.Value;
-                tb.TextWrapping = TextWrapping.Wrap;
-                tb.Foreground = Brushes.White;
-                tb.FontSize = 12;
-                InformationPanel.Children.Add(tb);
+                ExpInformation.AddItem(null, item.Key + " : " + item.Value);
             }
         }
 
@@ -336,7 +329,7 @@ namespace ODMR_Lab.数据处理
 
             UpdateInformationPanel(source);
 
-            //更新图标部分
+            //更新图表部分
             Plot1D.DataSource = source.ChartDataSource1D;
             Plot1D.UpdateDataPanel();
             Plot1D.UpdateChart(true);

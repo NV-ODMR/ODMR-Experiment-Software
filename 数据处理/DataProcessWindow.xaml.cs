@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using MathLib.NormalMath.Decimal.Function;
 using Controls;
 using System.Threading;
+using System.Windows.Markup;
 
 namespace ODMR_Lab.数据处理
 {
@@ -30,6 +31,9 @@ namespace ODMR_Lab.数据处理
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
             hel.RegisterWindow(this, 5, 40);
+
+            DataList.ItemSelected += ShowDataList;
+            DataList.ItemContextMenuSelected += DataListMenuEvents;
         }
 
         public new void ShowDialog()
@@ -72,75 +76,21 @@ namespace ODMR_Lab.数据处理
         }
 
         #region 数据显示区域
+        /// <summary>
+        /// 刷新数据条目栏
+        /// </summary>
         public void UpdateDataDisplay()
         {
-            DataList.Children.Clear();
+            DataList.ClearItems();
             int count = 0;
             //设置计算面板变量
             SimpleMappingBox.Variables.Clear();
             foreach (var item in ParentDataSource.ChartDataSource1D)
             {
-                DataList.Children.Add(Create1DDataBar(item, "V" + count.ToString()));
+                DataList.AddItem(new List<object>() { item, "V" + count.ToString() }, item.Name, "V" + count.ToString(), item.GetCount().ToString());
                 SimpleMappingBox.Variables.Add("V" + count.ToString());
                 ++count;
             }
-        }
-
-        private Grid Create1DDataBar(ChartData1D data, string varname)
-        {
-            Grid g = new Grid();
-            g.Height = 40;
-            g.Background = Brushes.Transparent;
-            g.ColumnDefinitions.Add(new ColumnDefinition());
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(100) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(100) });
-            Label l = new Label()
-            {
-                Content = data.Name,
-                Foreground = Brushes.White,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                FontSize = 11
-            };
-            g.Children.Add(l);
-            Grid.SetColumn(l, 0);
-
-            l = new Label()
-            {
-                Content = varname,
-                Foreground = Brushes.White,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                FontSize = 11
-            };
-            g.Children.Add(l);
-            Grid.SetColumn(l, 1);
-
-            l = new Label()
-            {
-                Content = data.GetCount().ToString(),
-                Foreground = Brushes.White,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                FontSize = 11
-            };
-            g.Children.Add(l);
-            Grid.SetColumn(l, 2);
-
-            g.Tag = new List<object>() { data, varname };
-
-            g.MouseLeftButtonUp += ShowDataList;
-
-            Controls.ContextMenu menu = new Controls.ContextMenu();
-            DecoratedButton btn = new DecoratedButton();
-            D1CalcBtn.CloneStyleTo(btn);
-            btn.Text = "删除";
-            btn.Tag = data;
-            btn.Click += RemoveData;
-            menu.Items.Add(btn);
-            menu.ApplyToControl(g);
-
-            return g;
         }
 
         /// <summary>
@@ -149,16 +99,9 @@ namespace ODMR_Lab.数据处理
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <exception cref="NotImplementedException"></exception>
-        private void ShowDataList(object sender, MouseButtonEventArgs e)
+        private void ShowDataList(int index, object obj)
         {
-            foreach (var item in DataList.Children)
-            {
-                (item as Grid).Background = Brushes.Transparent;
-            }
-
-            (sender as Grid).Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0075DA"));
-
-            ChartData1D data = ((sender as Grid).Tag as List<object>)[0] as ChartData1D;
+            ChartData1D data = (obj as List<object>)[0] as ChartData1D;
             DataListView.Data = data;
             if (int.TryParse(DataListView.DisplayIndex.Text, out int value) == false)
             {
@@ -170,17 +113,21 @@ namespace ODMR_Lab.数据处理
         }
 
         /// <summary>
-        /// 删除数据
+        /// 数据列表右键菜单事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <exception cref="NotImplementedException"></exception>
-        private void RemoveData(object sender, RoutedEventArgs e)
+        private void DataListMenuEvents(int menuind, int itemind, object tag)
         {
-            if (MessageWindow.ShowMessageBox("提示", "确定要删除数据" + ((sender as DecoratedButton).Tag as ChartData1D).Name + "吗？", MessageBoxButton.YesNo, owner: this) == MessageBoxResult.Yes)
+            if (menuind == 0)
             {
-                ParentDataSource.ChartDataSource1D.Remove((sender as DecoratedButton).Tag as ChartData1D);
-                UpdateDataDisplay();
+                ChartData1D data = (tag as List<object>)[0] as ChartData1D;
+                if (MessageWindow.ShowMessageBox("提示", "确定要删除数据" + data.Name + "吗？", MessageBoxButton.YesNo, owner: this) == MessageBoxResult.Yes)
+                {
+                    ParentDataSource.ChartDataSource1D.Remove(data);
+                    UpdateDataDisplay();
+                }
             }
         }
         #endregion

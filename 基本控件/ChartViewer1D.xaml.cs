@@ -35,7 +35,14 @@ namespace ODMR_Lab.基本控件
         public ChartViewer1D()
         {
             InitializeComponent();
-            StyleParam.LoadToPage(new FrameworkElement[] { this });
+            InitChartView();
+            InitDataView();
+        }
+
+        public void UpdateDataPanel()
+        {
+            UpdateChartDataPanel();
+            UpdateDataDataPanel();
         }
 
         #region 一维图表数据
@@ -43,6 +50,44 @@ namespace ODMR_Lab.基本控件
 
         public ChartData1D SelectedXdata { get; set; } = null;
         #endregion
+
+        #region 视图切换
+
+        /// <summary>
+        /// 切换视图
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeView(object sender, RoutedEventArgs e)
+        {
+            if (sender == GraphBtn)
+            {
+                ChartView.Visibility = Visibility.Visible;
+                DataView.Visibility = Visibility.Collapsed;
+                GraphBtn.KeepPressed = true;
+                DataBtn.KeepPressed = false;
+            }
+            else
+            {
+                ChartView.Visibility = Visibility.Collapsed;
+                DataView.Visibility = Visibility.Visible;
+                GraphBtn.KeepPressed = false;
+                DataBtn.KeepPressed = true;
+            }
+        }
+
+        #endregion
+
+        #region 图表视图
+
+        /// <summary>
+        /// 初始化图表区域
+        /// </summary>
+        private void InitChartView()
+        {
+            //复制图表样式到此图表
+            StyleParam.LoadToPage(new FrameworkElement[] { this });
+        }
 
         /// <summary>
         /// 刷新图表
@@ -76,7 +121,7 @@ namespace ODMR_Lab.基本控件
                     for (int i = 0; i < chart.DataList.Count; i++)
                     {
                         chart.DataList[i].Smooth = IsSmooth.IsSelected;
-                        chart.DataList[i].LineThickness = LineThickness;
+                        chart.DataList[i].LineThickness = StyleParam.LineWidth.Value;
                         bool exist = false;
                         foreach (var item in DataSource)
                         {
@@ -186,24 +231,24 @@ namespace ODMR_Lab.基本控件
             t.Start();
         }
 
+        #region 图表显示数据选择部分
         /// <summary>
         /// 刷新数据显示区
         /// </summary>
-        public void UpdateDataPanel()
+        public void UpdateChartDataPanel()
         {
-            XDataSet.Children.Clear();
-            YDataSet.Children.Clear();
+            XDataSet.ClearItems();
+            YDataSet.ClearItems();
             foreach (var item in DataSource)
             {
-                Grid g = CreateDataViewBar(item);
-                XDataSet.Children.Add(g);
+                XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
             }
 
             foreach (var item in DataSource)
             {
                 if (item is NumricChartData1D)
                 {
-                    YDataSet.Children.Add(CreateDataViewBar(item));
+                    YDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
                 }
             }
         }
@@ -212,112 +257,44 @@ namespace ODMR_Lab.基本控件
         {
             for (int i = 0; i < DataSource.Count; i++)
             {
-                int datacount = 0;
-                if (DataSource[i] is NumricChartData1D) datacount = (DataSource[i] as NumricChartData1D).Data.Count;
-                if (DataSource[i] is TimeChartData1D) datacount = (DataSource[i] as TimeChartData1D).Data.Count;
-                ((XDataSet.Children[i] as Grid).Children[2] as Label).Content = "点数：" + datacount.ToString();
+                XDataSet.SetCelValue(i, 1, DataSource[i].GetCount());
             }
 
+            int ind = 0;
             for (int i = 0; i < DataSource.Count; i++)
             {
                 if (DataSource[i] is NumricChartData1D)
                 {
-                    int datacount = 0;
-                    if (DataSource[i] is NumricChartData1D) datacount = (DataSource[i] as NumricChartData1D).Data.Count;
-                    if (DataSource[i] is TimeChartData1D) datacount = (DataSource[i] as TimeChartData1D).Data.Count;
-                    ((YDataSet.Children[i] as Grid).Children[2] as Label).Content = "点数：" + datacount.ToString();
+                    YDataSet.SetCelValue(ind, 1, DataSource[i].GetCount());
+                    ++ind;
                 }
             }
         }
 
-        private Grid CreateDataViewBar(ChartData1D data)
+        private void XDataSelectionChanged(int arg1, int arg2, object arg3)
         {
-            Grid g = new Grid();
-
-            g.ColumnDefinitions.Add(new ColumnDefinition());
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(40) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(100) });
-
-            g.Height = 40;
-            g.Margin = new Thickness(5);
-            Label l = new Label() { Content = data.Name, Foreground = Brushes.White, HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
-            l.FontSize = 10;
-            l.ToolTip = data.Name;
-            Grid.SetColumn(l, 0);
-            Grid.SetRow(l, 0);
-            g.Children.Add(l);
-
-            Chooser c = new Chooser() { Width = 40, Height = 20 };
-            Grid.SetColumn(c, 1);
-            c.Selected += DataSelected;
-            c.UnSelected += DataSelected;
-            Grid.SetRow(c, 0);
-            g.Children.Add(c);
-
-
-            int datacount = 0;
-            if (data is NumricChartData1D) datacount = (data as NumricChartData1D).Data.Count;
-            if (data is TimeChartData1D) datacount = (data as TimeChartData1D).Data.Count;
-
-            l = new Label() { Content = "点数：" + datacount.ToString(), Foreground = Brushes.White, HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
-            l.FontSize = 10;
-            Grid.SetColumn(l, 2);
-            Grid.SetRow(l, 0);
-            g.Children.Add(l);
-
-            g.Tag = data;
-
-            return g;
-        }
-
-        /// <summary>
-        /// 选中数据
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DataSelected(object sender, RoutedEventArgs e)
-        {
-            if (((sender as Chooser).Parent as Grid).Parent == XDataSet)
+            int count = XDataSet.GetRowCount();
+            for (int i = 0; i < count - 1; i++)
             {
-                foreach (var item in XDataSet.Children)
+                if (arg1 != i)
                 {
-                    if ((item as Grid).Children[1] != sender)
-                    {
-                        ((item as Grid).Children[1] as Chooser).IsSelected = false;
-                    }
+                    XDataSet.SetCelValue(i, 2, false);
                 }
-                foreach (var item in DataSource)
-                {
-                    item.IsSelectedAsX = false;
-                }
-               (((sender as Chooser).Parent as Grid).Tag as ChartData1D).IsSelectedAsX = (sender as Chooser).IsSelected;
             }
-            else
-            {
-                (((sender as Chooser).Parent as Grid).Tag as ChartData1D).IsSelectedAsY = (sender as Chooser).IsSelected;
-            }
+
+            ChartData1D data = XDataSet.GetTag(arg1) as ChartData1D;
+            data.IsSelectedAsX = (bool)arg3;
+
             UpdateChart(true);
         }
 
-        double LineThickness = 1;
-        /// <summary>
-        /// 设置图表样式
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Apply(object sender, RoutedEventArgs e)
+        private void YDataSelectionChanged(int arg1, int arg2, object arg3)
         {
-            try
-            {
-                double v = double.Parse(LineWidth.Text);
-                LineThickness = v;
-                UpdateChart(false);
-            }
-            catch
-            {
-                MessageWindow.ShowTipWindow("参数格式错误", MainWindow.Handle);
-            }
+            ChartData1D data = YDataSet.GetTag(arg1) as ChartData1D;
+            data.IsSelectedAsY = (bool)arg3;
+            UpdateChart(true);
         }
+        #endregion
 
         #region 图表操作
         private void ResizePlot(object sender, RoutedEventArgs e)
@@ -399,8 +376,9 @@ namespace ODMR_Lab.基本控件
         }
         #endregion
 
+        #region 文件保存
         /// <summary>
-        /// 保存为其他类型文件
+        /// 保存为userdat文件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -502,5 +480,79 @@ namespace ODMR_Lab.基本控件
             }
 
         }
+        #endregion
+
+        #endregion
+
+        #region 数据视图
+
+        /// <summary>
+        /// 初始化数据区域
+        /// </summary>
+        private void InitDataView()
+        {
+        }
+
+        /// <summary>
+        /// 刷新数据显示区
+        /// </summary>
+        public void UpdateDataDataPanel()
+        {
+            DataNames.ClearItems();
+            DataPanel.Children.Clear();
+            foreach (var item in DataSource)
+            {
+                DataNames.AddItem(item, item.Name, item.GetCount().ToString());
+                if (item.IsInDataDisplay)
+                {
+                    DataListViewer v = new DataListViewer();
+                    v.Data = item;
+                    v.UpdatePointList(0);
+                    v.Width = 150;
+                    DataPanel.Children.Add(v);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 刷新当前数据显示
+        /// </summary>
+        public void UpdateDataDisplay()
+        {
+            foreach (var item in DataPanel.Children)
+            {
+                (item as DataListViewer).UpdatePointList((item as DataListViewer).CurrentDisplayIndex);
+            }
+        }
+
+        private void DataNames_MultiItemSelected(int arg1, object arg2)
+        {
+            ChartData1D data = (arg2 as ChartData1D);
+            data.IsInDataDisplay = true;
+            foreach (var item in DataPanel.Children)
+            {
+                if ((item as DataListViewer).Data == data) return;
+            }
+            DataListViewer v = new DataListViewer();
+            v.Data = data;
+            v.UpdatePointList(0);
+            v.Width = 250;
+            DataPanel.Children.Add(v);
+        }
+        private void DataNames_MultiItemUnSelected(int arg1, object arg2)
+        {
+            ChartData1D data = (arg2 as ChartData1D);
+            data.IsInDataDisplay = false;
+            foreach (var item in DataPanel.Children)
+            {
+                if ((item as DataListViewer).Data == data)
+                {
+                    DataPanel.Children.Remove(item as DataListViewer);
+                    return;
+                };
+            }
+        }
+        #endregion
+
     }
 }

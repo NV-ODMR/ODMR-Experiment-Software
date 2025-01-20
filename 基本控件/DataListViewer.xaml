@@ -7,7 +7,6 @@
       mc:Ignorable="d"
         >
     <Grid.RowDefinitions>
-        <RowDefinition Height="40"/>
         <RowDefinition Height="*"/>
         <RowDefinition Height="40"/>
     </Grid.RowDefinitions>
@@ -17,22 +16,14 @@
         <ColumnDefinition/>
         <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <Label Name="DataName" Content="" Grid.ColumnSpan="4" Grid.Row="0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-    <control:AutoScrollViewer Name="datacontentscroll" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
-        <control:AutoScrollViewer.Content>
-            <WrapPanel Width="{Binding ElementName=datacontentscroll,Path=ActualWidth}" ItemWidth="{Binding ElementName=datacontentscroll,Path=ActualWidth}">
-                <Grid Height="40">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Label Content="序号" Grid.ColumnSpan="1" Grid.Row="0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                    <Label Content="值" Grid.ColumnSpan="1" Grid.Column="1" Grid.Row="0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                </Grid>
-                <WrapPanel Name="DataContent" Width="{Binding ElementName=datacontentscroll,Path=ActualWidth}" ItemWidth="{Binding ElementName=datacontentscroll,Path=ActualWidth}"/>
-            </WrapPanel>
-        </control:AutoScrollViewer.Content>
-    </control:AutoScrollViewer>
+    <control:ListViewer Name="datacontentscroll" MinItemWidth="200" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF0095FF" Background="#FF1A1A1A">
+        <control:ListViewer.HeaderLabelTemplate>
+            <Label Foreground="White" Background="#FF1A1A1A" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
+        </control:ListViewer.HeaderLabelTemplate>
+        <control:ListViewer.UnEditableTextTemplate>
+            <TextBlock Foreground="White" TextAlignment="Center" Background="#FF1A1A1A" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
+        </control:ListViewer.UnEditableTextTemplate>
+    </control:ListViewer>
     <Grid Grid.Row="2" Grid.ColumnSpan="4">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

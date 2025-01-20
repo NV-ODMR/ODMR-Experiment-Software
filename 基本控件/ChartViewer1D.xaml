@@ -9,63 +9,127 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" ClipToBounds="False">
     <Grid.RowDefinitions>
-        <RowDefinition MinHeight="300"/>
-        <RowDefinition Height="50"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
-        <ColumnDefinition MinWidth="300" Width="3*"/>
-        <ColumnDefinition Width="50"/>
-        <ColumnDefinition MinWidth="100" Width="1*"/>
+        <ColumnDefinition Width="30"/>
+        <ColumnDefinition Width="3*"/>
     </Grid.ColumnDefinitions>
-    <chart:ChartControl Name="chart" SnapsToDevicePixels="True" MouseMove="chart_MouseMove" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="16" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" ZoomY="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
-    <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="2">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition/>
-            <RowDefinition Height="50"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Label HorizontalContentAlignment="Center" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Content="X数据"/>
-        <Label HorizontalContentAlignment="Center" Grid.Row="2" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Content="Y数据"/>
-        <scroll:AutoScrollViewer Name="xscroll" Grid.Row="1">
-            <scroll:AutoScrollViewer.Content>
-                <WrapPanel Name="XDataSet" Width="{Binding ElementName=xscroll, Path=ActualWidth}" ItemWidth="{Binding ElementName=xscroll, Path=ActualWidth}"/>
-            </scroll:AutoScrollViewer.Content>
-        </scroll:AutoScrollViewer>
-        <scroll:AutoScrollViewer Name="yscroll" Grid.Row="3">
-            <scroll:AutoScrollViewer.Content>
-                <WrapPanel Name="YDataSet" Width="{Binding ElementName=yscroll, Path=ActualWidth}" ItemWidth="{Binding ElementName=xscroll, Path=ActualWidth}"/>
-            </scroll:AutoScrollViewer.Content>
-        </scroll:AutoScrollViewer>
-    </Grid>
-    <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
-        <scroll:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="1" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
-        <scroll:DecoratedButton Margin="7" Click="Snap" Grid.Row="0" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="复制截图到剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
-        <scroll:DecoratedButton Margin="7" Click="SaveAsExternal" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="保存为文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/save.png"/>
+        <scroll:DecoratedButton Name="GraphBtn" KeepPressed="True" Click="ChangeView" Grid.Row="0" Grid.Column="0" TextAreaRatio="1" Text="图表" FontSize="20" CornerRadius="10,0,0,10" FontWeight="Bold" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF2593FF" PressedColor="#FF0071D4" MoveInForeground="White" PressedForeground="White"/>
+        <scroll:DecoratedButton Name="DataBtn" Click="ChangeView" Grid.Row="1" Grid.Column="0" TextAreaRatio="1" Text="数据" FontSize="20" CornerRadius="10,0,0,10" FontWeight="Bold" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF2593FF" PressedColor="#FF0071D4" MoveInForeground="White" PressedForeground="White"/>
     </Grid>
-    <scroll:AutoScrollViewer Grid.Row="1" Grid.Column="0">
-        <scroll:AutoScrollViewer.Content>
-            <WrapPanel Orientation="Horizontal">
-                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="曲线类型" Width="80"/>
-                <scroll:ComboBox Name="PlotStyle" DefaultSelectIndex="0" SelectionChanged="ApplyLineStyle" Width="80" Height="30" Margin="5" PanelWidth="60" TextAreaRatio="0.8" IconMargin="2" ImagePlace="Right" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
-                    <scroll:ComboBox.Items>
-                        <scroll:DecoratedButton Height="40" Text="线状图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
-                        <scroll:DecoratedButton Height="40" Text="点状图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
-                        <scroll:DecoratedButton Height="40" Text="点线图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
-                    </scroll:ComboBox.Items>
-                </scroll:ComboBox>
-                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="线宽:" Width="60"/>
-                <TextBox x:Name="LineWidth" Text="1" LostFocus="ApplyLineStyle" KeyDown="ApplyLineStyleKey" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="70"/>
-                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="平滑曲线:" Width="80"/>
-                <scroll:Chooser Name="IsSmooth" Width="40" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="20" Margin="10"/>
-                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="点尺寸:" Width="60"/>
-                <TextBox x:Name="PointSize" Text="1" KeyDown="ApplyLineStyleKey" LostFocus="ApplyLineStyle" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="70"/>
-            </WrapPanel>
-        </scroll:AutoScrollViewer.Content>
-    </scroll:AutoScrollViewer>
+    <Grid Grid.Column="1" Name="ChartView" Visibility="Visible">
+        <Grid.RowDefinitions>
+            <RowDefinition MinHeight="300"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition MinWidth="300" Width="3*"/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition MinWidth="100" Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <chart:ChartControl Name="chart" SnapsToDevicePixels="True" MouseMove="chart_MouseMove" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="1" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="16" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" ZoomY="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
+        <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <scroll:ListViewer Name="XDataSet" ItemValueChanged="XDataSelectionChanged" ItemBarSelectedColor="#FF1A1A1A" ItemBarBackground="#FF1A1A1A">
+                <scroll:ListViewer.DataTemplate>
+                    <scroll:ViewerTemplate Descriptions="X数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
+                    <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="*" />
+                    <scroll:ViewerTemplate Descriptions="选中" DataType="Bool" Editable="True" DataDisplayWidth="*" />
+                </scroll:ListViewer.DataTemplate>
+                <scroll:ListViewer.HeaderLabelTemplate>
+                    <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                </scroll:ListViewer.HeaderLabelTemplate>
+                <scroll:ListViewer.UnEditableTextTemplate>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
+                </scroll:ListViewer.UnEditableTextTemplate>
+                <scroll:ListViewer.EditableBooleanTemplate>
+                    <scroll:Chooser Width="40" Height="20"/>
+                </scroll:ListViewer.EditableBooleanTemplate>
+            </scroll:ListViewer>
+            <scroll:ListViewer Grid.Row="1" Name="YDataSet" ItemValueChanged="YDataSelectionChanged" ItemBarBackground="#FF1A1A1A" ItemBarSelectedColor="#FF1A1A1A">
+                <scroll:ListViewer.DataTemplate>
+                    <scroll:ViewerTemplate Descriptions="Y数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
+                    <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="*" />
+                    <scroll:ViewerTemplate Descriptions="选中" DataType="Bool" Editable="True" DataDisplayWidth="*" />
+                </scroll:ListViewer.DataTemplate>
+                <scroll:ListViewer.HeaderLabelTemplate>
+                    <Label HorizontalContentAlignment="Center" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                </scroll:ListViewer.HeaderLabelTemplate>
+                <scroll:ListViewer.UnEditableTextTemplate>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
+                </scroll:ListViewer.UnEditableTextTemplate>
+                <scroll:ListViewer.EditableBooleanTemplate>
+                    <scroll:Chooser Width="40" Height="20"/>
+                </scroll:ListViewer.EditableBooleanTemplate>
+            </scroll:ListViewer>
+        </Grid>
+        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <scroll:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="1" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
+            <scroll:DecoratedButton Margin="7" Click="Snap" Grid.Row="0" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="复制截图到剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
+            <scroll:DecoratedButton Margin="7" Click="SaveAsExternal" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="保存为文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/save.png"/>
+        </Grid>
+        <scroll:AutoScrollViewer Grid.Row="1" Grid.Column="1">
+            <scroll:AutoScrollViewer.Content>
+                <WrapPanel Orientation="Horizontal">
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="曲线类型" Width="80"/>
+                    <scroll:ComboBox Name="PlotStyle" DefaultSelectIndex="0" SelectionChanged="ApplyLineStyle" Width="80" Height="30" Margin="5" PanelWidth="60" TextAreaRatio="0.8" IconMargin="2" ImagePlace="Right" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
+                        <scroll:ComboBox.Items>
+                            <scroll:DecoratedButton Height="40" Text="线状图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                            <scroll:DecoratedButton Height="40" Text="点状图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                            <scroll:DecoratedButton Height="40" Text="点线图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                        </scroll:ComboBox.Items>
+                    </scroll:ComboBox>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="线宽:" Width="60"/>
+                    <TextBox x:Name="LineWidth" Text="1" LostFocus="ApplyLineStyle" KeyDown="ApplyLineStyleKey" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="70"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="平滑曲线:" Width="80"/>
+                    <scroll:Chooser Name="IsSmooth" Width="40" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="20" Margin="10"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="14" Margin="10" Content="点尺寸:" Width="60"/>
+                    <TextBox x:Name="PointSize" Text="1" KeyDown="ApplyLineStyleKey" LostFocus="ApplyLineStyle" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="70"/>
+                </WrapPanel>
+            </scroll:AutoScrollViewer.Content>
+        </scroll:AutoScrollViewer>
+    </Grid>
+    <Grid Grid.Column="1" Name="DataView" Visibility="Collapsed">
+        <Grid.RowDefinitions>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <scroll:ListViewer Margin="5" Grid.Row="0" Grid.RowSpan="2" IsMultiSelected="True" MultiItemSelected="DataNames_MultiItemSelected" MultiItemUnSelected="DataNames_MultiItemUnSelected" Name="DataNames" ItemBarBackground="#FF4D4D4D" ItemBarSelectedColor="#FF2894FF" Background="#FF2E2E2E">
+            <scroll:ListViewer.DataTemplate>
+                <scroll:ViewerTemplate Descriptions="名称" DataType="String" DataDisplayWidth="*" Editable="False"/>
+                <scroll:ViewerTemplate Descriptions="点数" DataType="String" DataDisplayWidth="100" Editable="False"/>
+            </scroll:ListViewer.DataTemplate>
+            <scroll:ListViewer.HeaderLabelTemplate>
+                <Label HorizontalContentAlignment="Center" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="14"/>
+            </scroll:ListViewer.HeaderLabelTemplate>
+            <scroll:ListViewer.UnEditableTextTemplate>
+                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="White" FontSize="10"/>
+            </scroll:ListViewer.UnEditableTextTemplate>
+            <scroll:ListViewer.EditableBooleanTemplate>
+                <scroll:Chooser Width="40" Height="20"/>
+            </scroll:ListViewer.EditableBooleanTemplate>
+        </scroll:ListViewer>
+        <scroll:AutoScrollViewer Grid.Column="1" Name="scroll">
+            <scroll:AutoScrollViewer.Content>
+                <WrapPanel Name="DataPanel" Orientation="Horizontal" Height="{Binding ElementName=scroll,Path=ActualHeight}" ItemHeight="{Binding ElementName=scroll,Path=ActualHeight}" MinHeight="200">
+                </WrapPanel>
+            </scroll:AutoScrollViewer.Content>
+        </scroll:AutoScrollViewer>
+    </Grid>
 </Grid>

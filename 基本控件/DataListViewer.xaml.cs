@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Controls;
+using OpenCvSharp.Flann;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,13 +33,15 @@ namespace ODMR_Lab.基本控件
         /// </summary>
         int DisplayCount = 10;
 
-        int currentDisplayCount = 0;
+        public int CurrentDisplayIndex { private set; get; } = 0;
 
         public void UpdatePointList(int startindex)
         {
-
-            DataContent.Children.Clear();
-            DataName.Content = Data.Name;
+            datacontentscroll.DataTemplate = new List<Controls.ViewerTemplate>() {
+                new Controls.ViewerTemplate("序号",ListDataTypes.String,new GridLength(100),false),
+                new Controls.ViewerTemplate(Data.Name,ListDataTypes.String,new GridLength(1,GridUnitType.Star),false)
+            };
+            datacontentscroll.UpdateHeader();
             if (startindex > Data.GetCount() - DisplayCount)
             {
                 startindex = Data.GetCount() - DisplayCount;
@@ -47,81 +51,37 @@ namespace ODMR_Lab.基本控件
                 startindex = 0;
             }
 
-            currentDisplayCount = startindex;
+            CurrentDisplayIndex = startindex;
 
+            datacontentscroll.ClearItems();
             for (int i = startindex; i < startindex + DisplayCount; i++)
             {
                 if (i > Data.GetCount() - 1) continue;
-                DataContent.Children.Add(CreateDataListBar(i));
+                string value = "";
+                if (Data is TimeChartData1D)
+                {
+                    value = (Data as TimeChartData1D).Data[i].ToString("yyyy/MM/dd HH:mm:ss:FFF");
+                }
+                if (Data is NumricChartData1D)
+                {
+                    value = (Data as NumricChartData1D).Data[i].ToString();
+                }
+                datacontentscroll.AddItem(null, i, value);
             }
-        }
-
-        public Grid CreateDataListBar(int index)
-        {
-            string value = "";
-            if (Data is TimeChartData1D)
-            {
-                value = (Data as TimeChartData1D).Data[index].ToString("yyyy/MM/dd HH:mm:ss:FFF");
-            }
-            if (Data is NumricChartData1D)
-            {
-                value = (Data as NumricChartData1D).Data[index].ToString();
-            }
-
-            Grid g = new Grid();
-            g.Background = Brushes.Transparent;
-            g.Height = 40;
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(100) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { });
-            TextBox l = new TextBox()
-            {
-                Background = Brushes.Transparent,
-                Text = index.ToString(),
-                IsReadOnly = true,
-                IsReadOnlyCaretVisible = false,
-                ToolTip = index.ToString(),
-                Foreground = Brushes.White,
-                BorderThickness = new Thickness(0),
-                CaretBrush = Brushes.White,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                FontSize = 11
-            };
-            g.Children.Add(l);
-            SetColumn(l, 0);
-
-            l = new TextBox()
-            {
-                Background = Brushes.Transparent,
-                Text = value,
-                IsReadOnly = true,
-                IsReadOnlyCaretVisible = false,
-                ToolTip = value,
-                Foreground = Brushes.White,
-                BorderThickness = new Thickness(0),
-                CaretBrush = Brushes.White,
-                HorizontalContentAlignment = HorizontalAlignment.Center,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                FontSize = 11
-            };
-            g.Children.Add(l);
-            Grid.SetColumn(l, 1);
-
-            return g;
         }
 
         private void FormerDataList(object sender, RoutedEventArgs e)
         {
-            int ind = currentDisplayCount - DisplayCount;
+            int ind = CurrentDisplayIndex - DisplayCount;
             UpdatePointList(ind);
-            DisplayIndex.Text = currentDisplayCount.ToString();
+            DisplayIndex.Text = CurrentDisplayIndex.ToString();
         }
 
         private void LaterDataList(object sender, RoutedEventArgs e)
         {
-            int ind = currentDisplayCount + DisplayCount;
+            int ind = CurrentDisplayIndex + DisplayCount;
             UpdatePointList(ind);
-            DisplayIndex.Text = currentDisplayCount.ToString();
+            DisplayIndex.Text = CurrentDisplayIndex.ToString();
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
@@ -133,7 +93,7 @@ namespace ODMR_Lab.基本控件
                     TextBox b = sender as TextBox;
                     uint ind = uint.Parse(b.Text);
                     UpdatePointList((int)ind);
-                    DisplayIndex.Text = currentDisplayCount.ToString();
+                    DisplayIndex.Text = CurrentDisplayIndex.ToString();
                 }
                 catch (Exception ex) { }
             }

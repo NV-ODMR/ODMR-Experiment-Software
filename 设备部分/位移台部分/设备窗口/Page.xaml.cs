@@ -110,100 +110,35 @@ namespace ODMR_Lab.位移台部分
             NanoControllerBase tem = dev as NanoControllerBase;
         }
 
-        private Grid CreateMoverBar(NanoStageInfo device, string axisname, string controllername)
-        {
-            Grid grid = new Grid();
-            grid.Height = 40;
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            FontChangeText lbl = new FontChangeText();
-            lbl.InnerTextBox.IsReadOnly = true;
-            lbl.InnerTextBox.Text = controllername;
-            TextTemplate.CloneStyleTo(lbl);
-            grid.Children.Add(lbl);
-            Grid.SetColumn(lbl, 0);
-
-            FontChangeText lb2 = new FontChangeText();
-            lb2.InnerTextBox.IsReadOnly = true;
-            lb2.InnerTextBox.Text = axisname;
-            TextTemplate.CloneStyleTo(lb2);
-            grid.Children.Add(lb2);
-            Grid.SetColumn(lb2, 1);
-
-            ContextMenu menu = new ContextMenu();
-            menu.PanelMinWidth = 200;
-            menu.ItemHeight = 40;
-            DecoratedButton btn = new DecoratedButton()
-            {
-                Text = "关闭设备"
-            };
-            btn.Tag = device;
-            MagnetBtn.CloneStyleTo(btn);
-            btn.Click += CloseDevice;
-            menu.Items.Add(btn);
-
-            btn = new DecoratedButton()
-            {
-                Text = "参数设置"
-            };
-            btn.Tag = device;
-            MagnetBtn.CloneStyleTo(btn);
-            btn.Click += OpenParamWindow;
-            menu.Items.Add(btn);
-
-            menu.ApplyToControl(grid);
-
-            return grid;
-        }
 
         public void RefreshPanels()
         {
-            ProbeMovers.Children.Clear();
-            MagnetMovers.Children.Clear();
-            SampleMovers.Children.Clear();
-            MocrowaveMovers.Children.Clear();
+            ProbeMoverList.ClearItems();
+            SampleMoverList.ClearItems();
+            MWMoverList.ClearItems();
+            MagnetMoverList.ClearItems();
 
             foreach (var item in MoverList)
             {
                 foreach (var stage in item.Stages)
                 {
-                    Grid g = CreateMoverBar(stage, stage.Device.AxisName, item.Device.ProductName);
                     if (stage.PartType == PartTypes.Probe)
                     {
-                        ProbeMovers.Children.Add(g);
+                        ProbeMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
                     }
                     if (stage.PartType == PartTypes.Sample)
                     {
-                        SampleMovers.Children.Add(g);
+                        SampleMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
                     }
                     if (stage.PartType == PartTypes.Magnnet)
                     {
-                        MagnetMovers.Children.Add(g);
+                        MagnetMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
                     }
                     if (stage.PartType == PartTypes.Microwave)
                     {
-                        MocrowaveMovers.Children.Add(g);
+                        MWMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
                     }
                 }
-            }
-        }
-
-        private void OpenParamWindow(object sender, RoutedEventArgs e)
-        {
-            NanoStageInfo obj = (sender as DecoratedButton).Tag as NanoStageInfo;
-            ParameterWindow window = new ParameterWindow(obj.Device.AvailableParameterNames());
-            window.ShowDialog();
-        }
-
-        private void CloseDevice(object sender, RoutedEventArgs e)
-        {
-            if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
-            {
-                NanoMoverInfo mover = ((sender as DecoratedButton).Tag as NanoStageInfo).Parent;
-                mover.CloseDeviceInfoAndSaveParams(out bool result);
-                if (result == false) return;
-                MoverList.Remove(mover);
-                RefreshPanels();
             }
         }
 
@@ -232,5 +167,31 @@ namespace ODMR_Lab.位移台部分
             window?.ShowDialog();
             return;
         }
+
+        #region 设备列表
+        private void ContextMenuEvent(int arg1, int arg2, object arg3)
+        {
+            NanoStageInfo info = arg3 as NanoStageInfo;
+            #region 关闭设备
+            if (arg1 == 0)
+            {
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+                {
+                    info.Parent.CloseDeviceInfoAndSaveParams(out bool result);
+                    if (result == false) return;
+                    MoverList.Remove(info.Parent);
+                    RefreshPanels();
+                }
+            }
+            #endregion
+            #region 参数设置
+            if (arg1 == 1)
+            {
+                ParameterWindow window = new ParameterWindow(info.Device.AvailableParameterNames());
+                window.ShowDialog();
+            }
+            #endregion
+        }
+        #endregion
     }
 }

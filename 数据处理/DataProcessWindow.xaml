@@ -32,25 +32,19 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <Label Content="数据列表" Grid.Row="0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-            <control:AutoScrollViewer Margin="5" Name="datascroll" Grid.Row="2" Background="#FF2E2E2E">
-                <control:AutoScrollViewer.Content>
-                    <WrapPanel MinWidth="300" Width="{Binding ElementName=datascroll,Path=ActualWidth}" ItemWidth="{Binding ElementName=datascroll,Path=ActualWidth}">
-                        <Grid Height="40">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Content="数据名" Grid.Column="0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                            <Label Content="变量名" Grid.Column="1" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                            <Label Content="数据量" Grid.Column="2" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                        </Grid>
-                        <WrapPanel Name="DataList" ItemWidth="{Binding ElementName=datascroll,Path=ActualWidth}">
-                        </WrapPanel>
-                    </WrapPanel>
-                </control:AutoScrollViewer.Content>
-            </control:AutoScrollViewer>
+            <control:ListViewer Name="DataList" MinItemWidth="200" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF0095FF" Background="#FF1A1A1A">
+                <control:ListViewer.DataTemplate>
+                    <control:ViewerTemplate Descriptions="名称" DataDisplayWidth="*" DataType="String" Editable="False"/>
+                    <control:ViewerTemplate Descriptions="变量名" DataDisplayWidth="100" DataType="String" Editable="False"/>
+                    <control:ViewerTemplate Descriptions="数据量" DataDisplayWidth="100" DataType="String" Editable="False"/>
+                </control:ListViewer.DataTemplate>
+                <control:ListViewer.HeaderLabelTemplate>
+                    <Label Foreground="White" Background="#FF1A1A1A" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                </control:ListViewer.HeaderLabelTemplate>
+                <control:ListViewer.UnEditableTextTemplate>
+                    <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
+                </control:ListViewer.UnEditableTextTemplate>
+            </control:ListViewer>
             <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="1">
                 <基本控件:DataListViewer x:Name="DataListView"/>
             </Grid>

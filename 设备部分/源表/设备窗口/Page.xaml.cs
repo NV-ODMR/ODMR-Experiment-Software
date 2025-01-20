@@ -67,6 +67,7 @@ namespace ODMR_Lab.源表部分
             SampleTimeBox.Text = PowerMeterSampleTime.ToString();
         }
 
+        #region 设备部分
         /// <summary>
         /// 列出所有需要向数据库取回的数据
         /// </summary>
@@ -96,86 +97,50 @@ namespace ODMR_Lab.源表部分
             }
         }
 
-        private DecoratedButton CreateMeterBar(PowerMeterInfo device)
-        {
-            DecoratedButton grid = new DecoratedButton();
-            grid.Height = 40;
-            Btn.CloneStyleTo(grid);
-            grid.Text = device.Device.ProductName;
-            grid.ToolTip = device.Device.ProductName;
-            grid.Click += SelectBtn;
-            grid.Tag = device;
-
-            ContextMenu menu = new ContextMenu();
-            menu.PanelMinWidth = 200;
-            menu.ItemHeight = 40;
-            DecoratedButton btn = new DecoratedButton()
-            {
-                Text = "关闭设备"
-            };
-            btn.Tag = device;
-            Btn.CloneStyleTo(btn);
-            btn.Click += CloseDevice;
-            menu.Items.Add(btn);
-
-            btn = new DecoratedButton()
-            {
-                Text = "参数设置"
-            };
-            btn.Tag = device;
-            Btn.CloneStyleTo(btn);
-            btn.Click += OpenParamWindow;
-            menu.Items.Add(btn);
-
-            menu.ApplyToControl(grid);
-
-            return grid;
-        }
-
-        private void SelectBtn(object sender, RoutedEventArgs e)
-        {
-            DecoratedButton btn = sender as DecoratedButton;
-            foreach (var item in DeviceListPanel.Children)
-            {
-                (item as DecoratedButton).KeepPressed = false;
-            }
-            btn.KeepPressed = true;
-            CurrentSelectedMeter = btn.Tag as PowerMeterInfo;
-        }
-
         public void RefreshPanels()
         {
-            DeviceListPanel.Children.Clear();
+            DeviceList.ClearItems();
 
             foreach (var item in PowerMeterList)
             {
-                DecoratedButton g = CreateMeterBar(item);
-                DeviceListPanel.Children.Add(g);
+                DeviceList.AddItem(item, item.Device.ProductName);
             }
         }
 
-        private void OpenParamWindow(object sender, RoutedEventArgs e)
+        private void PowerMeterSelected(int arg1, object arg2)
         {
-            PowerMeterInfo obj = (sender as DecoratedButton).Tag as PowerMeterInfo;
-            ParameterWindow window = new ParameterWindow(obj.Device.AvailableParameterNames());
-            window.ShowDialog();
+            CurrentSelectedMeter = arg2 as PowerMeterInfo;
         }
 
-        private void CloseDevice(object sender, RoutedEventArgs e)
+        private void ContextMenuEvent(int arg1, int arg2, object arg3)
         {
-            if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+            PowerMeterInfo info = arg3 as PowerMeterInfo;
+            #region 关闭设备
+            if (arg1 == 0)
             {
-                PowerMeterInfo mover = (sender as DecoratedButton).Tag as PowerMeterInfo;
-                mover.CloseDeviceInfoAndSaveParams(out bool result);
-                if (result == false)
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
                 {
-                    return;
+                    info.CloseDeviceInfoAndSaveParams(out bool result);
+                    if (result == false)
+                    {
+                        return;
+                    }
+                    PowerMeterList.Remove(info);
+                    CurrentSelectedMeter = null;
+                    RefreshPanels();
                 }
-                PowerMeterList.Remove(mover);
-                CurrentSelectedMeter = null;
-                RefreshPanels();
             }
+            #endregion
+            #region 参数设置
+            if (arg1 == 1)
+            {
+                ParameterWindow window = new ParameterWindow(info.Device.AvailableParameterNames());
+                window.ShowDialog();
+            }
+            #endregion
         }
+
+        #endregion
 
         #region 电流监控线程
 
@@ -285,6 +250,7 @@ namespace ODMR_Lab.源表部分
         #endregion
 
 
+        #region 图像显示
         ChartViewerWindow GraphWindow = new ChartViewerWindow(true);
         /// <summary>
         /// 显示图表
@@ -303,5 +269,7 @@ namespace ODMR_Lab.源表部分
             GraphWindow.Topmost = true;
             GraphWindow.Topmost = false;
         }
+
+        #endregion
     }
 }
