@@ -128,7 +128,7 @@ namespace ODMR_Lab
                                         connectresult = (deviceinstance as WinUSBOuterInterface).ConnectUSB(obj.Descriptions["USBConnectName"], out Exception exc);
                                         if (connectresult == false)
                                         {
-                                            result.Add(((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["USBConnectName"]));
+                                            result.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["USBConnectName"]);
                                             continue;
                                         }
                                         connectinfo = new DeviceConnectInfo(PortType.USB, obj.Descriptions["USBConnectName"]);
@@ -138,7 +138,7 @@ namespace ODMR_Lab
                                         connectresult = (deviceinstance as COMOuterInterface).ConnectCOM(obj.Descriptions["COMName"], int.Parse(obj.Descriptions["BaudRate"]), out Exception exc);
                                         if (connectresult == false)
                                         {
-                                            result.Add(((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["COMName"]));
+                                            result.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["COMName"]);
                                             continue;
                                         }
                                         connectinfo = new DeviceConnectInfo(PortType.COM, obj.Descriptions["COMName"], obj.Descriptions["BaudRate"]);

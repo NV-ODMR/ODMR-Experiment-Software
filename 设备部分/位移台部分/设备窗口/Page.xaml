@@ -22,7 +22,7 @@
     <Label Content="探针位移台" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     <Label Content="样品位移台" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     <Label Content="微波丝位移台" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-    <control:ListViewer Name="MagnetMoverList" HeaderHeight="10" Grid.Column="1" Grid.RowSpan="1" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+    <control:ListViewer Name="MagnetMoverList" HeaderHeight="40" Grid.Column="1" Grid.RowSpan="1" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
             <control:ContextMenu>
                 <control:ContextMenu.Items>
@@ -45,7 +45,7 @@
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
     </control:ListViewer>
-    <control:ListViewer Name="ProbeMoverList" HeaderHeight="10" Grid.Column="1" Grid.RowSpan="1" Grid.Row="1" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+    <control:ListViewer Name="ProbeMoverList" HeaderHeight="40" Grid.Column="1" Grid.RowSpan="1" Grid.Row="1" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
             <control:ContextMenu>
                 <control:ContextMenu.Items>
@@ -68,7 +68,7 @@
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
     </control:ListViewer>
-    <control:ListViewer Name="SampleMoverList" HeaderHeight="10" Grid.Column="1" Grid.RowSpan="1" Grid.Row="2" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+    <control:ListViewer Name="SampleMoverList" HeaderHeight="40" Grid.Column="1" Grid.RowSpan="1" Grid.Row="2" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
             <control:ContextMenu>
                 <control:ContextMenu.Items>
@@ -91,7 +91,7 @@
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
     </control:ListViewer>
-    <control:ListViewer Name="MWMoverList" HeaderHeight="10" Grid.Column="1" Grid.RowSpan="1" Grid.Row="3" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+    <control:ListViewer Name="MWMoverList" HeaderHeight="40" Grid.Column="1" Grid.RowSpan="1" Grid.Row="3" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
             <control:ContextMenu>
                 <control:ContextMenu.Items>

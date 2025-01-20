@@ -97,6 +97,7 @@ namespace 温度监控程序.Windows
         /// <param name="e"></param>
         private void ConnectCOM(object sender, RoutedEventArgs e)
         {
+            if (COMDeviceTypeList.SelectedItem == null || COMDeviceList.SelectedItem == null) return;
             COMConnectSucceed.Visibility = Visibility.Hidden;
             COMConnectFalse.Visibility = Visibility.Hidden;
             int value = 9600;
@@ -138,6 +139,7 @@ namespace 温度监控程序.Windows
         /// <param name="e"></param>
         private void ConnectUSB(object sender, RoutedEventArgs e)
         {
+            if (USBDeviceList.SelectedItem == null || USBDeviceTypeList == null) return;
             USBConnectSucceed.Visibility = Visibility.Hidden;
             USBConnectFalse.Visibility = Visibility.Hidden;
             obj = Activator.CreateInstance(USBDeviceTypeList.SelectedItem.Tag as Type) as PortObject;

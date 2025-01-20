@@ -77,7 +77,7 @@ namespace ODMR_Lab.基本窗口
                 Grid.SetColumn(comboBox, 1);
                 if (paramobj.IsReadOnly)
                 {
-                    comboBox.IsEnabled = false;
+                    comboBox.IsHitTestVisible = false;
                 }
                 return grid;
             }
@@ -93,7 +93,7 @@ namespace ODMR_Lab.基本窗口
                 Grid.SetColumn(chooser, 1);
                 if (paramobj.IsReadOnly)
                 {
-                    chooser.IsEnabled = false;
+                    chooser.IsHitTestVisible = false;
                 }
                 return grid;
             }
@@ -108,7 +108,7 @@ namespace ODMR_Lab.基本窗口
                 Grid.SetColumn(font, 1);
                 if (paramobj.IsReadOnly)
                 {
-                    font.IsEnabled = false;
+                    font.IsHitTestVisible = false;
                 }
                 return grid;
             }
