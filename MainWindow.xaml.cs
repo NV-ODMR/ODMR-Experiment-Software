@@ -18,7 +18,6 @@ using CodeHelper;
 using Controls;
 using ODMR_Lab.Windows;
 using System.IO;
-using System.Windows.Threading;
 using System.Windows.Forms;
 using ODMR_Lab.相机;
 using HardWares.相机_CCD_;
