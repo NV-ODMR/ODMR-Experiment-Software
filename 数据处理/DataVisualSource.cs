@@ -37,7 +37,7 @@ namespace ODMR_Lab.数据处理
         public static DataVisualSource LoadFromFile(string path)
         {
             ExperimentFileTypes type = ExperimentFileObject<ParamBase>.GetExpType(path);
-            if (type == ExperimentFileTypes.None) throw new Exception("此文件为不支持预览的类型,无法打开");
+            if (type == ExperimentFileTypes.None) throw new Exception("此文件为不支持预览的类型,无法打开。\n文件路径:" + path);
             if (type == ExperimentFileTypes.源表IV测量数据)
             {
                 IVMeasureFileObject obj = new IVMeasureFileObject();

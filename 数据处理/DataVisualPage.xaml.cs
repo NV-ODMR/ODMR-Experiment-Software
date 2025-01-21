@@ -36,6 +36,11 @@ using ContextMenu = Controls.ContextMenu;
 using Label = System.Windows.Controls.Label;
 using Path = System.IO.Path;
 using ODMR_Lab.IO操作;
+using OpenCvSharp;
+using Window = System.Windows.Window;
+using DragEventArgs = System.Windows.DragEventArgs;
+using DataFormats = System.Windows.DataFormats;
+using DragDropEffects = System.Windows.DragDropEffects;
 
 namespace ODMR_Lab.数据处理
 {
@@ -102,36 +107,53 @@ namespace ODMR_Lab.数据处理
         /// <param name="e"></param>
         private void ImportFile(object sender, RoutedEventArgs e)
         {
-            try
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Multiselect = true;
+            dlg.Filter = "实验文件(*.userdat)|*.userdat";
+            if (dlg.ShowDialog() == DialogResult.OK)
             {
-                OpenFileDialog dlg = new OpenFileDialog();
-                dlg.Filter = "实验文件(*.userdat)|*.userdat";
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    foreach (var item in dlg.FileNames)
-                    {
-                        if (OpenedFiles.Contains(item))
-                        {
-                            DataVisualSource sou = Source[OpenedFiles.IndexOf(item)];
-                            SelectFileBtn(FilesPanel.Children[OpenedFiles.IndexOf(item)] as DecoratedButton);
-                            UpdateFromSource(sou);
+                LoadFiles(dlg.FileNames.ToList());
+            }
+        }
 
-                            return;
-                        }
-                        DataVisualSource source = DataVisualSource.LoadFromFile(item);
-                        Source.Add(source);
-                        OpenedFiles.Add(item);
+        /// <summary>
+        /// 导入指定路径文件
+        /// </summary>
+        /// <param name="paths"></param>
+        private void LoadFiles(List<string> paths)
+        {
+            DataVisualSource sou = null;
+            int ind = -1;
+            for (int i = 0; i < paths.Count(); i++)
+            {
+                try
+                {
+                    if (OpenedFiles.Contains(paths[i]))
+                    {
+                        sou = Source[OpenedFiles.IndexOf(paths[i])];
+                        ind = OpenedFiles.IndexOf(paths[i]);
+                    }
+                    else
+                    {
+                        sou = DataVisualSource.LoadFromFile(paths[i]);
+                        ind = OpenedFiles.Count;
+                        Source.Add(sou);
+                        OpenedFiles.Add(paths[i]);
                         UpdateFilesPanel();
-                        FilesPanel.UpdateLayout();
-                        SelectFileBtn(FilesPanel.Children[OpenedFiles.IndexOf(item)] as DecoratedButton);
-                        UpdateFromSource(source);
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageWindow.ShowTipWindow("打开文件失败,原因:\n" + ex.Message, ParentWindow);
+                }
             }
-            catch (Exception ex)
+            try
             {
-                MessageWindow.ShowTipWindow("打开文件失败,原因:\n" + ex.Message, ParentWindow);
+                FilesPanel.UpdateLayout();
+                SelectFileBtn(FilesPanel.Children[ind] as DecoratedButton);
+                UpdateFromSource(sou);
             }
+            catch (Exception ex) { return; }
         }
 
         /// <summary>
@@ -296,6 +318,8 @@ namespace ODMR_Lab.数据处理
             btn.KeepPressed = true;
         }
 
+        #region 文件处理
+
         /// <summary>
         /// 关闭当前文件
         /// </summary>
@@ -311,6 +335,45 @@ namespace ODMR_Lab.数据处理
             UpdateFilesPanel();
         }
 
+        /// <summary>
+        /// 外接拖动进入
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void File_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Move;
+            }
+        }
+
+        /// <summary>
+        /// 外界拖动移动
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void File_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.Move;
+            }
+        }
+
+        /// <summary>
+        /// 外界拖动松开(加载发票文件)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void File_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(DataFormats.FileDrop) == null) return;
+            var obj = (e.Data.GetData(DataFormats.FileDrop) as string[]).ToList();
+            LoadFiles(obj);
+            e.Handled = true;
+        }
+        #endregion
 
         public void UpdateFromSource(DataVisualSource source)
         {
@@ -340,6 +403,11 @@ namespace ODMR_Lab.数据处理
             MainWindow.Handle.SetShowInWindow();
         }
 
+        /// <summary>
+        /// 打开数据处理窗口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenDataProcessWindow(object sender, RoutedEventArgs e)
         {
             int ind = GetSelectedIndex();

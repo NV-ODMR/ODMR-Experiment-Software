@@ -23,7 +23,6 @@ using ODMR_Lab.相机;
 using HardWares.相机_CCD_;
 using Path = System.IO.Path;
 using System.Threading;
-using PythonPackage;
 using ODMR_Lab.Python.LbviewHandler;
 using ODMR_Lab.实验部分.磁场调节;
 using ODMR_Lab.基本窗口;
@@ -31,6 +30,7 @@ using ODMR_Lab.基本控件;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.实验部分.场效应器件测量;
 using Label = System.Windows.Controls.Label;
+using ODMR_Lab.Python管理器;
 
 namespace ODMR_Lab
 {
@@ -74,6 +74,15 @@ namespace ODMR_Lab
         public static 场效应器件测量.DisplayPage Exp_SourcePage = new 场效应器件测量.DisplayPage();
 
         #endregion
+
+        #region 扩展页面
+        /// <summary>
+        /// Python管理器
+        /// </summary>
+        public static Python管理器.ExtPage Ext_PythonPage = new Python管理器.ExtPage();
+
+        #endregion
+
 
         #region 数据处理部分
         public static bool IsInWindow { get; set; } = false;
@@ -270,54 +279,6 @@ namespace ODMR_Lab
                                 IsEnabled = true;
                             });
                         }
-
-                        MessageWindow win = null;
-                        Dispatcher.Invoke(() =>
-                        {
-                            IsEnabled = false;
-                            win = new MessageWindow("Python环境安装", "正在安装python环境", MessageBoxButton.OK, false, showButton: false);
-                            win.Owner = this;
-                            win.Content.Tag = "";
-                            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                            win.Show();
-                        });
-
-                        Python_NetInterpretor.Initialize(new Action<string>((str) =>
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                string temp = win.Content.Tag as string;
-                                win.Content.Tag = temp + str + "\n";
-                                win.Content.Text = str + "\n";
-                            });
-                        }), new Action(() =>
-                        {
-                        }));
-                        Dispatcher.Invoke(() =>
-                        {
-                            win.Close();
-                            IsEnabled = true;
-                            MessageWindow.ShowMessageBox("Python环境安装", win.Content.Tag as string, MessageBoxButton.OK, owner: this, MaxHeight: 600);
-                        });
-
-                        //初始化Labview环境
-                        LabviewConverter.InitLabview(out Exception ex);
-                        Dispatcher.Invoke(() =>
-                        {
-                            Topmost = true;
-                            Topmost = false;
-                        });
-                        if (ex != null)
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                MessageWindow.ShowTipWindow(ex.Message, this);
-                            });
-                        }
-                        else
-                        {
-                            double resu = MagnetAutoScanHelper.FindRoot(new PillarMagnet(5, 5), 5, 6, 1.5);
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -344,6 +305,7 @@ namespace ODMR_Lab
         {
             DeviceList.Visibility = Visibility.Collapsed;
             ExpList.Visibility = Visibility.Collapsed;
+            ExternalList.Visibility = Visibility.Collapsed;
             DecoratedButton btn = sender as DecoratedButton;
             if (btn.Text == "设备")
             {
@@ -369,6 +331,11 @@ namespace ODMR_Lab
                 {
                     SetShowInWindow();
                 }
+            }
+            if (btn.Text == "扩展")
+            {
+                ExternalList.Visibility = Visibility.Visible;
+                GeneralGrid.ColumnDefinitions[1].Width = new GridLength(160);
             }
         }
 
@@ -429,6 +396,20 @@ namespace ODMR_Lab
             {
                 CurrentPage = Exp_SourcePage;
                 PageContent.Children.Add(Exp_SourcePage);
+            }
+        }
+
+        private void ShowExternalContent(object sender, RoutedEventArgs e)
+        {
+            if (CurrentPage != null)
+            {
+                PageContent.Children.Clear();
+            }
+            DecoratedButton btn = sender as DecoratedButton;
+            if (btn.Text == "Python管理器")
+            {
+                CurrentPage = Ext_PythonPage;
+                PageContent.Children.Add(Ext_PythonPage);
             }
         }
     }

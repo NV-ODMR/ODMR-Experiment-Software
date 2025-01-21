@@ -45,11 +45,11 @@
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="DataBaseLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\DataBaseLib\DataBaseLib1\bin\Debug\DataBaseLib.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\DataBase\DataBaseLib1\bin\Debug\DataBaseLib.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -70,7 +70,7 @@
     </Reference>
     <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -185,6 +185,9 @@
     </Compile>
     <Compile Include="实验部分\磁场调节\子窗口\ScanInitWindow.xaml.cs">
       <DependentUpon>ScanInitWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="扩展部分\Python管理器\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\DataProcessWindow.xaml.cs">
       <DependentUpon>DataProcessWindow.xaml</DependentUpon>
@@ -313,6 +316,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\磁场调节\子窗口\ScanInitWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="扩展部分\Python管理器\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -488,9 +495,7 @@
   <ItemGroup>
     <Resource Include="图片资源\refresh.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="扩展部分\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Python\LabviewHandler\AutoTraceVI.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -516,6 +521,7 @@
     <Resource Include="图片资源\custom.png" />
     <Resource Include="图片资源\extension.png" />
     <Resource Include="图片资源\rightarrow.png" />
+    <Resource Include="图片资源\python.png" />
     <Content Include="图片资源\Setup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

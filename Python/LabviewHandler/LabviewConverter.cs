@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using PythonHandler;
 
 namespace ODMR_Lab.Python.LbviewHandler
 {
@@ -17,7 +18,7 @@ namespace ODMR_Lab.Python.LbviewHandler
         {
             try
             {
-                PythonPackage.Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "AutoTraceVI.py"), "AutoTrace", TimeSpan.FromSeconds(50));
+                Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "AutoTraceVI.py"), "AutoTrace", TimeSpan.FromSeconds(50));
                 exc = null;
                 return;
             }
@@ -40,7 +41,7 @@ namespace ODMR_Lab.Python.LbviewHandler
 
             try
             {
-                dynamic result = PythonPackage.Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "CWVI.py"), "RunCWGetRawData", TimeSpan.FromSeconds(300), startFreq, endFreq, step, averagetime, peakcount, scanRangeAfterstop, isReverse);
+                dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "CWVI.py"), "RunCWGetRawData", TimeSpan.FromSeconds(300), startFreq, endFreq, step, averagetime, peakcount, scanRangeAfterstop, isReverse);
                 //限定对比度范围
                 if (0.05 < result[2] < 0.4)
                 {
@@ -78,7 +79,7 @@ namespace ODMR_Lab.Python.LbviewHandler
         {
             try
             {
-                dynamic result = PythonPackage.Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "InitLabview.py"), "Init", TimeSpan.FromSeconds(5));
+                dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "InitLabview.py"), "Init", TimeSpan.FromSeconds(5));
                 exc = null;
                 return;
             }
@@ -99,7 +100,7 @@ namespace ODMR_Lab.Python.LbviewHandler
         {
             try
             {
-                dynamic result = PythonPackage.Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "GetE", TimeSpan.FromSeconds(5), k);
+                dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "GetE", TimeSpan.FromSeconds(5), k);
                 return result;
             }
             catch (Exception ex)
@@ -112,7 +113,7 @@ namespace ODMR_Lab.Python.LbviewHandler
         {
             try
             {
-                dynamic result = PythonPackage.Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "GetK", TimeSpan.FromSeconds(5), k);
+                dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "GetK", TimeSpan.FromSeconds(5), k);
                 return result;
             }
             catch (Exception ex)
