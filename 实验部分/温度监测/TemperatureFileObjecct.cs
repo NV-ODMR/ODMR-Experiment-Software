@@ -3,6 +3,7 @@ using Controls;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.温度监测部分;
 using ODMR_Lab.磁场调节;
@@ -21,9 +22,9 @@ using DisplayPage = ODMR_Lab.磁场调节.DisplayPage;
 namespace ODMR_Lab.实验部分.磁场调节
 {
     /// <summary>
-    /// 磁场调节的文件类
+    /// 温度监控的文件类
     /// </summary>
-    public class TemperatureFileObject : ExperimentFileObject<TemperatureParams>
+    public class TemperatureFileObject : ExperimentFileObject<TemperatureExpParams, TemperatureConfigParams>
     {
         /// <summary>
         /// 选中的温度通道
@@ -33,13 +34,18 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <summary>
         /// 参数列表
         /// </summary>
-        public override TemperatureParams Param { get; set; } = new TemperatureParams();
+        public override TemperatureExpParams Param { get; set; } = new TemperatureExpParams();
+
+        /// <summary>
+        /// 参数列表
+        /// </summary>
+        public override TemperatureConfigParams Config { get; set; } = new TemperatureConfigParams();
 
 
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.温度监测数据;
 
         /// <summary>
-        /// 不需要读取温度数据文件到
+        /// 读取温度数据文件到
         /// </summary>
         /// <param name="fobj"></param>
         protected override void InnerRead(FileObject fobj)

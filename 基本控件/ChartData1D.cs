@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab.基本控件
 {
+    public enum ChartDataType
+    {
+        X = 0,
+        Y = 1,
+        XY = 2
+    }
+
     public abstract class ChartData1D
     {
         /// <summary>
@@ -17,6 +24,8 @@ namespace ODMR_Lab.基本控件
 
         public bool IsSelectedAsX { get; set; } = false;
 
+        public ChartDataType DataAxisType { get; set; } = ChartDataType.XY;
+
         /// <summary>
         /// 是否显示在数据栏中
         /// </summary>
@@ -24,7 +33,7 @@ namespace ODMR_Lab.基本控件
 
         public int GetCount()
         {
-            if(this is NumricChartData1D)
+            if (this is NumricChartData1D)
             {
                 return (this as NumricChartData1D).Data.Count;
             }

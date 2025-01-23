@@ -36,7 +36,7 @@ namespace ODMR_Lab.数据处理
         /// <returns></returns>
         public static DataVisualSource LoadFromFile(string path)
         {
-            ExperimentFileTypes type = ExperimentFileObject<ParamBase>.GetExpType(path);
+            ExperimentFileTypes type = ExperimentFileObject<ExpParamBase, ConfigBase>.GetExpType(path);
             if (type == ExperimentFileTypes.None) throw new Exception("此文件为不支持预览的类型,无法打开。\n文件路径:" + path);
             if (type == ExperimentFileTypes.源表IV测量数据)
             {
@@ -46,7 +46,7 @@ namespace ODMR_Lab.数据处理
             }
             if (type == ExperimentFileTypes.磁场调节)
             {
-                MagnetControlFileObjecct obj = new MagnetControlFileObjecct();
+                MagnetScanFileObjecct obj = new MagnetScanFileObjecct();
                 obj.ReadFromFile(path);
                 return obj.ToDataVisualSource();
             }

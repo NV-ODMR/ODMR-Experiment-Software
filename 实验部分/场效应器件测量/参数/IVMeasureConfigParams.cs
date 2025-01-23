@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab.实验部分.场效应器件测量
 {
-    public class IVMeasureParams : ParamBase
+    public class IVMeasureConfigParams : ConfigBase
     {
         /// <summary>
         /// IV测量设备

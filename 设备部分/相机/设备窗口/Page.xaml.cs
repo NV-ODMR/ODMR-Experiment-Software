@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.相机_CCD_;
@@ -48,17 +47,6 @@ namespace ODMR_Lab.相机
         }
 
         public override void CloseBehaviour()
-        {
-        }
-
-        public override void UpdateDataBaseToUI()
-        {
-        }
-
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
         {
         }
 

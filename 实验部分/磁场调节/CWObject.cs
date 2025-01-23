@@ -53,6 +53,7 @@ namespace ODMR_Lab.实验部分.磁场调节
 
         public CWPointObject(double loc, double cw1, double cw2, double D, List<double> freqs1, List<double> values1, List<double> freqs2, List<double> values2)
         {
+            MoverLoc = loc;
             MagnetAutoScanHelper.CalculateB(cw1, cw2, out double bp, out double bv, D: D);
             Bp = bp;
             Bv = bv;

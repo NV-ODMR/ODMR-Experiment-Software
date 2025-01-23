@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
@@ -12,6 +11,7 @@ using ODMR_Lab.Windows;
 using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分.源表;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,22 +61,7 @@ namespace ODMR_Lab.源表部分
             MeasureListener?.Abort();
         }
 
-        public override void UpdateDataBaseToUI()
-        {
-            SamplePointBox.Text = PowerMeterSamplePoint.ToString();
-            SampleTimeBox.Text = PowerMeterSampleTime.ToString();
-        }
-
         #region 设备部分
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
-        {
-            DataBase.RegistateVar("PowerMeterSampleTime", this);
-            DataBase.RegistateVar("PowerMeterSamplePoint", this);
-        }
-
         private void NewConnect(object sender, RoutedEventArgs e)
         {
             ConnectWindow window = new ConnectWindow(typeof(PowerSourceBase), MainWindow.Handle);
@@ -85,7 +70,7 @@ namespace ODMR_Lab.源表部分
             {
                 PowerMeterInfo controller = (PowerMeterInfo)new PowerMeterInfo().CreateDeviceInfo(dev as PowerSourceBase, window.ConnectInfo);
 
-                controller.MaxSavePoint = PowerMeterSamplePoint;
+                controller.MaxSavePoint = Param.SamplePoint.Value;
 
                 PowerMeterList.Add(controller);
 
@@ -144,38 +129,17 @@ namespace ODMR_Lab.源表部分
 
         #region 电流监控线程
 
-        /// <summary>
-        /// 采样时间间隔
-        /// </summary>
-        public double PowerMeterSampleTime { get; set; } = 0.1;
-
-
-        private int maxSamplePoint = 100000;
-        /// <summary>
-        /// 采样最大点数
-        /// </summary>
-        public int PowerMeterSamplePoint
-        {
-            get
-            {
-                return maxSamplePoint;
-            }
-            set
-            {
-                maxSamplePoint = value;
-                foreach (var item in PowerMeterList)
-                {
-                    item.MaxSavePoint = value;
-                }
-            }
-        }
+        PowerMeterDevConfigParams Param = new PowerMeterDevConfigParams();
 
         private void ApplySet(object sender, RoutedEventArgs e)
         {
             try
             {
-                PowerMeterSamplePoint = int.Parse(SamplePointBox.Text);
-                PowerMeterSampleTime = double.Parse(SampleTimeBox.Text);
+                Param.ReadFromPage(new FrameworkElement[] { this });
+                foreach (var item in PowerMeterList)
+                {
+                    item.MaxSavePoint = Param.SamplePoint.Value;
+                }
             }
             catch (Exception ex)
             {
@@ -208,7 +172,7 @@ namespace ODMR_Lab.源表部分
                             VoltagePanel.Value.Text = "--- V";
                             CurrentPanel.Value.Text = "--- A";
                         });
-                        Thread.Sleep((int)(PowerMeterSampleTime * 1000));
+                        Thread.Sleep((int)(Param.SampleTime.Value * 1000));
                         continue;
                     }
                     IsSampling = true;
@@ -241,7 +205,7 @@ namespace ODMR_Lab.源表部分
                         });
                     }
                     IsSampling = false;
-                    Thread.Sleep((int)(PowerMeterSampleTime * 1000));
+                    Thread.Sleep((int)(Param.SampleTime.Value * 1000));
                 }
             });
             MeasureListener.Start();

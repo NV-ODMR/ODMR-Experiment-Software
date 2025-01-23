@@ -16,6 +16,10 @@ namespace ODMR_Lab.Python.LbviewHandler
         /// <param name="exc"></param>
         public static void AutoTrace(out Exception exc)
         {
+            #region 测试代码，跳过此步骤
+            exc = null;
+            return;
+            #endregion
             try
             {
                 Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "AutoTraceVI.py"), "AutoTrace", TimeSpan.FromSeconds(50));
@@ -38,6 +42,21 @@ namespace ODMR_Lab.Python.LbviewHandler
             fitcontracts = new List<double>();
             Frequences = new List<double>();
             Contracts = new List<double>();
+
+            #region 测试代码，生成随机结果
+            Random r = new Random();
+            fitpeaks.Add(r.Next(2200, 3100));
+            fitpeaks.Add(r.Next(2200, 3100));
+            fitcontracts.Add(r.NextDouble());
+            fitcontracts.Add(r.NextDouble());
+            for (int i = 0; i < 10; i++)
+            {
+                Frequences.Add(r.Next(2200, 3100));
+                Contracts.Add(r.NextDouble());
+            }
+            exc = null;
+            return;
+            #endregion
 
             try
             {

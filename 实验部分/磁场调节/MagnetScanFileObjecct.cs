@@ -20,7 +20,7 @@ namespace ODMR_Lab.实验部分.磁场调节
     /// <summary>
     /// 磁场调节的文件类
     /// </summary>
-    public class MagnetControlFileObjecct : ExperimentFileObject<MagnetScanParams>
+    public class MagnetScanFileObjecct : ExperimentFileObject<MagnetScanExpParams, MagnetScanConfigParams>
     {
         /// <summary>
         /// X扫描点
@@ -51,7 +51,12 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <summary>
         /// 参数列表
         /// </summary>
-        public override MagnetScanParams Param { get; set; } = new MagnetScanParams();
+        public override MagnetScanConfigParams Config { get; set; } = new MagnetScanConfigParams();
+
+        /// <summary>
+        /// 参数列表
+        /// </summary>
+        public override MagnetScanExpParams Param { get; set; } = new MagnetScanExpParams();
 
 
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.磁场调节;
@@ -340,21 +345,26 @@ namespace ODMR_Lab.实验部分.磁场调节
                 Param.LoadToPage(new System.Windows.FrameworkElement[] { page });
                 #endregion
                 #region 加载X窗口
-                page.XWin.AddDatas(XPoints);
+                page.XWin.CWPoints = XPoints;
+                page.XWin.UpdateDisplay();
                 #endregion
                 #region 加载Y窗口
-                page.YWin.AddDatas(YPoints);
+                page.YWin.CWPoints = YPoints;
+                page.YWin.UpdateDisplay();
                 #endregion
                 #region 加载Z窗口
-                page.ZWin.SetPoint1(ZPoints[0]);
-                page.ZWin.SetPoint2(ZPoints[1]);
+                page.ZWin.CWPoint1 = ZPoints[0];
+                page.ZWin.CWPoint2 = ZPoints[1];
+                page.ZWin.UpdateDisplay();
                 #endregion
                 #region 加载角度窗口
-                page.AngleWin.AddDatas(AnglePoints);
+                page.AngleWin.CWPoints = AnglePoints;
+                page.AngleWin.UpdateDisplay();
                 #endregion
                 #region 加载检查窗口
-                page.CheckWin.SetPoint1(CheckPoints[0]);
-                page.CheckWin.SetPoint2(CheckPoints[1]);
+                page.CheckWin.CWPoint1 = CheckPoints[0];
+                page.CheckWin.CWPoint2 = CheckPoints[1];
+                page.CheckWin.UpdatePointData();
                 #endregion
             }
             catch (Exception e)

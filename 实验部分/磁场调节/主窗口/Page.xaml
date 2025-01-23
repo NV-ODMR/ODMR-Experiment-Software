@@ -8,8 +8,9 @@
       d:DesignHeight="600" d:DesignWidth="800" Margin="10"
       >
     <Grid.RowDefinitions>
-        <RowDefinition Height="200"/>
-        <RowDefinition Height="40"/>
+        <RowDefinition Height="150"/>
+        <RowDefinition Height="100"/>
+        <RowDefinition Height="25"/>
         <RowDefinition/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
@@ -18,7 +19,7 @@
     </Grid.ColumnDefinitions>
     <Grid Grid.Row="0" Margin="10" Grid.Column="1">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="25"/>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
@@ -31,87 +32,123 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Content="磁场预测" Grid.ColumnSpan="5" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label Content="θ(度):" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label Content="φ(度):" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label Content="Z坐标:" Grid.Row="1" Grid.Column="4" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <TextBox x:Name="ThetaPre" Grid.Column="1" Grid.Row="1" Margin="5" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-        <TextBox x:Name="PhiPre" Grid.Column="3" Grid.Row="1" Margin="5" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-        <TextBox x:Name="ZHeight" Grid.Column="5" Grid.Row="1" Margin="5" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-        <Label Content="位移台X:" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label Content="位移台Y:" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label Content="位移台Z:" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label x:Name="XPre" Grid.Column="1" Grid.Row="2" Margin="5" BorderThickness="0" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
-        <Label x:Name="YPre" Grid.Column="3" Grid.Row="2" Margin="5" BorderThickness="0" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
-        <Label x:Name="ZPre" Grid.Column="5" Grid.Row="2" Margin="5" BorderThickness="0" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
-        <Label Content="角度:" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label Content="磁场强度(G):" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-        <Label x:Name="AnglePre" Grid.Column="1" Grid.Row="3" Margin="5,5,5,5" BorderThickness="0" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
-        <Label x:Name="BPre" Grid.Column="3" Grid.Row="3" Margin="5,5,5,5" BorderThickness="0" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
+        <Label Content="磁场预测" Name="PredictPanel" Grid.ColumnSpan="6" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="θ(度):" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="φ(度):" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="Z坐标:" Grid.Row="1" Grid.Column="4" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <TextBox x:Name="ThetaPre" Grid.Column="1" Grid.Row="1" Margin="5" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <TextBox x:Name="PhiPre" Grid.Column="3" Grid.Row="1" Margin="5" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <TextBox x:Name="ZHeight" Grid.Column="5" Grid.Row="1" Margin="5" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <Label Content="位移台X:" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="位移台Y:" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="位移台Z:" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label x:Name="XPre" Grid.Column="1" Grid.Row="2" Margin="5" BorderThickness="0" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
+        <Label x:Name="YPre" Grid.Column="3" Grid.Row="2" Margin="5" BorderThickness="0" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
+        <Label x:Name="ZPre" Grid.Column="5" Grid.Row="2" Margin="5" BorderThickness="0" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
+        <Label Content="角度:" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="磁场强度(G):" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label x:Name="AnglePre" Grid.Column="1" Grid.Row="3" Margin="5,5,5,5" BorderThickness="0" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
+        <Label x:Name="BPre" Grid.Column="3" Grid.Row="3" Margin="5,5,5,5" BorderThickness="0" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFF0F0F0"/>
         <control:DecoratedButton Name="TemplateBtn" Grid.Column="4" Click="CalculatePredictField" Grid.Row="3" Margin="5" Text="计算" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
         <control:DecoratedButton Grid.Column="5" Grid.Row="3" Margin="5" Text="移动" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
-    <control:AutoScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="3">
+    <Grid x:Name="InitParamPanel" Grid.Row="1" Grid.Column="1" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Label Content="定位预设参数" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="X扫描范围" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="Y扫描范围" Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="Z扫描高度" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="D值" Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="—" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="—" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <TextBox x:Name="XScanLo" Grid.Column="1" Margin="5" Grid.Row="1" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <TextBox x:Name="XScanHi" Grid.Column="3" Margin="5" Grid.Row="1" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <TextBox x:Name="YScanLo" Grid.Column="5" Margin="5" Grid.Row="1" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <TextBox x:Name="YScanHi" Grid.Column="7" Margin="5" Grid.Row="1" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <TextBox x:Name="ZPlane" Grid.Column="1" Margin="5" Grid.Row="2" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <TextBox x:Name="D" Grid.Column="5" Margin="5" Grid.Row="2" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+    </Grid>
+    <control:AutoScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="4">
         <control:AutoScrollViewer.Content>
             <WrapPanel Name="ParamPage" Width="190" Orientation="Horizontal">
-                <Label Content="磁铁参数" Width="190" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch"  Margin="5" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <Label Content="长度（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox Name="MLength" Width="70" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
-                <Label Content="半径（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="MRadius" Width="70" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
-                <Label Content="磁场强度系数:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox Name="MIntensity" Width="70" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
-                <Label Content="旋转台参数" Width="190" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <Label Content="角度基准点(度):" Margin="5" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="AngleStart" ToolTip="当圆柱形磁铁轴向沿X轴时角度位移台的度数" Margin="5" Width="60" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-                <Label Content="偏心修正参数" Width="190" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <Label Content="X（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox Name="OffsetX" IsReadOnly="True" Margin="5" Width="90" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-                <Label Content="Y（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox Name="OffsetY" IsReadOnly="True" Width="90" Margin="5" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-                <control:DecoratedButton Text="偏心参数计算" Click="OffsetCalculate" Margin="23,5,5,5" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" Height="40" Width="142"/>
-                <Label Content="轴范围限制" Width="190" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
+                <Label Content="磁铁参数" Width="190" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch"  Margin="5" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <Label Content="长度（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox Name="MLength" Width="70" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
+                <Label Content="半径（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox x:Name="MRadius" Width="70" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
+                <Label Content="磁场强度系数:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox Name="MIntensity" Width="70" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
+                <Label Content="旋转台参数" Width="190" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <Label Content="角度基准点(度):" Margin="5" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox Name="AngleStart" ToolTip="当圆柱形磁铁轴向沿X轴时角度位移台的度数" Margin="5" Width="60" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="偏心修正参数" Width="190" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <Label Content="X（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox Name="OffsetX" IsReadOnly="True" Margin="5" Width="90" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="Y（mm）:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox Name="OffsetY" IsReadOnly="True" Width="90" Margin="5" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <control:DecoratedButton Text="偏心参数计算" Click="OffsetCalculate" Margin="23,5,5,5" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" Height="25" Width="142"/>
+                <Label Content="轴范围限制" Width="190" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
 
-                <Label Content="X:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="XRangeLo" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-                <Label Content="—" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="XRangeHi" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="X:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox x:Name="XRangeLo" Margin="5" Width="50" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="—" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox x:Name="XRangeHi" Margin="5" Width="50" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
 
-                <Label Content="Y:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="YRangeLo" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-                <Label Content="—" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="YRangeHi" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="Y:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox x:Name="YRangeLo" Margin="5" Width="50" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="—" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox x:Name="YRangeHi" Margin="5" Width="50" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
 
-                <Label Content="Z:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="ZRangeLo" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
-                <Label Content="—" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <TextBox x:Name="ZRangeHi" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="Z:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox x:Name="ZRangeLo" Margin="5" Width="50" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Content="—" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <TextBox x:Name="ZRangeHi" Margin="5" Width="50" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
 
 
-                <Label Content="轴映射选项" Width="190" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <Label Content="X:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <control:ComboBox Name="XRelate" PanelWidth="100" ToolTip="与规定X轴对应的磁铁位移台轴" ImagePlace="Right" IconMargin="6" TextAreaRatio="0.8" Height="40" Width="120" Margin="5" BorderThickness="0" FontSize="15" Background="#FF383838" Foreground="#FFF0F0F0" IconSource="/图片资源/downArrow.png"/>
-                <Label Content="Y:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <control:ComboBox Name="YRelate" PanelWidth="100" ToolTip="与规定Y轴对应的磁铁位移台轴" ImagePlace="Right" IconMargin="6" TextAreaRatio="0.8" Height="40" Width="120" Margin="5" BorderThickness="0" FontSize="15" Background="#FF383838" Foreground="#FFF0F0F0" IconSource="/图片资源/downArrow.png"/>
-                <Label Content="Z:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <control:ComboBox Name="ZRelate" PanelWidth="100" ToolTip="与规定Z轴对应的磁铁位移台轴" ImagePlace="Right" IconMargin="6" TextAreaRatio="0.8" Height="40" Width="120" Margin="5" BorderThickness="0" FontSize="15" Background="#FF383838" Foreground="#FFF0F0F0" IconSource="/图片资源/downArrow.png"/>
-                <Label Content="反向Z轴" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="40"/>
-                <control:Chooser Name="ReverseZ" ToolTip="如果Z方向位移台的示数增加方向和规定的Z轴的正向不同，则要勾选此选项" Width="40" Height="20" Margin="5"/>
-                <control:DecoratedButton Margin="23,5,5,5" ToolTip="坐标系规定" Click="ShowAxisRelateInform" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" Height="40" Width="40" IconSource="/图片资源/information.png"/>
+                <Label Content="轴映射选项" Width="190" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <Label Content="X:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <control:ComboBox Name="XRelate" PanelWidth="100" ToolTip="与规定X轴对应的磁铁位移台轴" ImagePlace="Right" IconMargin="6" TextAreaRatio="0.8" Height="25" Width="120" Margin="5" BorderThickness="0" FontSize="11" Background="#FF383838" Foreground="#FFF0F0F0" IconSource="/图片资源/downArrow.png"/>
+                <Label Content="Y:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <control:ComboBox Name="YRelate" PanelWidth="100" ToolTip="与规定Y轴对应的磁铁位移台轴" ImagePlace="Right" IconMargin="6" TextAreaRatio="0.8" Height="25" Width="120" Margin="5" BorderThickness="0" FontSize="11" Background="#FF383838" Foreground="#FFF0F0F0" IconSource="/图片资源/downArrow.png"/>
+                <Label Content="Z:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <control:ComboBox Name="ZRelate" PanelWidth="100" ToolTip="与规定Z轴对应的磁铁位移台轴" ImagePlace="Right" IconMargin="6" TextAreaRatio="0.8" Height="25" Width="120" Margin="5" BorderThickness="0" FontSize="11" Background="#FF383838" Foreground="#FFF0F0F0" IconSource="/图片资源/downArrow.png"/>
+                <Label Content="角度:" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <control:ComboBox Name="ARelate" PanelWidth="100" ToolTip="与规定Z轴对应的磁铁位移台轴" ImagePlace="Right" IconMargin="6" TextAreaRatio="0.8" Height="25" Width="120" Margin="5" BorderThickness="0" FontSize="11" Background="#FF383838" Foreground="#FFF0F0F0" IconSource="/图片资源/downArrow.png"/>
+                <Label Content="反向X轴" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <control:Chooser Name="ReverseX" ToolTip="如果X方向位移台的示数增加方向和规定的X轴的正向不同，则要勾选此选项" Width="40" Height="20" Margin="30,0,0,0"/>
+                <Label Content="反向Y轴" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <control:Chooser Name="ReverseY" ToolTip="如果Y方向位移台的示数增加方向和规定的Y轴的正向不同，则要勾选此选项" Width="40" Height="20" Margin="30,0,0,0"/>
+                <Label Content="反向Z轴" Margin="5" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
+                <control:Chooser Name="ReverseZ" ToolTip="如果Z方向位移台的示数增加方向和规定的Z轴的正向不同，则要勾选此选项" Width="40" Height="20" Margin="30,0,0,0"/>
+                <control:DecoratedButton Margin="23,5,5,5" ToolTip="坐标系规定" Click="ShowAxisRelateInform" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" Height="25" Width="40" IconSource="/图片资源/information.png"/>
             </WrapPanel>
         </control:AutoScrollViewer.Content>
     </control:AutoScrollViewer>
-    <Grid Grid.Row="1" Grid.Column="2">
+    <Grid Grid.Row="2" Grid.Column="2">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <control:DecoratedButton TextAreaRatio="0" IconMargin="8" FontWeight="Thin" FontSize="14" Height="30" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
-        <control:DecoratedButton TextAreaRatio="0" FontWeight="Thin" FontSize="14" Height="30" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png" Grid.Column="2"/>
-        <control:DecoratedButton TextAreaRatio="0" IconMargin="8" FontWeight="Thin" FontSize="14" Height="30" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
+        <control:DecoratedButton Name="StartBtn" TextAreaRatio="0" Click="StartScan" IconMargin="4" FontWeight="Thin" FontSize="14" Height="25" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
+        <control:DecoratedButton Name="StopBtn" TextAreaRatio="0" Click="ResumeScan" FontWeight="Thin" IconMargin="0" FontSize="14" Height="25" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png" Grid.Column="2"/>
+        <control:DecoratedButton Name="ResumeBtn" TextAreaRatio="0" Click="StopScan" IconMargin="0" FontWeight="Thin" FontSize="14" Height="25" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
     </Grid>
-    <control:AutoScrollViewer Margin="10" Name="scrollviewer" Grid.Column="1" Grid.Row="2" Grid.RowSpan="1">
+    <control:AutoScrollViewer Margin="10" Name="scrollviewer" Grid.Column="1" Grid.Row="3" Grid.RowSpan="1">
         <control:AutoScrollViewer.Content>
             <WrapPanel Width="{Binding ElementName=scrollviewer,Path=ActualWidth}">
                 <Border Name="BorderX" MouseLeftButtonUp="OpenWindow" Width="{Binding ElementName=scrollviewer,Path=ActualWidth}" Height="100" CornerRadius="10" BorderThickness="2" Background="#FF2E2E2E" BorderBrush="#FF0076FF">
@@ -125,12 +162,12 @@
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
                         <Label Name="XProgress" Content="0%" FontSize="18" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                        <Image Name="XOk" Height="30" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
+                        <Image Name="XOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="X方向扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                             <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="XState" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="XLoc" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="XState" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="XLoc" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -145,12 +182,12 @@
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
                         <Label Name="YProgress" Content="0%" FontSize="18" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                        <Image Name="YOk" Height="30" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
+                        <Image Name="YOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="Y方向扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                             <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="YState" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="YLoc" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="YState" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="YLoc" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -165,13 +202,13 @@
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
                         <Label Name="ZProgress" Content="0%" FontSize="18" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                        <Image Name="ZOk" Height="30" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
+                        <Image Name="ZOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="Z方向扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                             <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                             <TextBlock x:Name="ZState" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="ZLoc" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="ZDistance" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="ZLoc" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="ZDistance" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -186,13 +223,19 @@
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
                         <Label Name="AngleProgress" Content="0%" FontSize="18" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                        <Image Name="AngleOk" Height="30" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
+                        <Image Name="AngleOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="角度扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                            <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="AngleState" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="AngleTheta" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="AnglePhi" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <Label Content="状态：" VerticalAlignment="Stretch" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="AngleState" VerticalAlignment="Stretch" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="θ=" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="Theta1" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="或" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="Theta2" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="phi=" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="Phi1" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="或" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="Phi2" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -207,11 +250,15 @@
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
                         <Label Name="CheckProgress" Content="0%" FontSize="18" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                        <Image Name="CheckOk" Height="30" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
+                        <Image Name="CheckOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="角度结果检查" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                            <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="CheckState" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <Label Content="状态：" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="CheckState" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="θ=" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="CheckedTheta" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="φ=" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="CheckedPhi" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>

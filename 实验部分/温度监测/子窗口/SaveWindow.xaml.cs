@@ -38,12 +38,7 @@ namespace ODMR_Lab.温度监测部分
             {
                 AutoOptions.IsEnabled = false;
             }
-            Path.Content = page.FolderPath;
-            Path.ToolTip = page.FolderPath;
-            AutoPath.Content = page.AutoFolderPath;
-            AutoPath.ToolTip = page.AutoFolderPath;
-            AutoSaveGap.Text = page.AutoSaveGap.ToString();
-            AutoChooser.IsSelected = page.AutoSave;
+
             DateTime time = page.HistorySaveTime;
             LastSaveTime.Content = time.Year.ToString() + "年" + time.Month.ToString() + "月" + time.Day.ToString() + "日" + "   " + time.ToString("HH:mm:ss");
         }
@@ -58,7 +53,7 @@ namespace ODMR_Lab.温度监测部分
 
         private void Close(object sender, RoutedEventArgs e)
         {
-            Close();
+            Hide();
         }
 
         private void Minimize(object sender, RoutedEventArgs e)
@@ -78,7 +73,6 @@ namespace ODMR_Lab.温度监测部分
             {
                 Path.Content = dia.SelectedPath;
                 Path.ToolTip = dia.SelectedPath;
-                page.FolderPath = dia.SelectedPath;
             }
         }
 
@@ -89,7 +83,6 @@ namespace ODMR_Lab.温度监测部分
             {
                 AutoPath.Content = dia.SelectedPath;
                 AutoPath.ToolTip = dia.SelectedPath;
-                page.AutoFolderPath = dia.SelectedPath;
             }
         }
 
@@ -122,7 +115,6 @@ namespace ODMR_Lab.温度监测部分
 
         private void AutoChooser_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            page.AutoSave = AutoChooser.IsSelected;
             if (AutoChooser.IsSelected)
             {
                 AutoOptions.IsEnabled = true;
@@ -140,7 +132,6 @@ namespace ODMR_Lab.温度监测部分
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             if (double.TryParse(AutoSaveGap.Text, out double value))
             {
-                page.AutoSaveGap = value;
                 window.ShowWindow("设置成功");
             }
             else

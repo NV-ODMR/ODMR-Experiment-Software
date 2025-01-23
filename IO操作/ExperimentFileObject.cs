@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab
 {
-    public abstract class ExperimentFileObject<ParamType>
-        where ParamType : ParamBase
+    public abstract class ExperimentFileObject<ParamType, ConfigType>
+        where ParamType : ExpParamBase
+        where ConfigType : ConfigBase
     {
         /// <summary>
         /// 实验文件类型
@@ -22,6 +23,11 @@ namespace ODMR_Lab
         /// 实验参数
         /// </summary>
         public abstract ParamType Param { get; set; }
+
+        /// <summary>
+        /// UI显示参数
+        /// </summary>
+        public abstract ConfigType Config { get; set; }
 
         public bool ReadFromFile(string filepath)
         {
@@ -38,6 +44,10 @@ namespace ODMR_Lab
                 if (Param != null)
                 {
                     Param.ReadFromDescription(obj.Descriptions);
+                }
+                if (Config != null)
+                {
+                    Config.ReadFromDescription(obj.Descriptions);
                 }
 
                 return true;
@@ -63,6 +73,11 @@ namespace ODMR_Lab
                     Param.ReadFromDescription(obj.Descriptions);
                 }
 
+                if (Config != null)
+                {
+                    Config.ReadFromDescription(obj.Descriptions);
+                }
+
                 return true;
             }
             return false;
@@ -80,6 +95,18 @@ namespace ODMR_Lab
             {
 
                 Dictionary<string, string> dic = Param.GenerateDescription();
+                foreach (var item in dic)
+                {
+                    if (!obj.Descriptions.Keys.Contains(item.Key))
+                    {
+                        obj.Descriptions.Add(item.Key, item.Value);
+                    }
+                }
+            }
+            if (Config != null)
+            {
+
+                Dictionary<string, string> dic = Config.GenerateDescription();
                 foreach (var item in dic)
                 {
                     if (!obj.Descriptions.Keys.Contains(item.Key))
@@ -112,6 +139,19 @@ namespace ODMR_Lab
                     }
                 }
             }
+
+            if (Config != null)
+            {
+                Dictionary<string, string> dic = Config.GenerateDescription();
+                foreach (var item in dic)
+                {
+                    if (!obj.Descriptions.Keys.Contains(item.Key))
+                    {
+                        obj.Descriptions.Add(item.Key, item.Value);
+                    }
+                }
+            }
+
 
             if (!obj.Descriptions.Keys.Contains("实验类型"))
             {

@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
@@ -68,16 +67,6 @@ namespace ODMR_Lab.样品定位
         {
         }
 
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
-        {
-        }
-
-        public override void UpdateDataBaseToUI()
-        {
-        }
 
         public override void CloseBehaviour()
         {

@@ -97,17 +97,17 @@ namespace ODMR_Lab.实验部分.磁场调节
             offsety = r * Math.Sin(angle * Math.PI / 180);
         }
 
-        public static List<double> GetTargetOffset(MagnetScanParams param, double targetAngle)
+        public static List<double> GetTargetOffset(MagnetScanConfigParams config, double targetAngle)
         {
 
             // 计算随体坐标系下的极坐标
-            double r = Math.Sqrt(param.OffsetX.Value * param.OffsetX.Value + param.OffsetY.Value * param.OffsetY.Value);
-            double the = Math.Atan2(param.OffsetY.Value, param.OffsetX.Value) * 180 / Math.PI;
+            double r = Math.Sqrt(config.OffsetX.Value * config.OffsetX.Value + config.OffsetY.Value * config.OffsetY.Value);
+            double the = Math.Atan2(config.OffsetY.Value, config.OffsetX.Value) * 180 / Math.PI;
 
-            double the1 = the + param.ReverseANum.Value * (targetAngle - param.StartAngle.Value);
+            double the1 = the + GetReverseNum(config.ReverseA.Value) * (targetAngle - config.AngleStart.Value);
 
-            double dx = param.ReverseXNum.Value * r * (Math.Cos(the / 180 * Math.PI) - Math.Cos(the1 / 180 * Math.PI));
-            double dy = param.ReverseYNum.Value * r * (Math.Sin(the / 180 * Math.PI) - Math.Sin(the1 / 180 * Math.PI));
+            double dx = GetReverseNum(config.ReverseX.Value) * r * (Math.Cos(the / 180 * Math.PI) - Math.Cos(the1 / 180 * Math.PI));
+            double dy = GetReverseNum(config.ReverseY.Value) * r * (Math.Sin(the / 180 * Math.PI) - Math.Sin(the1 / 180 * Math.PI));
 
             return new List<double>() { dx, dy };
         }
@@ -315,6 +315,104 @@ namespace ODMR_Lab.实验部分.磁场调节
         public static List<double> FitSinCurve(List<double> x, List<double> y)
         {
             return Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "FitSinData", TimeSpan.FromMilliseconds(100000), x, y);
+        }
+
+        /// <summary>
+        /// 根据参数计算可能的两个NV朝向对应的XYZ和角度位移台位置
+        /// </summary>
+        /// <param name="P"></param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="z1"></param>
+        /// <param name="angle1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        /// <param name="z2"></param>
+        /// <param name="angle2"></param>
+        public static void CalculatePossibleLocs(MagnetScanConfigParams Config, MagnetScanExpParams Param, out double x1, out double y1, out double z1, out double angle1, out double x2, out double y2, out double z2, out double angle2)
+        {
+            #region 第一个方向
+            List<double> res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Param.Theta1.Value, Param.Phi1.Value, Param.ZDistance.Value);
+            double ang = res[0] * GetReverseNum(Config.ReverseA.Value);
+            double dx = res[1] * GetReverseNum(Config.ReverseX.Value);
+            double dy = res[2] * GetReverseNum(Config.ReverseY.Value);
+            ang = Config.AngleStart.Value + ang;
+            while (ang > 360)
+            {
+                ang -= 360;
+            }
+            while (ang < -360)
+            {
+                ang += 360;
+            }
+            if (Math.Abs(ang) > 150)
+            {
+                res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Math.PI - Param.Theta1.Value, Param.Phi1.Value - Math.PI, Param.ZDistance.Value);
+                ang = res[0] * GetReverseNum(Config.ReverseA.Value);
+                dx = res[1] * GetReverseNum(Config.ReverseX.Value);
+                dy = res[2] * GetReverseNum(Config.ReverseY.Value);
+                ang = Config.AngleStart.Value + ang;
+                while (ang > 360)
+                {
+                    ang -= 360;
+                }
+                while (ang < -360)
+                {
+                    ang += 360;
+                }
+            }
+            //根据需要移动的角度进行偏心修正
+            List<double> re = MagnetAutoScanHelper.GetTargetOffset(Config, ang);
+            x1 = Param.XLoc.Value + re[0] + dx;
+            y1 = Param.YLoc.Value + re[1] + dy;
+            z1 = Param.ZLoc.Value;
+            angle1 = ang;
+
+            #endregion
+
+            #region 第二个方向
+            res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Param.Theta2.Value, Param.Phi1.Value, Param.ZDistance.Value);
+            ang = res[0] * GetReverseNum(Config.ReverseA.Value);
+            dx = res[1] * GetReverseNum(Config.ReverseX.Value);
+            dy = res[2] * GetReverseNum(Config.ReverseY.Value);
+            ang = Config.AngleStart.Value + ang;
+            while (ang > 360)
+            {
+                ang -= 360;
+            }
+            while (ang < -360)
+            {
+                ang += 360;
+            }
+            if (Math.Abs(ang) > 150)
+            {
+                res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Math.PI - Param.Theta2.Value, Param.Phi1.Value - Math.PI, Param.ZDistance.Value);
+                ang = res[0] * GetReverseNum(Config.ReverseA.Value);
+                dx = res[1] * GetReverseNum(Config.ReverseX.Value);
+                dy = res[2] * GetReverseNum(Config.ReverseY.Value);
+                ang = Config.AngleStart.Value + ang;
+                while (ang > 360)
+                {
+                    ang -= 360;
+                }
+                while (ang < -360)
+                {
+                    ang += 360;
+                }
+            }
+            //根据需要移动的角度进行偏心修正
+            re = MagnetAutoScanHelper.GetTargetOffset(Config, ang);
+            x2 = Param.XLoc.Value + re[0] + dx;
+            y2 = Param.YLoc.Value + re[1] + dy;
+            z2 = Param.ZLoc.Value;
+            angle2 = ang;
+
+            #endregion
+        }
+
+        private static int GetReverseNum(bool value)
+        {
+            return value ? 1 : -1;
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab.实验部分.场效应器件测量
 {
-    public class IVMeasureFileObject : ExperimentFileObject<IVMeasureParams>
+    public class IVMeasureFileObject : ExperimentFileObject<IVMeasureExpParams, IVMeasureConfigParams>
     {
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.源表IV测量数据;
 
@@ -33,7 +33,9 @@ namespace ODMR_Lab.实验部分.场效应器件测量
         /// </summary>
         public List<DateTime> IVTimes { get; set; } = new List<DateTime>();
 
-        public override IVMeasureParams Param { get; set; } = new IVMeasureParams();
+        public override IVMeasureExpParams Param { get; set; } = new IVMeasureExpParams();
+
+        public override IVMeasureConfigParams Config { get; set; } = new IVMeasureConfigParams();
 
         protected override void InnerRead(FileObject fobj)
         {
@@ -46,12 +48,12 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             if (fobj.Descriptions.Keys.Contains("ScanPoints"))
             {
                 List<string> strs = fobj.Descriptions["ScanPoints"].Split(',').ToList();
-                Param.ScanPoints.Clear();
+                Config.ScanPoints.Clear();
                 foreach (var item in strs)
                 {
                     try
                     {
-                        Param.ScanPoints.Add(double.Parse(item.Replace("V", "")));
+                        Config.ScanPoints.Add(double.Parse(item.Replace("V", "")));
                     }
                     catch (Exception) { }
                 }
@@ -65,7 +67,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
 
             //添加扫描路径点
             string points = "";
-            foreach (var item in Param.ScanPoints)
+            foreach (var item in Config.ScanPoints)
             {
                 points += item.ToString() + "V " + ",";
             }
@@ -93,7 +95,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             }
 
             string scanroute = "";
-            foreach (var item in Param.ScanPoints)
+            foreach (var item in Config.ScanPoints)
             {
                 scanroute += item.ToString() + "V ,";
             }

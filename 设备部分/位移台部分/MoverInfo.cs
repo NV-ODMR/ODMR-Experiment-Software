@@ -83,16 +83,28 @@ namespace ODMR_Lab.位移台部分
             Device = stage;
         }
 
+        private object lockobj = new object();
+
         public bool IsWriting { get; private set; } = false;
 
-        public void Use()
+        public bool Use(bool showmessagebox = false, bool log = true)
         {
-            IsWriting = true;
+            lock (lockobj)
+            {
+                if (IsWriting)
+                {
+                    MessageLogger.AddLogger("设备", "未能成功获取位移台设备" + Parent.Device.ProductName + "的" + Device.AxisName + "轴,轴正在使用。", MessageTypes.Warning, showmessagebox, log);
+                    return false;
+                }
+                IsWriting = true;
+                return true;
+            }
         }
 
         public void UnUse()
         {
-            IsWriting = false;
+            lock (lockobj)
+                IsWriting = false;
         }
     }
 

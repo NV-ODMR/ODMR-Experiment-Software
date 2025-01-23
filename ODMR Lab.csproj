@@ -47,13 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
-    <Reference Include="DataBaseLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\DataBase\DataBaseLib1\bin\Debug\DataBaseLib.dll</HintPath>
-    </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -119,10 +115,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IO操作\ConfigBase.cs" />
     <Compile Include="IO操作\ExperimentFileTypes.cs" />
     <Compile Include="IO操作\ExperimentFileObject.cs" />
+    <Compile Include="IO操作\ExpParamBase.cs" />
     <Compile Include="IO操作\Param.cs" />
     <Compile Include="IO操作\ParamBase.cs" />
+    <Compile Include="IO操作\ParamManager.cs" />
     <Compile Include="MessageLogger.cs" />
     <Compile Include="PageBase.cs" />
     <Compile Include="Python\LabviewHandler\LabviewConverter.cs" />
@@ -146,31 +145,40 @@
       <DependentUpon>ChartViewerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\场效应器件测量\IVMeasureFileObject.cs" />
-    <Compile Include="实验部分\场效应器件测量\IVMeasureParams.cs" />
     <Compile Include="实验部分\场效应器件测量\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\场效应器件测量\参数\IVMeasureConfigParams.cs" />
+    <Compile Include="实验部分\场效应器件测量\参数\IVMeasureExpParams.cs" />
+    <Compile Include="实验部分\场效应器件测量\参数\VoltageSetConfigParams.cs" />
+    <Compile Include="实验部分\场效应器件测量\参数\VoltageSetExpParams.cs" />
+    <Compile Include="实验部分\扫描基方法\Scan1DBase.cs" />
+    <Compile Include="实验部分\扫描基方法\Scan2DBase.cs" />
+    <Compile Include="实验部分\扫描基方法\ScanHelper.cs" />
     <Compile Include="实验部分\样品定位\CorrelatePoint.cs" />
     <Compile Include="实验部分\样品定位\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\样品定位\TransformStep.cs" />
     <Compile Include="实验部分\温度监测\TemperatureFileObjecct.cs" />
-    <Compile Include="实验部分\温度监测\TemperatureParams.cs" />
     <Compile Include="实验部分\温度监测\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\温度监测\参数\TemperatureConfigParams.cs" />
+    <Compile Include="实验部分\温度监测\参数\TemperatureExpParams.cs" />
     <Compile Include="实验部分\温度监测\子窗口\SaveWindow.xaml.cs">
       <DependentUpon>SaveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\磁场调节\CWObject.cs" />
-    <Compile Include="实验部分\磁场调节\MagnetControlFileObjecct.cs" />
-    <Compile Include="实验部分\磁场调节\MagnetScanParams.cs" />
+    <Compile Include="实验部分\磁场调节\MagnetScanFileObjecct.cs" />
     <Compile Include="实验部分\磁场调节\PillarMagnet.cs" />
     <Compile Include="实验部分\磁场调节\MagnetAutoScanHelper.cs" />
+    <Compile Include="实验部分\磁场调节\PillarMagnetHelper.cs" />
     <Compile Include="实验部分\磁场调节\主窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\磁场调节\参数\MagnetScanExpParams.cs" />
+    <Compile Include="实验部分\磁场调节\参数\MagnetScanConfigParams.cs" />
     <Compile Include="实验部分\磁场调节\子窗口\MagnetCheckWindow.xaml.cs">
       <DependentUpon>MagnetCheckWindow.xaml</DependentUpon>
     </Compile>
@@ -182,9 +190,6 @@
     </Compile>
     <Compile Include="实验部分\磁场调节\子窗口\OffsetWindow.xaml.cs">
       <DependentUpon>OffsetWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="实验部分\磁场调节\子窗口\ScanInitWindow.xaml.cs">
-      <DependentUpon>ScanInitWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="扩展部分\Python管理器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -226,6 +231,7 @@
     <Compile Include="设备部分\温度监测部分\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="设备部分\源表\PowerMeterDevConfigParams.cs" />
     <Compile Include="设备部分\源表\PowerMeterInfo.cs" />
     <Compile Include="设备部分\源表\控件\SourceMeterPannel.xaml.cs">
       <DependentUpon>SourceMeterPannel.xaml</DependentUpon>
@@ -314,10 +320,6 @@
     <Page Include="实验部分\磁场调节\子窗口\OffsetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="实验部分\磁场调节\子窗口\ScanInitWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="扩展部分\Python管理器\Page.xaml">
       <Generator>MSBuild:Compile</Generator>

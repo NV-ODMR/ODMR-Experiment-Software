@@ -12,18 +12,8 @@ namespace ODMR_Lab.磁场调节
     /// <summary>
     /// 磁场调节参数列表
     /// </summary>
-    public class MagnetScanParams : ParamBase
+    public class MagnetScanConfigParams : ConfigBase
     {
-        #region 设备信息
-        public Param<string> XDeviceName { get; set; } = new Param<string>("X方向设备", "");
-
-        public Param<string> YDeviceName { get; set; } = new Param<string>("Y方向设备", "");
-
-        public Param<string> ZDeviceName { get; set; } = new Param<string>("Z方向设备", "");
-
-        public Param<string> RotName { get; set; } = new Param<string>("旋转台设备", "");
-        #endregion
-
         #region 预设参数
         /// <summary>
         /// 磁铁半径
@@ -35,6 +25,8 @@ namespace ODMR_Lab.磁场调节
         /// </summary>
         public Param<double> MLength { get; set; } = new Param<double>("磁铁长度(mm)", double.NaN);
 
+        public Param<double> MIntensity { get; set; } = new Param<double>("磁铁磁化强度系数", double.NaN);
+
         /// <summary>
         /// 偏心量X
         /// </summary>
@@ -45,30 +37,45 @@ namespace ODMR_Lab.磁场调节
         /// </summary>
         public Param<double> OffsetY { get; set; } = new Param<double>("偏心量Y(mm)", double.NaN);
 
+        /// <summary>
+        /// X对应位移台轴
+        /// </summary>
+        public Param<MoverTypes> XRelate { get; set; } = new Param<MoverTypes>("X对应位移台轴", MoverTypes.None);
 
-        public MoverTypes XRelate { get; set; } = MoverTypes.None;
-        public MoverTypes YRelate { get; set; } = MoverTypes.None;
-        public MoverTypes ZRelate { get; set; } = MoverTypes.None;
+        /// <summary>
+        /// Y对应位移台轴
+        /// </summary>
+        public Param<MoverTypes> YRelate { get; set; } = new Param<MoverTypes>("Y对应位移台轴", MoverTypes.None);
+
+        /// <summary>
+        /// Z对应位移台轴
+        /// </summary>
+        public Param<MoverTypes> ZRelate { get; set; } = new Param<MoverTypes>("Z对应位移台轴", MoverTypes.None);
+
+        /// <summary>
+        /// 角度对应位移台轴
+        /// </summary>
+        public Param<MoverTypes> ARelate { get; set; } = new Param<MoverTypes>("角度对应位移台轴", MoverTypes.None);
 
         /// <summary>
         /// X反转值 
         /// </summary>
-        public Param<int> ReverseXNum { get; set; } = new Param<int>("X轴反转系数", 1);
+        public Param<bool> ReverseX { get; set; } = new Param<bool>("反转X轴", false);
 
         /// <summary>
         /// Y反转值 
         /// </summary>
-        public Param<int> ReverseYNum { get; set; } = new Param<int>("Y轴反转系数", 1);
+        public Param<bool> ReverseY { get; set; } = new Param<bool>("反转Y轴", false);
 
         /// <summary>
         /// Z反转值 
         /// </summary>
-        public Param<int> ReverseZNum { get; set; } = new Param<int>("Z轴反转系数", 1);
+        public Param<bool> ReverseZ { get; set; } = new Param<bool>("反转Z轴", false);
 
         /// <summary>
         /// 角度反转值 
         /// </summary>
-        public Param<int> ReverseANum { get; set; } = new Param<int>("角度反转系数", 1);
+        public Param<bool> ReverseA { get; set; } = new Param<bool>("反转角度", false);
 
         /// <summary>
         /// 进行X扫描时的旋转台角度
@@ -82,7 +89,7 @@ namespace ODMR_Lab.磁场调节
         /// <summary>
         ///基准角度
         /// </summary>
-        public Param<double> StartAngle { get; set; } = new Param<double>("角度零点(度)", double.NaN);
+        public Param<double> AngleStart { get; set; } = new Param<double>("角度零点(度)", double.NaN);
 
         /// <summary>
         /// X扫描范围
@@ -146,46 +153,5 @@ namespace ODMR_Lab.磁场调节
 
         #endregion
 
-        #region 运行时参数
-        /// <summary>
-        /// X扫描结果
-        /// </summary>
-        public Param<double> XLoc { get; set; } = new Param<double>("X方向磁场峰值位置(mm)", double.NaN);
-
-        /// <summary>
-        /// Y扫描结果
-        /// </summary>
-        public Param<double> YLoc { get; set; } = new Param<double>("Y方向磁场峰值位置(mm)", double.NaN);
-
-        /// <summary>
-        /// Z扫描结果
-        /// </summary>
-        public Param<double> ZLoc { get; set; } = new Param<double>("Z方向位置(mm)", double.NaN);
-
-        /// <summary>
-        /// Z扫描结果
-        /// </summary>
-        public Param<double> ZDistance { get; set; } = new Param<double>("Z方向位置和磁铁的距离(mm)", double.NaN);
-
-        /// <summary>
-        /// 角度扫描结果
-        /// </summary>
-        public Param<double> Theta1 { get; set; } = new Param<double>("方位角θ1(度)", double.NaN);
-
-        /// <summary>
-        /// 角度扫描结果
-        /// </summary>
-        public Param<double> Theta2 { get; set; } = new Param<double>("方位角θ2(度)", double.NaN);
-
-        /// <summary>
-        /// 角度扫描结果
-        /// </summary>
-        public Param<double> Phi1 { get; set; } = new Param<double>("方位角φ1(度)", double.NaN);
-
-        /// <summary>
-        /// 角度扫描结果
-        /// </summary>
-        public Param<double> Phi2 { get; set; } = new Param<double>("方位角φ2(度)", double.NaN);
-        #endregion
     }
 }

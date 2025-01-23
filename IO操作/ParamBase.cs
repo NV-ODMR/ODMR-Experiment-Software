@@ -21,105 +21,6 @@ namespace ODMR_Lab.IO操作
     public abstract class ParamBase
     {
         /// <summary>
-        /// 将参数值写入UI中，参数名必须和UI控件名保持一致
-        /// </summary>
-        /// <param name="eles"></param>
-        /// <exception cref="Exception"></exception>
-        public void LoadToPage(FrameworkElement[] eles)
-        {
-            PropertyInfo[] param = GetType().GetProperties();
-            foreach (var item in param)
-            {
-                if (!typeof(ParamB).IsAssignableFrom(item.PropertyType)) continue;
-                foreach (var ele in eles)
-                {
-                    var res = ele.FindName(item.Name);
-                    if (res == null) continue;
-                    ParamB value = (ParamB)item.GetValue(this);
-                    if (res is TextBox)
-                    {
-                        string str = ParamB.GetUnknownParamValue(value).ToString();
-                        if (str == "NAN") str = "";
-                        (res as TextBox).Text = str;
-                        break;
-                    }
-                    if (res is Label)
-                    {
-                        string str = ParamB.GetUnknownParamValue(value).ToString();
-                        if (str == "NAN") str = "";
-                        (res as Label).Content = str;
-                        break;
-                    }
-                    if (res is Chooser)
-                    {
-                        (res as Chooser).IsSelected = (bool)ParamB.GetUnknownParamValue(value);
-                        break;
-                    }
-                    if (res is ComboBox)
-                    {
-                        if (typeof(Enum).IsAssignableFrom(value.ValueType))
-                        {
-                            (res as ComboBox).Select(Enum.GetName(ParamB.GetUnknownParamValue(value).GetType(), value));
-                        }
-                        if (typeof(string).IsAssignableFrom(value.ValueType))
-                        {
-                            (res as ComboBox).Select(ParamB.GetUnknownParamValue(value));
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 从UI中读取参数值
-        /// </summary>
-        public void ReadFromPage(FrameworkElement[] eles)
-        {
-            PropertyInfo[] param = GetType().GetProperties();
-            foreach (var item in param)
-            {
-                if (!typeof(ParamB).IsAssignableFrom(item.PropertyType)) continue;
-                foreach (var ele in eles)
-                {
-                    var res = ele.FindName(item.Name);
-                    if (res == null) continue;
-                    try
-                    {
-                        if (res is TextBox)
-                        {
-                            //枚举类型
-                            ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as TextBox).Text);
-                        }
-                        if (res is Label)
-                        {
-                            ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as Label).Content.ToString());
-                        }
-                        if (res is Chooser)
-                        {
-                            ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as Chooser).IsSelected);
-                        }
-                        if (res is ComboBox)
-                        {
-                            if ((res as ComboBox).SelectedItem == null)
-                            {
-                                ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), "");
-                            }
-                            else
-                            {
-                                ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as ComboBox).SelectedItem.Text);
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception("参数设置错误,试图将" + res.GetType().Name + "的值赋给" + item.PropertyType.Name + ",参数名:" + item.Name);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// 转换类型(bool,int,double,字符串，枚举)
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -214,6 +115,10 @@ namespace ODMR_Lab.IO操作
             return output;
         }
 
+        /// <summary>
+        /// 生成不含Description的文件描述
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, string> GetPureDescription()
         {
             Dictionary<string, string> des = GenerateDescription();
@@ -227,6 +132,158 @@ namespace ODMR_Lab.IO操作
                 catch (Exception) { }
             }
             return newdes;
+        }
+
+        /// <summary>
+        /// 将参数值写入UI中，参数名必须和UI控件名保持一致
+        /// </summary>
+        /// <param name="eles"></param>
+        /// <exception cref="Exception"></exception>
+        public void LoadToPage(FrameworkElement[] eles)
+        {
+            PropertyInfo[] param = GetType().GetProperties();
+            foreach (var item in param)
+            {
+                if (!typeof(ParamB).IsAssignableFrom(item.PropertyType)) continue;
+                foreach (var ele in eles)
+                {
+                    var res = ele.FindName(item.Name);
+                    if (res == null) continue;
+                    ParamB value = (ParamB)item.GetValue(this);
+                    if (res is TextBox)
+                    {
+                        string str = ParamB.GetUnknownParamValue(value).ToString();
+                        if (str == "NAN") str = "";
+                        (res as TextBox).Text = str;
+                        break;
+                    }
+                    if (res is Label)
+                    {
+                        string str = ParamB.GetUnknownParamValue(value).ToString();
+                        if (str == "NAN") str = "";
+                        (res as Label).Content = str;
+                        break;
+                    }
+                    if (res is Chooser)
+                    {
+                        (res as Chooser).IsSelected = (bool)ParamB.GetUnknownParamValue(value);
+                        break;
+                    }
+                    if (res is ComboBox)
+                    {
+                        if (typeof(Enum).IsAssignableFrom(value.ValueType))
+                        {
+                            (res as ComboBox).Select(Enum.GetName(ParamB.GetUnknownParamValue(value).GetType(), ParamB.GetUnknownParamValue(value)));
+                        }
+                        if (typeof(string).IsAssignableFrom(value.ValueType))
+                        {
+                            (res as ComboBox).Select(ParamB.GetUnknownParamValue(value));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从UI中读取参数值,如果发生值转换错误则报错
+        /// </summary>
+        public void ReadFromPage(FrameworkElement[] eles, bool ThrowException = true)
+        {
+            PropertyInfo[] param = GetType().GetProperties();
+            foreach (var item in param)
+            {
+                if (!typeof(ParamB).IsAssignableFrom(item.PropertyType)) continue;
+                foreach (var ele in eles)
+                {
+                    var res = ele.FindName(item.Name);
+                    if (res == null) continue;
+                    try
+                    {
+                        if (res is TextBox)
+                        {
+                            //枚举类型
+                            ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as TextBox).Text);
+                        }
+                        if (res is Label)
+                        {
+                            ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as Label).Content.ToString());
+                        }
+                        if (res is Chooser)
+                        {
+                            ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as Chooser).IsSelected);
+                        }
+                        if (res is ComboBox)
+                        {
+                            if ((res as ComboBox).SelectedItem == null)
+                            {
+                                ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), "");
+                            }
+                            else
+                            {
+                                ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as ComboBox).SelectedItem.Text);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        if (ThrowException)
+                            throw new Exception("参数设置错误,试图将" + res.GetType().Name + "的值赋给" + item.PropertyType.Name + ",参数名:" + item.Name);
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从UI中读取指定参数
+        /// </summary>
+        public void ReadSingleFromPageWithException(ParamB TargetParam, FrameworkElement ele)
+        {
+            PropertyInfo item = GetType().GetProperty(TargetParam.GetType().Name);
+            if (!typeof(ParamB).IsAssignableFrom(item.PropertyType))
+            {
+                throw new Exception("读取参数" + item.Name + "失败");
+            };
+            var res = ele.FindName(item.Name);
+            if (res == null)
+            {
+                throw new Exception("指定UI中不存在此参数");
+            }
+            try
+            {
+                if (res is TextBox)
+                {
+                    //枚举类型
+                    ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as TextBox).Text);
+                }
+                if (res is Label)
+                {
+                    ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as Label).Content.ToString());
+                }
+                if (res is Chooser)
+                {
+                    ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as Chooser).IsSelected);
+                }
+                if (res is ComboBox)
+                {
+                    if ((res as ComboBox).SelectedItem == null)
+                    {
+                        ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), "");
+                    }
+                    else
+                    {
+                        ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as ComboBox).SelectedItem.Text);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("参数设置错误,试图将" + res.GetType().Name + "的值赋给" + item.PropertyType.Name + ",参数名:" + item.Name);
+            }
         }
 
         /// <summary>
@@ -293,25 +350,5 @@ namespace ODMR_Lab.IO操作
             return obj;
         }
 
-
-        /// <summary>
-        /// 实验开始时间
-        /// </summary>
-        public Param<string> ExpStartTime { get; set; } = new Param<string>("开始时间", "");
-
-        /// <summary>
-        /// 实验结束时间
-        /// </summary>
-        public Param<string> ExpEndTime { get; set; } = new Param<string>("结束时间", "");
-
-        public void SetStartTime(DateTime time)
-        {
-            ExpStartTime.Value = time.ToString("yyyy-MM-dd HH:mm:ss");
-        }
-
-        public void SetEndTime(DateTime time)
-        {
-            ExpEndTime.Value = time.ToString("yyyy-MM-dd HH:mm:ss");
-        }
     }
 }

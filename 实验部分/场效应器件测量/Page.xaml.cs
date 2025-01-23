@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
@@ -63,17 +62,6 @@ namespace ODMR_Lab.场效应器件测量
         {
             CurrentLimitListener.Abort();
             while (CurrentLimitListener.ThreadState == ThreadState.Running) Thread.Sleep(10);
-        }
-
-        public override void UpdateDataBaseToUI()
-        {
-        }
-
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
-        {
         }
 
         #region IV测量部分
@@ -158,7 +146,7 @@ namespace ODMR_Lab.场效应器件测量
                 }
             }
 
-            IVMeasureObj.Param.ScanPoints = scanpoints;
+            IVMeasureObj.Config.ScanPoints = scanpoints;
 
             try
             {
@@ -203,9 +191,9 @@ namespace ODMR_Lab.场效应器件测量
                         //测量
                         dev.BeginUse();
 
-                        dev.Device.VoltageRampGap = IVMeasureObj.Param.IVRampGap.Value;
-                        dev.Device.VoltageRampStep = IVMeasureObj.Param.IVRampStep.Value;
-                        dev.Device.CurrentLimit = IVMeasureObj.Param.IVCurrentLimit.Value;
+                        dev.Device.VoltageRampGap = IVMeasureObj.Config.IVRampGap.Value;
+                        dev.Device.VoltageRampStep = IVMeasureObj.Config.IVRampStep.Value;
+                        dev.Device.CurrentLimit = IVMeasureObj.Config.IVCurrentLimit.Value;
 
                         //停止自动采样
                         dev.AllowAutoMeasure = false;
@@ -230,11 +218,11 @@ namespace ODMR_Lab.场效应器件测量
                             end = scanpoints[i + 1];
                             int sgn = (end - begin) > 0 ? 1 : -1;
 
-                            double temp = begin + IVMeasureObj.Param.IVScanStep.Value * sgn;
+                            double temp = begin + IVMeasureObj.Config.IVScanStep.Value * sgn;
                             while ((temp - end) * sgn < 0)
                             {
                                 count += 1;
-                                temp += IVMeasureObj.Param.IVScanStep.Value * sgn;
+                                temp += IVMeasureObj.Config.IVScanStep.Value * sgn;
                             }
                         }
 
@@ -259,7 +247,7 @@ namespace ODMR_Lab.场效应器件测量
                                 IVMeasureObj.IVIData.Add(g.Current);
                                 IVMeasureObj.IVTatgetData.Add(temp);
                                 IVMeasureObj.IVVData.Add(g.Voltage);
-                                temp += IVMeasureObj.Param.IVScanStep.Value * sgn;
+                                temp += IVMeasureObj.Config.IVScanStep.Value * sgn;
                                 //设置进度条
                                 Dispatcher.Invoke(() =>
                                 {

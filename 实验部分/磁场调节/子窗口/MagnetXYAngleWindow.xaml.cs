@@ -20,6 +20,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Window = System.Windows.Window;
 
+using ODMR_Lab.基本控件;
+
 namespace ODMR_Lab.磁场调节
 {
     /// <summary>
@@ -27,34 +29,57 @@ namespace ODMR_Lab.磁场调节
     /// </summary>
     public partial class MagnetXYAngleWindow : Window
     {
-        private List<CWPointObject> CWPoints = new List<CWPointObject>();
+        public List<CWPointObject> CWPoints = new List<CWPointObject>();
 
-        private NumricDataSeries LineBp = new NumricDataSeries("Bp", new List<double>(), new List<double>()) { LineColor = Colors.LightGreen, LineThickness = 3, Smooth = false, MarkerSize = 0 };
+        private NumricChartData1D DataBp = new NumricChartData1D() { Name = "沿轴磁场(Gauss)", DataAxisType = ChartDataType.Y };
+        private NumricChartData1D DataBv = new NumricChartData1D() { Name = "垂直轴磁场(Gauss)", DataAxisType = ChartDataType.Y };
+        private NumricChartData1D DataB = new NumricChartData1D() { Name = "总磁场(Gauss)", DataAxisType = ChartDataType.Y };
+        private NumricChartData1D DataLoc = new NumricChartData1D() { Name = "位置", DataAxisType = ChartDataType.X };
 
-        private NumricDataSeries LineBv = new NumricDataSeries("Bv", new List<double>(), new List<double>()) { LineColor = Colors.LightGreen, LineThickness = 3, Smooth = false, MarkerSize = 0 };
-
-        private NumricDataSeries LineB = new NumricDataSeries("B", new List<double>(), new List<double>()) { LineColor = Colors.LightGreen, LineThickness = 3, Smooth = false, MarkerSize = 0 };
-
-        private NumricDataSeries LineCW1 = new NumricDataSeries("CW", new List<double>(), new List<double>()) { LineColor = Colors.LightBlue, LineThickness = 3, Smooth = false, MarkerSize = 0 };
-        private NumricDataSeries LineCW2 = new NumricDataSeries("CW", new List<double>(), new List<double>()) { LineColor = Colors.LightGreen, LineThickness = 3, Smooth = false, MarkerSize = 0 };
+        private NumricChartData1D DataCW1 = new NumricChartData1D() { Name = "CW数据1", DataAxisType = ChartDataType.Y };
+        private NumricChartData1D DataCW2 = new NumricChartData1D() { Name = "CW数据2", DataAxisType = ChartDataType.Y };
+        private NumricChartData1D Freq1 = new NumricChartData1D() { Name = "频率1", DataAxisType = ChartDataType.X };
+        private NumricChartData1D Freq2 = new NumricChartData1D() { Name = "频率2", DataAxisType = ChartDataType.X };
 
         private CWPointObject CurrentPoint = null;
 
         private bool IsAngleWindow = false;
 
-        public MagnetXYAngleWindow(string windowtitle, bool isAngleWindow)
+        private DisplayPage ParentPage { get; set; } = null;
+
+        public MagnetXYAngleWindow(string windowtitle, bool isAngleWindow, DisplayPage parent)
         {
             InitializeComponent();
+            ParentPage = parent;
             IsAngleWindow = isAngleWindow;
             Title = windowtitle;
             WindowTitle.Content = windowtitle;
             CodeHelper.WindowResizeHelper helper = new CodeHelper.WindowResizeHelper();
             helper.RegisterWindow(this, dragHeight: 30);
+
+            Chart.DataSource = new List<ChartData1D>()
+            {
+                DataBv,
+                DataBp,
+                DataB,
+                DataLoc
+            };
+
+            CWChart.DataSource = new List<ChartData1D>()
+            {
+                Freq1,
+                Freq2,
+                DataCW1,
+                DataCW2
+            };
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            RefreshCheck();
+            Chart.UpdateDataPanel();
+            Chart.UpdateChart(true);
+            CWChart.UpdateDataPanel();
+            CWChart.UpdateChart(true);
         }
 
         private void Close(object sender, RoutedEventArgs e)
@@ -67,162 +92,101 @@ namespace ODMR_Lab.磁场调节
             WindowState = WindowState.Minimized;
         }
 
-        private void UpdateData()
+        /// <summary>
+        /// 刷新CW点显示
+        /// </summary>
+        public void UpdateCWPointsDisplay()
         {
-
+            DataViewer.ClearItems();
+            for (int i = 0; i < CWPoints.Count; i++)
+            {
+                DataViewer.AddItem(CWPoints[i],
+                    Math.Round(CWPoints[i].MoverLoc, 4),
+                    Math.Round(CWPoints[i].CW1, 4),
+                    Math.Round(CWPoints[i].CW2, 4),
+                    Math.Round(CWPoints[i].Bp, 4),
+                    Math.Round(CWPoints[i].Bv, 4),
+                    Math.Round(CWPoints[i].B, 4));
+            }
         }
 
-        private StackPanel CreateInformationBar(CWPointObject data)
+        /// <summary>
+        /// 刷新显示
+        /// </summary>
+        public void UpdateDisplay()
         {
-            StackPanel panel = new StackPanel();
-            panel.Orientation = Orientation.Horizontal;
-            List<double> datas = new List<double>() { data.MoverLoc, data.CW1, data.CW2, data.Bp, data.Bv, data.B };
-            foreach (var item in datas)
-            {
-                Label l = new Label();
-                l.Foreground = Brushes.White;
-                l.Width = 100;
-                l.Height = 45;
-                l.FontSize = 10;
-                l.FontWeight = FontWeights.Thin;
-                l.Content = Math.Round(item, 4).ToString();
-                l.ToolTip = Math.Round(item, 4).ToString();
-                panel.Children.Add(l);
-            }
-            panel.MouseLeftButtonDown += SelectPoint;
-            MouseColorHelper helper = new MouseColorHelper(Background, BtnTemplate.MoveInColor, BtnTemplate.PressedColor);
-            panel.Tag = data;
-            helper.RegistateTarget(panel);
-            return panel;
+            UpdateCWPointsDisplay();
+            UpdateBsChart();
+            UpdateCWsChart();
         }
 
-        private void SelectPoint(object sender, MouseButtonEventArgs e)
-        {
-            foreach (var item in DataViewer.Children)
-            {
-                (item as StackPanel).IsEnabled = true;
-            }
-            (sender as StackPanel).IsEnabled = false;
-            (sender as StackPanel).Background = BtnTemplate.PressedColor;
-            LineCW1.ClearData();
-            LineCW2.ClearData();
-            CWPointObject point = (sender as StackPanel).Tag as CWPointObject;
-            for (int i = 0; i < point.CW1Freqs.Count; i++)
-            {
-                LineCW1.AddData(point.CW1Freqs[i], point.CW1Values[i]);
-            }
-            for (int i = 0; i < point.CW2Freqs.Count; i++)
-            {
-                LineCW2.AddData(point.CW2Freqs[i], point.CW2Values[i]);
-            }
-            UpdateCWPlot();
-        }
-
+        /// <summary>
+        /// 清除数据
+        /// </summary>
         public void ClearData()
         {
-            LineBp.ClearData();
-            LineBv.ClearData();
-            LineB.ClearData();
-            CWPoints.Clear();
-            LineCW1.ClearData();
-            LineCW2.ClearData();
-            DataViewer.Children.Clear();
-            Chart.RefreshPlotWithAutoScale();
-            CWChart.RefreshPlotWithAutoScale();
+            DataBp.Data.Clear();
+            DataBp.Data.Clear();
+            DataB.Data.Clear();
+            DataCW1.Data.Clear();
+            DataCW2.Data.Clear();
+            Freq1.Data.Clear();
+            Freq2.Data.Clear();
+            DataLoc.Data.Clear();
+
+            DataViewer.ClearItems();
+            Chart.UpdateChartDataPanel();
+            Chart.UpdateChart(true);
+            CWChart.UpdateChartDataPanel();
+            CWChart.UpdateChart(true);
         }
 
-        public void AddData(CWPointObject point)
+        /// <summary>
+        /// 数据点选中事件
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        private void SelectPoint(int arg1, object arg2)
         {
-            CWPoints.Add(point);
-            DataViewer.Children.Add(CreateInformationBar(point));
-            LineBp.AddData(point.MoverLoc, point.Bp);
-            LineBv.AddData(point.MoverLoc, point.Bv);
-            LineB.AddData(point.MoverLoc, point.B);
-            Chart.RefreshPlotWithAutoScale();
+            UpdateCWsChart();
         }
 
-        public void AddDatas(List<CWPointObject> points)
+        /// <summary>
+        /// 刷新CW图表
+        /// </summary>
+        public void UpdateCWsChart()
         {
-            foreach (var item in points)
-            {
-                CWPoints.Add(item);
-                DataViewer.Children.Add(CreateInformationBar(item));
-                LineBp.AddData(item.MoverLoc, item.Bp);
-                LineBv.AddData(item.MoverLoc, item.Bv);
-                LineB.AddData(item.MoverLoc, item.B);
-            }
-            Chart.RefreshPlotWithAutoScale();
+            if (DataViewer.GetSelectedTag() == null) return;
+            CWPointObject point = DataViewer.GetSelectedTag() as CWPointObject;
+
+            DataCW1.Data = point.CW1Values;
+            DataCW2.Data = point.CW2Values;
+            Freq1.Data = point.CW1Freqs;
+            Freq2.Data = point.CW2Freqs;
+
+            CWChart.UpdateDataPoint();
+            CWChart.UpdateChart(true);
         }
 
-        public void AddPoint(CWPointObject obj)
+        /// <summary>
+        /// 刷新磁场图表
+        /// </summary>
+        public void UpdateBsChart()
         {
-            DataViewer.Children.Add(CreateInformationBar(obj));
-            LineBp.AddData(obj.MoverLoc, obj.Bp);
-            LineBv.AddData(obj.MoverLoc, obj.Bv);
-            LineB.AddData(obj.MoverLoc, obj.B);
-            Chart.RefreshPlotWithAutoScale();
+            DataLoc.Data = CWPoints.Select((x) => x.MoverLoc).ToList();
+            DataBp.Data = CWPoints.Select((x) => x.Bp).ToList();
+            DataBv.Data = CWPoints.Select((x) => x.Bv).ToList();
+            DataB.Data = CWPoints.Select((x) => x.B).ToList();
+
+            Chart.UpdateDataPoint();
+            Chart.UpdateChart(true);
         }
 
-        private void ChangeLineCheck(object sender, RoutedEventArgs e)
-        {
-            if (Chart == null) return;
-            RefreshCheck();
-        }
-
-        private void RefreshCheck()
-        {
-            Chart.DataList.Clear();
-            if (BpCheck.IsChecked == true)
-            {
-                Chart.DataList.Add(LineBp);
-            }
-            if (BvCheck.IsChecked == true)
-            {
-                Chart.DataList.Add(LineBv);
-            }
-            if (BCheck.IsChecked == true)
-            {
-                Chart.DataList.Add(LineB);
-            }
-        }
-
-        private void SnapPlot(object sender, RoutedEventArgs e)
-        {
-            Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(Chart));
-            TimeWindow window = new TimeWindow();
-            window.Owner = this;
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            window.ShowWindow("截图已复制到剪切板");
-        }
-
-        private void SnapPlotCW(object sender, RoutedEventArgs e)
-        {
-            Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(CWChart));
-            TimeWindow window = new TimeWindow();
-            window.Owner = this;
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            window.ShowWindow("截图已复制到剪切板");
-        }
-
-        private void ChangeCWPlot(object sender, RoutedEventArgs e)
-        {
-            UpdateCWPlot();
-        }
-
-        private void UpdateCWPlot()
-        {
-            if (CWChart == null) return;
-            CWChart.DataList.Clear();
-            if (CW1.IsChecked == true)
-            {
-                CWChart.DataList.Add(LineCW1);
-            }
-            if (CW2.IsChecked == true)
-            {
-                CWChart.DataList.Add(LineCW2);
-            }
-        }
-
+        /// <summary>
+        /// 用二次函数拟合
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FitWithCurve(object sender, RoutedEventArgs e)
         {
             if (IsAngleWindow)
@@ -271,5 +235,27 @@ namespace ODMR_Lab.磁场调节
             return ny;
         }
 
+        /// <summary>
+        /// 切换视图
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeView(object sender, RoutedEventArgs e)
+        {
+            CWChart.Visibility = Visibility.Collapsed;
+            Chart.Visibility = Visibility.Collapsed;
+            if (sender == MagnetBtn)
+            {
+                MagnetBtn.KeepPressed = true;
+                CWBtn.KeepPressed = false;
+                Chart.Visibility = Visibility.Visible;
+            }
+            if (sender == CWBtn)
+            {
+                MagnetBtn.KeepPressed = false;
+                CWBtn.KeepPressed = true;
+                CWChart.Visibility = Visibility.Visible;
+            }
+        }
     }
 }

@@ -57,9 +57,9 @@
     </StackPanel>
     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
         <Label Content="采样时间(s)" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" Height="50" Width="100"/>
-        <TextBox x:Name="SampleTimeBox" Margin="5" Width="100" Text="0.1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+        <TextBox x:Name="SampleTime" Margin="5" Width="100" Text="0.1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
         <Label Content="数据存储量（点数）" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" Height="50" Width="150"/>
-        <TextBox x:Name="SamplePointBox" Margin="5" Width="100" Text="1000000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+        <TextBox x:Name="SamplePoint" Margin="5" Width="100" Text="1000000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
         <control:DecoratedButton Click="ApplySet" Text="应用" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" Width="50" PressedForeground="#FFFAFAFA" Margin="10"/>
     </StackPanel>
 </odmr_lab:PageBase>

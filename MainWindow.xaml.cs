@@ -1,5 +1,4 @@
-﻿using DataBaseLib;
-using ODMR_Lab.温度监测部分;
+﻿using ODMR_Lab.温度监测部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +30,7 @@ using ODMR_Lab.数据处理;
 using ODMR_Lab.实验部分.场效应器件测量;
 using Label = System.Windows.Controls.Label;
 using ODMR_Lab.Python管理器;
+using ODMR_Lab.IO操作;
 
 namespace ODMR_Lab
 {
@@ -69,7 +69,7 @@ namespace ODMR_Lab
         public static 样品定位.DisplayPage Exp_SamplePage = new 样品定位.DisplayPage();
 
         /// <summary>
-        /// 样品定位
+        /// 场效应管测量
         /// </summary>
         public static 场效应器件测量.DisplayPage Exp_SourcePage = new 场效应器件测量.DisplayPage();
 
@@ -157,28 +157,6 @@ namespace ODMR_Lab
             Exp_SamplePage.Init();
             Exp_SourcePage.Init();
 
-            DataBase.InitDataBase(this);
-            Dev_TemPeraPage.ListDataBaseData();
-            Dev_CameraPage.ListDataBaseData();
-            Dev_MoversPage.ListDataBaseData();
-            Dev_PowerMeterPage.ListDataBaseData();
-
-            Exp_TemPeraPage.ListDataBaseData();
-            Exp_MagnetControlPage.ListDataBaseData();
-            Exp_SamplePage.ListDataBaseData();
-            Exp_SourcePage.ListDataBaseData();
-            DataBase.UpdateDataFromDataBase();
-
-            Dev_TemPeraPage.UpdateDataBaseToUI();
-            Dev_CameraPage.UpdateDataBaseToUI();
-            Dev_MoversPage.UpdateDataBaseToUI();
-            Dev_PowerMeterPage.UpdateDataBaseToUI();
-
-            Exp_TemPeraPage.UpdateDataBaseToUI();
-            Exp_MagnetControlPage.UpdateDataBaseToUI();
-            Exp_SamplePage.UpdateDataBaseToUI();
-            Exp_SourcePage.UpdateDataBaseToUI();
-
             AutoScrollViewer a = new AutoScrollViewer();
 
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
@@ -197,6 +175,8 @@ namespace ODMR_Lab
                 Hide();
                 bool canclose = DeviceDispatcher.CloseDevicesAndSave();
                 if (!canclose) return;
+                //保存界面参数
+                ParamManager.SaveParams();
                 Close();
                 Environment.Exit(0);
             }
@@ -207,6 +187,8 @@ namespace ODMR_Lab
             MessageWindow.ShowTipWindow("程序运行出现异常,即将退出,异常原因：\n" + ((Exception)e.ExceptionObject).Message, this);
             PrintStacktrace((Exception)e.ExceptionObject);
             DeviceDispatcher.CloseDevicesAndSave();
+            //保存界面参数
+            ParamManager.SaveParams();
         }
 
         private void PrintStacktrace(Exception e)
@@ -252,7 +234,10 @@ namespace ODMR_Lab
 
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            #region 自动连接设备，配置Python环境
+            #region 加载参数
+            ParamManager.ReadAndLoadParams();
+            #endregion
+            #region 自动连接设备
             MessageBoxResult res = MessageWindow.ShowMessageBox("自动连接", "是否自动尝试连接上次关闭时保存的所有设备?", MessageBoxButton.YesNo, owner: this);
             {
                 UpdateLayout();

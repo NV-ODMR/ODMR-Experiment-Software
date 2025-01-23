@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
@@ -33,6 +32,10 @@ using MathNet.Numerics.Distributions;
 using System.Diagnostics.Contracts;
 using MathNet.Numerics;
 using ODMR_Lab.Python.LbviewHandler;
+using ODMR_Lab.实验部分.扫描基方法;
+using OpenCvSharp;
+using static System.Collections.Specialized.BitVector32;
+using ODMR_Lab.IO操作;
 
 namespace ODMR_Lab.磁场调节
 {
@@ -41,17 +44,26 @@ namespace ODMR_Lab.磁场调节
     /// </summary>
     public partial class DisplayPage : PageBase
     {
-        public MagnetXYAngleWindow XWin { get; set; } = new MagnetXYAngleWindow("X扫描窗口", false) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
-        public MagnetXYAngleWindow YWin { get; set; } = new MagnetXYAngleWindow("Y扫描窗口", false) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
-        public MagnetXYAngleWindow AngleWin { get; set; } = new MagnetXYAngleWindow("角度扫描窗口", true) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
+        public MagnetXYAngleWindow XWin { get; set; } = null;
+        public MagnetXYAngleWindow YWin { get; set; } = null;
+        public MagnetZWindow ZWin { get; set; } = null;
 
-        public MagnetZWindow ZWin { get; set; } = new MagnetZWindow("Z方向窗口") { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
-
-        public MagnetCheckWindow CheckWin { get; set; } = new MagnetCheckWindow("角度检查窗口") { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
+        public MagnetXYAngleWindow AngleWin { get; set; } = null;
+        public MagnetCheckWindow CheckWin { get; set; } = null;
 
         public DisplayPage()
         {
             InitializeComponent();
+
+            #region 设置子窗口
+            XWin = new MagnetXYAngleWindow("X扫描窗口", false, this) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
+            YWin = new MagnetXYAngleWindow("Y扫描窗口", false, this) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
+            ZWin = new MagnetZWindow("Z方向窗口", this) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
+
+            AngleWin = new MagnetXYAngleWindow("角度扫描窗口", true, this) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
+            CheckWin = new MagnetCheckWindow("角度检查窗口", this) { WindowStartupLocation = WindowStartupLocation.CenterOwner, Owner = MainWindow.Handle };
+            #endregion
+
             XRelate.TemplateButton = TemplateBtn;
             YRelate.TemplateButton = TemplateBtn;
             ZRelate.TemplateButton = TemplateBtn;
@@ -64,6 +76,9 @@ namespace ODMR_Lab.磁场调节
             ZRelate.Items.Add(new DecoratedButton() { Text = "X" });
             ZRelate.Items.Add(new DecoratedButton() { Text = "Y" });
             ZRelate.Items.Add(new DecoratedButton() { Text = "Z" });
+            ARelate.Items.Add(new DecoratedButton() { Text = "AngleX" });
+            ARelate.Items.Add(new DecoratedButton() { Text = "AngleY" });
+            ARelate.Items.Add(new DecoratedButton() { Text = "AngleZ" });
 
             CodeHelper.MouseColorHelper h = new MouseColorHelper(BorderX.Background, TemplateBtn.MoveInColor, TemplateBtn.PressedColor);
             h.RegistateTarget(BorderX);
@@ -78,18 +93,6 @@ namespace ODMR_Lab.磁场调节
         }
 
         public override void Init()
-        {
-            CreateThread();
-        }
-
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
-        {
-        }
-
-        public override void UpdateDataBaseToUI()
         {
         }
 
@@ -136,43 +139,29 @@ namespace ODMR_Lab.磁场调节
         {
             try
             {
-                MagnetScanParams P = new MagnetScanParams();
-                P.MRadius.Value = double.Parse(MRadius.Text);
-                P.MLength.Value = double.Parse(MLength.Text);
-                P.StartAngle.Value = double.Parse(AngleStart.Text);
+                MagnetScanConfigParams P = new MagnetScanConfigParams();
+                P.ReadFromPage(new FrameworkElement[] { this });
 
                 double the = double.Parse(ThetaPre.Text);
                 double phi = double.Parse(PhiPre.Text);
                 double currentzloc = double.Parse(ZHeight.Text);
-                double initzdis = double.Parse(ZDistance.Text);
-                double x = double.Parse(XLoc.Text);
-                double y = double.Parse(YLoc.Text);
-                double z = double.Parse(ZLoc.Text);
-
-                MoverTypes xType = (MoverTypes)Enum.Parse(typeof(MoverTypes), XRelate.SelectedItem.Text);
-                MoverTypes yType = (MoverTypes)Enum.Parse(typeof(MoverTypes), YRelate.SelectedItem.Text);
-                MoverTypes zType = (MoverTypes)Enum.Parse(typeof(MoverTypes), ZRelate.SelectedItem.Text);
 
                 double offsetx = double.Parse(OffsetX.Text);
                 double offsety = double.Parse(OffsetY.Text);
 
-                P.ReverseANum.Value = DeviceDispatcher.TryGetMoverDevice(MoverTypes.AngleZ, OperationMode.Read, PartTypes.Magnnet, true).IsReverse ? -1 : 1;
-                P.ReverseZNum.Value = ReverseZ.IsSelected ? -1 : 1;
-                P.ReverseXNum.Value = DeviceDispatcher.TryGetMoverDevice(xType, OperationMode.Read, PartTypes.Magnnet, true).IsReverse ? -1 : 1;
-                P.ReverseYNum.Value = DeviceDispatcher.TryGetMoverDevice(yType, OperationMode.Read, PartTypes.Magnnet, true).IsReverse ? -1 : 1;
+                double zdis = GetReverseNum(P.ReverseZ.Value) * (currentzloc - FileObj.Param.ZLoc.Value) + FileObj.Param.ZDistance.Value;
 
-                double zdis = P.ReverseZNum.Value * (currentzloc - z) + initzdis;
                 List<double> res = MagnetAutoScanHelper.FindDire(P.MRadius.Value, P.MLength.Value, the, phi, currentzloc);
                 double ang = res[0];
                 double dx = res[1];
                 double dy = res[2];
                 double B = res[3];
-                double dz = zdis - initzdis;
-                dx *= P.ReverseXNum.Value;
-                dy *= P.ReverseYNum.Value;
-                dz *= P.ReverseZNum.Value;
-                ang *= P.ReverseANum.Value;
-                double ang1 = P.StartAngle.Value + ang;
+                double dz = zdis - FileObj.Param.ZDistance.Value;
+                dx *= GetReverseNum(P.ReverseX.Value);
+                dy *= GetReverseNum(P.ReverseY.Value);
+                dz *= GetReverseNum(P.ReverseZ.Value);
+                ang *= GetReverseNum(P.ReverseA.Value);
+                double ang1 = P.AngleStart.Value + ang;
 
                 List<double> doffs = MagnetAutoScanHelper.GetTargetOffset(P, ang1);
                 double doffx = doffs[0];
@@ -191,12 +180,12 @@ namespace ODMR_Lab.磁场调节
                     dx = res[1];
                     dy = res[2];
                     B = res[3];
-                    dz = zdis - initzdis;
-                    dx *= P.ReverseXNum.Value;
-                    dy *= P.ReverseYNum.Value;
-                    dz *= P.ReverseZNum.Value;
-                    ang *= P.ReverseANum.Value;
-                    ang1 = P.StartAngle.Value + ang;
+                    dz = zdis - FileObj.Param.ZDistance.Value;
+                    dx *= GetReverseNum(P.ReverseX.Value);
+                    dy *= GetReverseNum(P.ReverseY.Value);
+                    dz *= GetReverseNum(P.ReverseZ.Value);
+                    ang *= GetReverseNum(P.ReverseA.Value);
+                    ang1 = P.AngleStart.Value + ang;
 
                     if (ang > 150)
                         ang -= 360;
@@ -204,13 +193,13 @@ namespace ODMR_Lab.磁场调节
                         ang += 360;
 
                     //根据需要移动的角度进行偏心修正
-                    doffs = MagnetAutoScanHelper.GetTargetOffset(FileObj.Param, ang1);
+                    doffs = MagnetAutoScanHelper.GetTargetOffset(P, ang1);
                     doffx = doffs[0];
                     doffy = doffs[1];
                 }
 
-                XPre.Content = Math.Round(x + dx + doffx, 5).ToString();
-                YPre.Content = Math.Round(y + dy + doffy, 5).ToString();
+                XPre.Content = Math.Round(FileObj.Param.XLoc.Value + dx + doffx, 5).ToString();
+                YPre.Content = Math.Round(FileObj.Param.YLoc.Value + dy + doffy, 5).ToString();
                 ZPre.Content = Math.Round(currentzloc, 5).ToString();
                 AnglePre.Content = Math.Round(ang1, 5).ToString();
 
@@ -274,107 +263,162 @@ namespace ODMR_Lab.磁场调节
 
         private Thread ControlThread = null;
 
+        /// <summary>
+        /// 线程是否停止
+        /// </summary>
         private bool IsThreadEnd = false;
+
+        /// <summary>
+        /// 扫描是否暂停
+        /// </summary>
         private bool IsThreadResume = false;
 
-        MagnetControlFileObjecct FileObj = new MagnetControlFileObjecct();
+        public MagnetScanFileObjecct FileObj = new MagnetScanFileObjecct();
 
         #region 线程参数
-
+        private NanoStageInfo XStage = new NanoStageInfo(new NanoMoverInfo(), new PIStage("", null));
+        private NanoStageInfo YStage = new NanoStageInfo(new NanoMoverInfo(), new PIStage("", null));
+        private NanoStageInfo ZStage = new NanoStageInfo(new NanoMoverInfo(), new PIStage("", null));
+        private NanoStageInfo AStage = new NanoStageInfo(new NanoMoverInfo(), new PIStage("", null));
         #endregion
-
-        private NanoStageInfo XStage = null;
-        private NanoStageInfo YStage = null;
-        private NanoStageInfo ZStage = null;
-        private NanoStageInfo AStage = null;
-
-        private double ARangeLoNum = -150;
-        private double ARangeHiNum = 150;
 
         private event Action ThreadResumeEvent = null;
 
-        private bool IsScamFinished = false;
+        #region 开始，暂停和停止操作
+        private void StartScan(object sender, RoutedEventArgs e)
+        {
+            SetStartState();
+            StartThread();
+        }
 
-        private void CreateThread()
+        private void ResumeScan(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void StopScan(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SetStartState()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                StartBtn.IsEnabled = false;
+                StopBtn.IsEnabled = true;
+                ResumeBtn.IsEnabled = true;
+                InitParamPanel.IsEnabled = false;
+                ParamPage.IsEnabled = false;
+                PredictPanel.IsEnabled = false;
+            });
+        }
+
+        private void SetResumeState()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                StartBtn.IsEnabled = true;
+                StopBtn.IsEnabled = true;
+                ResumeBtn.IsEnabled = false;
+                InitParamPanel.IsEnabled = false;
+                ParamPage.IsEnabled = false;
+                PredictPanel.IsEnabled = false;
+            });
+        }
+
+        private void SetStopState()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                StartBtn.IsEnabled = true;
+                StopBtn.IsEnabled = false;
+                ResumeBtn.IsEnabled = false;
+                InitParamPanel.IsEnabled = true;
+                ParamPage.IsEnabled = true;
+                PredictPanel.IsEnabled = true;
+            });
+        }
+        #endregion
+
+        private void StartThread()
         {
             ControlThread = new Thread(() =>
             {
-                IsScamFinished = false;
-                FileObj.Param = new MagnetScanParams();
-
-                //设置初始参数
-                bool result = false;
-                ScanInitWindow win = null;
-                Dispatcher.Invoke(() =>
-                {
-                    win = new ScanInitWindow();
-                    result = win.ShowDialog();
-                });
-                if (!result) return;
-
-                FileObj.Param.ZPlane.Value = win.ZPlane;
-                FileObj.Param.XScanLo.Value = win.XLo;
-                FileObj.Param.XScanHi.Value = win.XHi;
-                FileObj.Param.YScanLo.Value = win.YLo;
-                FileObj.Param.YScanHi.Value = win.YHi;
-                FileObj.Param.D.Value = win.D;
-
+                IsThreadEnd = false;
+                IsThreadResume = false;
+                MagnetScanConfigParams P = new MagnetScanConfigParams();
                 #region 检查数据合法性
                 try
                 {
-                    FileObj.Param.XRelate = (MoverTypes)Enum.Parse(typeof(MoverTypes), XRelate.SelectedItem.Text);
-                    FileObj.Param.YRelate = (MoverTypes)Enum.Parse(typeof(MoverTypes), YRelate.SelectedItem.Text);
-                    FileObj.Param.ZRelate = (MoverTypes)Enum.Parse(typeof(MoverTypes), ZRelate.SelectedItem.Text);
-                    FileObj.Param.ReverseXNum.Value = DeviceDispatcher.TryGetMoverDevice(FileObj.Param.XRelate, OperationMode.Read, PartTypes.Magnnet, true, true).IsReverse ? -1 : 1;
-                    FileObj.Param.ReverseYNum.Value = DeviceDispatcher.TryGetMoverDevice(FileObj.Param.YRelate, OperationMode.Read, PartTypes.Magnnet, true, true).IsReverse ? -1 : 1;
-                    FileObj.Param.ReverseZNum.Value = ReverseZ.IsSelected ? -1 : 1;
-                    FileObj.Param.ReverseANum.Value = DeviceDispatcher.TryGetMoverDevice(MoverTypes.AngleZ, OperationMode.Read, PartTypes.Magnnet, true, true).IsReverse ? -1 : 1;
+                    #region 从UI读取参数
+                    Dispatcher.Invoke(() =>
+                    {
+                        P.ReadFromPage(new FrameworkElement[] { this });
+                    });
+                    #endregion
 
-                    FileObj.Param.AngleY = double.Parse(AngleStart.Text);
-                    FileObj.Param.AngleX = FileObj.Param.AngleY + 90;
-
-                    FileObj.Param.ReadFromPage(new FrameworkElement[] { this });
-
+                    P.AngleY = P.AngleStart.Value;
+                    P.AngleX = P.AngleY + 90;
                 }
                 catch (Exception ex)
                 {
                     Dispatcher.Invoke(() =>
                     {
                         MessageWindow.ShowTipWindow("参数设置存在错误", MainWindow.Handle);
-                        return;
+                        SetStopState();
                     });
+                    return;
                 }
-                #endregion
-
-                #region 设备占用
-                XStage = DeviceDispatcher.TryGetMoverDevice(FileObj.Param.XRelate, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
-                if (XStage == null) return;
-                XStage.Use();
-                YStage = DeviceDispatcher.TryGetMoverDevice(FileObj.Param.YRelate, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
-                if (YStage == null) return;
-                YStage.Use();
-                ZStage = DeviceDispatcher.TryGetMoverDevice(FileObj.Param.ZRelate, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
-                if (ZStage == null) return;
-                ZStage.Use();
-                AStage = DeviceDispatcher.TryGetMoverDevice(MoverTypes.AngleZ, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
-                if (AStage == null) return;
-                AStage.Use();
                 #endregion
 
                 try
                 {
+                    bool iscontinue = true;
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (MessageWindow.ShowMessageBox("提示", "执行扫描过程会清除当前记录的数据且不可恢复，是否继续?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+                        {
+                            //清除数据
+                            FileObj.Param = new MagnetScanExpParams();
+                            FileObj.Config = P;
+                            FileObj.XPoints.Clear();
+                            FileObj.YPoints.Clear();
+                            FileObj.ZPoints.Clear();
+                            FileObj.AnglePoints.Clear();
+                            FileObj.CheckPoints.Clear();
+                            //刷新窗口
+                            XWin.CWPoints = FileObj.XPoints;
+                            XWin.UpdateDisplay();
+                            YWin.CWPoints = FileObj.YPoints;
+                            YWin.UpdateDisplay();
+                            AngleWin.CWPoints = FileObj.AnglePoints;
+                            AngleWin.UpdateDisplay();
+                            ZWin.CWPoint1 = null;
+                            ZWin.CWPoint2 = null;
+                            ZWin.UpdateDisplay();
+                            CheckWin.CWPoint1 = null;
+                            CheckWin.CWPoint2 = null;
+                            CheckWin.UpdateDisplay();
+                        }
+                        else
+                        {
+                            iscontinue = false;
+                        }
+                    });
+                    if (!iscontinue) return;
+
                     #region 刷新面板显示
-                    SetText(XState, "正在执行流程...");
                     SetText(XLoc, "");
-                    SetText(YState, "正在执行流程...");
                     SetText(YLoc, "");
-                    SetText(ZState, "正在执行流程...");
                     SetText(ZDistance, "");
                     SetText(ZLoc, "");
-                    SetText(AngleState, "正在执行流程...");
-                    SetText(AngleTheta, "");
-                    SetText(AnglePhi, "");
-                    SetText(CheckState, "正在执行流程...");
+                    SetText(Theta1, "");
+                    SetText(Theta2, "");
+                    SetText(Phi1, "");
+                    SetText(Phi2, "");
+                    SetText(CheckedTheta, "");
+                    SetText(CheckedPhi, "");
                     SetProgress("X", 0);
                     SetProgress("Y", 0);
                     SetProgress("Z", 0);
@@ -382,252 +426,235 @@ namespace ODMR_Lab.磁场调节
                     SetProgress("C", 0);
                     #endregion
 
-                    MoveZ(win.ZPlane, 10000);
-
+                    SetText(XState, "正在执行流程...");
+                    //移动Z轴
+                    ScanHelper.Move(ZStage, JudgeThreadEndOrResume, FileObj.Config.ZRangeLo.Value, FileObj.Config.ZRangeHi.Value, FileObj.Config.ZPlane.Value, 10000);
                     //旋转台移动到轴向沿Y
-                    AStage.Device.MoveToAndWait(FileObj.Param.AngleX, 10000);
-                    //Y扫描
+                    ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, FileObj.Config.AngleX, 60000, 360);
+                    //X方向扫描
                     ScanX();
+                    SetProgress("X", 100);
                     SetText(XState, "已完成，X方向磁场最大位置为：");
-                    SetText(XLoc, Math.Round(FileObj.Param.XLoc.Value, 5).ToString());
+                    SetText(XLoc, Math.Round(FileObj.Param.XLoc.Value, 4).ToString());
 
+                    SetText(YState, "正在执行流程...");
                     //旋转台移动到轴向沿X
-                    AStage.Device.MoveToAndWait(FileObj.Param.AngleY, 10000);
+                    ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, FileObj.Config.AngleY, 10000);
                     //移动X到最大值
-                    MoveX(FileObj.Param.XLoc.Value, 10000);
-                    //X扫描
+                    ScanHelper.Move(XStage, JudgeThreadEndOrResume, FileObj.Config.ZRangeLo.Value, FileObj.Config.ZRangeHi.Value, FileObj.Param.XLoc.Value, 10000);
+                    //Y方向扫描
                     ScanY();
+                    SetProgress("Y", 100);
                     SetText(YState, "已完成,Y方向磁场最大位置为：");
-                    SetText(YLoc, Math.Round(FileObj.Param.YLoc.Value, 5).ToString());
+                    SetText(YLoc, Math.Round(FileObj.Param.YLoc.Value, 4).ToString());
 
+                    SetText(ZState, "正在执行流程...");
                     //移动Y到最大值
-                    MoveY(FileObj.Param.YLoc.Value, 10000);
+                    ScanHelper.Move(YStage, JudgeThreadEndOrResume, FileObj.Config.YRangeLo.Value, FileObj.Config.YRangeHi.Value, FileObj.Param.YLoc.Value, 10000);
                     //Z扫描
                     ScanZ();
+                    SetProgress("Z", 100);
                     SetText(ZState, "已完成,Z轴位置及对应的与NV距离分别为：");
-                    SetText(ZLoc, Math.Round(FileObj.Param.ZLoc.Value, 5).ToString());
-                    SetText(ZDistance, Math.Round(FileObj.Param.ZDistance.Value, 5).ToString());
+                    SetText(ZDistance, Math.Round(FileObj.Param.ZDistance.Value, 4).ToString());
+                    SetText(ZLoc, Math.Round(FileObj.Param.ZLoc.Value, 4).ToString());
 
+                    SetText(AngleState, "正在执行流程...");
                     //角度扫描
-                    MoveZ(FileObj.Param.ZPlane.Value, 10000);
+                    ScanHelper.Move(ZStage, JudgeThreadEndOrResume, FileObj.Config.ZRangeLo.Value, FileObj.Config.ZRangeHi.Value, FileObj.Config.ZPlane.Value, 10000);
                     ScanAngle();
+                    SetProgress("A", 100);
                     SetText(AngleState, "已完成,NV的方位角θ和φ分别为:");
-                    SetText(AngleTheta, Math.Round(FileObj.Param.Theta1.Value, 4).ToString() + "或" + Math.Round(FileObj.Param.Theta2.Value, 4).ToString());
-                    SetText(AnglePhi, Math.Round(FileObj.Param.Phi1.Value, 4).ToString() + "或" + Math.Round(FileObj.Param.Phi2.Value, 4).ToString());
+                    SetText(Phi1, Math.Round(FileObj.Param.Phi1.Value, 4).ToString());
+                    SetText(Phi2, Math.Round(FileObj.Param.Phi2.Value, 4).ToString());
+                    SetText(Theta1, Math.Round(FileObj.Param.Theta1.Value, 4).ToString());
+                    SetText(Theta2, Math.Round(FileObj.Param.Theta2.Value, 4).ToString());
 
+                    SetText(CheckState, "正在执行流程...");
                     //角度检查
+                    CheckAngle();
+                    SetProgress("C", 100);
+                    SetText(CheckState, "已完成,NV的方位角θ和φ分别为:");
+                    SetText(CheckedTheta, Math.Round(FileObj.Param.CheckedTheta.Value, 4).ToString());
+                    SetText(CheckedPhi, Math.Round(FileObj.Param.CheckedPhi.Value, 4).ToString());
                     //计算目标位置
                 }
-                catch (Exception e) { MessageWindow.ShowTipWindow("定位过程发生异常：\n" + e.Message, MainWindow.Handle); }
+                catch (Exception e)
+                {
+                    MessageWindow.ShowTipWindow("定位过程发生异常,已结束定位过程：\n" + e.Message, MainWindow.Handle);
+                    SetText(XState, "");
+                    SetText(YState, "");
+                    SetText(ZState, "");
+                    SetText(AngleState, "");
+                    SetText(CheckState, "");
+                }
                 finally
                 {
-                    #region 结束设备占用
-                    XStage.UnUse();
-                    YStage.UnUse();
-                    ZStage.UnUse();
-                    AStage.UnUse();
-                    #endregion
+                    SetStopState();
                 }
 
-                IsScamFinished = true;
             });
-        }
-
-        private void StartThread()
-        {
             ControlThread.Start();
         }
 
+        /// <summary>
+        /// X方向扫描
+        /// </summary>
         private void ScanX()
         {
-            double loc = LineScanCore("X", FileObj.Param.XScanLo.Value, FileObj.Param.XScanHi.Value, FileObj.Param.D.Value);
+            double loc = LineScanCore("X", FileObj);
             // 读取磁铁角度，计算偏移量
-            double angle = FileObj.Param.AngleX;
-            List<double> xy = MagnetAutoScanHelper.GetTargetOffset(FileObj.Param, angle);
+            double angle = FileObj.Config.AngleX;
+            List<double> xy = MagnetAutoScanHelper.GetTargetOffset(FileObj.Config, angle);
             FileObj.Param.XLoc.Value = loc - xy[0];
         }
 
+        /// <summary>
+        /// Y方向扫描
+        /// </summary>
         private void ScanY()
         {
-            FileObj.Param.YLoc.Value = LineScanCore("Y", FileObj.Param.YScanLo.Value, FileObj.Param.YScanHi.Value, FileObj.Param.D.Value);
+            FileObj.Param.YLoc.Value = LineScanCore("Y", FileObj);
         }
 
-        private double LineScanCore(string Scandir, double Lo, double Hi, double D)
+        private double LineScanCore(string ScanDir, MagnetScanFileObjecct obj)
         {
-            SetProgress(Scandir, 0);
-
             //根据点数设置位移台（二分法,扫描点数始终为6)
             //遍历一遍范围，之后拟合得到最大值位置，之后范围减半
             //重复上一步骤，直到步长小于0.05mm
             //计算总点数
             double scancount = 6;
             double countApprox = 0;
-            double step = (Hi - Lo) / (scancount - 1);
+            double step = (obj.Config.XScanHi.Value - obj.Config.XScanLo.Value) / (scancount - 1);
             while (step >= 0.1)
             {
                 countApprox += scancount;
                 step /= 2;
             }
 
-            step = (Hi - Lo) / (scancount - 1);
+            int ind = 0;
+            Scan1DSession session = new Scan1DSession();
+            session.FirstScanEvent = ScanEvent;
+            session.ScanEvent = ScanEvent;
+            session.ProgressBarMethod = SetProgressFromSession;
+            session.StateJudgeEvent = JudgeThreadEndOrResume;
 
-            bool IsFirstScan = true;
+            double restrictlo = 0;
+            double restricthi = 0;
 
-            double cw1 = 0;
-            double cw2 = 0;
+            if (ScanDir == "X")
+            {
+                session.ScanMover = XStage;
+                restrictlo = obj.Config.XScanLo.Value;
+                restricthi = obj.Config.XScanHi.Value;
+            }
+            if (ScanDir == "Y")
+            {
+                session.ScanMover = YStage;
+                restrictlo = obj.Config.YScanLo.Value;
+                restricthi = obj.Config.YScanHi.Value;
+            }
 
-            List<double> locdata = new List<double>();
-            List<double> cw1s = new List<double>();
-            List<double> cw2s = new List<double>();
-            List<double> Bs = new List<double>();
-
-            int finishedpoint = 0;
+            double cw1 = 0, cw2 = 0;
             double peak = 0;
+            double scanmin = obj.Config.XScanLo.Value;
+            double scanmax = obj.Config.XScanHi.Value;
+            double scanrange = Math.Abs(obj.Config.XScanHi.Value - obj.Config.XScanLo.Value);
 
-            double scanmin = Lo;
-
-            double scanmax = Hi;
-
-            List<double> freqs1 = new List<double>();
-            List<double> freqs2 = new List<double>();
-            List<double> contracts1 = new List<double>();
-            List<double> contracts2 = new List<double>();
-
+            step = (scanrange) / (scancount - 1);
             while (step >= 0.1)
             {
-                //扫描
-                for (int i = 0; i < scancount; i++)
+                session.BeginScan(scanmin, scanmax, restrictlo, restricthi, 6, 0.1, ind * 100.0 / countApprox, (ind + 5) * 100.0 / countApprox, obj, cw1, cw2);
+                ind += 6;
+
+                #region 根据二次函数计算当前峰值
+                List<double> xdata = new List<double>();
+                List<double> ydata = new List<double>();
+                List<double> cw1s = new List<double>();
+                List<double> cw2s = new List<double>();
+
+                if (ScanDir == "X")
                 {
-                    if (Scandir == "X")
-                    {
-                        MoveX(scanmin + i * step, 4000);
-                    }
-                    if (Scandir == "Y")
-                    {
-                        MoveY(scanmin + i * step, 4000);
-                    }
-
-                    if (IsFirstScan)
-                    {
-                        IsFirstScan = false;
-                        LabviewConverter.AutoTrace(out Exception e);
-                        JudgeThreadEndOrResume();
-                        MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks, out freqs1, out contracts1, out freqs2, out contracts2);
-                        JudgeThreadEndOrResume();
-                        cw1 = peaks[0];
-                        cw2 = peaks[1];
-                    }
-                    else
-                    {
-                        LabviewConverter.AutoTrace(out Exception exc);
-                        JudgeThreadEndOrResume();
-                        MagnetAutoScanHelper.ScanCW2(out cw1, out cw2, out freqs1, out contracts1, out freqs2, out contracts2, cw1, cw2);
-                        JudgeThreadEndOrResume();
-                    }
-
-                    if (cw1 != 0 && cw2 != 0)
-                    {
-                        locdata.Add(scanmin + i * step);
-                        cw1s.Add(cw1);
-                        cw2s.Add(cw2);
-                        CWPointObject point = new CWPointObject(Math.Round(scanmin + i * step, 5), cw1, cw2, D, freqs1, contracts1, freqs2, contracts2);
-                        Dispatcher.Invoke(() =>
-                        {
-                            if (Scandir == "X")
-                            {
-                                XWin.AddData(point);
-                            }
-                            if (Scandir == "Y")
-                            {
-                                YWin.AddData(point);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        //未扫描到谱峰，添加提示信息
-                        MessageLogger.AddLogger("磁场定位", "在磁场定位中的" + Scandir + "=" + Math.Round(scanmin + i * step, 5).ToString() + "时未扫描到完整的共振峰谱", MessageTypes.Information);
-                    }
-
-                    SetProgress(Scandir, finishedpoint * 100 / countApprox);
-                    finishedpoint += 1;
+                    xdata = obj.XPoints.Select((x) => x.MoverLoc).ToList();
+                    ydata = obj.XPoints.Select((x) => x.B).ToList();
+                    cw1s = obj.XPoints.Select((x) => x.CW1).ToList();
+                    cw2s = obj.XPoints.Select((x) => x.CW2).ToList();
+                }
+                if (ScanDir == "Y")
+                {
+                    xdata = obj.YPoints.Select((x) => x.MoverLoc).ToList();
+                    ydata = obj.YPoints.Select((x) => x.B).ToList();
+                    cw1s = obj.YPoints.Select((x) => x.CW1).ToList();
+                    cw2s = obj.YPoints.Select((x) => x.CW2).ToList();
                 }
 
-                //拟合并绘图
-                List<double> param = MagnetAutoScanHelper.FitDataWithPow2(locdata, Bs);
+                List<double> param = param = MagnetAutoScanHelper.FitDataWithPow2(xdata, ydata);
                 //计算峰值
                 peak = -param[1] / (2 * param[2]);
                 //步长减半，范围减半
                 step /= 2;
-                double scanrange = Math.Abs(scanmax - scanmin);
+                scanrange = Math.Abs(scanmax - scanmin);
                 scanmin = peak - scanrange / 4;
                 scanmax = peak + scanrange / 4;
 
-                int peakind = MagnetAutoScanHelper.GetNearestDataIndex(locdata, scanmin);
+                int peakind = MagnetAutoScanHelper.GetNearestDataIndex(xdata, scanmin);
                 cw1 = cw1s[peakind];
                 cw2 = cw2s[peakind];
+                #endregion
             }
-
             return peak;
         }
 
-
+        /// <summary>
+        /// Z方向扫描
+        /// </summary>
         private void ScanZ()
         {
             //扫第一个点
-            AStage.Device.MoveTo(FileObj.Param.AngleX);
-            LabviewConverter.AutoTrace(out Exception e);
-            SetProgress("Z", 12.5);
-            JudgeThreadEndOrResume();
-            MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks1, out List<double> freqs11, out List<double> contracts11, out List<double> freqs12, out List<double> contracts12);
-            SetProgress("Z", 25);
-            JudgeThreadEndOrResume();
-            MoveZ(FileObj.Param.ZPlane.Value + FileObj.Param.ReverseZNum.Value, 10000);
+            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, FileObj.Config.AngleX, 60000, 360);
+            Scan1DSession session = new Scan1DSession();
+            session.ProgressBarMethod = SetProgressFromSession;
+            session.FirstScanEvent = ScanEvent;
+            session.ScanEvent = ScanEvent;
+            session.StateJudgeEvent = JudgeThreadEndOrResume;
+            session.ScanMover = ZStage;
+
+            double reslo = FileObj.Config.ZRangeLo.Value;
+            double reshi = FileObj.Config.ZRangeHi.Value;
+
+            //扫第一个点
+            double height = FileObj.Config.ZPlane.Value;
+            session.BeginScan(height, height, reslo, reshi, 1, 0.1, 0, 25, FileObj, 0.0, 0.0);
             //扫第二个点
-            LabviewConverter.AutoTrace(out e);
-            SetProgress("Z", 37.5);
-            JudgeThreadEndOrResume();
-            MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks2, out List<double> freqs21, out List<double> contracts21, out List<double> freqs22, out List<double> contracts22);
-            SetProgress("Z", 50);
-            JudgeThreadEndOrResume();
+            height = FileObj.Config.ZPlane.Value + GetReverseNum(FileObj.Config.ReverseZ.Value);
+            session.BeginScan(height, height, reslo, reshi, 1, 0.1, 25, 50, FileObj, 0.0, 0.0);
 
-            CWPointObject cp1 = new CWPointObject(FileObj.Param.ZPlane.Value, peaks1[0], peaks1[1], FileObj.Param.D.Value, freqs11, contracts11, freqs12, contracts12);
-            CWPointObject cp2 = new CWPointObject(FileObj.Param.ZPlane.Value + FileObj.Param.ReverseZNum.Value, peaks2[0], peaks2[1], FileObj.Param.D.Value, freqs21, contracts21, freqs22, contracts22);
+            CWPointObject cp1 = FileObj.ZPoints[0];
+            CWPointObject cp2 = FileObj.ZPoints[1];
 
-            // 如果NV磁场分量太小则转90度再测
+            #region 如果NV磁场分量太小则转90度再测
             if (cp1.Bv != 0 && cp2.Bv != 0)
             {
                 if (cp1.Bp / cp1.Bv < 0.1 || cp2.Bp / cp2.Bv < 0.1)
                 {
-                    AStage.Device.MoveTo(FileObj.Param.AngleY);
-                    MoveZ(FileObj.Param.ZPlane.Value, 10000);
+                    ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, FileObj.Config.AngleY, 60000, 360);
+
+                    FileObj.ZPoints.Clear();
+
                     //扫第一个点
-                    LabviewConverter.AutoTrace(out e);
-                    SetProgress("Z", 62.5);
-                    JudgeThreadEndOrResume();
-                    MagnetAutoScanHelper.TotalCWPeaks2OrException(out peaks1, out freqs11, out contracts11, out freqs12, out contracts12);
-                    SetProgress("Z", 75);
-                    JudgeThreadEndOrResume();
-                    MoveZ(FileObj.Param.ZPlane.Value + FileObj.Param.ReverseZNum.Value, 10000);
+                    height = FileObj.Config.ZPlane.Value;
+                    session.BeginScan(height, height, reslo, reshi, 1, 0.1, 50, 75, FileObj, 0.0, 0.0);
                     //扫第二个点
-                    LabviewConverter.AutoTrace(out e);
-                    SetProgress("Z", 87.5);
-                    JudgeThreadEndOrResume();
-                    MagnetAutoScanHelper.TotalCWPeaks2OrException(out peaks2, out freqs21, out contracts21, out freqs22, out contracts22);
-                    SetProgress("Z", 100);
-                    JudgeThreadEndOrResume();
-                    cp1 = new CWPointObject(FileObj.Param.ZPlane.Value, peaks1[0], peaks1[1], FileObj.Param.D.Value, freqs11, contracts11, freqs12, contracts12);
-                    cp2 = new CWPointObject(FileObj.Param.ZPlane.Value + FileObj.Param.ReverseZNum.Value, peaks2[0], peaks2[1], FileObj.Param.D.Value, freqs21, contracts21, freqs22, contracts22);
+                    height = FileObj.Config.ZPlane.Value + GetReverseNum(FileObj.Config.ReverseZ.Value);
+                    session.BeginScan(height, height, reslo, reshi, 1, 0.1, 75, 100, FileObj, 0.0, 0.0);
+
+                    cp1 = FileObj.ZPoints[0];
+                    cp2 = FileObj.ZPoints[1];
                 }
             }
+            #endregion
 
-            Dispatcher.Invoke(() =>
-            {
-                ZWin.SetPoint1(cp1);
-                ZWin.SetPoint2(cp2);
-            });
 
-            //计算位置
+            #region 计算位置
             double ratio = cp1.Bp / cp2.Bp;
             FileObj.Param.ZLoc.Value = cp1.MoverLoc;
             if (ratio < 1)
@@ -635,84 +662,40 @@ namespace ODMR_Lab.磁场调节
                 ratio = cp2.Bp / cp1.Bp;
                 FileObj.Param.ZLoc.Value = cp2.MoverLoc;
             }
+            FileObj.Param.ZDistance.Value = MagnetAutoScanHelper.FindRoot(new PillarMagnet(FileObj.Config.MRadius.Value, FileObj.Config.MLength.Value), cp1.MoverLoc, cp2.MoverLoc, ratio);
+            #endregion
 
-            FileObj.Param.ZDistance.Value = MagnetAutoScanHelper.FindRoot(new PillarMagnet(FileObj.Param.MRadius.Value, FileObj.Param.MLength.Value), cp1.MoverLoc, cp2.MoverLoc, ratio);
-            SetProgress("Z", 100);
+            #region 刷新界面
+            Dispatcher.Invoke(() =>
+            {
+                ZWin.CWPoint1 = cp1;
+                ZWin.CWPoint2 = cp2;
+                ZWin.UpdateDisplay();
+            });
+            #endregion
         }
 
+        /// <summary>
+        /// 角度扫描
+        /// </summary>
         private void ScanAngle()
         {
-            bool IsFirstScan = true;
+            Scan1DSession session = new Scan1DSession();
+            session.ProgressBarMethod = SetProgressFromSession;
+            session.FirstScanEvent = ScanAngleEvent;
+            session.ScanEvent = ScanAngleEvent;
+            session.StateJudgeEvent = JudgeThreadEndOrResume;
+            session.ScanMover = AStage;
 
-            double peak1 = 0;
-            double peak2 = 0;
+            session.BeginScan(-140, 140, -150, 150, 15, 0.1, 0, 100, FileObj, 0.0, 0.0);
 
-            List<double> locs = new List<double>();
-            List<double> bps = new List<double>();
-            List<double> bs = new List<double>();
-
-            for (int i = 0; i < 15; i++)
-            {
-                //设置旋转角度
-                AStage.Device.MoveToAndWait(-140 + 20 * i, 10000);
-                // 获取偏心修正后的x,y位置
-                List<double> xy = GetRealXYLoc(-140 + 20 * i, FileObj.Param.XLoc.Value, FileObj.Param.YLoc.Value);
-                // 设置XY
-                MoveX(xy[0], 10000);
-                MoveY(xy[1], 10000);
-
-                List<double> freqs1 = new List<double>();
-                List<double> freqs2 = new List<double>();
-                List<double> contracts1 = new List<double>();
-                List<double> contracts2 = new List<double>();
-
-                if (IsFirstScan)
-                {
-                    IsFirstScan = false;
-                    LabviewConverter.AutoTrace(out Exception e);
-                    JudgeThreadEndOrResume();
-                    MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks, out freqs1, out contracts1, out freqs2, out contracts2);
-                    JudgeThreadEndOrResume();
-                    peak1 = peaks[0];
-                    peak2 = peaks[1];
-                }
-                else
-                {
-                    LabviewConverter.AutoTrace(out Exception e);
-                    JudgeThreadEndOrResume();
-                    MagnetAutoScanHelper.ScanCW2(out peak1, out peak2, out freqs1, out contracts1, out freqs2, out contracts2, peak1, peak2, scanWidth: 100);
-                    JudgeThreadEndOrResume();
-
-                    if (peak1 == 0 || peak2 == 0 || Math.Abs(peak1 - peak2) < 5)
-                    {
-                        LabviewConverter.AutoTrace(out e);
-                        JudgeThreadEndOrResume();
-                        MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks, out freqs1, out contracts1, out freqs2, out contracts2);
-                        JudgeThreadEndOrResume();
-
-                        peak1 = peaks[0];
-                        peak2 = peaks[1];
-                    }
-                }
-
-                SetProgress("A", (i + 1) * 100.0 / 15);
-
-                CWPointObject p = new CWPointObject(-140 + 20 * i, peak1, peak2, FileObj.Param.D.Value, freqs1, contracts1, freqs2, contracts2);
-                locs.Add(-140 + 20 * i);
-                bps.Add(p.Bp);
-                bs.Add(p.B);
-
-                Dispatcher.Invoke(() =>
-                {
-                    AngleWin.AddData(p);
-                });
-            }
-
-            //进行拟合得到方位角
-            List<double> sindata = AngleWin.ConvertAbsDataToSin(bps);
+            #region 进行拟合得到方位角
+            List<double> locs = FileObj.AnglePoints.Select((x) => x.MoverLoc).ToList();
+            List<double> bs = FileObj.AnglePoints.Select((x) => x.B).ToList();
+            List<double> sindata = AngleWin.ConvertAbsDataToSin(FileObj.AnglePoints.Select((x) => x.Bp).ToList());
             for (int i = 0; i < locs.Count; i++)
             {
-                locs[i] = FileObj.Param.ReverseANum.Value * locs[i] - FileObj.Param.AngleY;
+                locs[i] = GetReverseNum(FileObj.Config.ReverseA.Value) * locs[i] - FileObj.Config.AngleY;
             }
             List<double> result = MagnetAutoScanHelper.FitSinCurve(locs, sindata);
             double amplitude = result[0];
@@ -732,6 +715,15 @@ namespace ODMR_Lab.磁场调节
             {
                 FileObj.Param.Phi2.Value += 360;
             }
+            #endregion
+
+            #region 在界面上更新
+            Dispatcher.Invoke(() =>
+            {
+                AngleWin.CWPoints = FileObj.AnglePoints;
+                AngleWin.UpdateDisplay();
+            });
+            #endregion
         }
 
         /// <summary>
@@ -740,9 +732,141 @@ namespace ODMR_Lab.磁场调节
         private void CheckAngle()
         {
             ///刷新计算结果
-            CheckWin.UpdateCalculate(FileObj.Param);
-            //CheckWin.
+            MagnetAutoScanHelper.CalculatePossibleLocs(FileObj.Config, FileObj.Param, out double x1, out double y1, out double z1, out double a1, out double x2, out double y2, out double z2, out double a2);
+            CWPointObject p1 = CheckWin.MoveAndScan(x1, y1, z1, a1, JudgeThreadEndOrResume);
+            CWPointObject p2 = CheckWin.MoveAndScan(x2, y2, z2, a2, JudgeThreadEndOrResume);
+            FileObj.CheckPoints.Add(p1);
+            FileObj.CheckPoints.Add(p2);
+
+            #region 计算结果
+            if (p1 == null || p2 == null)
+            {
+                throw new Exception("数据不全，无法筛选出正确的NV朝向");
+            }
+            double v1 = p1.Bp / p1.B;
+            double v2 = p2.Bp / p2.B;
+            if (v1 < v2)
+            {
+                FileObj.Param.CheckedPhi = FileObj.Param.Phi1;
+                FileObj.Param.CheckedTheta = FileObj.Param.Theta1;
+            }
+            else
+            {
+                FileObj.Param.CheckedPhi = FileObj.Param.Phi2;
+                FileObj.Param.CheckedTheta = FileObj.Param.Theta2;
+            }
+            #endregion 
+
+            #region 刷新界面
+            Dispatcher.Invoke(() =>
+            {
+                CheckWin.CWPoint1 = p1;
+                CheckWin.CWPoint2 = p2;
+            });
+            #endregion
         }
+
+        /// <summary>
+        /// 获取反转系数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public int GetReverseNum(bool value)
+        {
+            return value ? 1 : -1;
+        }
+
+        #region 扫描实验步骤(扫谱后保存数据点)
+        private List<object> ScanEvent(NanoStageInfo stage, double loc, List<object> originOutput)
+        {
+            return Experiment(stage, loc, 10, originOutput);
+        }
+
+        private List<object> ScanAngleEvent(NanoStageInfo stage, double loc, List<object> originOutput)
+        {
+            // 获取偏心修正后的x,y位置
+            List<double> xy = GetRealXYLoc(loc, FileObj.Param.XLoc.Value, FileObj.Param.YLoc.Value);
+            // 设置XY
+            ScanHelper.Move(XStage, JudgeThreadEndOrResume, FileObj.Config.XRangeLo.Value, FileObj.Config.XRangeHi.Value, xy[0], 10000);
+            ScanHelper.Move(YStage, JudgeThreadEndOrResume, FileObj.Config.YRangeLo.Value, FileObj.Config.YRangeHi.Value, xy[0], 10000);
+
+            return Experiment(stage, loc, 30, originOutput);
+        }
+
+        private List<object> Experiment(NanoStageInfo stage, double loc, double scanWidth, List<object> originOutput)
+        {
+            List<double> freqs1 = new List<double>();
+            List<double> contracts1 = new List<double>();
+            List<double> freqs2 = new List<double>();
+            List<double> contracts2 = new List<double>();
+            //频率未确定
+            if ((double)originOutput[1] == 0 && (double)originOutput[2] == 0)
+            {
+                LabviewConverter.AutoTrace(out Exception e);
+                JudgeThreadEndOrResume();
+                MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks, out freqs1, out contracts1, out freqs2, out contracts2);
+                JudgeThreadEndOrResume();
+
+                originOutput[1] = Math.Min(peaks[0], peaks[1]);
+                originOutput[2] = Math.Max(peaks[0], peaks[1]);
+            }
+            else
+            {
+                LabviewConverter.AutoTrace(out Exception exc);
+                JudgeThreadEndOrResume();
+                MagnetAutoScanHelper.ScanCW2(out double cw1, out double cw2, out freqs1, out contracts1, out freqs2, out contracts2, (double)originOutput[1], (double)originOutput[2], scanWidth);
+                JudgeThreadEndOrResume();
+                if (cw1 == 0 || cw2 == 0)
+                {
+                    //未扫描到谱峰，添加提示信息
+                    MessageLogger.AddLogger("磁场定位", "位移台" + stage.MoverType.ToString() + "=" + Math.Round(loc, 5).ToString() + "时未扫描到完整的共振峰谱", MessageTypes.Information);
+                    originOutput[1] = cw1;
+                    originOutput[2] = cw2;
+                    return originOutput;
+                }
+                originOutput[1] = cw1;
+                originOutput[2] = cw2;
+            }
+
+            MagnetScanFileObjecct obj = originOutput[0] as MagnetScanFileObjecct;
+            CWPointObject point = new CWPointObject(loc, (double)originOutput[1], (double)originOutput[2], obj.Config.D.Value, freqs1, contracts1, freqs2, contracts2);
+
+            if (stage == XStage)
+            {
+                obj.XPoints.Add(point);
+                Dispatcher.Invoke(() =>
+                {
+                    XWin.UpdateDisplay();
+                });
+            }
+            if (stage == YStage)
+            {
+                obj.YPoints.Add(point);
+                Dispatcher.Invoke(() =>
+                {
+                    YWin.UpdateDisplay();
+                });
+            }
+            if (stage == ZStage)
+            {
+                obj.ZPoints.Add(point);
+                Dispatcher.Invoke(() =>
+                {
+                    ZWin.UpdateDisplay();
+                });
+            }
+            if (stage == AStage)
+            {
+                obj.AnglePoints.Add(point);
+                Dispatcher.Invoke(() =>
+                {
+                    AngleWin.UpdateDisplay();
+                });
+            }
+
+            return originOutput;
+        }
+        #endregion
 
         private void SetProgress(string procedureName, double value)
         {
@@ -750,75 +874,64 @@ namespace ODMR_Lab.磁场调节
             {
                 if (procedureName == "X")
                 {
-                    if (value >= 100)
-                    {
-                        XProgress.Visibility = Visibility.Hidden;
-                        XOk.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        XProgress.Content = Math.Round(value, 2).ToString();
-                        XProgress.Visibility = Visibility.Visible;
-                        XOk.Visibility = Visibility.Hidden;
-                    }
+                    SetSingleProcess(XProgress, XOk, value);
                 }
                 if (procedureName == "Y")
                 {
-                    if (value >= 100)
-                    {
-                        YProgress.Visibility = Visibility.Hidden;
-                        YOk.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        YProgress.Content = Math.Round(value, 2).ToString();
-                        YProgress.Visibility = Visibility.Visible;
-                        YOk.Visibility = Visibility.Hidden;
-                    }
+                    SetSingleProcess(YProgress, YOk, value);
                 }
                 if (procedureName == "Z")
                 {
-                    if (value >= 100)
-                    {
-                        ZProgress.Visibility = Visibility.Hidden;
-                        ZOk.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        ZProgress.Content = Math.Round(value, 2).ToString();
-                        ZProgress.Visibility = Visibility.Visible;
-                        ZOk.Visibility = Visibility.Hidden;
-                    }
+                    SetSingleProcess(ZProgress, ZOk, value);
                 }
                 if (procedureName == "A")
                 {
-                    if (value >= 100)
-                    {
-                        AngleProgress.Visibility = Visibility.Hidden;
-                        AngleOk.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        AngleProgress.Content = Math.Round(value, 2).ToString();
-                        AngleProgress.Visibility = Visibility.Visible;
-                        AngleOk.Visibility = Visibility.Hidden;
-                    }
+                    SetSingleProcess(AngleProgress, AngleOk, value);
                 }
                 if (procedureName == "C")
                 {
-                    if (value >= 100)
-                    {
-                        CheckProgress.Visibility = Visibility.Hidden;
-                        CheckOk.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        CheckProgress.Content = Math.Round(value, 2).ToString();
-                        CheckProgress.Visibility = Visibility.Visible;
-                        CheckOk.Visibility = Visibility.Hidden;
-                    }
+                    SetSingleProcess(CheckProgress, CheckOk, value);
                 }
             });
+        }
+
+        private void SetSingleProcess(Label Progress, Image ProgressImage, double value)
+        {
+            if (value >= 100)
+            {
+                Progress.Visibility = Visibility.Hidden;
+                ProgressImage.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Progress.Content = Math.Round(value, 2).ToString() + "%";
+                Progress.Visibility = Visibility.Visible;
+                ProgressImage.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void SetProgressFromSession(NanoStageInfo info, double arg2)
+        {
+            if (info == XStage)
+            {
+                SetProgress("X", arg2);
+                return;
+            }
+            if (info == YStage)
+            {
+                SetProgress("Y", arg2);
+                return;
+            }
+            if (info == ZStage)
+            {
+                SetProgress("Z", arg2);
+                return;
+            }
+            if (info == AStage)
+            {
+                SetProgress("A", arg2);
+                return;
+            }
         }
 
         private void SetText(TextBlock l, string value)
@@ -827,90 +940,6 @@ namespace ODMR_Lab.磁场调节
             {
                 l.Text = value;
             });
-        }
-
-        /// <summary>
-        /// 移动X轴
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="timeout"></param>
-        private void MoveX(double target, int timeout)
-        {
-            if (target > FileObj.Param.XRangeHi.Value || target < FileObj.Param.XRangeLo.Value)
-            {
-                MessageLogger.AddLogger("磁场定位", "位移台" + Enum.GetName(typeof(MoverTypes), FileObj.Param.XRelate) + "超量程", MessageTypes.Warning);
-                return;
-            }
-            double target0 = XStage.Device.Target;
-            double det = target - target0;
-            int sgn = det > 0 ? 1 : -1;
-            det = Math.Abs(det);
-            while (det > 0.1)
-            {
-                target0 += sgn * 0.1;
-                XStage.Device.MoveToAndWait(target, timeout);
-                JudgeThreadEndOrResume();
-                det -= 0.1;
-                Thread.Sleep(50);
-            }
-            XStage.Device.MoveToAndWait(target0 + sgn * det, timeout);
-            JudgeThreadEndOrResume();
-        }
-
-        /// <summary>
-        /// 移动Y轴
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="timeout"></param>
-        private void MoveY(double target, int timeout)
-        {
-            if (target > FileObj.Param.YRangeHi.Value || target < FileObj.Param.YRangeLo.Value)
-            {
-                MessageLogger.AddLogger("磁场定位", "位移台" + Enum.GetName(typeof(MoverTypes), FileObj.Param.YRelate) + "超量程", MessageTypes.Warning);
-                return;
-            }
-            double target0 = YStage.Device.Target;
-            double det = target - target0;
-            int sgn = det > 0 ? 1 : -1;
-            det = Math.Abs(det);
-            while (det > 0.1)
-            {
-                target0 += sgn * 0.1;
-                YStage.Device.MoveToAndWait(target, timeout);
-                JudgeThreadEndOrResume();
-                det -= 0.1;
-                Thread.Sleep(50);
-            }
-            YStage.Device.MoveToAndWait(target0 + sgn * det, timeout);
-            JudgeThreadEndOrResume();
-        }
-
-        /// <summary>
-        /// 移动Z轴
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="timeout"></param>
-        private void MoveZ(double target, int timeout)
-        {
-            if (target > FileObj.Param.ZRangeHi.Value || target < FileObj.Param.ZRangeLo.Value)
-            {
-                MessageLogger.AddLogger("磁场定位", "位移台" + Enum.GetName(typeof(MoverTypes), FileObj.Param.ZRelate) + "超量程", MessageTypes.Warning);
-                return;
-            }
-            double target0 = ZStage.Device.Target;
-            double det = target - target0;
-            int sgn = det > 0 ? 1 : -1;
-            det = Math.Abs(det);
-            while (det > 0.1)
-            {
-                target0 += sgn * 0.1;
-                ZStage.Device.MoveToAndWait(target, timeout);
-                JudgeThreadEndOrResume();
-                det -= 0.1;
-                Thread.Sleep(50);
-            }
-            ZStage.Device.MoveToAndWait(target0 + sgn * det, timeout);
-            JudgeThreadEndOrResume();
         }
 
         /// <summary>
@@ -935,7 +964,7 @@ namespace ODMR_Lab.磁场调节
 
         private List<double> GetRealXYLoc(double angle, double centerx, double centery)
         {
-            List<double> xy = MagnetAutoScanHelper.GetTargetOffset(FileObj.Param, angle);
+            List<double> xy = MagnetAutoScanHelper.GetTargetOffset(FileObj.Config, angle);
             return new List<double>() { centerx + xy[0], centery + xy[1] };
         }
         #endregion

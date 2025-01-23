@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.端口基类;
@@ -64,18 +63,6 @@ namespace ODMR_Lab.温度监测部分
         {
             SampleThread?.Abort();
         }
-
-        public override void UpdateDataBaseToUI()
-        {
-        }
-
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
-        {
-        }
-
 
         private ContextMenu CreateBtnMenu(ChannelInfo data)
         {

@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
@@ -41,7 +40,7 @@ namespace ODMR_Lab.温度监测部分
         public TemperaturePage()
         {
             InitializeComponent();
-
+            SetWindow = new SaveWindow(this);
         }
 
         public override void Init()
@@ -52,23 +51,6 @@ namespace ODMR_Lab.温度监测部分
 
             //创建自动保存线程
             CreateAutoSaveThread();
-        }
-
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
-        {
-            DataBase.RegistateVar("FolderPath", this);
-            DataBase.RegistateVar("AutoFolderPath", this);
-            DataBase.RegistateVar("AutoSave", this);
-            DataBase.RegistateVar("AutoSaveGap", this);
-            DataBase.RegistateVar("SampleTime", this);
-        }
-
-        public override void UpdateDataBaseToUI()
-        {
-            SampleTimeText.Text = SampleTime.ToString();
         }
 
         public override void CloseBehaviour()
@@ -350,23 +332,8 @@ namespace ODMR_Lab.温度监测部分
         #endregion
 
         #region 文件保存
-        /// <summary>
-        /// 文件保存路径
-        /// </summary>
-        public string FolderPath { get; set; } = "";
-        /// <summary>
-        /// 文件自动保存路径
-        /// </summary>
-        public string AutoFolderPath { get; set; } = "";
-        /// <summary>
-        /// 文件保存路径
-        /// </summary>
-        public bool AutoSave { get; set; } = false;
 
-        /// <summary>
-        /// 自动保存间隔（天）
-        /// </summary>
-        public double AutoSaveGap { get; set; } = 1;
+        public SaveWindow SetWindow;
 
         /// <summary>
         /// 历史保存时间
@@ -384,6 +351,34 @@ namespace ODMR_Lab.温度监测部分
             {
                 while (true)
                 {
+                    double AutoSaveGap = 0;
+                    string AutoFolderPath = "";
+                    bool IsAutoSave = false;
+
+                    bool isparamread = true;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            AutoSaveGap = double.Parse(SetWindow.AutoSaveGap.Text);
+                            AutoFolderPath = SetWindow.AutoPath.Content.ToString();
+                            IsAutoSave = SetWindow.AutoChooser.IsSelected;
+                        }
+                        catch (Exception) { isparamread = false; }
+                    });
+                    if (isparamread == false)
+                    {
+                        Thread.Sleep(1 * 60 * 1000);
+                        continue;
+                    }
+
+                    if (IsAutoSave == false)
+                    {
+                        Thread.Sleep(1 * 60 * 1000);
+                        continue;
+                    }
+
                     if ((DateTime.Now - HistorySaveTime).TotalDays > AutoSaveGap)
                     {
                         HistorySaveTime = DateTime.Now;
@@ -511,8 +506,7 @@ namespace ODMR_Lab.温度监测部分
         /// <param name="e"></param>
         private void ExportClick(object sender, RoutedEventArgs e)
         {
-            SaveWindow window = new SaveWindow(this);
-            window.ShowDialog();
+            SetWindow.ShowDialog();
         }
         #endregion
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using MathNet.Numerics.RootFinding;
+using PythonHandler;
 
 namespace ODMR_Lab.实验部分.磁场调节
 {
@@ -51,7 +52,7 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <returns></returns>
         public static double FindRoot(PillarMagnet M, double z1, double z2, double ratiovalue)
         {
-            dynamic result = PythonPackage.Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Magnet.py"), "FindRoot", TimeSpan.FromSeconds(5), M.Radius, M.Length, z1, z2, ratiovalue);
+            dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Magnet.py"), "FindRoot", TimeSpan.FromSeconds(5), M.Radius, M.Length, z1, z2, ratiovalue);
             return result;
         }
 

@@ -89,6 +89,57 @@ namespace ODMR_Lab.基本控件
             StyleParam.LoadToPage(new FrameworkElement[] { this });
         }
 
+        #region 刷新显示部分
+        #endregion
+
+        /// <summary>
+        /// 刷新数据显示区
+        /// </summary>
+        public void UpdateChartDataPanel()
+        {
+            XDataSet.ClearItems();
+            YDataSet.ClearItems();
+            foreach (var item in DataSource)
+            {
+                if (item.DataAxisType != ChartDataType.Y && !(item is TimeChartData1D))
+                    XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
+            }
+
+            foreach (var item in DataSource)
+            {
+                if (item is NumricChartData1D && item.DataAxisType != ChartDataType.X)
+                {
+                    YDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 刷新点数显示
+        /// </summary>
+        public void UpdateDataPoint()
+        {
+            int ind = 0;
+            for (int i = 0; i < DataSource.Count; i++)
+            {
+                if (DataSource[i].DataAxisType != ChartDataType.Y && !(DataSource[i] is TimeChartData1D))
+                {
+                    XDataSet.SetCelValue(ind, 1, DataSource[i].GetCount());
+                    ++ind;
+                }
+            }
+
+            ind = 0;
+            for (int i = 0; i < DataSource.Count; i++)
+            {
+                if (DataSource[i] is NumricChartData1D && DataSource[i].DataAxisType != ChartDataType.X)
+                {
+                    YDataSet.SetCelValue(ind, 1, DataSource[i].GetCount());
+                    ++ind;
+                }
+            }
+        }
+
         /// <summary>
         /// 刷新图表
         /// </summary>
@@ -231,45 +282,40 @@ namespace ODMR_Lab.基本控件
             t.Start();
         }
 
-        #region 图表显示数据选择部分
         /// <summary>
         /// 刷新数据显示区
         /// </summary>
-        public void UpdateChartDataPanel()
+        public void UpdateDataDataPanel()
         {
-            XDataSet.ClearItems();
-            YDataSet.ClearItems();
+            DataNames.ClearItems();
+            DataPanel.Children.Clear();
             foreach (var item in DataSource)
             {
-                XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
-            }
-
-            foreach (var item in DataSource)
-            {
-                if (item is NumricChartData1D)
+                DataNames.AddItem(item, item.Name, item.GetCount().ToString());
+                if (item.IsInDataDisplay)
                 {
-                    YDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
+                    DataListViewer v = new DataListViewer();
+                    v.Data = item;
+                    v.UpdatePointList(0);
+                    v.Width = 150;
+                    DataPanel.Children.Add(v);
                 }
             }
         }
 
-        public void UpdateDataPoint()
+        /// <summary>
+        /// 刷新当前数据显示
+        /// </summary>
+        public void UpdateDataDisplay()
         {
-            for (int i = 0; i < DataSource.Count; i++)
+            foreach (var item in DataPanel.Children)
             {
-                XDataSet.SetCelValue(i, 1, DataSource[i].GetCount());
-            }
-
-            int ind = 0;
-            for (int i = 0; i < DataSource.Count; i++)
-            {
-                if (DataSource[i] is NumricChartData1D)
-                {
-                    YDataSet.SetCelValue(ind, 1, DataSource[i].GetCount());
-                    ++ind;
-                }
+                (item as DataListViewer).UpdatePointList((item as DataListViewer).CurrentDisplayIndex);
             }
         }
+
+
+        #region 图表显示数据选择部分
 
         private void XDataSelectionChanged(int arg1, int arg2, object arg3)
         {
@@ -378,7 +424,7 @@ namespace ODMR_Lab.基本控件
 
         #region 文件保存
         /// <summary>
-        /// 保存为userdat文件
+        /// 保存为文本文件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -491,38 +537,6 @@ namespace ODMR_Lab.基本控件
         /// </summary>
         private void InitDataView()
         {
-        }
-
-        /// <summary>
-        /// 刷新数据显示区
-        /// </summary>
-        public void UpdateDataDataPanel()
-        {
-            DataNames.ClearItems();
-            DataPanel.Children.Clear();
-            foreach (var item in DataSource)
-            {
-                DataNames.AddItem(item, item.Name, item.GetCount().ToString());
-                if (item.IsInDataDisplay)
-                {
-                    DataListViewer v = new DataListViewer();
-                    v.Data = item;
-                    v.UpdatePointList(0);
-                    v.Width = 150;
-                    DataPanel.Children.Add(v);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 刷新当前数据显示
-        /// </summary>
-        public void UpdateDataDisplay()
-        {
-            foreach (var item in DataPanel.Children)
-            {
-                (item as DataListViewer).UpdatePointList((item as DataListViewer).CurrentDisplayIndex);
-            }
         }
 
         private void DataNames_MultiItemSelected(int arg1, object arg2)

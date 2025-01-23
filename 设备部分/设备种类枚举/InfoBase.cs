@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 namespace ODMR_Lab
 {
     public abstract class DeviceInfoBase<T>
+        where T : PortObject
     {
-
         public bool IsWriting { get; private set; } = false;
 
         public DeviceConnectInfo ConnectInfo { get; protected set; } = null;
@@ -228,12 +228,23 @@ namespace ODMR_Lab
             return devinfo;
         }
 
+        private object lockobj = new object();
+
         /// <summary>
         /// 使用设备,向设备写信息，当设备处于使用状态时其他无关操作会导致报错
         /// </summary>
-        public void BeginUse()
+        public bool BeginUse(bool showmessagebox = false, bool log = true)
         {
-            IsWriting = true;
+            lock (lockobj)
+            {
+                if (IsWriting)
+                {
+                    MessageLogger.AddLogger("设备", "未能成功获取设备" + Device.ProductName + ", 轴正在使用。", MessageTypes.Warning, showmessagebox, log);
+                    return false;
+                }
+                IsWriting = true;
+                return true;
+            }
         }
 
         /// <summary>
@@ -241,7 +252,10 @@ namespace ODMR_Lab
         /// </summary>
         public void EndUse()
         {
-            IsWriting = false;
+            lock (lockobj)
+            {
+                IsWriting = false;
+            }
         }
     }
 }

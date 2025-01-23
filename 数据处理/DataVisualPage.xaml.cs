@@ -1,6 +1,5 @@
 ﻿using CodeHelper;
 using Controls;
-using DataBaseLib;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
@@ -63,17 +62,6 @@ namespace ODMR_Lab.数据处理
         }
 
         public override void CloseBehaviour()
-        {
-        }
-
-        public override void UpdateDataBaseToUI()
-        {
-        }
-
-        /// <summary>
-        /// 列出所有需要向数据库取回的数据
-        /// </summary>
-        public override void ListDataBaseData()
         {
         }
 
@@ -213,7 +201,7 @@ namespace ODMR_Lab.数据处理
             {
                 MessageWindow.ShowTipWindow("没有找到文件,文件可能已经被移动或删除", ParentWindow);
             }
-            if (ExperimentFileObject<ParamBase>.GetExpType(OpenedFiles[ind]) != ExperimentFileTypes.自定义数据)
+            if (ExperimentFileObject<ExpParamBase, ConfigBase>.GetExpType(OpenedFiles[ind]) != ExperimentFileTypes.自定义数据)
             {
                 MessageWindow.ShowTipWindow("原始实验数据仅支持读取，无法进行编辑操作，请先将文件另存为自定义数据后再进行操作", ParentWindow);
                 return;
@@ -268,7 +256,7 @@ namespace ODMR_Lab.数据处理
                 DecoratedButton btn = new DecoratedButton();
                 RawDataTemplateBtn.CloneStyleTo(btn);
                 btn.TextAreaRatio = RawDataTemplateBtn.TextAreaRatio;
-                if (ExperimentFileObject<ParamBase>.GetExpType(item) == ExperimentFileTypes.自定义数据)
+                if (ExperimentFileObject<ExpParamBase, ConfigBase>.GetExpType(item) == ExperimentFileTypes.自定义数据)
                 {
                     btn.IconSource = CustomDataTemplateBtn.IconSource;
                 }

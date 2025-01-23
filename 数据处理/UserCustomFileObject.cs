@@ -12,11 +12,13 @@ namespace ODMR_Lab.数据处理
     /// <summary>
     /// 用户编辑文件
     /// </summary>
-    public class UserCustomFileObject : ExperimentFileObject<ParamBase>
+    public class UserCustomFileObject : ExperimentFileObject<ExpParamBase, ConfigBase>
     {
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.自定义数据;
 
-        public override ParamBase Param { get; set; } = null;
+        public override ExpParamBase Param { get; set; } = null;
+
+        public override ConfigBase Config { get; set; } = null;
 
         public DataVisualSource DataSource { get; set; } = new DataVisualSource();
 
