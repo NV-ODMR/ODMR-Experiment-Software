@@ -15,6 +15,11 @@ namespace ODMR_Lab
         where ConfigType : ConfigBase
     {
         /// <summary>
+        /// 非法字符
+        /// </summary>
+        public static List<char> InvaliidChars = new List<char>() { '$' };
+
+        /// <summary>
         /// 实验文件类型
         /// </summary>
         public abstract ExperimentFileTypes ExpType { get; protected set; }

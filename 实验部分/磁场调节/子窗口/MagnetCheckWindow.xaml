@@ -6,7 +6,7 @@
         xmlns:Controls="clr-namespace:Controls;assembly=Controls"
         xmlns:Charts="clr-namespace:Controls.Charts;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件" x:Class="ODMR_Lab.磁场调节.MagnetCheckWindow"
         mc:Ignorable="d"
-        Title="MagnetZWindow" Height="470" Width="779" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+        Title="MagnetZWindow" Height="600" Width="779" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -14,14 +14,15 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="613*"/>
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Content="   角度检验" x:Name="WindowTitle" IsHitTestVisible="False" Grid.ColumnSpan="3" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
-        <Controls:DecoratedButton Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Close" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
-        <Controls:DecoratedButton Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Minimize" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/minimize.png" />
-        <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4" Margin="20">
+        <Label Grid.Row="0" Content="   角度检验" x:Name="WindowTitle" IsHitTestVisible="False" Grid.ColumnSpan="4" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
+        <Controls:DecoratedButton Grid.Column="4" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Close" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <Controls:DecoratedButton Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Minimize" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/minimize.png" />
+        <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="5" Margin="20,20,20,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="180"/>
                 <RowDefinition Height="*"/>
@@ -61,7 +62,7 @@
                         <Controls:ViewerTemplate Descriptions="角度" DataType="String" DataDisplayWidth="*" Editable="False"/>
                     </Controls:ListViewer.DataTemplate>
                 </Controls:ListViewer>
-                <Controls:ListViewer Name="MeasuredPoints" Margin="4" Grid.Column="1" Grid.RowSpan="3" Grid.Row="3" ItemHeight="30" HeaderHeight="30" ItemBarSelectedColor="{x:Null}" ItemBarBackground="{x:Null}" Background="#FF2E2E2E">
+                <Controls:ListViewer Name="MeasuredPoints" ItemSelected="SelectCW" Margin="4" Grid.Column="1" Grid.RowSpan="3" Grid.Row="3" ItemHeight="30" HeaderHeight="30" ItemBarSelectedColor="#FF20B3F7" ItemBarBackground="#FF2E2E2E" Background="#FF2E2E2E">
                     <Controls:ListViewer.HeaderLabelTemplate>
                         <Label FontSize="12" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF1F1F1F"/>
                     </Controls:ListViewer.HeaderLabelTemplate>

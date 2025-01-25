@@ -74,24 +74,27 @@ namespace ODMR_Lab.基本窗口
         {
             if (ContentPanel.Children.Count == 0)
             {
-                C1D.DataSource = data;
+                C1D.DataSource.Clear(false);
+                C1D.DataSource.AddRange(data);
+                foreach (var item in data)
+                {
+                    item.ParentChart = C1D;
+                }
                 ContentPanel.Children.Add(C1D);
-                C1D.UpdateDataPanel();
-                C1D.UpdateChart(true);
+                C1D.UpdateChartAndDataFlow(true);
             }
             Topmost = true;
             Show();
             Topmost = false;
         }
 
-        public void UpdateChart(bool autoscale)
+        public void UpdateChartAndDataFlow(bool autoscale)
         {
             if (ContentPanel.Children.Count != 0)
             {
                 if (ContentPanel.Children[0] == C1D)
                 {
-                    C1D.UpdateDataPoint();
-                    C1D.UpdateChart(autoscale);
+                    C1D.UpdateChartAndDataFlow(true);
                 }
             }
         }

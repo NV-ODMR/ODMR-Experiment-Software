@@ -24,20 +24,44 @@ namespace ODMR_Lab.磁场调节
     /// </summary>
     public partial class MagnetZWindow : Window
     {
-        public CWPointObject CWPoint1 { get; set; } = null;
+        private CWPointObject cwPoint1 = null;
+        public CWPointObject CWPoint1
+        {
+            get { return cwPoint1; }
+            set
+            {
+                cwPoint1 = value;
+                UpdatePointDisplay();
+            }
+        }
 
-        public CWPointObject CWPoint2 { get; set; } = null;
+        private CWPointObject cwPoint2 = null;
+        public CWPointObject CWPoint2
+        {
+            get { return cwPoint2; }
+            set
+            {
+                cwPoint2 = value;
+                UpdatePointDisplay();
+            }
+        }
 
-        private NumricChartData1D LineCW1 = new NumricChartData1D() { Name = "CW1" };
-        private NumricChartData1D LineCW2 = new NumricChartData1D() { Name = "CW2" };
-        private NumricChartData1D Freq1 = new NumricChartData1D() { Name = "Freq1" };
-        private NumricChartData1D Freq2 = new NumricChartData1D() { Name = "Freq2" };
+        private NumricChartData1D LineCW1;
+        private NumricChartData1D LineCW2;
+        private NumricChartData1D Freq1;
+        private NumricChartData1D Freq2;
 
         private DisplayPage ParentPage { get; set; } = null;
 
         public MagnetZWindow(string windowtitle, DisplayPage parent)
         {
             InitializeComponent();
+
+            LineCW1 = new NumricChartData1D("CW1", "CW扫描数据", ChartDataType.Y);
+            LineCW2 = new NumricChartData1D("CW2", "CW扫描数据", ChartDataType.Y);
+            Freq1 = new NumricChartData1D("Freq1", "CW扫描数据", ChartDataType.X);
+            Freq2 = new NumricChartData1D("Freq2", "CW扫描数据", ChartDataType.X);
+
             ParentPage = parent;
             Title = windowtitle;
             WindowTitle.Content = windowtitle;
@@ -58,7 +82,7 @@ namespace ODMR_Lab.磁场调节
         /// <summary>
         /// 刷新CW点显示
         /// </summary>
-        public void UpdatePointDisplay()
+        private void UpdatePointDisplay()
         {
             PointList.ClearItems();
             if (CWPoint1 == null)
@@ -83,7 +107,7 @@ namespace ODMR_Lab.磁场调节
         /// <summary>
         /// 刷新图表显示
         /// </summary>
-        public void UpdateChartDisplay()
+        public void UpdateChartAndDataFlow(bool IsAutoScale)
         {
             if (PointList.GetSelectedTag() == null) return;
             CWPointObject point = PointList.GetSelectedTag() as CWPointObject;
@@ -93,25 +117,23 @@ namespace ODMR_Lab.磁场调节
             Freq1.Data = point.CW1Freqs;
             Freq2.Data = point.CW2Freqs;
 
-            CWChart.UpdateChartDataPanel();
-            CWChart.UpdateChart(true);
+            CWChart.UpdateChartAndDataFlow(IsAutoScale);
         }
 
-        /// <summary>
-        /// 刷新所有显示
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            UpdatePointDisplay();
-            UpdateChartDisplay();
-        }
+
         #endregion
 
         public void ClearPoints()
         {
             CWPoint1 = null;
             CWPoint2 = null;
-            UpdateDisplay();
+            UpdatePointDisplay();
+
+            LineCW1.Data = new List<double>();
+            LineCW2.Data = new List<double>();
+            Freq1.Data = new List<double>();
+            Freq2.Data = new List<double>();
+            CWChart.UpdateChartAndDataFlow(true);
         }
     }
 }

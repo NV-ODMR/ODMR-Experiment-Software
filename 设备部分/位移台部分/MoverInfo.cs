@@ -44,10 +44,6 @@ namespace ODMR_Lab.位移台部分
                 {
                     item.MoverType = (MoverTypes)Enum.Parse(typeof(MoverTypes), file.Descriptions["AxisType " + item.Device.AxisName]);
                 }
-                if (file.Descriptions.Keys.Contains("IsReverse " + item.Device.AxisName))
-                {
-                    item.IsReverse = bool.Parse(file.Descriptions["IsReverse " + item.Device.AxisName]);
-                }
             }
         }
 
@@ -57,7 +53,6 @@ namespace ODMR_Lab.位移台部分
             {
                 obj.Descriptions.Add("AxisPart " + item.Device.AxisName, Enum.GetName(item.PartType.GetType(), item.PartType));
                 obj.Descriptions.Add("AxisType " + item.Device.AxisName, Enum.GetName(item.MoverType.GetType(), item.MoverType));
-                obj.Descriptions.Add("IsReverse " + item.Device.AxisName, item.IsReverse.ToString());
             }
         }
     }
@@ -70,8 +65,6 @@ namespace ODMR_Lab.位移台部分
         /// 所属部分
         /// </summary>
         public PartTypes PartType { get; set; } = PartTypes.None;
-
-        public bool IsReverse { get; set; } = false;
 
         public NanoMoverInfo Parent { get; set; } = null;
 

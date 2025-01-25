@@ -32,6 +32,7 @@ namespace ODMR_Lab.Python.LbviewHandler
             }
         }
 
+        static Random r = new Random();
         /// <summary>
         /// 测NV的CW谱(只取对比度大于0.07的峰)
         /// </summary>
@@ -44,9 +45,8 @@ namespace ODMR_Lab.Python.LbviewHandler
             Contracts = new List<double>();
 
             #region 测试代码，生成随机结果
-            Random r = new Random();
-            fitpeaks.Add(r.Next(2200, 3100));
-            fitpeaks.Add(r.Next(2200, 3100));
+            fitpeaks.Add(r.Next((int)startFreq, (int)endFreq));
+            fitpeaks.Add(r.Next((int)startFreq, (int)endFreq));
             fitcontracts.Add(r.NextDouble());
             fitcontracts.Add(r.NextDouble());
             for (int i = 0; i < 10; i++)

@@ -339,25 +339,21 @@ namespace ODMR_Lab.场效应器件测量
         {
             IVResultWindow.ShowAs1D(new List<ChartData1D>()
             {
-                new NumricChartData1D()
+                new NumricChartData1D("电压测量值(V)","IV测试数据")
                 {
                     Data=IVMeasureObj.IVVData,
-                    Name="IV测量-电压测量值(V)"
                 },
-                  new NumricChartData1D()
+                  new NumricChartData1D("电流测量值(A)","IV测试数据")
                 {
                     Data=IVMeasureObj.IVIData,
-                    Name="IV测量-电流测量值(A)"
                 },
-                    new NumricChartData1D()
+                    new NumricChartData1D("电压设置值(V)","IV测试数据")
                 {
                     Data=IVMeasureObj.IVTatgetData,
-                    Name="IV测量-电压设置值(V)"
                 },
-                      new TimeChartData1D()
+                      new TimeChartData1D("采样时间点","IV测试数据")
                 {
                     Data=IVMeasureObj.IVTimes,
-                    Name="IV测量-采样时间点"
                 },
             });
         }
@@ -366,7 +362,7 @@ namespace ODMR_Lab.场效应器件测量
         {
             Dispatcher.Invoke(() =>
             {
-                IVResultWindow.UpdateChart(true);
+                IVResultWindow.UpdateChartAndDataFlow(true);
             });
         }
 

@@ -30,7 +30,7 @@
                 <ColumnDefinition Width="40"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Controls:ListViewer Grid.Row="0" Grid.Column="0" Margin="5" Grid.RowSpan="1" Name="PointList" Grid.ColumnSpan="3" Background="#FF2E2E2E">
+            <Controls:ListViewer Grid.Row="0" Grid.Column="0" Margin="5" Grid.RowSpan="1" Name="PointList" Grid.ColumnSpan="3" Background="#FF2E2E2E" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF4598FF">
                 <Controls:ListViewer.DataTemplate>
                     <Controls:ViewerTemplate DataType="String" DataDisplayWidth="*" Editable="False" Descriptions="位置"/>
                     <Controls:ViewerTemplate DataType="String" DataDisplayWidth="*" Editable="False" Descriptions="CW1(MHz)"/>

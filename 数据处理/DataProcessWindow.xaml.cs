@@ -26,7 +26,10 @@ namespace ODMR_Lab.数据处理
     /// </summary>
     public partial class DataProcessWindow : Window
     {
-        public DataProcessWindow()
+
+        DataVisualPage ParentPage = null;
+
+        public DataProcessWindow(DataVisualPage parentPage)
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
@@ -34,6 +37,7 @@ namespace ODMR_Lab.数据处理
 
             DataList.ItemSelected += ShowDataList;
             DataList.ItemContextMenuSelected += DataListMenuEvents;
+            ParentPage = parentPage;
         }
 
         public new void ShowDialog()
@@ -149,6 +153,11 @@ namespace ODMR_Lab.数据处理
                     return;
                 }
             };
+
+            if (GroupName.SelectedItem == null || DataType.SelectedItem == null) return;
+            ChartDataType type = (ChartDataType)Enum.Parse(typeof(ChartDataType), DataType.SelectedItem.Text);
+            string groupname = GroupName.SelectedItem.Text;
+
             List<ChartData1D> DataToCalc = new List<ChartData1D>();
             int count = -1;
             string expression = SimpleMappingBox.Text;
@@ -172,7 +181,7 @@ namespace ODMR_Lab.数据处理
 
             Thread t = new Thread(() =>
             {
-                NumricChartData1D numricChartData1D = new NumricChartData1D();
+                NumricChartData1D numricChartData1D = new NumricChartData1D("", groupname, type);
                 Dispatcher.Invoke(() =>
                 {
                     D1CalcBtn.IsEnabled = false;
@@ -220,6 +229,29 @@ namespace ODMR_Lab.数据处理
             });
             t.Start();
 
+        }
+        #endregion
+
+        #region 数据保存部分
+        /// <summary>
+        /// 刷新分组列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateGroup(object sender, RoutedEventArgs e)
+        {
+            HashSet<string> groups = new HashSet<string>();
+            foreach (var item in ParentDataSource.ChartDataSource1D)
+            {
+                groups.Add(item.GroupName);
+            }
+            GroupName.Items.Clear();
+            foreach (var item in groups)
+            {
+                DecoratedButton bt = new DecoratedButton() { Text = item };
+                D1CalcBtn.CloneStyleTo(bt);
+                GroupName.Items.Add(bt);
+            }
         }
         #endregion
     }

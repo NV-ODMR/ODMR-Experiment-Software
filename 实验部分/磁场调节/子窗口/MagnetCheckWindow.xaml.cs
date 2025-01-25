@@ -29,20 +29,47 @@ namespace ODMR_Lab.磁场调节
     /// </summary>
     public partial class MagnetCheckWindow : Window
     {
-        public CWPointObject CWPoint1 { get; set; } = null;
+        private CWPointObject cwwPoint1 = null;
+        public CWPointObject CWPoint1
+        {
+            get { return cwwPoint1; }
+            set
+            {
+                cwwPoint1 = value;
+                UpdatePointData();
+            }
+        }
 
-        public CWPointObject CWPoint2 { get; set; } = null;
+        private CWPointObject cwwPoint2 = null;
+        public CWPointObject CWPoint2
+        {
+            get { return cwwPoint2; }
+            set
+            {
+                cwwPoint2 = value;
+                UpdatePointData();
+            }
+        }
 
         private DisplayPage ParentPage { get; set; } = null;
 
-        private NumricChartData1D LineCW1 = new NumricChartData1D() { Name = "CW1", DataAxisType = ChartDataType.Y };
-        private NumricChartData1D LineCW2 = new NumricChartData1D() { Name = "CW2", DataAxisType = ChartDataType.Y };
-        private NumricChartData1D Freq1 = new NumricChartData1D() { Name = "Freq1", DataAxisType = ChartDataType.X };
-        private NumricChartData1D Freq2 = new NumricChartData1D() { Name = "Freq2", DataAxisType = ChartDataType.X };
+        private NumricChartData1D LineCW1;
+        private NumricChartData1D LineCW2;
+        private NumricChartData1D Freq1;
+        private NumricChartData1D Freq2;
 
         public MagnetCheckWindow(string windowtitle, DisplayPage parent)
         {
             InitializeComponent();
+
+            LineCW1 = new NumricChartData1D("CW1", "角度检验数据", ChartDataType.Y);
+            LineCW2 = new NumricChartData1D("CW2", "角度检验数据", ChartDataType.Y);
+            Freq1 = new NumricChartData1D("Freq1", "角度检验数据", ChartDataType.X);
+            Freq2 = new NumricChartData1D("Freq2", "角度检验数据", ChartDataType.X);
+
+            CWChart.DataSource.AddRange(new List<ChartData1D>() { LineCW1, LineCW2, Freq1, Freq2 });
+            CWChart.UpdateChartAndDataFlow(true);
+
             ParentPage = parent;
             Title = windowtitle;
             WindowTitle.Content = windowtitle;
@@ -63,7 +90,7 @@ namespace ODMR_Lab.磁场调节
         /// <summary>
         /// 刷新CW点列表
         /// </summary>
-        public void UpdatePointData()
+        private void UpdatePointData()
         {
             MeasuredPoints.ClearItems();
             if (CWPoint1 == null)
@@ -72,7 +99,7 @@ namespace ODMR_Lab.磁场调节
             }
             else
             {
-                MeasuredPoints.AddItem(null, Math.Round(CWPoint1.CW1, 4).ToString(), Math.Round(CWPoint1.CW2, 4).ToString(), Math.Round(CWPoint1.Bp, 4).ToString(), Math.Round(CWPoint1.Bv, 4).ToString(), Math.Round(CWPoint1.B, 4).ToString());
+                MeasuredPoints.AddItem(CWPoint1, Math.Round(CWPoint1.CW1, 4).ToString(), Math.Round(CWPoint1.CW2, 4).ToString(), Math.Round(CWPoint1.Bp, 4).ToString(), Math.Round(CWPoint1.Bv, 4).ToString(), Math.Round(CWPoint1.B, 4).ToString());
             }
 
             if (CWPoint2 == null)
@@ -81,7 +108,7 @@ namespace ODMR_Lab.磁场调节
             }
             else
             {
-                MeasuredPoints.AddItem(null, Math.Round(CWPoint2.CW1, 4).ToString(), Math.Round(CWPoint2.CW2, 4).ToString(), Math.Round(CWPoint2.Bp, 4).ToString(), Math.Round(CWPoint2.Bv, 4).ToString(), Math.Round(CWPoint2.B, 4).ToString());
+                MeasuredPoints.AddItem(CWPoint2, Math.Round(CWPoint2.CW1, 4).ToString(), Math.Round(CWPoint2.CW2, 4).ToString(), Math.Round(CWPoint2.Bp, 4).ToString(), Math.Round(CWPoint2.Bv, 4).ToString(), Math.Round(CWPoint2.B, 4).ToString());
             }
         }
 
@@ -95,9 +122,9 @@ namespace ODMR_Lab.磁场调节
                 try
                 {
                     MagnetScanConfigParams Cp = new MagnetScanConfigParams();
-                    Cp.ReadFromPage(new FrameworkElement[] { ParentPage });
+                    Cp.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
                     MagnetScanExpParams Pp = new MagnetScanExpParams();
-                    Pp.ReadFromPage(new FrameworkElement[] { ParentPage });
+                    Pp.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
                     MagnetAutoScanHelper.CalculatePossibleLocs(Cp, Pp, out double x1, out double y1, out double z1, out double angle1, out double x2, out double y2, out double z2, out double angle2);
                     PredictParams.ClearItems();
                     PredictParams.AddItem(null, x1, y1, z1, angle1);
@@ -105,15 +132,23 @@ namespace ODMR_Lab.磁场调节
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("参数格式错误，磁场预测计算未完成", this);
+                    if (IsVisible == true)
+                    {
+                        MessageWindow.ShowTipWindow("参数格式错误，磁场预测计算未完成", this);
+                    }
                 }
             });
+        }
+
+        private void SelectCW(int arg1, object arg2)
+        {
+            UpdateChartAndDataFlow(true);
         }
 
         /// <summary>
         /// 刷新图表显示
         /// </summary>
-        public void UpdateChartDisplay()
+        public void UpdateChartAndDataFlow(bool isAutoScale)
         {
             if (MeasuredPoints.GetSelectedTag() == null) return;
             CWPointObject point = MeasuredPoints.GetSelectedTag() as CWPointObject;
@@ -123,17 +158,7 @@ namespace ODMR_Lab.磁场调节
             Freq1.Data = point.CW1Freqs;
             Freq2.Data = point.CW2Freqs;
 
-            CWChart.UpdateChartDataPanel();
-            CWChart.UpdateChart(true);
-        }
-
-        /// <summary>
-        /// 刷新所有显示
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            UpdatePointData();
-            UpdateChartDisplay();
+            CWChart.UpdateChartAndDataFlow(isAutoScale);
         }
         #endregion
 
@@ -168,7 +193,7 @@ namespace ODMR_Lab.磁场调节
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    UpdateDisplay();
+                    UpdateChartAndDataFlow(true);
                     P1Btn.IsEnabled = true;
                     P2Btn.IsEnabled = true;
                 });
@@ -206,7 +231,7 @@ namespace ODMR_Lab.磁场调节
                 }
                 Dispatcher.Invoke(() =>
                 {
-                    UpdateDisplay();
+                    UpdateChartAndDataFlow(true);
                     P1Btn.IsEnabled = true;
                     P2Btn.IsEnabled = true;
                 });
@@ -222,7 +247,10 @@ namespace ODMR_Lab.磁场调节
             try
             {
                 MagnetScanConfigParams P = new MagnetScanConfigParams();
-                P.ReadFromPage(new FrameworkElement[] { ParentPage });
+                Dispatcher.Invoke(() =>
+                {
+                    P.ReadFromPage(new FrameworkElement[] { ParentPage });
+                });
                 //移动位移台
                 var moverx = DeviceDispatcher.TryGetMoverDevice(P.XRelate.Value, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
                 if (moverx == null)

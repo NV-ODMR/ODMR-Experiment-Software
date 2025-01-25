@@ -381,9 +381,10 @@ namespace ODMR_Lab.数据处理
             UpdateInformationPanel(source);
 
             //更新图表部分
-            Plot1D.DataSource = source.ChartDataSource1D;
-            Plot1D.UpdateDataPanel();
-            Plot1D.UpdateChart(true);
+            Plot1D.DataSource.Clear(false);
+            Plot1D.DataSource.AddRange(source.ChartDataSource1D);
+            Plot1D.UpdateChartAndDataFlow(true);
+            Plot1D.SelectGroup(source.ChartDataSource1D[0].GroupName);
         }
 
         private void ShowInWindowClick(object sender, RoutedEventArgs e)
@@ -400,7 +401,7 @@ namespace ODMR_Lab.数据处理
         {
             int ind = GetSelectedIndex();
             if (ind == -1) return;
-            DataProcessWindow win = new DataProcessWindow();
+            DataProcessWindow win = new DataProcessWindow(this);
             win.ParentDataSource = Source[ind];
             win.ShowDialog();
             UpdateFromSource(Source[ind]);

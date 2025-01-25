@@ -157,6 +157,13 @@ namespace ODMR_Lab.IO操作
                         (res as TextBox).Text = str;
                         break;
                     }
+                    if (res is TextBlock)
+                    {
+                        string str = ParamB.GetUnknownParamValue(value).ToString();
+                        if (str == "NAN") str = "";
+                        (res as TextBlock).Text = str;
+                        break;
+                    }
                     if (res is Label)
                     {
                         string str = ParamB.GetUnknownParamValue(value).ToString();
@@ -204,6 +211,11 @@ namespace ODMR_Lab.IO操作
                         {
                             //枚举类型
                             ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as TextBox).Text);
+                        }
+                        if (res is TextBlock)
+                        {
+                            //枚举类型
+                            ParamB.SetUnknownParamValue((ParamB)item.GetValue(this), (res as TextBlock).Text);
                         }
                         if (res is Label)
                         {
@@ -301,7 +313,7 @@ namespace ODMR_Lab.IO操作
                 ParamB resb = result as ParamB;
                 foreach (string keyseg in des.Keys)
                 {
-                    if (keyseg.Contains(item.Name) && keyseg.Contains("→"))
+                    if (keyseg.Contains(item.Name + "→"))
                     {
                         string description = keyseg.Split('→')[1];
 

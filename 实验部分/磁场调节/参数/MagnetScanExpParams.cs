@@ -22,32 +22,6 @@ namespace ODMR_Lab.实验部分.磁场调节
         #region 运行时参数
 
         /// <summary>
-        /// X扫描范围
-        /// </summary>
-        public Param<double> XScanHi { get; set; } = new Param<double>("X扫描范围上限(mm)", double.NaN);
-
-        /// <summary>
-        /// X扫描范围 
-        /// </summary>
-        public Param<double> XScanLo { get; set; } = new Param<double>("X扫描范围下限(mm)", double.NaN);
-
-        /// <summary>
-        /// Y扫描范围
-        /// </summary>
-        public Param<double> YScanHi { get; set; } = new Param<double>("Y扫描范围上限(mm)", double.NaN);
-
-        /// <summary>
-        /// Y扫描范围 
-        /// </summary>
-        public Param<double> YScanLo { get; set; } = new Param<double>("Y扫描范围下限(mm)", double.NaN);
-
-        /// <summary>
-        /// Z扫描高度
-        /// </summary>
-        public Param<double> ZPlane { get; set; } = new Param<double>("Z扫描高度(mm)", double.NaN);
-
-
-        /// <summary>
         /// X扫描结果
         /// </summary>
         public Param<double> XLoc { get; set; } = new Param<double>("X方向磁场峰值位置(mm)", double.NaN);

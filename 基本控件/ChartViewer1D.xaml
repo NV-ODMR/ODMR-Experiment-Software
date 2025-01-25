@@ -22,9 +22,9 @@
         <scroll:DecoratedButton Name="GraphBtn" KeepPressed="True" Click="ChangeView" Grid.Row="0" Grid.Column="0" TextAreaRatio="1" Text="图表" FontSize="14" CornerRadius="10,0,0,10" FontWeight="Bold" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF2593FF" PressedColor="#FF0071D4" MoveInForeground="White" PressedForeground="White"/>
         <scroll:DecoratedButton Name="DataBtn" Click="ChangeView" Grid.Row="1" Grid.Column="0" TextAreaRatio="1" Text="数据" FontSize="14" CornerRadius="10,0,0,10" FontWeight="Bold" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF2593FF" PressedColor="#FF0071D4" MoveInForeground="White" PressedForeground="White"/>
     </Grid>
-    <Grid Grid.Column="1" Name="ChartView" Visibility="Visible">
+    <Grid Grid.Column="1" Name="ChartView" Visibility="Collapsed">
         <Grid.RowDefinitions>
-            <RowDefinition MinHeight="300"/>
+            <RowDefinition/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -36,10 +36,13 @@
         <chart:ChartControl Name="chart" SnapsToDevicePixels="True" MouseMove="chart_MouseMove" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="1" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="16" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" ZoomY="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
         <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
             <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <scroll:ListViewer Name="XDataSet" MinItemWidth="150" ItemValueChanged="XDataSelectionChanged" ItemBarSelectedColor="#FF1A1A1A" ItemBarBackground="#FF1A1A1A">
+            <scroll:ComboBox Name="ChartGroups" DefaultSelectIndex="0" SelectionChanged="ChangeGroup" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
+            </scroll:ComboBox>
+            <scroll:ListViewer Grid.Row="1" Name="XDataSet" MinItemWidth="150" ItemValueChanged="XDataSelectionChanged" ItemBarSelectedColor="#FF1A1A1A" ItemBarBackground="#FF1A1A1A">
                 <scroll:ListViewer.DataTemplate>
                     <scroll:ViewerTemplate Descriptions="X数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
                     <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="60" />
@@ -55,7 +58,7 @@
                     <scroll:Chooser Width="30" Height="15"/>
                 </scroll:ListViewer.EditableBooleanTemplate>
             </scroll:ListViewer>
-            <scroll:ListViewer Grid.Row="1" Name="YDataSet" MinItemWidth="150" ItemValueChanged="YDataSelectionChanged" ItemBarBackground="#FF1A1A1A" ItemBarSelectedColor="#FF1A1A1A">
+            <scroll:ListViewer Grid.Row="2" Name="YDataSet" MinItemWidth="150" ItemValueChanged="YDataSelectionChanged" ItemBarBackground="#FF1A1A1A" ItemBarSelectedColor="#FF1A1A1A">
                 <scroll:ListViewer.DataTemplate>
                     <scroll:ViewerTemplate Descriptions="Y数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
                     <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="60" />
@@ -103,14 +106,18 @@
             </scroll:AutoScrollViewer.Content>
         </scroll:AutoScrollViewer>
     </Grid>
-    <Grid Grid.Column="1" Name="DataView" Visibility="Collapsed">
+    <Grid Grid.Column="1" Name="DataView" Visibility="Visible">
         <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <scroll:ListViewer Margin="5" Grid.Row="0" Grid.RowSpan="2" IsMultiSelected="True" MultiItemSelected="DataNames_MultiItemSelected" MultiItemUnSelected="DataNames_MultiItemUnSelected" Name="DataNames" ItemBarBackground="#FF4D4D4D" ItemBarSelectedColor="#FF2894FF" Background="#FF2E2E2E">
+        <scroll:ComboBox Name="DataGroups" DefaultSelectIndex="0" SelectionChanged="ChangeGroup" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
+        </scroll:ComboBox>
+        <scroll:ListViewer Margin="5" Grid.RowSpan="1" Grid.Row="1" IsMultiSelected="True" MultiItemSelected="DataNames_MultiItemSelected" MultiItemUnSelected="DataNames_MultiItemUnSelected" Name="DataNames" ItemBarBackground="#FF4D4D4D" ItemBarSelectedColor="#FF2894FF" Background="#FF2E2E2E">
             <scroll:ListViewer.DataTemplate>
                 <scroll:ViewerTemplate Descriptions="名称" DataType="String" DataDisplayWidth="*" Editable="False"/>
                 <scroll:ViewerTemplate Descriptions="点数" DataType="String" DataDisplayWidth="100" Editable="False"/>
@@ -125,7 +132,7 @@
                 <scroll:Chooser Width="40" Height="20"/>
             </scroll:ListViewer.EditableBooleanTemplate>
         </scroll:ListViewer>
-        <scroll:AutoScrollViewer Grid.Column="1" Name="scroll">
+        <scroll:AutoScrollViewer Grid.Column="1" Grid.RowSpan="2" Name="scroll">
             <scroll:AutoScrollViewer.Content>
                 <WrapPanel Name="DataPanel" Orientation="Horizontal" Height="{Binding ElementName=scroll,Path=ActualHeight}" ItemHeight="{Binding ElementName=scroll,Path=ActualHeight}" MinHeight="200">
                 </WrapPanel>

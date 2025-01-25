@@ -161,7 +161,7 @@ namespace ODMR_Lab.相机
                         long tik1 = DateTime.Now.Ticks;
 
                         BitmapSource image = Camera.Device.GrabFrame(2000);
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(() =>
                         {
                             image = ClipImage(image, ClipImageBound);
                             DisplayArea.SetSource(image);
@@ -169,7 +169,7 @@ namespace ODMR_Lab.相机
                         Thread.Sleep(40);
                         long tik2 = DateTime.Now.Ticks;
                         //计算帧率
-                        Dispatcher.InvokeAsync(() =>
+                        Dispatcher.Invoke(() =>
                         {
                             Framerate.Content = "帧率:" + Math.Round(1000.0 / ((tik2 - tik1) / 10000.0), 3).ToString();
                         });

@@ -225,9 +225,9 @@ namespace ODMR_Lab.源表部分
         {
             if (CurrentSelectedMeter == null) return;
             List<ChartData1D> list = new List<ChartData1D>();
-            list.Add(new NumricChartData1D() { Data = new List<double>(CurrentSelectedMeter.CurrentBuffer.ToArray()), Name = "电流值(A)" });
-            list.Add(new NumricChartData1D() { Data = new List<double>(CurrentSelectedMeter.VoltageBuffer), Name = "电压值(V)" });
-            list.Add(new TimeChartData1D() { Data = new List<DateTime>(CurrentSelectedMeter.Times), Name = "采样时间" });
+            list.Add(new NumricChartData1D("电流值(A)", "源表监测数据") { Data = new List<double>(CurrentSelectedMeter.CurrentBuffer) });
+            list.Add(new NumricChartData1D("电压值(V)", "源表监测数据") { Data = new List<double>(CurrentSelectedMeter.VoltageBuffer) });
+            list.Add(new TimeChartData1D("采样时间", "源表监测数据") { Data = new List<DateTime>(CurrentSelectedMeter.Times) });
             GraphWindow.Title = "源表数据：" + CurrentSelectedMeter.Device.ProductName;
             GraphWindow.ShowAs1D(list);
             GraphWindow.Topmost = true;

@@ -11,13 +11,14 @@
         <RowDefinition Height="150"/>
         <RowDefinition Height="100"/>
         <RowDefinition Height="25"/>
+        <RowDefinition Height="25"/>
         <RowDefinition/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
         <ColumnDefinition Width="200"/>
         <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <Grid Grid.Row="0" Margin="10" Grid.Column="1">
+    <Grid Grid.Row="0" Margin="10" Grid.Column="1" Name="PredictPanel">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
             <RowDefinition/>
@@ -32,7 +33,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label Content="磁场预测" Name="PredictPanel" Grid.ColumnSpan="6" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+        <Label Content="磁场预测" Grid.ColumnSpan="6" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
         <Label Content="θ(度):" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
         <Label Content="φ(度):" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
         <Label Content="Z坐标:" Grid.Row="1" Grid.Column="4" HorizontalContentAlignment="Center" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
@@ -82,7 +83,7 @@
         <TextBox x:Name="ZPlane" Grid.Column="1" Margin="5" Grid.Row="2" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
         <TextBox x:Name="D" Grid.Column="5" Margin="5" Grid.Row="2" BorderThickness="0" FontSize="11" Text="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
     </Grid>
-    <control:AutoScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="4">
+    <control:AutoScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="5">
         <control:AutoScrollViewer.Content>
             <WrapPanel Name="ParamPage" Width="190" Orientation="Horizontal">
                 <Label Content="磁铁参数" Width="190" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch"  Margin="5" FontSize="11" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Height="25"/>
@@ -138,17 +139,31 @@
             </WrapPanel>
         </control:AutoScrollViewer.Content>
     </control:AutoScrollViewer>
-    <Grid Grid.Row="2" Grid.Column="2">
+    <Grid Grid.Row="2" Grid.Column="1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="70"/>
+        </Grid.ColumnDefinitions>
+        <control:DecoratedButton TextAreaRatio="0" Grid.Column="4" ToolTip="保存实验文件" Margin="3" Click="SaveFile" IconMargin="4" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
+        <Label Content="开始时间:" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
+        <Label Name="StartTime" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
+        <Label Name="EndTime" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
+        <Label Content="结束时间:" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
+    </Grid>
+    <Grid Grid.Row="3" Grid.Column="2" Margin="3">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <control:DecoratedButton Name="StartBtn" TextAreaRatio="0" Click="StartScan" IconMargin="4" FontWeight="Thin" FontSize="14" Height="25" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
-        <control:DecoratedButton Name="StopBtn" TextAreaRatio="0" Click="ResumeScan" FontWeight="Thin" IconMargin="0" FontSize="14" Height="25" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png" Grid.Column="2"/>
-        <control:DecoratedButton Name="ResumeBtn" TextAreaRatio="0" Click="StopScan" IconMargin="0" FontWeight="Thin" FontSize="14" Height="25" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
+        <control:DecoratedButton Name="StartBtn" TextAreaRatio="0" Click="StartScan" IconMargin="4" FontWeight="Thin" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
+        <control:DecoratedButton Name="StopBtn" TextAreaRatio="0" Click="StopScan" FontWeight="Thin" IconMargin="0" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png" Grid.Column="2"/>
+        <control:DecoratedButton Name="ResumeBtn" TextAreaRatio="0" Click="ResumeScan" IconMargin="0" FontWeight="Thin" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
     </Grid>
-    <control:AutoScrollViewer Margin="10" Name="scrollviewer" Grid.Column="1" Grid.Row="3" Grid.RowSpan="1">
+    <control:AutoScrollViewer Margin="10" Name="scrollviewer" Grid.Column="1" Grid.Row="4" Grid.RowSpan="1">
         <control:AutoScrollViewer.Content>
             <WrapPanel Width="{Binding ElementName=scrollviewer,Path=ActualWidth}">
                 <Border Name="BorderX" MouseLeftButtonUp="OpenWindow" Width="{Binding ElementName=scrollviewer,Path=ActualWidth}" Height="100" CornerRadius="10" BorderThickness="2" Background="#FF2E2E2E" BorderBrush="#FF0076FF">
@@ -165,9 +180,9 @@
                         <Image Name="XOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="X方向扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                            <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="XState" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="XLoc" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <Label Content="状态：" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="XState" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="XLoc" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -185,9 +200,9 @@
                         <Image Name="YOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="Y方向扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                            <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="YState" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="YLoc" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <Label Content="状态：" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="YState" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="YLoc" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -205,10 +220,10 @@
                         <Image Name="ZOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="Z方向扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                            <Label Content="状态：" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="ZState" VerticalAlignment="Stretch" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="ZLoc" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Name="ZDistance" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <Label Content="状态：" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="ZState" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="ZLoc" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="ZDistance" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -226,16 +241,16 @@
                         <Image Name="AngleOk" Height="25" Visibility="Hidden" Grid.RowSpan="2" Grid.Column="1" Width="30" Stretch="UniformToFill" Source="/图片资源/ok.png"/>
                         <Label Content="角度扫描" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                            <Label Content="状态：" VerticalAlignment="Stretch" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="AngleState" VerticalAlignment="Stretch" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Text="θ=" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="Theta1" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Text="或" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="Theta2" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Text="phi=" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="Phi1" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Text="或" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="Phi2" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <Label Content="状态：" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="AngleState" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="θ=" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="Theta1" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="或" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="Theta2" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="phi=" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="Phi1" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="或" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Name="Phi2" VerticalAlignment="Center" Margin="5,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -254,11 +269,11 @@
                         <Label Content="角度结果检查" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                             <Label Content="状态：" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="CheckState" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Text="θ=" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="CheckedTheta" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock Text="φ=" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
-                            <TextBlock x:Name="CheckedPhi" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="18" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="CheckState" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="θ=" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="CheckedTheta" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock Text="φ=" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                            <TextBlock x:Name="CheckedPhi" VerticalAlignment="Center" Margin="30,0,0,0" FontSize="14" Grid.Column="0" HorizontalAlignment="Left"  FontWeight="Bold" Foreground="#FFFAFAFA"/>
                         </StackPanel>
                     </Grid>
                 </Border>

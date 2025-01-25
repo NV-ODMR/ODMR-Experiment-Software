@@ -84,7 +84,7 @@ namespace ODMR_Lab.Windows
             }
         }
 
-        public static MessageBoxResult ShowMessageBox(string caption, string content, MessageBoxButton option, bool CanClose = true, bool showBtns = true, Window owner = null, double MaxHeight = double.NaN, ImageSource source = null)
+        public static MessageBoxResult ShowMessageBox(string caption, string content, MessageBoxButton option, bool CanClose = true, bool showBtns = true, Window owner = null, double MaxHeight = 700, ImageSource source = null)
         {
             MessageWindow win = null;
             MainWindow.Handle.Dispatcher.Invoke(() =>
@@ -102,7 +102,7 @@ namespace ODMR_Lab.Windows
 
         public static void ShowTipWindow(string content, Window Parent)
         {
-            ShowMessageBox("提示", content, MessageBoxButton.OK, owner: Parent, MaxHeight: 800);
+            ShowMessageBox("提示", content, MessageBoxButton.OK, owner: Parent, MaxHeight: 700);
         }
 
         private void Close(object sender, RoutedEventArgs e)

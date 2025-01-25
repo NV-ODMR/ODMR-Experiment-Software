@@ -24,16 +24,16 @@ namespace ODMR_Lab.磁场调节
     /// </summary>
     public partial class OffsetWindow : Window
     {
-        double AngleStart { get; set; }
 
         public double OffsetX { get; set; } = double.NaN;
 
         public double OffsetY { get; set; } = double.NaN;
 
+        private DisplayPage Page = null;
 
-        public OffsetWindow(double AngleStart)
+        public OffsetWindow(DisplayPage page)
         {
-            this.AngleStart = AngleStart;
+            Page = page;
             InitializeComponent();
         }
 
@@ -58,14 +58,10 @@ namespace ODMR_Lab.磁场调节
 
                 double angle1 = double.Parse(Angle1.Text);
 
-                bool reverseX = DeviceDispatcher.TryGetMoverDevice(MoverTypes.X, OperationMode.Read, PartTypes.Magnnet, showmessagebox: true).IsReverse;
+                MagnetScanConfigParams P = new MagnetScanConfigParams();
+                P.ReadFromPage(new FrameworkElement[] { Page });
 
-                bool reverseY = DeviceDispatcher.TryGetMoverDevice(MoverTypes.Y, OperationMode.Read, PartTypes.Magnnet, showmessagebox: true).IsReverse;
-
-                bool reverseAngle = DeviceDispatcher.TryGetMoverDevice(MoverTypes.AngleZ, OperationMode.Read, PartTypes.Magnnet, showmessagebox: true).IsReverse;
-
-
-                MagnetAutoScanHelper.GetZeroOffset(angle1, x1, y1, angle1 - 180, x2, y2, reverseX, reverseY, reverseAngle, AngleStart, out double offx, out double offy);
+                MagnetAutoScanHelper.GetZeroOffset(angle1, x1, y1, angle1 - 180, x2, y2, P.ReverseX.Value, P.ReverseY.Value, P.ReverseA.Value, P.AngleStart.Value, out double offx, out double offy);
                 OffsetX = offx;
                 OffsetY = offy;
 

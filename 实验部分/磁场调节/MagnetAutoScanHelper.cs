@@ -124,7 +124,12 @@ namespace ODMR_Lab.实验部分.磁场调节
         public static dynamic FindDire(double r0, double l0, double targetthe, double targetphi, double distance)
         {
             dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Magnet.py"), "FindDire", TimeSpan.FromSeconds(5), r0, l0, targetthe, targetphi, distance);
-            return result;
+            List<double> res = new List<double>();
+            foreach (var item in result)
+            {
+                res.Add((double)item);
+            }
+            return res;
         }
 
         private static void TotalCW(out List<double> peaks, out List<double> freqs1, out List<double> contracts1, out List<double> freqs2, out List<double> contracts2)
@@ -314,7 +319,13 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <returns></returns>
         public static List<double> FitSinCurve(List<double> x, List<double> y)
         {
-            return Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "FitSinData", TimeSpan.FromMilliseconds(100000), x, y);
+            var result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "FitSinData", TimeSpan.FromMilliseconds(100000), x, y);
+            List<double> res = new List<double>();
+            foreach (var item in result)
+            {
+                res.Add((double)item);
+            }
+            return res;
         }
 
         /// <summary>

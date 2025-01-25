@@ -2,6 +2,7 @@
 using Controls;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.Windows;
+using ODMR_Lab.基本控件;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.磁场调节;
 using System;
@@ -345,26 +346,29 @@ namespace ODMR_Lab.实验部分.磁场调节
                 Param.LoadToPage(new System.Windows.FrameworkElement[] { page });
                 #endregion
                 #region 加载X窗口
-                page.XWin.CWPoints = XPoints;
-                page.XWin.UpdateDisplay();
+                page.XWin.CWPoints.Clear(false);
+                page.XWin.CWPoints.AddRange(XPoints);
+                page.XWin.UpdateChartAndDataFlow(true);
                 #endregion
                 #region 加载Y窗口
-                page.YWin.CWPoints = YPoints;
-                page.YWin.UpdateDisplay();
+                page.YWin.CWPoints.Clear(false);
+                page.YWin.CWPoints.AddRange(YPoints);
+                page.YWin.UpdateChartAndDataFlow(true);
                 #endregion
                 #region 加载Z窗口
                 page.ZWin.CWPoint1 = ZPoints[0];
                 page.ZWin.CWPoint2 = ZPoints[1];
-                page.ZWin.UpdateDisplay();
+                page.ZWin.UpdateChartAndDataFlow(true);
                 #endregion
                 #region 加载角度窗口
-                page.AngleWin.CWPoints = AnglePoints;
-                page.AngleWin.UpdateDisplay();
+                page.AngleWin.CWPoints.Clear(false);
+                page.AngleWin.CWPoints.AddRange(AnglePoints);
+                page.AngleWin.UpdateChartAndDataFlow(true);
                 #endregion
                 #region 加载检查窗口
                 page.CheckWin.CWPoint1 = CheckPoints[0];
                 page.CheckWin.CWPoint2 = CheckPoints[1];
-                page.CheckWin.UpdatePointData();
+                page.CheckWin.UpdateChartAndDataFlow(true);
                 #endregion
             }
             catch (Exception e)
@@ -375,7 +379,66 @@ namespace ODMR_Lab.实验部分.磁场调节
 
         public override DataVisualSource ToDataVisualSource()
         {
-            return new DataVisualSource();
+            DataVisualSource page = new DataVisualSource();
+            page.Params.Add("实验类型", Enum.GetName(ExpType.GetType(), ExpType));
+            Dictionary<string, string> configs = Config.GetPureDescription();
+            foreach (var item in configs)
+            {
+                page.Params.Add(item.Key, item.Value);
+            }
+            Dictionary<string, string> param = Param.GetPureDescription();
+            foreach (var item in param)
+            {
+                page.Params.Add(item.Key, item.Value);
+            }
+
+            #region 导入整体数据
+            AddTotalData(page, "X扫描谱峰信息", XPoints);
+            AddTotalData(page, "Y扫描谱峰信息", YPoints);
+            AddTotalData(page, "Z扫描谱峰信息", ZPoints);
+            AddTotalData(page, "角度扫描谱峰信息", AnglePoints);
+            AddTotalData(page, "角度校验谱峰信息", CheckPoints);
+            #endregion
+
+            #region 导入CW谱扫描信息
+            #endregion
+
+            return page;
+        }
+
+        private void AddTotalData(DataVisualSource page, string groupname, List<CWPointObject> Points)
+        {
+            #region X方向数据
+            page.ChartDataSource1D.Add(new NumricChartData1D("位移台位置", groupname, ChartDataType.X)
+            {
+                Data = Points.Select((x) => x.MoverLoc).ToList(),
+            });
+            page.ChartDataSource1D.Add(new NumricChartData1D("CW谱位置1(MHz)", groupname, ChartDataType.Y)
+            {
+                Data = Points.Select((x) => x.CW1).ToList(),
+            });
+            page.ChartDataSource1D.Add(new NumricChartData1D("CW谱位置2(MHz)", groupname, ChartDataType.Y)
+            {
+                Data = Points.Select((x) => x.CW2).ToList(),
+            });
+            page.ChartDataSource1D.Add(new NumricChartData1D("沿轴磁场(Gauss)", groupname, ChartDataType.Y)
+            {
+                Data = Points.Select((x) => x.Bp).ToList(),
+            });
+            page.ChartDataSource1D.Add(new NumricChartData1D("垂直轴磁场(Gauss)", groupname, ChartDataType.Y)
+            {
+                Data = Points.Select((x) => x.Bv).ToList(),
+            });
+            page.ChartDataSource1D.Add(new NumricChartData1D("总磁场(Gauss)", groupname, ChartDataType.Y)
+            {
+                Data = Points.Select((x) => x.B).ToList(),
+            });
+            #endregion
+        }
+
+        private void AddCWData()
+        {
+
         }
     }
 }

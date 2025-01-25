@@ -47,7 +47,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
         }
 
         /// <summary>
-        /// 移动位移台，如果移动超量程或者设备被占用则报错
+        /// 占用设备,移动位移台，如果移动超量程或者设备被占用则报错
         /// </summary>
         /// <param name="mover"></param>
         /// <param name="StopMethod"></param>

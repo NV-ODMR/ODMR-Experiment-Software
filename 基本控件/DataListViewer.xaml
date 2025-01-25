@@ -7,6 +7,7 @@
       mc:Ignorable="d"
         >
     <Grid.RowDefinitions>
+        <RowDefinition Height="30"/>
         <RowDefinition Height="*"/>
         <RowDefinition Height="40"/>
     </Grid.RowDefinitions>
@@ -16,9 +17,10 @@
         <ColumnDefinition/>
         <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <control:ListViewer Name="datacontentscroll" MinItemWidth="200" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF0095FF" Background="#FF1A1A1A">
+    <Label Name="Title" Grid.Row="0" Grid.ColumnSpan="4" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13" FontWeight="Bold"/>
+    <control:ListViewer Name="datacontentscroll" MinItemWidth="200" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF0095FF" Background="#FF1A1A1A">
         <control:ListViewer.HeaderLabelTemplate>
-            <Label Foreground="White" Background="#FF1A1A1A" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
+            <Label Foreground="White" Background="#FF1A1A1A" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="12"/>
         </control:ListViewer.HeaderLabelTemplate>
         <control:ListViewer.UnEditableTextTemplate>
             <TextBlock Foreground="White" TextAlignment="Center" Background="#FF1A1A1A" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>

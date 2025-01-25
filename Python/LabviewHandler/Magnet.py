@@ -174,7 +174,7 @@ def GetAngle(M, x, dis):
 
 # 指定方向和给定的Z方向距离，找出对应方向上的磁场，相对于角度基准点（磁铁朝向为X轴）要转动的角度，以及XY平面上相对于原点的坐标
 def FindDire(r0, l0, targetthe, targetphi, distance):
-    M = mag.Magnet(r0, l0, 0, 0, 1)
+    M = Magnet(r0, l0, 0, 0, 1)
     # 计算以X轴为正向的给定theta角的距离
     res = opt.root(lambda x: GetAngle(M, x, distance) - targetthe, numpy.array([0]), tol=1e-5)
     r = res.x[0]

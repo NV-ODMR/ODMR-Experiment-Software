@@ -107,10 +107,10 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             source.Params.Add("扫描路径", scanroute);
 
             source.ChartDataSource1D.Clear();
-            source.ChartDataSource1D.Add(new TimeChartData1D() { Name = "测量时间", Data = IVTimes });
-            source.ChartDataSource1D.Add(new NumricChartData1D() { Name = "电流测量值(A)", Data = IVIData });
-            source.ChartDataSource1D.Add(new NumricChartData1D() { Name = "电压测量值(V)", Data = IVVData });
-            source.ChartDataSource1D.Add(new NumricChartData1D() { Name = "电压设定值(V)", Data = IVTatgetData });
+            source.ChartDataSource1D.Add(new TimeChartData1D("测量时间", "IV测量数据") { Data = IVTimes });
+            source.ChartDataSource1D.Add(new NumricChartData1D("电流测量值(A)", "IV测量数据") { Data = IVIData });
+            source.ChartDataSource1D.Add(new NumricChartData1D("电压测量值(V)", "IV测量数据") { Data = IVVData });
+            source.ChartDataSource1D.Add(new NumricChartData1D("电压设定值(V)", "IV测量数据") { Data = IVTatgetData });
             return source;
         }
     }

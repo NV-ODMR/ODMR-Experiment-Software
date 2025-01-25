@@ -69,7 +69,6 @@ namespace ODMR_Lab.位移台部分
             grid.ColumnDefinitions.Add(new ColumnDefinition());
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(60) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(90) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(60) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(90) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(60) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(40) });
@@ -89,24 +88,20 @@ namespace ODMR_Lab.位移台部分
             grid.Children.Add(box);
             Grid.SetColumn(box, 2);
 
-            Chooser chooser = CreateChooserStyle(info);
-            grid.Children.Add(chooser);
-            Grid.SetColumn(chooser, 3);
-
             FontChangeText target = new FontChangeText();
             target.Margin = new Thickness(5);
             target.InnerTextBox.IsReadOnly = true;
             target.Tag = info;
             TextTemplate.CloneStyleTo(target);
             grid.Children.Add(target);
-            Grid.SetColumn(target, 4);
+            Grid.SetColumn(target, 3);
 
             FontChangeText text = new FontChangeText();
             text.InnerTextBox.Text = "0.01";
             text.Margin = new Thickness(5);
             TextTemplate.CloneStyleTo(text);
             grid.Children.Add(text);
-            Grid.SetColumn(text, 5);
+            Grid.SetColumn(text, 4);
 
             DecoratedButton btn = new DecoratedButton() { Text = "<" };
             BtnTemplate.CloneStyleTo(btn);
@@ -115,7 +110,7 @@ namespace ODMR_Lab.位移台部分
             grid.Children.Add(btn);
             btn.Margin = new Thickness(5);
             btn.CornerRadius = new CornerRadius(5);
-            Grid.SetColumn(btn, 6);
+            Grid.SetColumn(btn, 5);
 
             btn = new DecoratedButton() { Text = ">" };
             BtnTemplate.CloneStyleTo(btn);
@@ -124,7 +119,7 @@ namespace ODMR_Lab.位移台部分
             grid.Children.Add(btn);
             btn.Margin = new Thickness(5);
             btn.CornerRadius = new CornerRadius(5);
-            Grid.SetColumn(btn, 7);
+            Grid.SetColumn(btn, 6);
 
             return grid;
         }
@@ -160,17 +155,6 @@ namespace ODMR_Lab.位移台部分
             box.Select(Enum.GetName(info.MoverType.GetType(), info.MoverType));
             box.Margin = new Thickness(5);
             return box;
-        }
-
-        private Chooser CreateChooserStyle(NanoStageInfo info)
-        {
-            Chooser chooser = new Chooser();
-            chooser.HorizontalAlignment = HorizontalAlignment.Center;
-            chooser.VerticalAlignment = VerticalAlignment.Center;
-            chooser.IsSelected = info.IsReverse;
-            chooser.Width = 50;
-            chooser.Height = 25;
-            return chooser;
         }
         #endregion
 
@@ -247,7 +231,7 @@ namespace ODMR_Lab.位移台部分
                 MoveThread = new Thread(() =>
                 {
                     IsMoveStopped = false;
-                    stage.MoveStepAndWait(-step * (info.IsReverse ? -1 : 1), 5000);
+                    stage.MoveStepAndWait(-step, 5000);
                     IsMoveStopped = true;
                 });
                 MoveThread.Start();
@@ -260,7 +244,7 @@ namespace ODMR_Lab.位移台部分
             MoveThread = new Thread(() =>
             {
                 IsMoveStopped = false;
-                stage.MoveStepAndWait(-step * (info.IsReverse ? -1 : 1), 5000);
+                stage.MoveStepAndWait(-step, 5000);
                 IsMoveStopped = true;
             });
             MoveThread.Start();
@@ -278,7 +262,7 @@ namespace ODMR_Lab.位移台部分
                 MoveThread = new Thread(() =>
                 {
                     IsMoveStopped = false;
-                    stage.MoveStepAndWait(step * (info.IsReverse ? -1 : 1), 5000);
+                    stage.MoveStepAndWait(step, 5000);
                     IsMoveStopped = true;
                 });
                 MoveThread.Start();
@@ -291,7 +275,7 @@ namespace ODMR_Lab.位移台部分
             MoveThread = new Thread(() =>
             {
                 IsMoveStopped = false;
-                stage.MoveStepAndWait(step * (info.IsReverse ? -1 : 1), 5000);
+                stage.MoveStepAndWait(step, 5000);
                 IsMoveStopped = true;
             });
             MoveThread.Start();
@@ -313,7 +297,6 @@ namespace ODMR_Lab.位移台部分
             {
                 Grid g = MoverLists.Children[i] as Grid;
                 infos.Add(g.Tag as NanoStageInfo);
-                (g.Tag as NanoStageInfo).IsReverse = (g.Children[3] as Chooser).IsSelected;
                 types.Add((MoverTypes)Enum.Parse(typeof(MoverTypes), (g.Children[2] as ComboBox).Text));
             }
             for (int i = 0; i < types.Count; i++)

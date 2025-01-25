@@ -41,7 +41,7 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -37,16 +37,36 @@ namespace ODMR_Lab.基本控件
             InitializeComponent();
             InitChartView();
             InitDataView();
+            //数据改变事件
+            DataSource.ItemChanged += UpdateDataPanel;
         }
 
-        public void UpdateDataPanel()
+        /// <summary>
+        /// 修改数据显示条元素
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateDataPanel(object sender, RoutedEventArgs e)
         {
-            UpdateChartDataPanel();
-            UpdateDataDataPanel();
+            foreach (var item in DataSource)
+            {
+                item.ParentChart = this;
+            }
+            UpdateGroups();
+            UpdateDataPanel();
         }
 
         #region 一维图表数据
-        public List<ChartData1D> DataSource { get; set; } = new List<ChartData1D>();
+        private ItemsList<ChartData1D> dataSource = new ItemsList<ChartData1D>();
+        public ItemsList<ChartData1D> DataSource
+        {
+            get { return dataSource; }
+            set
+            {
+                dataSource = value;
+                UpdateDataPanel(this, new RoutedEventArgs());
+            }
+        }
 
         public ChartData1D SelectedXdata { get; set; } = null;
         #endregion
@@ -93,58 +113,140 @@ namespace ODMR_Lab.基本控件
         #endregion
 
         /// <summary>
-        /// 刷新数据显示区
+        /// 刷新数据显示组
         /// </summary>
-        public void UpdateChartDataPanel()
+        private void UpdateGroups()
         {
-            XDataSet.ClearItems();
-            YDataSet.ClearItems();
-            foreach (var item in DataSource)
+            #region 查找所有GroupNames
+            HashSet<string> groups = new HashSet<string>();
+            foreach (ChartData1D data in DataSource)
             {
-                if (item.DataAxisType != ChartDataType.Y && !(item is TimeChartData1D))
-                    XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
+                groups.Add(data.GroupName);
+            }
+            ChartGroups.Items.Clear();
+            foreach (var item in groups)
+            {
+                DecoratedButton btn = new DecoratedButton() { Text = item };
+                GraphBtn.CloneStyleTo(btn);
+                btn.Tag = item;
+                ChartGroups.Items.Add(btn);
             }
 
-            foreach (var item in DataSource)
+            DataGroups.Items.Clear();
+            foreach (var item in groups)
             {
-                if (item is NumricChartData1D && item.DataAxisType != ChartDataType.X)
+                DecoratedButton btn = new DecoratedButton() { Text = item };
+                GraphBtn.CloneStyleTo(btn);
+                btn.Tag = item;
+                DataGroups.Items.Add(btn);
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 数据显示组改变事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeGroup(object sender, RoutedEventArgs e)
+        {
+            UpdateDataPanel();
+            UpdateChartAndDataFlow(true);
+        }
+
+        /// <summary>
+        /// 刷新图表数据显示
+        /// </summary>
+        public void UpdateDataPanel()
+        {
+            if (DataGroups.SelectedItem == null && DataGroups.Items.Count != 0)
+            {
+                DataGroups.Select(0);
+                return;
+            }
+            if (ChartGroups.SelectedItem == null && ChartGroups.Items.Count != 0)
+            {
+                ChartGroups.Select(0);
+                return;
+            }
+            if (DataGroups.SelectedItem != null)
+            {
+                string GroupName = DataGroups.SelectedItem.Tag as string;
+
+                DataNames.ClearItems();
+
+                foreach (var item in DataSource)
                 {
-                    YDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
+                    if (item.GroupName != GroupName)
+                    {
+                        continue;
+                    }
+                    DataNames.AddItem(item, item.Name, item.GetCount());
+                    if (item.IsInDataDisplay)
+                    {
+                        DataNames.Select(DataNames.GetRowCount() - 1);
+                    }
                 }
             }
+            if (ChartGroups.SelectedItem != null)
+            {
+                string GroupName = ChartGroups.SelectedItem.Tag as string;
+
+                XDataSet.ClearItems();
+                YDataSet.ClearItems();
+
+                foreach (var item in DataSource)
+                {
+                    if (item.GroupName != GroupName)
+                    {
+                        item.IsSelectedAsX = false;
+                        item.IsSelectedAsY = false;
+                        continue;
+                    }
+                    if (item.DataAxisType != ChartDataType.Y && !(item is TimeChartData1D))
+                        XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
+                    if (item is NumricChartData1D && item.DataAxisType != ChartDataType.X)
+                    {
+                        YDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 选中组
+        /// </summary>
+        public void SelectGroup(string name)
+        {
+            ChartGroups.Select(name);
         }
 
         /// <summary>
         /// 刷新点数显示
         /// </summary>
-        public void UpdateDataPoint()
+        private void UpdateDataPoint()
         {
-            int ind = 0;
-            for (int i = 0; i < DataSource.Count; i++)
+            for (int i = 0; i < XDataSet.GetRowCount(); i++)
             {
-                if (DataSource[i].DataAxisType != ChartDataType.Y && !(DataSource[i] is TimeChartData1D))
-                {
-                    XDataSet.SetCelValue(ind, 1, DataSource[i].GetCount());
-                    ++ind;
-                }
+                XDataSet.SetCelValue(i, 1, (XDataSet.GetTag(i) as ChartData1D).GetCount());
             }
 
-            ind = 0;
-            for (int i = 0; i < DataSource.Count; i++)
+            for (int i = 0; i < YDataSet.GetRowCount(); i++)
             {
-                if (DataSource[i] is NumricChartData1D && DataSource[i].DataAxisType != ChartDataType.X)
-                {
-                    YDataSet.SetCelValue(ind, 1, DataSource[i].GetCount());
-                    ++ind;
-                }
+                YDataSet.SetCelValue(i, 1, (YDataSet.GetTag(i) as ChartData1D).GetCount());
             }
         }
 
         /// <summary>
-        /// 刷新图表
+        /// 从DataSource中同步数据并刷新绘图
         /// </summary>
-        public void UpdateChart(bool IsAutoScale)
+        public void UpdateChartAndDataFlow(bool IsAutoScale)
         {
+            //刷新数据点数
+            UpdateDataPoint();
+            //刷新数据显示
+            UpdateDataDisplay();
+
             Thread t = new Thread(() =>
             {
                 SelectedXdata = null;
@@ -283,30 +385,9 @@ namespace ODMR_Lab.基本控件
         }
 
         /// <summary>
-        /// 刷新数据显示区
-        /// </summary>
-        public void UpdateDataDataPanel()
-        {
-            DataNames.ClearItems();
-            DataPanel.Children.Clear();
-            foreach (var item in DataSource)
-            {
-                DataNames.AddItem(item, item.Name, item.GetCount().ToString());
-                if (item.IsInDataDisplay)
-                {
-                    DataListViewer v = new DataListViewer();
-                    v.Data = item;
-                    v.UpdatePointList(0);
-                    v.Width = 150;
-                    DataPanel.Children.Add(v);
-                }
-            }
-        }
-
-        /// <summary>
         /// 刷新当前数据显示
         /// </summary>
-        public void UpdateDataDisplay()
+        private void UpdateDataDisplay()
         {
             foreach (var item in DataPanel.Children)
             {
@@ -314,31 +395,28 @@ namespace ODMR_Lab.基本控件
             }
         }
 
-
         #region 图表显示数据选择部分
 
         private void XDataSelectionChanged(int arg1, int arg2, object arg3)
         {
             int count = XDataSet.GetRowCount();
-            for (int i = 0; i < count - 1; i++)
+            for (int i = 0; i < count; i++)
             {
-                if (arg1 != i)
-                {
-                    XDataSet.SetCelValue(i, 2, false);
-                }
+                ChartData1D dat = XDataSet.GetTag(i) as ChartData1D;
+                dat.IsSelectedAsX = false;
             }
 
             ChartData1D data = XDataSet.GetTag(arg1) as ChartData1D;
             data.IsSelectedAsX = (bool)arg3;
 
-            UpdateChart(true);
+            UpdateChartAndDataFlow(true);
         }
 
         private void YDataSelectionChanged(int arg1, int arg2, object arg3)
         {
             ChartData1D data = YDataSet.GetTag(arg1) as ChartData1D;
             data.IsSelectedAsY = (bool)arg3;
-            UpdateChart(true);
+            UpdateChartAndDataFlow(true);
         }
         #endregion
 
@@ -549,7 +627,7 @@ namespace ODMR_Lab.基本控件
             }
             DataListViewer v = new DataListViewer();
             v.Data = data;
-            v.UpdatePointList(0);
+            v.UpdatePointList(0, data.GroupName + ":" + data.Name);
             v.Width = 250;
             DataPanel.Children.Add(v);
         }
@@ -567,6 +645,5 @@ namespace ODMR_Lab.基本控件
             }
         }
         #endregion
-
     }
 }

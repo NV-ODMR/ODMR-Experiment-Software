@@ -21,7 +21,7 @@ namespace ODMR_Lab.基本控件
     /// </summary>
     public partial class DataListViewer : Grid
     {
-        public ChartData1D Data { get; set; } = new NumricChartData1D();
+        public ChartData1D Data { get; set; } = new NumricChartData1D("", "");
 
         public DataListViewer()
         {
@@ -35,12 +35,19 @@ namespace ODMR_Lab.基本控件
 
         public int CurrentDisplayIndex { private set; get; } = 0;
 
-        public void UpdatePointList(int startindex)
+        public void UpdatePointList(int startindex, string name = "")
         {
             datacontentscroll.DataTemplate = new List<Controls.ViewerTemplate>() {
                 new Controls.ViewerTemplate("序号",ListDataTypes.String,new GridLength(100),false),
-                new Controls.ViewerTemplate(Data.Name,ListDataTypes.String,new GridLength(1,GridUnitType.Star),false)
-            };
+                new Controls.ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false) };
+            if (name == "")
+            {
+                Title.Content = Data.Name;
+            }
+            else
+            {
+                Title.Content = Data.GroupName + ":" + Data.Name;
+            }
             datacontentscroll.UpdateHeader();
             if (startindex > Data.GetCount() - DisplayCount)
             {

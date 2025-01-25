@@ -10,7 +10,8 @@ namespace ODMR_Lab.基本控件
     {
         X = 0,
         Y = 1,
-        XY = 2
+        XY = 2,
+        None = 3
     }
 
     public abstract class ChartData1D
@@ -25,6 +26,13 @@ namespace ODMR_Lab.基本控件
         public bool IsSelectedAsX { get; set; } = false;
 
         public ChartDataType DataAxisType { get; set; } = ChartDataType.XY;
+
+        public ChartViewer1D ParentChart { get; set; } = null;
+
+        /// <summary>
+        /// 分组名称
+        /// </summary>
+        public string GroupName { get; set; } = "";
 
         /// <summary>
         /// 是否显示在数据栏中
@@ -50,6 +58,13 @@ namespace ODMR_Lab.基本控件
         /// 数据
         /// </summary>
         public List<double> Data { get; set; } = new List<double>();
+
+        public NumricChartData1D(string name, string groupname, ChartDataType chartDataType = ChartDataType.XY)
+        {
+            Name = name;
+            GroupName = groupname;
+            DataAxisType = chartDataType;
+        }
     }
 
     public class TimeChartData1D : ChartData1D
@@ -58,5 +73,12 @@ namespace ODMR_Lab.基本控件
         /// 数据
         /// </summary>
         public List<DateTime> Data { get; set; } = new List<DateTime>();
+
+        public TimeChartData1D(string name, string groupname, ChartDataType chartDataType = ChartDataType.XY)
+        {
+            Name = name;
+            GroupName = groupname;
+            DataAxisType = chartDataType;
+        }
     }
 }

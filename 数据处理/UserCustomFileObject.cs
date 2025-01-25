@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ODMR_Lab.数据处理
 {
@@ -36,13 +37,28 @@ namespace ODMR_Lab.数据处理
                 Type t = fobj.JudgeDataType(item);
                 if (t != null)
                 {
+                    //处理item，分解为名称，轴类型和组名称
+                    string[] ss = item.Split('$');
+                    string name = "";
+                    string groupname = "";
+                    ChartDataType type = ChartDataType.XY;
+                    if (ss.Count() == 1)
+                    {
+                        name = ss[0];
+                    }
+                    else
+                    {
+                        name = ss[0];
+                        groupname = ss[1];
+                        type = (ChartDataType)Enum.Parse(typeof(ChartDataType), ss[2]);
+                    }
                     if (t.Name == typeof(double).Name)
                     {
-                        DataSource.ChartDataSource1D.Add(new NumricChartData1D() { Data = fobj.ExtractDouble(item), Name = item });
+                        DataSource.ChartDataSource1D.Add(new NumricChartData1D(name, groupname, type) { Data = fobj.ExtractDouble(item) });
                     }
                     if (t.Name == typeof(DateTime).Name)
                     {
-                        DataSource.ChartDataSource1D.Add(new TimeChartData1D() { Data = fobj.ExtractDate(item), Name = item });
+                        DataSource.ChartDataSource1D.Add(new TimeChartData1D(name, groupname, type) { Data = fobj.ExtractDate(item) });
                     }
                 }
             }
@@ -68,16 +84,18 @@ namespace ODMR_Lab.数据处理
             }
             foreach (var item in DataSource.ChartDataSource1D)
             {
+                string name = item.Name + "$" + item.GroupName + "$" + Enum.GetName(typeof(ChartDataType), item.DataAxisType);
                 if (item is NumricChartData1D)
                 {
-                    obj.WriteDoubleData(item.Name, (item as NumricChartData1D).Data);
+                    obj.WriteDoubleData(name, (item as NumricChartData1D).Data);
                 }
                 if (item is TimeChartData1D)
                 {
-                    obj.WriteDateData(item.Name, (item as TimeChartData1D).Data);
+                    obj.WriteDateData(name, (item as TimeChartData1D).Data);
                 }
             }
             return obj;
         }
+
     }
 }

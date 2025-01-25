@@ -55,11 +55,11 @@ namespace ODMR_Lab.实验部分.磁场调节
             {
                 if (fobj.JudgeDataType(item).IsEquivalentTo(typeof(DateTime)))
                 {
-                    SelectedChannelsData.Add(new TimeChartData1D() { Data = fobj.ExtractDate(item), Name = item });
+                    SelectedChannelsData.Add(new TimeChartData1D(item, "温度监测数据") { Data = fobj.ExtractDate(item) });
                 }
                 if (fobj.JudgeDataType(item).IsEquivalentTo(typeof(double)))
                 {
-                    SelectedChannelsData.Add(new NumricChartData1D() { Data = fobj.ExtractDouble(item), Name = item });
+                    SelectedChannelsData.Add(new NumricChartData1D(item, "温度监测数据") { Data = fobj.ExtractDouble(item) });
                 }
             }
         }

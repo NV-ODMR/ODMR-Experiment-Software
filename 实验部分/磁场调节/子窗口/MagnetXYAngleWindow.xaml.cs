@@ -21,6 +21,7 @@ using System.Windows.Shapes;
 using Window = System.Windows.Window;
 
 using ODMR_Lab.基本控件;
+using Controls;
 
 namespace ODMR_Lab.磁场调节
 {
@@ -29,17 +30,17 @@ namespace ODMR_Lab.磁场调节
     /// </summary>
     public partial class MagnetXYAngleWindow : Window
     {
-        public List<CWPointObject> CWPoints = new List<CWPointObject>();
+        public ItemsList<CWPointObject> CWPoints { get; private set; } = new ItemsList<CWPointObject>();
 
-        private NumricChartData1D DataBp = new NumricChartData1D() { Name = "沿轴磁场(Gauss)", DataAxisType = ChartDataType.Y };
-        private NumricChartData1D DataBv = new NumricChartData1D() { Name = "垂直轴磁场(Gauss)", DataAxisType = ChartDataType.Y };
-        private NumricChartData1D DataB = new NumricChartData1D() { Name = "总磁场(Gauss)", DataAxisType = ChartDataType.Y };
-        private NumricChartData1D DataLoc = new NumricChartData1D() { Name = "位置", DataAxisType = ChartDataType.X };
+        private NumricChartData1D DataBp = new NumricChartData1D("沿轴磁场(Gauss)", "磁场扫描数据", ChartDataType.Y);
+        private NumricChartData1D DataBv = new NumricChartData1D("垂直轴磁场(Gauss)", "磁场扫描数据", ChartDataType.Y);
+        private NumricChartData1D DataB = new NumricChartData1D("总磁场(Gauss)", "磁场扫描数据", ChartDataType.Y);
+        private NumricChartData1D DataLoc = new NumricChartData1D("位置", "磁场扫描数据", ChartDataType.X);
 
-        private NumricChartData1D DataCW1 = new NumricChartData1D() { Name = "CW数据1", DataAxisType = ChartDataType.Y };
-        private NumricChartData1D DataCW2 = new NumricChartData1D() { Name = "CW数据2", DataAxisType = ChartDataType.Y };
-        private NumricChartData1D Freq1 = new NumricChartData1D() { Name = "频率1", DataAxisType = ChartDataType.X };
-        private NumricChartData1D Freq2 = new NumricChartData1D() { Name = "频率2", DataAxisType = ChartDataType.X };
+        private NumricChartData1D DataCW1 = new NumricChartData1D("CW数据1", "磁场扫描CW数据", ChartDataType.Y);
+        private NumricChartData1D DataCW2 = new NumricChartData1D("CW数据2", "磁场扫描CW数据", ChartDataType.Y);
+        private NumricChartData1D Freq1 = new NumricChartData1D("频率1(MHz)", "磁场扫描CW数据", ChartDataType.X);
+        private NumricChartData1D Freq2 = new NumricChartData1D("频率2(MHz)", "磁场扫描CW数据", ChartDataType.X);
 
         private CWPointObject CurrentPoint = null;
 
@@ -57,29 +58,33 @@ namespace ODMR_Lab.磁场调节
             CodeHelper.WindowResizeHelper helper = new CodeHelper.WindowResizeHelper();
             helper.RegisterWindow(this, dragHeight: 30);
 
-            Chart.DataSource = new List<ChartData1D>()
+            Chart.DataSource.AddRange(new List<ChartData1D>()
             {
                 DataBv,
                 DataBp,
                 DataB,
                 DataLoc
-            };
+            });
 
-            CWChart.DataSource = new List<ChartData1D>()
+            CWChart.DataSource.AddRange(new List<ChartData1D>()
             {
                 Freq1,
                 Freq2,
                 DataCW1,
                 DataCW2
-            };
+            });
+
+            CWPoints.ItemChanged += UpdatePointPanel;
+        }
+
+        private void UpdatePointPanel(object sender, RoutedEventArgs e)
+        {
+            UpdateCWPointsDisplay();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Chart.UpdateDataPanel();
-            Chart.UpdateChart(true);
-            CWChart.UpdateDataPanel();
-            CWChart.UpdateChart(true);
+            UpdateChartAndDataFlow(true);
         }
 
         private void Close(object sender, RoutedEventArgs e)
@@ -95,7 +100,7 @@ namespace ODMR_Lab.磁场调节
         /// <summary>
         /// 刷新CW点显示
         /// </summary>
-        public void UpdateCWPointsDisplay()
+        private void UpdateCWPointsDisplay()
         {
             DataViewer.ClearItems();
             for (int i = 0; i < CWPoints.Count; i++)
@@ -108,16 +113,6 @@ namespace ODMR_Lab.磁场调节
                     Math.Round(CWPoints[i].Bv, 4),
                     Math.Round(CWPoints[i].B, 4));
             }
-        }
-
-        /// <summary>
-        /// 刷新显示
-        /// </summary>
-        public void UpdateDisplay()
-        {
-            UpdateCWPointsDisplay();
-            UpdateBsChart();
-            UpdateCWsChart();
         }
 
         /// <summary>
@@ -135,10 +130,8 @@ namespace ODMR_Lab.磁场调节
             DataLoc.Data.Clear();
 
             DataViewer.ClearItems();
-            Chart.UpdateChartDataPanel();
-            Chart.UpdateChart(true);
-            CWChart.UpdateChartDataPanel();
-            CWChart.UpdateChart(true);
+            Chart.UpdateChartAndDataFlow(true);
+            CWChart.UpdateChartAndDataFlow(true);
         }
 
         /// <summary>
@@ -148,14 +141,21 @@ namespace ODMR_Lab.磁场调节
         /// <param name="arg2"></param>
         private void SelectPoint(int arg1, object arg2)
         {
-            UpdateCWsChart();
+            UpdateChartAndDataFlow(true);
         }
 
         /// <summary>
         /// 刷新CW图表
         /// </summary>
-        public void UpdateCWsChart()
+        public void UpdateChartAndDataFlow(bool isAutoScale)
         {
+            DataLoc.Data = CWPoints.Select((x) => x.MoverLoc).ToList();
+            DataBp.Data = CWPoints.Select((x) => x.Bp).ToList();
+            DataBv.Data = CWPoints.Select((x) => x.Bv).ToList();
+            DataB.Data = CWPoints.Select((x) => x.B).ToList();
+
+            Chart.UpdateChartAndDataFlow(isAutoScale);
+
             if (DataViewer.GetSelectedTag() == null) return;
             CWPointObject point = DataViewer.GetSelectedTag() as CWPointObject;
 
@@ -164,22 +164,7 @@ namespace ODMR_Lab.磁场调节
             Freq1.Data = point.CW1Freqs;
             Freq2.Data = point.CW2Freqs;
 
-            CWChart.UpdateDataPoint();
-            CWChart.UpdateChart(true);
-        }
-
-        /// <summary>
-        /// 刷新磁场图表
-        /// </summary>
-        public void UpdateBsChart()
-        {
-            DataLoc.Data = CWPoints.Select((x) => x.MoverLoc).ToList();
-            DataBp.Data = CWPoints.Select((x) => x.Bp).ToList();
-            DataBv.Data = CWPoints.Select((x) => x.Bv).ToList();
-            DataB.Data = CWPoints.Select((x) => x.B).ToList();
-
-            Chart.UpdateDataPoint();
-            Chart.UpdateChart(true);
+            CWChart.UpdateChartAndDataFlow(isAutoScale);
         }
 
         /// <summary>

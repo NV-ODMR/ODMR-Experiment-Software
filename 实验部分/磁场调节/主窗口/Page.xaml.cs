@@ -36,6 +36,7 @@ using ODMR_Lab.实验部分.扫描基方法;
 using OpenCvSharp;
 using static System.Collections.Specialized.BitVector32;
 using ODMR_Lab.IO操作;
+using System.Net.Http;
 
 namespace ODMR_Lab.磁场调节
 {
@@ -115,7 +116,7 @@ namespace ODMR_Lab.磁场调节
             try
             {
                 double anglestart = double.Parse(AngleStart.Text);
-                OffsetWindow win = new OffsetWindow(anglestart);
+                OffsetWindow win = new OffsetWindow(this);
                 win.Owner = MainWindow.Handle;
                 win.ShowDialog();
                 if (!double.IsNaN(win.OffsetX))
@@ -287,18 +288,27 @@ namespace ODMR_Lab.磁场调节
         #region 开始，暂停和停止操作
         private void StartScan(object sender, RoutedEventArgs e)
         {
-            SetStartState();
-            StartThread();
+            if (IsThreadResume == true && IsThreadEnd == false)
+            {
+                IsThreadResume = false;
+                SetStartState();
+            }
+            else
+            {
+                SetStartState();
+                StartThread();
+            }
         }
 
         private void ResumeScan(object sender, RoutedEventArgs e)
         {
-
+            IsThreadResume = true;
+            SetResumeState();
         }
 
         private void StopScan(object sender, RoutedEventArgs e)
         {
-
+            IsThreadEnd = true;
         }
 
         private void SetStartState()
@@ -371,7 +381,14 @@ namespace ODMR_Lab.磁场调节
                     return;
                 }
                 #endregion
-
+                #region 获取位移台,设置实验开始时间
+                Dispatcher.Invoke(() =>
+                {
+                    FileObj.Param.SetStartTime(DateTime.Now);
+                    StartTime.Content = FileObj.Param.ExpStartTime.ToString();
+                    EndTime.Content = "";
+                });
+                #endregion
                 try
                 {
                     bool iscontinue = true;
@@ -379,7 +396,7 @@ namespace ODMR_Lab.磁场调节
                     {
                         if (MessageWindow.ShowMessageBox("提示", "执行扫描过程会清除当前记录的数据且不可恢复，是否继续?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
                         {
-                            //清除数据
+                            #region 清除数据
                             FileObj.Param = new MagnetScanExpParams();
                             FileObj.Config = P;
                             FileObj.XPoints.Clear();
@@ -388,18 +405,19 @@ namespace ODMR_Lab.磁场调节
                             FileObj.AnglePoints.Clear();
                             FileObj.CheckPoints.Clear();
                             //刷新窗口
-                            XWin.CWPoints = FileObj.XPoints;
-                            XWin.UpdateDisplay();
-                            YWin.CWPoints = FileObj.YPoints;
-                            YWin.UpdateDisplay();
-                            AngleWin.CWPoints = FileObj.AnglePoints;
-                            AngleWin.UpdateDisplay();
+                            XWin.CWPoints.Clear();
+                            XWin.UpdateChartAndDataFlow(true);
+                            YWin.CWPoints.Clear();
+                            YWin.UpdateChartAndDataFlow(true);
+                            AngleWin.CWPoints.Clear();
+                            AngleWin.UpdateChartAndDataFlow(true);
                             ZWin.CWPoint1 = null;
                             ZWin.CWPoint2 = null;
-                            ZWin.UpdateDisplay();
+                            ZWin.UpdateChartAndDataFlow(true);
                             CheckWin.CWPoint1 = null;
                             CheckWin.CWPoint2 = null;
-                            CheckWin.UpdateDisplay();
+                            CheckWin.UpdateChartAndDataFlow(true);
+                            #endregion
                         }
                         else
                         {
@@ -490,6 +508,11 @@ namespace ODMR_Lab.磁场调节
                 finally
                 {
                     SetStopState();
+                    FileObj.Param.SetEndTime(DateTime.Now);
+                    Dispatcher.Invoke(() =>
+                    {
+                        EndTime.Content = DateTime.Now.ToString();
+                    });
                 }
 
             });
@@ -662,6 +685,16 @@ namespace ODMR_Lab.磁场调节
                 ratio = cp2.Bp / cp1.Bp;
                 FileObj.Param.ZLoc.Value = cp2.MoverLoc;
             }
+            if (double.IsInfinity(ratio))
+            {
+                ratio = cp1.B / cp2.B;
+                FileObj.Param.ZLoc.Value = cp1.MoverLoc;
+                if (ratio < 1)
+                {
+                    ratio = cp2.B / cp1.B;
+                    FileObj.Param.ZLoc.Value = cp2.MoverLoc;
+                }
+            }
             FileObj.Param.ZDistance.Value = MagnetAutoScanHelper.FindRoot(new PillarMagnet(FileObj.Config.MRadius.Value, FileObj.Config.MLength.Value), cp1.MoverLoc, cp2.MoverLoc, ratio);
             #endregion
 
@@ -670,7 +703,7 @@ namespace ODMR_Lab.磁场调节
             {
                 ZWin.CWPoint1 = cp1;
                 ZWin.CWPoint2 = cp2;
-                ZWin.UpdateDisplay();
+                ZWin.UpdateChartAndDataFlow(true);
             });
             #endregion
         }
@@ -703,6 +736,8 @@ namespace ODMR_Lab.磁场调节
             double B = bs.Average();
             //拟合参数A
             double sint = amplitude / B;
+            if (sint > 1) sint = 1;
+            if (sint < -1) sint = -1;
             FileObj.Param.Theta1.Value = Math.Abs(Math.Asin(sint) * 180 / Math.PI);
             FileObj.Param.Theta2.Value = 180 - FileObj.Param.Theta1.Value;
             FileObj.Param.Phi1.Value = phase;
@@ -720,8 +755,9 @@ namespace ODMR_Lab.磁场调节
             #region 在界面上更新
             Dispatcher.Invoke(() =>
             {
-                AngleWin.CWPoints = FileObj.AnglePoints;
-                AngleWin.UpdateDisplay();
+                AngleWin.CWPoints.Clear(false);
+                AngleWin.CWPoints.AddRange(FileObj.AnglePoints);
+                AngleWin.UpdateChartAndDataFlow(true);
             });
             #endregion
         }
@@ -731,12 +767,49 @@ namespace ODMR_Lab.磁场调节
         /// </summary>
         private void CheckAngle()
         {
+            Dispatcher.Invoke(() =>
+            {
+                CheckWin.UpdateCalculate();
+                CheckWin.UpdateChartAndDataFlow(true);
+            });
             ///刷新计算结果
             MagnetAutoScanHelper.CalculatePossibleLocs(FileObj.Config, FileObj.Param, out double x1, out double y1, out double z1, out double a1, out double x2, out double y2, out double z2, out double a2);
-            CWPointObject p1 = CheckWin.MoveAndScan(x1, y1, z1, a1, JudgeThreadEndOrResume);
-            CWPointObject p2 = CheckWin.MoveAndScan(x2, y2, z2, a2, JudgeThreadEndOrResume);
+
+            #region 移动并测量第一个点
+            ScanHelper.Move(XStage, JudgeThreadEndOrResume, FileObj.Config.XRangeLo.Value, FileObj.Config.XRangeHi.Value, x1, 10000);
+            ScanHelper.Move(YStage, JudgeThreadEndOrResume, FileObj.Config.YRangeLo.Value, FileObj.Config.YRangeHi.Value, y1, 10000);
+            ScanHelper.Move(ZStage, JudgeThreadEndOrResume, FileObj.Config.ZRangeLo.Value, FileObj.Config.ZRangeHi.Value, z1, 10000);
+            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, a1, 10000);
+            //测量
+            LabviewConverter.AutoTrace(out Exception e);
+            MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks, out List<double> freqs1, out List<double> contracts1, out List<double> freqs2, out List<double> contracts2);
+
+            CWPointObject p1 = new CWPointObject(0, Math.Min(peaks[0], peaks[1]), Math.Max(peaks[0], peaks[1]), FileObj.Config.D.Value, freqs1, contracts1, freqs2, contracts2);
             FileObj.CheckPoints.Add(p1);
-            FileObj.CheckPoints.Add(p2);
+            Dispatcher.Invoke(() =>
+            {
+                CheckWin.CWPoint1 = p1;
+                CheckWin.UpdateChartAndDataFlow(true);
+            });
+            #endregion
+
+            #region 移动并测量第二个点
+            ScanHelper.Move(XStage, JudgeThreadEndOrResume, FileObj.Config.XRangeLo.Value, FileObj.Config.XRangeHi.Value, x2, 10000);
+            ScanHelper.Move(YStage, JudgeThreadEndOrResume, FileObj.Config.YRangeLo.Value, FileObj.Config.YRangeHi.Value, y2, 10000);
+            ScanHelper.Move(ZStage, JudgeThreadEndOrResume, FileObj.Config.ZRangeLo.Value, FileObj.Config.ZRangeHi.Value, z2, 10000);
+            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, a2, 10000);
+            //测量
+            LabviewConverter.AutoTrace(out e);
+            MagnetAutoScanHelper.TotalCWPeaks2OrException(out peaks, out freqs1, out contracts1, out freqs2, out contracts2);
+
+            CWPointObject p2 = new CWPointObject(0, Math.Min(peaks[0], peaks[1]), Math.Max(peaks[0], peaks[1]), FileObj.Config.D.Value, freqs1, contracts1, freqs2, contracts2);
+            FileObj.CheckPoints.Add(p1);
+            Dispatcher.Invoke(() =>
+            {
+                CheckWin.CWPoint2 = p2;
+                CheckWin.UpdateChartAndDataFlow(true);
+            });
+            #endregion
 
             #region 计算结果
             if (p1 == null || p2 == null)
@@ -836,7 +909,8 @@ namespace ODMR_Lab.磁场调节
                 obj.XPoints.Add(point);
                 Dispatcher.Invoke(() =>
                 {
-                    XWin.UpdateDisplay();
+                    XWin.CWPoints.Add(point);
+                    XWin.UpdateChartAndDataFlow(true);
                 });
             }
             if (stage == YStage)
@@ -844,7 +918,8 @@ namespace ODMR_Lab.磁场调节
                 obj.YPoints.Add(point);
                 Dispatcher.Invoke(() =>
                 {
-                    YWin.UpdateDisplay();
+                    YWin.CWPoints.Add(point);
+                    YWin.UpdateChartAndDataFlow(true);
                 });
             }
             if (stage == ZStage)
@@ -852,7 +927,15 @@ namespace ODMR_Lab.磁场调节
                 obj.ZPoints.Add(point);
                 Dispatcher.Invoke(() =>
                 {
-                    ZWin.UpdateDisplay();
+                    if (obj.ZPoints.Count == 1)
+                    {
+                        ZWin.CWPoint1 = point;
+                    }
+                    else
+                    {
+                        ZWin.CWPoint2 = point;
+                    }
+                    ZWin.UpdateChartAndDataFlow(true);
                 });
             }
             if (stage == AStage)
@@ -860,7 +943,8 @@ namespace ODMR_Lab.磁场调节
                 obj.AnglePoints.Add(point);
                 Dispatcher.Invoke(() =>
                 {
-                    AngleWin.UpdateDisplay();
+                    AngleWin.CWPoints.Add(point);
+                    AngleWin.UpdateChartAndDataFlow(true);
                 });
             }
 
@@ -957,6 +1041,10 @@ namespace ODMR_Lab.磁场调节
                 ThreadResumeEvent?.Invoke();
                 while (IsThreadResume)
                 {
+                    if (IsThreadEnd)
+                    {
+                        throw new Exception("定位进程已被终止");
+                    }
                     Thread.Sleep(50);
                 }
             }
@@ -968,5 +1056,22 @@ namespace ODMR_Lab.磁场调节
             return new List<double>() { centerx + xy[0], centery + xy[1] };
         }
         #endregion
+
+        /// <summary>
+        /// 保存实验数据为文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveFile(object sender, RoutedEventArgs e)
+        {
+            bool result = FileObj.WriteFromExplorer();
+            if (result)
+            {
+                TimeWindow w = new TimeWindow();
+                w.Owner = MainWindow.Handle;
+                w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                w.ShowWindow("文件已保存");
+            }
+        }
     }
 }

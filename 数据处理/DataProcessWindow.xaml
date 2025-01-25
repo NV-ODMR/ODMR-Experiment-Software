@@ -56,6 +56,8 @@
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="40"/>
                     <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -67,9 +69,19 @@
                 <Label Content="简单映射计算" Grid.ColumnSpan="2" Grid.Row="1" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
                 <control:DecoratedButton Grid.Column="2" TextAreaRatio="0" Grid.Row="1" Click="ShowSimpleMappingInformation" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/information.png" Margin="10"/>
                 <control:AlgebraBox Name="SimpleMappingBox" Grid.Row="2" Grid.ColumnSpan="3" FontSize="12" Background="#FF2E2E2E" Margin="5" TipBarBackground="#FF4D4D4D" TipBarSelectedColor="#FF0075DA" TipDiscriptionColor="White" Foreground="White" CaretColor="White"/>
-                <Label Grid.ColumnSpan="1" Content="新数据名称" Grid.Row="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                <control:DecoratedButton Name="D1CalcBtn" Grid.Column="0" TextAreaRatio="1" Text="计算并添加" FontSize="12" Grid.ColumnSpan="3" Grid.Row="4" Click="Calculate1DSimpleMapping" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/information.png" Margin="3"/>
+                <Label Grid.ColumnSpan="1" Content="数据分组" Grid.Row="4" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                <control:ComboBox Name="GroupName" Click="UpdateGroup" Margin="5" TextAreaRatio="0.9" IconMargin="2" ImagePlace="Right" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Background="#FF424242" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D" IconSource="/图片资源/downArrow.png"/>
+                <control:DecoratedButton Name="D1CalcBtn" Margin="5" Grid.Column="0" TextAreaRatio="1" Text="计算并添加" FontSize="12" Grid.ColumnSpan="3" Grid.Row="6" Click="Calculate1DSimpleMapping" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/information.png"/>
                 <TextBox x:Name="D1DataName" Height="30" Grid.Row="3" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Grid.Column="1" Grid.ColumnSpan="2" Margin="2"/>
+                <Label Grid.ColumnSpan="1" Content="新数据集名称" Grid.Row="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                <Label Grid.ColumnSpan="1" Content="数据类型" Grid.Row="5" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                <control:ComboBox x:Name="DataType" DefaultSelectIndex="0" Margin="5,5,5,5" TextAreaRatio="0.9" IconMargin="2" ImagePlace="Right" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Background="#FF424242" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D" IconSource="/图片资源/downArrow.png">
+                    <control:ComboBox.Items>
+                        <control:DecoratedButton Text="X" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
+                        <control:DecoratedButton Text="Y" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
+                        <control:DecoratedButton Text="XY" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
+                    </control:ComboBox.Items>
+                </control:ComboBox>
             </Grid>
         </Grid>
     </Grid>

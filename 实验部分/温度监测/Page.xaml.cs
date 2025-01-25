@@ -472,13 +472,13 @@ namespace ODMR_Lab.温度监测部分
 
                 if (data is SensorChannelInfo)
                 {
-                    saveObject.SelectedChannelsData.Add(new NumricChartData1D() { Data = new List<double>(y.ToArray()), Name = data.Name + "—温度(" + (data as SensorChannelInfo).Channel.Unit + ")" });
-                    saveObject.SelectedChannelsData.Add(new TimeChartData1D() { Data = new List<DateTime>(x.ToArray()), Name = data.Name + "—时间" });
+                    saveObject.SelectedChannelsData.Add(new NumricChartData1D(data.Name + "—温度(" + (data as SensorChannelInfo).Channel.Unit + ")", "温度监测数据") { Data = new List<double>(y.ToArray()) });
+                    saveObject.SelectedChannelsData.Add(new TimeChartData1D(data.Name + "—时间", "温度监测数据") { Data = new List<DateTime>(x.ToArray()) });
                 }
                 if (data is OutputChannelInfo)
                 {
-                    saveObject.SelectedChannelsData.Add(new NumricChartData1D() { Data = new List<double>(y.ToArray()), Name = data.Name + "—功率(" + (data as OutputChannelInfo).Channel.Unit + ")" });
-                    saveObject.SelectedChannelsData.Add(new TimeChartData1D() { Data = new List<DateTime>(x.ToArray()), Name = data.Name + "—时间" });
+                    saveObject.SelectedChannelsData.Add(new NumricChartData1D(data.Name + "—功率(" + (data as OutputChannelInfo).Channel.Unit + ")", "温度监测数据") { Data = new List<double>(y.ToArray()) });
+                    saveObject.SelectedChannelsData.Add(new TimeChartData1D(data.Name + "—时间", "温度监测数据") { Data = new List<DateTime>(x.ToArray()) });
                 }
             }
 
