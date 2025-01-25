@@ -66,11 +66,13 @@ namespace ODMR_Lab.基本窗口
                 comboBox.IconSource = ButtonTemplate.IconSource;
                 comboBox.ImagePlace = ButtonTemplate.ImagePlace;
                 comboBox.IconMargin = ButtonTemplate.IconMargin;
+                comboBox.PanelWidth = 200;
                 comboBox.FontSize = 15;
-                comboBox.TemplateButton = ButtonTemplate;
                 foreach (string item in Enum.GetNames(paramvalue.GetType()))
                 {
-                    comboBox.Items.Add(new DecoratedButton() { Text = item });
+                    DecoratedButton btn = new DecoratedButton() { Text = item };
+                    ButtonTemplate.CloneStyleTo(btn);
+                    comboBox.Items.Add(btn);
                 }
                 comboBox.Select(Enum.GetName(paramvalue.GetType(), paramvalue));
                 grid.Children.Add(comboBox);
