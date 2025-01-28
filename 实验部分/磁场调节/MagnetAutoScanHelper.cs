@@ -53,9 +53,9 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <param name="z2"></param>
         /// <param name="ratiovalue"></param>
         /// <returns></returns>
-        public static double FindRoot(PillarMagnet M, double z1, double z2, double ratiovalue)
+        public static double FindRoot(double Radius, double Length, double z1, double z2, double ratiovalue)
         {
-            dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Magnet.py"), "FindRoot", TimeSpan.FromSeconds(5), M.Radius, M.Length, z1, z2, ratiovalue);
+            dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Magnet.py"), "FindRoot", TimeSpan.FromSeconds(5), Radius, Length, z1, z2, ratiovalue);
             return result;
         }
 

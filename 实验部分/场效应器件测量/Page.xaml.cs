@@ -110,7 +110,7 @@ namespace ODMR_Lab.场效应器件测量
         /// <summary>
         /// IV测量结果
         /// </summary>
-        IVMeasureFileObject IVMeasureObj = new IVMeasureFileObject();
+        IVMeasureExpObject IVMeasureObj = new IVMeasureExpObject();
         /// <summary>
         /// 开始测量IV
         /// </summary>

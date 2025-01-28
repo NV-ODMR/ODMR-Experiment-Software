@@ -24,7 +24,7 @@ namespace ODMR_Lab.实验部分.磁场调节
     /// <summary>
     /// 温度监控的文件类
     /// </summary>
-    public class TemperatureFileObject : ExperimentFileObject<TemperatureExpParams, TemperatureConfigParams>
+    public class TemperatureExpObject : ExperimentObject<TemperatureExpParams, TemperatureConfigParams>
     {
         /// <summary>
         /// 选中的温度通道

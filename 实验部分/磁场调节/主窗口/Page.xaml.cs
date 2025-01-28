@@ -274,7 +274,7 @@ namespace ODMR_Lab.磁场调节
         /// </summary>
         private bool IsThreadResume = false;
 
-        public MagnetScanFileObjecct FileObj = new MagnetScanFileObjecct();
+        public MagnetScanExpObjecct FileObj = new MagnetScanExpObjecct();
 
         #region 线程参数
         private NanoStageInfo XStage = new NanoStageInfo(new NanoMoverInfo(), new PIStage("", null));
@@ -539,7 +539,7 @@ namespace ODMR_Lab.磁场调节
             FileObj.Param.YLoc.Value = LineScanCore("Y", FileObj);
         }
 
-        private double LineScanCore(string ScanDir, MagnetScanFileObjecct obj)
+        private double LineScanCore(string ScanDir, MagnetScanExpObjecct obj)
         {
             //根据点数设置位移台（二分法,扫描点数始终为6)
             //遍历一遍范围，之后拟合得到最大值位置，之后范围减半
@@ -695,7 +695,7 @@ namespace ODMR_Lab.磁场调节
                     FileObj.Param.ZLoc.Value = cp2.MoverLoc;
                 }
             }
-            FileObj.Param.ZDistance.Value = MagnetAutoScanHelper.FindRoot(new PillarMagnet(FileObj.Config.MRadius.Value, FileObj.Config.MLength.Value), cp1.MoverLoc, cp2.MoverLoc, ratio);
+            FileObj.Param.ZDistance.Value = MagnetAutoScanHelper.FindRoot(FileObj.Config.MRadius.Value, FileObj.Config.MLength.Value, cp1.MoverLoc, cp2.MoverLoc, ratio);
             #endregion
 
             #region 刷新界面
@@ -901,7 +901,7 @@ namespace ODMR_Lab.磁场调节
                 originOutput[2] = cw2;
             }
 
-            MagnetScanFileObjecct obj = originOutput[0] as MagnetScanFileObjecct;
+            MagnetScanExpObjecct obj = originOutput[0] as MagnetScanExpObjecct;
             CWPointObject point = new CWPointObject(loc, (double)originOutput[1], (double)originOutput[2], obj.Config.D.Value, freqs1, contracts1, freqs2, contracts2);
 
             if (stage == XStage)

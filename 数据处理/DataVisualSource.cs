@@ -36,17 +36,17 @@ namespace ODMR_Lab.数据处理
         /// <returns></returns>
         public static DataVisualSource LoadFromFile(string path)
         {
-            ExperimentFileTypes type = ExperimentFileObject<ExpParamBase, ConfigBase>.GetExpType(path);
+            ExperimentFileTypes type = ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(path);
             if (type == ExperimentFileTypes.None) throw new Exception("此文件为不支持预览的类型,无法打开。\n文件路径:" + path);
             if (type == ExperimentFileTypes.源表IV测量数据)
             {
-                IVMeasureFileObject obj = new IVMeasureFileObject();
+                IVMeasureExpObject obj = new IVMeasureExpObject();
                 obj.ReadFromFile(path);
                 return obj.ToDataVisualSource();
             }
             if (type == ExperimentFileTypes.磁场调节)
             {
-                MagnetScanFileObjecct obj = new MagnetScanFileObjecct();
+                MagnetScanExpObjecct obj = new MagnetScanExpObjecct();
                 obj.ReadFromFile(path);
                 return obj.ToDataVisualSource();
             }
@@ -58,7 +58,7 @@ namespace ODMR_Lab.数据处理
             }
             if (type == ExperimentFileTypes.温度监测数据)
             {
-                TemperatureFileObject obj = new TemperatureFileObject();
+                TemperatureExpObject obj = new TemperatureExpObject();
                 obj.ReadFromFile(path);
                 return obj.ToDataVisualSource();
             }

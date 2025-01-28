@@ -203,7 +203,7 @@ namespace ODMR_Lab.基本控件
                         item.IsSelectedAsY = false;
                         continue;
                     }
-                    if (item.DataAxisType != ChartDataType.Y && !(item is TimeChartData1D))
+                    if (item.DataAxisType != ChartDataType.Y || (item is TimeChartData1D))
                         XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
                     if (item is NumricChartData1D && item.DataAxisType != ChartDataType.X)
                     {
@@ -409,6 +409,7 @@ namespace ODMR_Lab.基本控件
             ChartData1D data = XDataSet.GetTag(arg1) as ChartData1D;
             data.IsSelectedAsX = (bool)arg3;
 
+            UpdateDataPanel();
             UpdateChartAndDataFlow(true);
         }
 

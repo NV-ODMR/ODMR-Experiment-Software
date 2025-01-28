@@ -10,7 +10,12 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab
 {
-    public abstract class ExperimentFileObject<ParamType, ConfigType>
+    /// <summary>
+    /// 实验基类型
+    /// </summary>
+    /// <typeparam name="ParamType"></typeparam>
+    /// <typeparam name="ConfigType"></typeparam>
+    public abstract class ExperimentObject<ParamType, ConfigType>
         where ParamType : ExpParamBase
         where ConfigType : ConfigBase
     {

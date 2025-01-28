@@ -417,7 +417,7 @@ namespace ODMR_Lab.温度监测部分
         }
 
 
-        TemperatureFileObject saveObject = new TemperatureFileObject();
+        TemperatureExpObject saveObject = new TemperatureExpObject();
         /// <summary>
         /// 保存文件
         /// </summary>
@@ -425,7 +425,7 @@ namespace ODMR_Lab.温度监测部分
         /// <param name="e"></param>
         public void Save(string SavePath, string Filename = "")
         {
-            saveObject = new TemperatureFileObject();
+            saveObject = new TemperatureExpObject();
             if (LegendContent.Children.Count == 0)
             {
                 throw new Exception("没有需要保存的数据");

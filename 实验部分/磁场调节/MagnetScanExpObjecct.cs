@@ -13,15 +13,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using ComboBox = Controls.ComboBox;
 using DisplayPage = ODMR_Lab.磁场调节.DisplayPage;
 
 namespace ODMR_Lab.实验部分.磁场调节
 {
     /// <summary>
-    /// 磁场调节的文件类
+    /// 磁场调节的实验类
     /// </summary>
-    public class MagnetScanFileObjecct : ExperimentFileObject<MagnetScanExpParams, MagnetScanConfigParams>
+    public class MagnetScanExpObjecct : ExperimentObject<MagnetScanExpParams, MagnetScanConfigParams>
     {
         /// <summary>
         /// X扫描点
@@ -401,6 +402,11 @@ namespace ODMR_Lab.实验部分.磁场调节
             #endregion
 
             #region 导入CW谱扫描信息
+            AddCWData(page, "X方向CW谱扫描信息", XPoints);
+            AddCWData(page, "Y方向CW谱扫描信息", YPoints);
+            AddCWData(page, "Z方向CW谱扫描信息", ZPoints);
+            AddCWData(page, "角度CW谱扫描信息", AnglePoints);
+            AddCWData(page, "角度校验CW谱扫描信息", CheckPoints);
             #endregion
 
             return page;
@@ -413,11 +419,11 @@ namespace ODMR_Lab.实验部分.磁场调节
             {
                 Data = Points.Select((x) => x.MoverLoc).ToList(),
             });
-            page.ChartDataSource1D.Add(new NumricChartData1D("CW谱位置1(MHz)", groupname, ChartDataType.Y)
+            page.ChartDataSource1D.Add(new NumricChartData1D("CW谱峰位置1(MHz)", groupname, ChartDataType.Y)
             {
                 Data = Points.Select((x) => x.CW1).ToList(),
             });
-            page.ChartDataSource1D.Add(new NumricChartData1D("CW谱位置2(MHz)", groupname, ChartDataType.Y)
+            page.ChartDataSource1D.Add(new NumricChartData1D("CW谱峰位置2(MHz)", groupname, ChartDataType.Y)
             {
                 Data = Points.Select((x) => x.CW2).ToList(),
             });
@@ -436,9 +442,29 @@ namespace ODMR_Lab.实验部分.磁场调节
             #endregion
         }
 
-        private void AddCWData()
+        private void AddCWData(DataVisualSource page, string groupname, List<CWPointObject> Points)
         {
-
+            #region X方向数据
+            foreach (var item in Points)
+            {
+                page.ChartDataSource1D.Add(new NumricChartData1D("位置:" + Math.Round(item.MoverLoc, 4).ToString() + "->" + "频率1(MHz)", groupname, ChartDataType.X)
+                {
+                    Data = item.CW1Freqs,
+                });
+                page.ChartDataSource1D.Add(new NumricChartData1D("位置:" + Math.Round(item.MoverLoc, 4).ToString() + "->" + "频率2(MHz)", groupname, ChartDataType.X)
+                {
+                    Data = item.CW1Freqs,
+                });
+                page.ChartDataSource1D.Add(new NumricChartData1D("位置:" + Math.Round(item.MoverLoc, 4).ToString() + "->" + "对比度1", groupname, ChartDataType.Y)
+                {
+                    Data = item.CW1Values,
+                });
+                page.ChartDataSource1D.Add(new NumricChartData1D("位置:" + Math.Round(item.MoverLoc, 4).ToString() + "->" + "对比度2", groupname, ChartDataType.Y)
+                {
+                    Data = item.CW2Values,
+                });
+            }
+            #endregion
         }
     }
 }

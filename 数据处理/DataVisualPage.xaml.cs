@@ -201,7 +201,7 @@ namespace ODMR_Lab.数据处理
             {
                 MessageWindow.ShowTipWindow("没有找到文件,文件可能已经被移动或删除", ParentWindow);
             }
-            if (ExperimentFileObject<ExpParamBase, ConfigBase>.GetExpType(OpenedFiles[ind]) != ExperimentFileTypes.自定义数据)
+            if (ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(OpenedFiles[ind]) != ExperimentFileTypes.自定义数据)
             {
                 MessageWindow.ShowTipWindow("原始实验数据仅支持读取，无法进行编辑操作，请先将文件另存为自定义数据后再进行操作", ParentWindow);
                 return;
@@ -256,7 +256,7 @@ namespace ODMR_Lab.数据处理
                 DecoratedButton btn = new DecoratedButton();
                 RawDataTemplateBtn.CloneStyleTo(btn);
                 btn.TextAreaRatio = RawDataTemplateBtn.TextAreaRatio;
-                if (ExperimentFileObject<ExpParamBase, ConfigBase>.GetExpType(item) == ExperimentFileTypes.自定义数据)
+                if (ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(item) == ExperimentFileTypes.自定义数据)
                 {
                     btn.IconSource = CustomDataTemplateBtn.IconSource;
                 }
@@ -384,7 +384,10 @@ namespace ODMR_Lab.数据处理
             Plot1D.DataSource.Clear(false);
             Plot1D.DataSource.AddRange(source.ChartDataSource1D);
             Plot1D.UpdateChartAndDataFlow(true);
-            Plot1D.SelectGroup(source.ChartDataSource1D[0].GroupName);
+            if (source.ChartDataSource1D.Count != 0)
+            {
+                Plot1D.SelectGroup(source.ChartDataSource1D[0].GroupName);
+            }
         }
 
         private void ShowInWindowClick(object sender, RoutedEventArgs e)

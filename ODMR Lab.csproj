@@ -117,7 +117,7 @@
     </ApplicationDefinition>
     <Compile Include="IO操作\ConfigBase.cs" />
     <Compile Include="IO操作\ExperimentFileTypes.cs" />
-    <Compile Include="IO操作\ExperimentFileObject.cs" />
+    <Compile Include="IO操作\ExperimentObject.cs" />
     <Compile Include="IO操作\ExpParamBase.cs" />
     <Compile Include="IO操作\Param.cs" />
     <Compile Include="IO操作\ParamBase.cs" />
@@ -144,7 +144,7 @@
     <Compile Include="基本窗口\ChartViewerWindow.xaml.cs">
       <DependentUpon>ChartViewerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\场效应器件测量\IVMeasureFileObject.cs" />
+    <Compile Include="实验部分\场效应器件测量\IVMeasureExpObject.cs" />
     <Compile Include="实验部分\场效应器件测量\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -160,7 +160,7 @@
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\样品定位\TransformStep.cs" />
-    <Compile Include="实验部分\温度监测\TemperatureFileObjecct.cs" />
+    <Compile Include="实验部分\温度监测\TemperatureExpObjecct.cs" />
     <Compile Include="实验部分\温度监测\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -170,10 +170,8 @@
       <DependentUpon>SaveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\磁场调节\CWObject.cs" />
-    <Compile Include="实验部分\磁场调节\MagnetScanFileObjecct.cs" />
-    <Compile Include="实验部分\磁场调节\PillarMagnet.cs" />
+    <Compile Include="实验部分\磁场调节\MagnetScanExpObjecct.cs" />
     <Compile Include="实验部分\磁场调节\MagnetAutoScanHelper.cs" />
-    <Compile Include="实验部分\磁场调节\PillarMagnetHelper.cs" />
     <Compile Include="实验部分\磁场调节\主窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
