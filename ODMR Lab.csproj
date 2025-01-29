@@ -117,7 +117,6 @@
     </ApplicationDefinition>
     <Compile Include="IO操作\ConfigBase.cs" />
     <Compile Include="IO操作\ExperimentFileTypes.cs" />
-    <Compile Include="IO操作\ExperimentObject.cs" />
     <Compile Include="IO操作\ExpParamBase.cs" />
     <Compile Include="IO操作\Param.cs" />
     <Compile Include="IO操作\ParamBase.cs" />
@@ -144,6 +143,8 @@
     <Compile Include="基本窗口\ChartViewerWindow.xaml.cs">
       <DependentUpon>ChartViewerWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验类\ExperimentObject.cs" />
+    <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\场效应器件测量\IVMeasureExpObject.cs" />
     <Compile Include="实验部分\场效应器件测量\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -170,11 +171,11 @@
       <DependentUpon>SaveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\磁场调节\CWObject.cs" />
-    <Compile Include="实验部分\磁场调节\MagnetScanExpObjecct.cs" />
     <Compile Include="实验部分\磁场调节\MagnetAutoScanHelper.cs" />
     <Compile Include="实验部分\磁场调节\主窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\磁场调节\主窗口\PredictData.cs" />
     <Compile Include="实验部分\磁场调节\参数\MagnetScanExpParams.cs" />
     <Compile Include="实验部分\磁场调节\参数\MagnetScanConfigParams.cs" />
     <Compile Include="实验部分\磁场调节\子窗口\MagnetCheckWindow.xaml.cs">
@@ -189,6 +190,12 @@
     <Compile Include="实验部分\磁场调节\子窗口\OffsetWindow.xaml.cs">
       <DependentUpon>OffsetWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\磁场调节\扫描线程及文件保存\CheckAngle.cs" />
+    <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ExpEvent.cs" />
+    <Compile Include="实验部分\磁场调节\扫描线程及文件保存\MagnetScanExpObjecct.cs" />
+    <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanAngle.cs" />
+    <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanZ.cs" />
+    <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanXY.cs" />
     <Compile Include="扩展部分\Python管理器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>

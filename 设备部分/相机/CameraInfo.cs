@@ -14,19 +14,17 @@ namespace ODMR_Lab.相机
 
         public CameraWindow DisplayWindow { get; set; } = null;
 
-        public override DeviceInfoBase<CameraBase> CreateDeviceInfo(CameraBase device, DeviceConnectInfo connectinfo)
+        public override void CreateDeviceInfoBehaviour()
         {
-            CameraInfo info = new CameraInfo() { ConnectInfo = connectinfo, Device = device };
-            info.CloseDeviceEvent += new Action(() =>
+            CloseDeviceEvent += new Action(() =>
             {
-                if (info.DisplayWindow != null && info.DisplayWindow.IsActive)
+                if (DisplayWindow != null && DisplayWindow.IsActive)
                 {
-                    info.DisplayWindow.CancelThread();
-                    info.DisplayWindow.Close();
-                    info.DisplayWindow = null;
+                    DisplayWindow.CancelThread();
+                    DisplayWindow.Close();
+                    DisplayWindow = null;
                 }
             });
-            return info;
         }
 
         protected override void AutoConnectedAction(FileObject file)

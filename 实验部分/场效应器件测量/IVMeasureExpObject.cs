@@ -1,16 +1,22 @@
 ﻿using CodeHelper;
+using HardWares.源表;
+using ODMR_Lab.位移台部分;
+using ODMR_Lab.场效应器件测量;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.数据处理;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace ODMR_Lab.实验部分.场效应器件测量
 {
     public class IVMeasureExpObject : ExperimentObject<IVMeasureExpParams, IVMeasureConfigParams>
     {
+        #region 数据及IO部分
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.源表IV测量数据;
 
         /// <summary>
@@ -113,5 +119,133 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             source.ChartDataSource1D.Add(new NumricChartData1D("电压设定值(V)", "IV测量数据") { Data = IVTatgetData });
             return source;
         }
+        #endregion
+
+        #region 实验线程部分
+        public DisplayPage ExpPage { get; set; } = null;
+        public override void ExperimentEvent()
+        {
+
+            ExpPage.IVResultWindow.SetTitle("IV测量结果，开始时间：" + DateTime.Now.ToString("yyyy-MM-dd  HH:mm:ss"));
+
+            IVVData.Clear();
+            IVTimes.Clear();
+            IVIData.Clear();
+            IVTatgetData.Clear();
+            //测量
+
+            Dev.Device.VoltageRampGap = Config.IVRampGap.Value;
+            Dev.Device.VoltageRampStep = Config.IVRampStep.Value;
+            Dev.Device.CurrentLimit = Config.IVCurrentLimit.Value;
+
+            //停止自动采样
+            Dev.AllowAutoMeasure = false;
+            while (Dev.IsMeasuring)
+            {
+                Thread.Sleep(10);
+            }
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ExpPage.IVMeasureProgress.Value = 0;
+            });
+
+
+            double begin = 0;
+            double end = 0;
+
+            //预计总点数
+            int count = 0;
+            for (int i = 0; i < Config.ScanPoints.Count - 1; i++)
+            {
+                begin = Config.ScanPoints[i];
+                end = Config.ScanPoints[i + 1];
+                int sgn = (end - begin) > 0 ? 1 : -1;
+
+                double temp = begin + Config.IVScanStep.Value * sgn;
+                while ((temp - end) * sgn < 0)
+                {
+                    count += 1;
+                    temp += Config.IVScanStep.Value * sgn;
+                }
+            }
+
+            int ind = 0;
+            MeasureGroup g;
+            for (int i = 0; i < Config.ScanPoints.Count - 1; i++)
+            {
+                begin = Config.ScanPoints[i];
+                end = Config.ScanPoints[i + 1];
+                int sgn = (end - begin) > 0 ? 1 : -1;
+                double temp = begin;
+                while ((temp - end) * sgn < 0)
+                {
+                    JudgeThreadEndOrResume();
+                    Dev.Device.TargetVoltage = temp;
+                    g = Dev.Device.Measure();
+                    IVTimes.Add(g.TimeStamp);
+                    IVIData.Add(g.Current);
+                    IVTatgetData.Add(temp);
+                    IVVData.Add(g.Voltage);
+                    temp += Config.IVScanStep.Value * sgn;
+                    //设置进度条
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        ExpPage.IVMeasureProgress.Value = ind * 90.0 / count;
+                    });
+                    //更新结果
+                    ExpPage.UpdateResult();
+                    ind += 1;
+                }
+            }
+
+            Dev.Device.TargetVoltage = end;
+            g = Dev.Device.Measure();
+            IVTimes.Add(g.TimeStamp);
+            IVIData.Add(g.Current);
+            IVTatgetData.Add(end);
+            IVVData.Add(g.Voltage);
+
+            //测量完成后返回0V
+            Dev.Device.TargetVoltage = 0;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ExpPage.IVMeasureProgress.Value = 100;
+            });
+
+        }
+
+        public override IVMeasureConfigParams ReadConfig()
+        {
+            IVMeasureConfigParams P = new IVMeasureConfigParams();
+            P.ReadFromPage(new System.Windows.FrameworkElement[] { ExpPage });
+            List<double> scanpoints = new List<double>() { 0 };
+            foreach (var item in ExpPage.ScanPointPanel.Children)
+            {
+                try
+                {
+                    double value = double.Parse((item as TextBox).Text);
+                    scanpoints.Add(value);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+
+            Config.ScanPoints = scanpoints;
+            return P;
+        }
+
+        PowerMeterInfo Dev = null;
+        public override List<InfoBase> GetDevices()
+        {
+            if (ExpPage.IVDevice.SelectedItem == null)
+            {
+                throw new Exception("未选择进行IV测量的源表");
+            }
+            Dev = ExpPage.IVDevice.SelectedItem.Tag as PowerMeterInfo;
+            return new List<InfoBase>() { Dev };
+        }
+        #endregion
     }
 }

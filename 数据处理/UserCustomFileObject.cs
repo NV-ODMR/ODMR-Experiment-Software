@@ -13,8 +13,9 @@ namespace ODMR_Lab.数据处理
     /// <summary>
     /// 用户编辑文件
     /// </summary>
-    public class UserCustomFileObject : ExperimentObject<ExpParamBase, ConfigBase>
+    public class UserCustomExpObject : ExperimentObject<ExpParamBase, ConfigBase>
     {
+        #region 数据及IO部分
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.自定义数据;
 
         public override ExpParamBase Param { get; set; } = null;
@@ -96,6 +97,22 @@ namespace ODMR_Lab.数据处理
             }
             return obj;
         }
+        #endregion
 
+        #region 实验线程部分
+        public override void ExperimentEvent()
+        {
+        }
+
+        public override List<InfoBase> GetDevices()
+        {
+            return new List<InfoBase>();
+        }
+
+        public override ConfigBase ReadConfig()
+        {
+            return null;
+        }
+        #endregion
     }
 }

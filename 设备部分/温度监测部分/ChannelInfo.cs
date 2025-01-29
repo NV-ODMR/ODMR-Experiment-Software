@@ -89,31 +89,24 @@ namespace ODMR_Lab.温度监测部分
         /// <param name="device"></param>
         /// <param name="connectinfo"></param>
         /// <returns></returns>
-        public override DeviceInfoBase<TemperatureControllerBase> CreateDeviceInfo(TemperatureControllerBase device, DeviceConnectInfo connectinfo)
+        public override void CreateDeviceInfoBehaviour()
         {
-            TemperatureControllerInfo info = new TemperatureControllerInfo()
-            {
-                Device = device,
-                ConnectInfo = connectinfo
-            };
-            Device = device;
             DevicePage devpage = MainWindow.Dev_TemPeraPage;
             //添加通道按钮
-            foreach (var item in device.SensorChannels)
+            foreach (var item in Device.SensorChannels)
             {
                 DecoratedButton btn = new DecoratedButton();
-                btn.Text = device.ProductName + ":" + item.Name;
-                SensorChannelInfo sensorinfo = new SensorChannelInfo(info, item, device.ProductName + "_" + item.Name, btn);
-                info.SensorsInfo.Add(sensorinfo);
+                btn.Text = Device.ProductName + ":" + item.Name;
+                SensorChannelInfo sensorinfo = new SensorChannelInfo(this, item, Device.ProductName + "_" + item.Name, btn);
+                SensorsInfo.Add(sensorinfo);
             }
-            foreach (var item in device.OutputChannels)
+            foreach (var item in Device.OutputChannels)
             {
                 DecoratedButton btn = new DecoratedButton();
-                btn.Text = device.ProductName + ":" + item.Name;
-                OutputChannelInfo outputinfo = new OutputChannelInfo(info, item, device.ProductName + "_" + item.Name, btn);
-                info.OutputsInfo.Add(outputinfo);
+                btn.Text = Device.ProductName + ":" + item.Name;
+                OutputChannelInfo outputinfo = new OutputChannelInfo(this, item, Device.ProductName + "_" + item.Name, btn);
+                OutputsInfo.Add(outputinfo);
             }
-            return info;
         }
 
         protected override void AutoConnectedAction(FileObject file)

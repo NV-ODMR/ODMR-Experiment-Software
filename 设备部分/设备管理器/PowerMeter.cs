@@ -1,4 +1,5 @@
-﻿using ODMR_Lab.位移台部分;
+﻿using HardWares.源表;
+using ODMR_Lab.位移台部分;
 using ODMR_Lab.相机;
 using System;
 using System.Collections.Generic;

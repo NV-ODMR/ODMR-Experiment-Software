@@ -51,6 +51,7 @@ namespace ODMR_Lab.场效应器件测量
         public DisplayPage()
         {
             InitializeComponent();
+            InitIVThread();
         }
 
         public override void Init()
@@ -62,9 +63,19 @@ namespace ODMR_Lab.场效应器件测量
         {
             CurrentLimitListener.Abort();
             while (CurrentLimitListener.ThreadState == ThreadState.Running) Thread.Sleep(10);
+            IVMeasureObj?.Dispose();
         }
 
         #region IV测量部分
+        public void InitIVThread()
+        {
+            IVMeasureObj.ExpPage = this;
+            IVMeasureObj.StartButton = IVBeginBtn;
+            IVMeasureObj.StopButton = IVStopBtn;
+            IVMeasureObj.ExpStartTimeLabel = IVStartTime;
+            IVMeasureObj.ExpEndTimeLabel = IVEndTime;
+        }
+
         /// <summary>
         /// 添加扫描路径点
         /// </summary>
@@ -105,231 +116,12 @@ namespace ODMR_Lab.场效应器件测量
         }
 
 
-        bool ToStop = false;
-
         /// <summary>
         /// IV测量结果
         /// </summary>
         IVMeasureExpObject IVMeasureObj = new IVMeasureExpObject();
-        /// <summary>
-        /// 开始测量IV
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BeginIV(object sender, RoutedEventArgs e)
-        {
-            IVMeasureProgress.Value = 0.5;
-            Thread.Sleep(1);
-            IVMeasureProgress.Value = 1;
 
-            if (IVDevice.SelectedItem == null)
-            {
-                MessageWindow.ShowTipWindow("未选择进行IV测量的源表", MainWindow.Handle);
-                return;
-            }
-
-            IVBeginBtn.IsEnabled = false;
-
-            string scanstrs = "0 V\n";
-            List<double> scanpoints = new List<double>() { 0 };
-            foreach (var item in ScanPointPanel.Children)
-            {
-                try
-                {
-                    double value = double.Parse((item as TextBox).Text);
-                    scanpoints.Add(value);
-                    scanstrs += value.ToString() + " V\n";
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-            }
-
-            IVMeasureObj.Config.ScanPoints = scanpoints;
-
-            try
-            {
-                //获取测量参数
-                IVMeasureObj.Param.ReadFromPage(new FrameworkElement[] { this });
-            }
-            catch (Exception exc)
-            {
-                MessageWindow.ShowTipWindow("存在格式错误的参数，请检查参数格式。", MainWindow.Handle);
-                return;
-            }
-
-            if (MessageWindow.ShowMessageBox("确认IV测量参数", "测量路径点：\n" + scanstrs + "继续执行将会在电源上设置非零伏电压,同时修改电流限制值，是否继续？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
-            {
-                Thread t = new Thread(() =>
-                {
-                    SetBeginState();
-                    ToStop = false;
-
-                    IVResultWindow.SetTitle("IV测量结果，开始时间：" + DateTime.Now.ToString("yyyy-MM-dd  HH:mm:ss"));
-
-                    IVMeasureObj.IVVData.Clear();
-                    IVMeasureObj.IVTimes.Clear();
-                    IVMeasureObj.IVIData.Clear();
-                    IVMeasureObj.IVTatgetData.Clear();
-
-                    PowerMeterInfo dev = null;
-                    Dispatcher.Invoke(() =>
-                    {
-                        //获取设备
-                        dev = DeviceDispatcher.TryGetPowerMeterDevice(IVDevice.SelectedItem.Tag as PowerMeterInfo, OperationMode.ReadWrite, true, true);
-                    });
-                    try
-                    {
-                        if (dev == null)
-                        {
-                            SetStopState();
-                            dev.AllowAutoMeasure = true;
-                            dev.EndUse();
-                            return;
-                        }
-                        //测量
-                        dev.BeginUse();
-
-                        dev.Device.VoltageRampGap = IVMeasureObj.Config.IVRampGap.Value;
-                        dev.Device.VoltageRampStep = IVMeasureObj.Config.IVRampStep.Value;
-                        dev.Device.CurrentLimit = IVMeasureObj.Config.IVCurrentLimit.Value;
-
-                        //停止自动采样
-                        dev.AllowAutoMeasure = false;
-                        while (dev.IsMeasuring)
-                        {
-                            Thread.Sleep(10);
-                        }
-                        Dispatcher.Invoke(() =>
-                        {
-                            IVMeasureProgress.Value = 0;
-                        });
-
-
-                        double begin = 0;
-                        double end = 0;
-
-                        //预计总点数
-                        int count = 0;
-                        for (int i = 0; i < scanpoints.Count - 1; i++)
-                        {
-                            begin = scanpoints[i];
-                            end = scanpoints[i + 1];
-                            int sgn = (end - begin) > 0 ? 1 : -1;
-
-                            double temp = begin + IVMeasureObj.Config.IVScanStep.Value * sgn;
-                            while ((temp - end) * sgn < 0)
-                            {
-                                count += 1;
-                                temp += IVMeasureObj.Config.IVScanStep.Value * sgn;
-                            }
-                        }
-
-                        int ind = 0;
-                        MeasureGroup g;
-                        for (int i = 0; i < scanpoints.Count - 1; i++)
-                        {
-                            begin = scanpoints[i];
-                            end = scanpoints[i + 1];
-                            int sgn = (end - begin) > 0 ? 1 : -1;
-                            double temp = begin;
-                            while ((temp - end) * sgn < 0)
-                            {
-                                if (ToStop == true)
-                                {
-                                    SetBeginState();
-                                    return;
-                                }
-                                dev.Device.TargetVoltage = temp;
-                                g = dev.Device.Measure();
-                                IVMeasureObj.IVTimes.Add(g.TimeStamp);
-                                IVMeasureObj.IVIData.Add(g.Current);
-                                IVMeasureObj.IVTatgetData.Add(temp);
-                                IVMeasureObj.IVVData.Add(g.Voltage);
-                                temp += IVMeasureObj.Config.IVScanStep.Value * sgn;
-                                //设置进度条
-                                Dispatcher.Invoke(() =>
-                                {
-                                    IVMeasureProgress.Value = ind * 90.0 / count;
-                                });
-                                //更新结果
-                                UpdateResult();
-                                ind += 1;
-                            }
-                        }
-
-                        dev.Device.TargetVoltage = end;
-                        g = dev.Device.Measure();
-                        IVMeasureObj.IVTimes.Add(g.TimeStamp);
-                        IVMeasureObj.IVIData.Add(g.Current);
-                        IVMeasureObj.IVTatgetData.Add(end);
-                        IVMeasureObj.IVVData.Add(g.Voltage);
-
-                        //测量完成后返回0V
-                        dev.Device.TargetVoltage = 0;
-                        Dispatcher.Invoke(() =>
-                        {
-                            IVMeasureProgress.Value = 100;
-                            IVResultBtn.IsEnabled = true;
-                        });
-
-                        dev.EndUse();
-                    }
-                    catch (Exception exc)
-                    {
-                        MessageWindow.ShowTipWindow("IV测量过程中遇到错误," + exc.Message, MainWindow.Handle);
-                    }
-                    finally
-                    {
-                        //开始自动采样
-                        dev.EndUse();
-                        dev.AllowAutoMeasure = true;
-                        Dispatcher.Invoke(() =>
-                        {
-                            SetStopState();
-                        });
-                    }
-                });
-                t.Start();
-            }
-            else
-            {
-                SetStopState();
-            }
-        }
-
-
-        private void IVStop(object sender, RoutedEventArgs e)
-        {
-            ToStop = true;
-        }
-
-        public void SetStopState()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                IVStopBtn.IsEnabled = false;
-                IVBeginBtn.IsEnabled = true;
-                IVMeasureObj.Param.SetEndTime(DateTime.Now);
-                IVEndTime.Content = IVMeasureObj.Param.ExpEndTime.Value;
-                IVEndTime.ToolTip = IVMeasureObj.Param.ExpEndTime.Value;
-            });
-        }
-
-        public void SetBeginState()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                IVStopBtn.IsEnabled = true;
-                IVBeginBtn.IsEnabled = false;
-                IVMeasureObj.Param.SetStartTime(DateTime.Now);
-                IVStartTime.Content = IVMeasureObj.Param.ExpStartTime.Value;
-                IVStartTime.ToolTip = IVMeasureObj.Param.ExpStartTime.Value;
-            });
-        }
-
-        ChartViewerWindow IVResultWindow = new ChartViewerWindow(true);
+        public ChartViewerWindow IVResultWindow = new ChartViewerWindow(true);
         /// <summary>
         /// IV测量结果
         /// </summary>
@@ -358,7 +150,7 @@ namespace ODMR_Lab.场效应器件测量
             });
         }
 
-        private void UpdateResult()
+        public void UpdateResult()
         {
             Dispatcher.Invoke(() =>
             {

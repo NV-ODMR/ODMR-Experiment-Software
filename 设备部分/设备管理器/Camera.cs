@@ -1,4 +1,5 @@
-﻿using ODMR_Lab.相机;
+﻿using HardWares.相机_CCD_;
+using ODMR_Lab.相机;
 using System;
 using System.Collections.Generic;
 using System.IO;

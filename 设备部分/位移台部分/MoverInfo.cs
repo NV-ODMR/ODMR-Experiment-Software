@@ -20,14 +20,12 @@ namespace ODMR_Lab.位移台部分
         {
         }
 
-        public override DeviceInfoBase<NanoControllerBase> CreateDeviceInfo(NanoControllerBase device, DeviceConnectInfo connectinfo)
+        public override void CreateDeviceInfoBehaviour()
         {
-            NanoMoverInfo info = new NanoMoverInfo() { Device = device, ConnectInfo = connectinfo };
-            foreach (var item in info.Device.Stages)
+            foreach (var item in Device.Stages)
             {
-                info.Stages.Add(new NanoStageInfo(info, item));
+                Stages.Add(new NanoStageInfo(this, item));
             }
-            return info;
         }
 
 
@@ -57,7 +55,7 @@ namespace ODMR_Lab.位移台部分
         }
     }
 
-    public class NanoStageInfo
+    public class NanoStageInfo : DeviceElementInfoBase<StageBase>
     {
         public MoverTypes MoverType { get; set; } = MoverTypes.None;
 
@@ -76,28 +74,8 @@ namespace ODMR_Lab.位移台部分
             Device = stage;
         }
 
-        private object lockobj = new object();
-
-        public bool IsWriting { get; private set; } = false;
-
-        public bool Use(bool showmessagebox = false, bool log = true)
+        public override void CreateDeviceInfoBehaviour()
         {
-            lock (lockobj)
-            {
-                if (IsWriting)
-                {
-                    MessageLogger.AddLogger("设备", "未能成功获取位移台设备" + Parent.Device.ProductName + "的" + Device.AxisName + "轴,轴正在使用。", MessageTypes.Warning, showmessagebox, log);
-                    return false;
-                }
-                IsWriting = true;
-                return true;
-            }
-        }
-
-        public void UnUse()
-        {
-            lock (lockobj)
-                IsWriting = false;
         }
     }
 

@@ -2,12 +2,14 @@
 using Controls;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
+using HardWares.源表;
 using HardWares.相机_CCD_;
 using HardWares.端口基类;
 using HardWares.端口基类部分;
 using HardWares.纳米位移台;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
+using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本窗口;
 using System;
 using System.Collections.Generic;
@@ -56,7 +58,9 @@ namespace ODMR_Lab.相机
             bool res = window.ShowDialog(out PortObject dev);
             if (res == true)
             {
-                CameraInfo camera = (CameraInfo)new CameraInfo().CreateDeviceInfo(dev as CameraBase, window.ConnectInfo);
+                CameraInfo camera = new CameraInfo() { Device = dev as CameraBase, ConnectInfo = window.ConnectInfo };
+                camera.CreateDeviceInfoBehaviour();
+
                 Cameras.Add(camera);
                 RefreshPanels();
             }

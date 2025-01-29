@@ -1,4 +1,5 @@
-﻿using ODMR_Lab.位移台部分;
+﻿using HardWares.纳米位移台;
+using ODMR_Lab.位移台部分;
 using ODMR_Lab.温度监测部分;
 using System;
 using System.Collections.Generic;

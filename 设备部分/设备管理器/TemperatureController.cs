@@ -1,4 +1,5 @@
-﻿using ODMR_Lab.温度监测部分;
+﻿using HardWares.温度控制器;
+using ODMR_Lab.温度监测部分;
 using ODMR_Lab.相机;
 using System;
 using System.Collections.Generic;

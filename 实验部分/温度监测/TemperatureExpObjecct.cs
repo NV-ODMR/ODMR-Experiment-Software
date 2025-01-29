@@ -26,6 +26,7 @@ namespace ODMR_Lab.实验部分.磁场调节
     /// </summary>
     public class TemperatureExpObject : ExperimentObject<TemperatureExpParams, TemperatureConfigParams>
     {
+        #region 实验数据及IO部分
         /// <summary>
         /// 选中的温度通道
         /// </summary>
@@ -95,5 +96,23 @@ namespace ODMR_Lab.实验部分.磁场调节
             }
             return source;
         }
+        #endregion
+
+        #region 实验线程部分
+        public override void ExperimentEvent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TemperatureConfigParams ReadConfig()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override List<InfoBase> GetDevices()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

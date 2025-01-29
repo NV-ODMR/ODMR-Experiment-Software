@@ -11,6 +11,8 @@ using static System.Net.WebRequestMethods;
 using System.Linq;
 using PythonHandler;
 using ODMR_Lab.磁场调节;
+using System.Windows;
+using ODMR_Lab.实验部分.磁场调节.主窗口;
 
 namespace ODMR_Lab.实验部分.磁场调节
 {
@@ -424,6 +426,88 @@ namespace ODMR_Lab.实验部分.磁场调节
         private static int GetReverseNum(bool value)
         {
             return value ? 1 : -1;
+        }
+
+        /// <summary>
+        /// 计算预测磁场
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public static void CalculatePredictField(PredictData PData)
+        {
+            try
+            {
+                double the = PData.ThetaPredictInput;
+                double phi = PData.PhiPredictInput;
+                double currentzloc = PData.ZPredictHeightInput;
+
+                MagnetScanConfigParams CP = PData.ConfigParams;
+                MagnetScanExpParams EP = PData.Params;
+
+
+                double zdis = GetReverseNum(CP.ReverseZ.Value) * (currentzloc - EP.ZLoc.Value) + EP.ZDistance.Value;
+
+                List<double> res = MagnetAutoScanHelper.FindDire(CP.MRadius.Value, CP.MLength.Value, the, phi, currentzloc);
+                double ang = res[0];
+                double dx = res[1];
+                double dy = res[2];
+                double B = res[3];
+                double dz = zdis - EP.ZDistance.Value;
+                dx *= GetReverseNum(CP.ReverseX.Value);
+                dy *= GetReverseNum(CP.ReverseY.Value);
+                dz *= GetReverseNum(CP.ReverseZ.Value);
+                ang *= GetReverseNum(CP.ReverseA.Value);
+                double ang1 = CP.AngleStart.Value + ang;
+
+                List<double> doffs = GetTargetOffset(CP, ang1);
+                double doffx = doffs[0];
+                double doffy = doffs[1];
+
+                if (ang > 150)
+                    ang -= 360;
+                if (ang < -150)
+                    ang += 360;
+
+                //角度超量程,取等效位置
+                if (Math.Abs(ang) > 150)
+                {
+                    res = MagnetAutoScanHelper.FindDire(CP.MRadius.Value, CP.MLength.Value, 180 - the, phi + 180, zdis);
+                    ang = res[0];
+                    dx = res[1];
+                    dy = res[2];
+                    B = res[3];
+                    dz = zdis - EP.ZDistance.Value;
+                    dx *= GetReverseNum(CP.ReverseX.Value);
+                    dy *= GetReverseNum(CP.ReverseY.Value);
+                    dz *= GetReverseNum(CP.ReverseZ.Value);
+                    ang *= GetReverseNum(CP.ReverseA.Value);
+                    ang1 = CP.AngleStart.Value + ang;
+
+                    if (ang > 150)
+                        ang -= 360;
+                    if (ang < -150)
+                        ang += 360;
+
+                    //根据需要移动的角度进行偏心修正
+                    doffs = MagnetAutoScanHelper.GetTargetOffset(CP, ang1);
+                    doffx = doffs[0];
+                    doffy = doffs[1];
+                }
+
+                PData.XLocPredictOutPut = EP.XLoc.Value + dx + doffx;
+                PData.YLocPredictOutPut = EP.YLoc.Value + dy + doffy;
+                PData.ZLocPredictOutPut = currentzloc;
+                PData.ALocPredictOutPut = ang1;
+
+                try
+                {
+                    //如果可能的话计算预测的磁场强度 
+                    double Intensity = CP.MIntensity.Value;
+                    PData.PredictB = Intensity * B * 10000;
+                }
+                catch (Exception) { }
+            }
+            catch (Exception ex) { return; }
         }
     }
 }

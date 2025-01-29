@@ -147,7 +147,7 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="70"/>
         </Grid.ColumnDefinitions>
-        <control:DecoratedButton TextAreaRatio="0" Grid.Column="4" ToolTip="保存实验文件" Margin="3" Click="SaveFile" IconMargin="4" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
+        <control:DecoratedButton TextAreaRatio="0" Grid.Column="4" ToolTip="保存实验文件" Margin="3" Click="SaveFile" IconMargin="2" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
         <Label Content="开始时间:" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
         <Label Name="StartTime" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
         <Label Name="EndTime" Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White"/>
@@ -159,9 +159,9 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <control:DecoratedButton Name="StartBtn" TextAreaRatio="0" Click="StartScan" IconMargin="4" FontWeight="Thin" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
-        <control:DecoratedButton Name="StopBtn" TextAreaRatio="0" Click="StopScan" FontWeight="Thin" IconMargin="0" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png" Grid.Column="2"/>
-        <control:DecoratedButton Name="ResumeBtn" TextAreaRatio="0" Click="ResumeScan" IconMargin="0" FontWeight="Thin" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
+        <control:DecoratedButton Name="StartBtn" TextAreaRatio="0" IconMargin="4" FontWeight="Thin" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
+        <control:DecoratedButton Name="StopBtn" TextAreaRatio="0" FontWeight="Thin" IconMargin="0" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png" Grid.Column="2"/>
+        <control:DecoratedButton Name="ResumeBtn" TextAreaRatio="0" IconMargin="0" FontWeight="Thin" FontSize="14" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
     </Grid>
     <control:AutoScrollViewer Margin="10" Name="scrollviewer" Grid.Column="1" Grid.Row="4" Grid.RowSpan="1">
         <control:AutoScrollViewer.Content>

@@ -108,7 +108,8 @@ namespace ODMR_Lab.温度监测部分
             bool res = window.ShowDialog(out PortObject dev);
             if (res == true)
             {
-                TemperatureControllerInfo info = (TemperatureControllerInfo)new TemperatureControllerInfo().CreateDeviceInfo(dev as TemperatureControllerBase, window.ConnectInfo);
+                TemperatureControllerInfo info = new TemperatureControllerInfo() { Device = (TemperatureControllerBase)dev, ConnectInfo = window.ConnectInfo };
+                info.CreateDeviceInfoBehaviour();
                 TemperatureControllers.Add(info);
             }
             else

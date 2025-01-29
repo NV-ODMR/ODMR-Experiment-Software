@@ -151,7 +151,7 @@ namespace ODMR_Lab.数据处理
         /// <param name="e"></param>
         private void SaveFileAs(object sender, RoutedEventArgs e)
         {
-            UserCustomFileObject obj = new UserCustomFileObject();
+            UserCustomExpObject obj = new UserCustomExpObject();
             if (GetSelectedIndex() == -1)
             {
                 return;
@@ -208,7 +208,7 @@ namespace ODMR_Lab.数据处理
             }
             try
             {
-                UserCustomFileObject obj = new UserCustomFileObject();
+                UserCustomExpObject obj = new UserCustomExpObject();
                 obj.DataSource = Source[ind];
                 obj.WriteToFile(Path.GetDirectoryName(OpenedFiles[ind]), Path.GetFileName(OpenedFiles[ind]));
 

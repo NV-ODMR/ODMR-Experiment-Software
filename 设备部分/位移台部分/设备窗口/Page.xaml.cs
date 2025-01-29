@@ -59,7 +59,8 @@ namespace ODMR_Lab.位移台部分
             {
                 DecoratedButton btn = sender as DecoratedButton;
 
-                NanoMoverInfo controller = (NanoMoverInfo)new NanoMoverInfo().CreateDeviceInfo(dev as NanoControllerBase, window.ConnectInfo);
+                NanoMoverInfo controller = new NanoMoverInfo() { Device = dev as NanoControllerBase, ConnectInfo = window.ConnectInfo };
+                controller.CreateDeviceInfoBehaviour();
                 if (btn.Name == "MagnetBtn")
                 {
                     foreach (var item in controller.Stages)

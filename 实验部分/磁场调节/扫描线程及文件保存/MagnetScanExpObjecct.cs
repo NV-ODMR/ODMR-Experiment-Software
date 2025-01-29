@@ -1,8 +1,12 @@
 ﻿using CodeHelper;
 using Controls;
+using HardWares.纳米位移台.PI;
+using MathNet.Numerics;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.Windows;
+using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.磁场调节;
 using System;
@@ -12,7 +16,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using ComboBox = Controls.ComboBox;
 using DisplayPage = ODMR_Lab.磁场调节.DisplayPage;
@@ -22,8 +29,9 @@ namespace ODMR_Lab.实验部分.磁场调节
     /// <summary>
     /// 磁场调节的实验类
     /// </summary>
-    public class MagnetScanExpObjecct : ExperimentObject<MagnetScanExpParams, MagnetScanConfigParams>
+    public partial class MagnetScanExpObject : ExperimentObject<MagnetScanExpParams, MagnetScanConfigParams>
     {
+        #region 数据及IO部分
         /// <summary>
         /// X扫描点
         /// </summary>
@@ -466,5 +474,146 @@ namespace ODMR_Lab.实验部分.磁场调节
             }
             #endregion
         }
+        #endregion
+
+        #region 实验线程部分
+        public DisplayPage ExpPage { get; set; } = null;
+
+        public Action<FrameworkElement, string> UISignal = null;
+
+        public override void ExperimentEvent()
+        {
+            bool iscontinue = true;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (MessageWindow.ShowMessageBox("提示", "执行扫描过程会清除当前记录的数据且不可恢复，是否继续?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+                {
+                    #region 清除数据
+                    XPoints.Clear();
+                    YPoints.Clear();
+                    ZPoints.Clear();
+                    AnglePoints.Clear();
+                    CheckPoints.Clear();
+                    //刷新窗口
+                    UISignal.Invoke(null, "Clear Windows");
+                    #endregion
+                }
+                else
+                {
+                    iscontinue = false;
+                }
+            });
+            if (!iscontinue) return;
+
+            #region 刷新面板显示
+            UISignal.Invoke(null, "Set InitState");
+            #endregion
+
+            UISignal.Invoke(ExpPage.XState, "正在执行流程...");
+            //移动Z轴
+            ScanHelper.Move(ZStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
+            //旋转台移动到轴向沿Y
+            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleX, 60000, 360);
+            //X方向扫描
+            ScanX();
+            ExpPage.SetProgress("X", 100);
+            UISignal.Invoke(ExpPage.XState, "已完成，X方向磁场最大位置为：");
+            UISignal.Invoke(ExpPage.XLoc, Math.Round(Param.XLoc.Value, 4).ToString());
+
+            UISignal.Invoke(ExpPage.YState, "正在执行流程...");
+            //旋转台移动到轴向沿X
+            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleY, 10000);
+            //移动X到最大值
+            ScanHelper.Move(XStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Param.XLoc.Value, 10000);
+            //Y方向扫描
+            ScanY();
+            ExpPage.SetProgress("Y", 100);
+            UISignal.Invoke(ExpPage.YState, "已完成,Y方向磁场最大位置为：");
+            UISignal.Invoke(ExpPage.YLoc, Math.Round(Param.YLoc.Value, 4).ToString());
+
+            UISignal.Invoke(ExpPage.ZState, "正在执行流程...");
+            //移动Y到最大值
+            ScanHelper.Move(YStage, JudgeThreadEndOrResume, Config.YRangeLo.Value, Config.YRangeHi.Value, Param.YLoc.Value, 10000);
+            //Z扫描
+            ScanZ();
+            ExpPage.SetProgress("Z", 100);
+            UISignal.Invoke(ExpPage.ZState, "已完成,Z轴位置及对应的与NV距离分别为：");
+            UISignal.Invoke(ExpPage.ZDistance, Math.Round(Param.ZDistance.Value, 4).ToString());
+            UISignal.Invoke(ExpPage.ZLoc, Math.Round(Param.ZLoc.Value, 4).ToString());
+
+            UISignal.Invoke(ExpPage.AngleState, "正在执行流程...");
+            //角度扫描
+            ScanHelper.Move(ZStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
+            ScanAngle();
+            ExpPage.SetProgress("A", 100);
+            UISignal.Invoke(ExpPage.AngleState, "已完成,NV的方位角θ和φ分别为:");
+            UISignal.Invoke(ExpPage.Phi1, Math.Round(Param.Phi1.Value, 4).ToString());
+            UISignal.Invoke(ExpPage.Phi2, Math.Round(Param.Phi2.Value, 4).ToString());
+            UISignal.Invoke(ExpPage.Theta1, Math.Round(Param.Theta1.Value, 4).ToString());
+            UISignal.Invoke(ExpPage.Theta2, Math.Round(Param.Theta2.Value, 4).ToString());
+
+            UISignal.Invoke(ExpPage.CheckState, "正在执行流程...");
+            //角度检查
+            CheckAngle();
+            ExpPage.SetProgress("C", 100);
+            UISignal.Invoke(ExpPage.CheckState, "已完成,NV的方位角θ和φ分别为:");
+            UISignal.Invoke(ExpPage.CheckedTheta, Math.Round(Param.CheckedTheta.Value, 4).ToString());
+            UISignal.Invoke(ExpPage.CheckedPhi, Math.Round(Param.CheckedPhi.Value, 4).ToString());
+            //计算目标位置
+        }
+
+        /// <summary>
+        /// 获取反转系数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public int GetReverseNum(bool value)
+        {
+            return value ? 1 : -1;
+        }
+
+        public override MagnetScanConfigParams ReadConfig()
+        {
+            MagnetScanConfigParams P = new MagnetScanConfigParams();
+            P.ReadFromPage(new FrameworkElement[] { ExpPage });
+            P.AngleY = P.AngleStart.Value;
+            P.AngleX = P.AngleY + 90;
+            return P;
+        }
+
+        private NanoStageInfo XStage { get; set; } = new NanoStageInfo(new NanoMoverInfo(), null);
+        private NanoStageInfo YStage { get; set; } = new NanoStageInfo(new NanoMoverInfo(), null);
+        private NanoStageInfo ZStage { get; set; } = new NanoStageInfo(new NanoMoverInfo(), null);
+        private NanoStageInfo AStage { get; set; } = new NanoStageInfo(new NanoMoverInfo(), null);
+
+        public override List<InfoBase> GetDevices()
+        {
+            //XStage = DeviceDispatcher.TryGetMoverDevice(Config.XRelate.Value, OperationMode.Read, PartTypes.Magnnet);
+            //YStage = DeviceDispatcher.TryGetMoverDevice(Config.YRelate.Value, OperationMode.Read, PartTypes.Magnnet);
+            //ZStage = DeviceDispatcher.TryGetMoverDevice(Config.ZRelate.Value, OperationMode.Read, PartTypes.Magnnet);
+            //AStage = DeviceDispatcher.TryGetMoverDevice(Config.ARelate.Value, OperationMode.Read, PartTypes.Magnnet);
+            return new List<InfoBase>() { XStage, YStage, ZStage, AStage };
+        }
+
+        private void SetProgressFromSession(NanoStageInfo info, double arg2)
+        {
+            if (info == XStage)
+            {
+                ExpPage.SetProgress("X", arg2);
+            }
+            if (info == YStage)
+            {
+                ExpPage.SetProgress("Y", arg2);
+            }
+            if (info == ZStage)
+            {
+                ExpPage.SetProgress("Z", arg2);
+            }
+            if (info == AStage)
+            {
+                ExpPage.SetProgress("A", arg2);
+            }
+        }
+        #endregion
     }
 }

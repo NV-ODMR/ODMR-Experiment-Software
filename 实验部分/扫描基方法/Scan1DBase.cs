@@ -59,18 +59,12 @@ namespace ODMR_Lab.实验部分.扫描基方法
 
             List<object> result = null;
 
-            //bool res = ScanMover.Use();
-            //if (res == false)
-            //{
-            //    throw new Exception(ScanMover.Parent.Device.ProductName + "的" + ScanMover.Device.AxisName + "轴被占用");
-            //}
-
             try
             {
                 for (int i = 0; i < pointscount; i++)
                 {
                     //移动位移台
-                    MoveWithoutUse(ScanMover, StateJudgeEvent, RestrictLo, RestrictHi, Lo + step * i, 10000, moveMaxStep);
+                    Move(ScanMover, StateJudgeEvent, RestrictLo, RestrictHi, Lo + step * i, 10000, moveMaxStep);
                     //进行操作
                     if (IsFirstScan == true)
                     {
@@ -84,12 +78,11 @@ namespace ODMR_Lab.实验部分.扫描基方法
                     SetProgress(progressLo + (i + 1) * (progressHi - progressLo) / pointscount);
                     Thread.Sleep(500);
                 }
-                ScanMover?.UnUse();
+                ScanMover?.EndUse();
                 return result;
             }
             catch (Exception ex)
             {
-                ScanMover?.UnUse();
                 throw ex;
             }
         }

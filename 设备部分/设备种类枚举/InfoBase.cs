@@ -13,26 +13,76 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab
 {
-    public abstract class DeviceInfoBase<T>
-        where T : PortObject
+    public abstract class InfoBase
     {
         public bool IsWriting { get; private set; } = false;
 
-        public DeviceConnectInfo ConnectInfo { get; protected set; } = null;
+        protected object SourceDevice { get; set; } = null;
 
+
+        private object lockobj = new object();
+
+        /// <summary>
+        /// 创建DeviceInfo的具体方法
+        /// </summary>
+        public abstract void CreateDeviceInfoBehaviour();
+
+        /// <summary>
+        /// 使用设备,向设备写信息，当设备处于使用状态时其他无关操作会导致报错
+        /// </summary>
+        public bool BeginUse()
+        {
+            lock (lockobj)
+            {
+                if (IsWriting)
+                {
+                    throw new Exception("未能成功获取设备," + "设备正在使用。");
+                }
+                IsWriting = true;
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// 停止向设备写信息，当设备处于使用状态时其他无关操作会导致报错
+        /// </summary>
+        public void EndUse()
+        {
+            lock (lockobj)
+            {
+                IsWriting = false;
+            }
+        }
+    }
+
+    public abstract class DeviceInfoBase<T> : InfoBase
+        where T : PortObject
+    {
         /// <summary>
         /// 设备名
         /// </summary>
-        public T Device { get; set; }
+        public new T Device
+        {
+            get
+            {
+                return (T)SourceDevice;
+            }
+            set
+            {
+                SourceDevice = value;
+            }
+        }
 
-        public abstract DeviceInfoBase<T> CreateDeviceInfo(T device, DeviceConnectInfo connectinfo);
+        public DeviceConnectInfo ConnectInfo { get; set; } = null;
+
+        protected abstract void CloseFileAction(FileObject obj);
+
+        protected abstract void AutoConnectedAction(FileObject file);
 
         /// <summary>
         /// 设备关闭事件
         /// </summary>
         public event Action CloseDeviceEvent = null;
-
-        protected abstract void CloseFileAction(FileObject obj);
 
         /// <summary>
         /// 关闭设备，保存参数，返回参数文件路径
@@ -41,14 +91,10 @@ namespace ODMR_Lab
         {
             if (!IsWriting)
             {
-                PortObject dev = Device as PortObject;
+                PortObject dev = Device;
                 CloseDeviceEvent?.Invoke();
                 FileObject obj = new FileObject();
-                if (Device is CameraBase)
-                {
-                    CameraBase c = Device as CameraBase;
-                    obj = c.GenerateParamsFile(c);
-                }
+                obj = dev.GenerateParamsFile();
                 dev.Dispose();
                 CloseFileAction(obj);
                 obj.Descriptions.Add("FileType", "DeviceParamsFile");
@@ -148,17 +194,16 @@ namespace ODMR_Lab
 
                                     }
                                     Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);
-                                    DeviceInfoBase<T> devinfo = null;
-                                    MainWindow.Handle.Dispatcher.Invoke(() =>
-                                    {
-                                        devinfo = (Activator.CreateInstance(infoType) as DeviceInfoBase<T>).CreateDeviceInfo((T)deviceinstance, connectinfo);
-                                    });
-                                    devinfo.Device = (T)deviceinstance;
-                                    devinfo.AutoConnectedAction(obj);
-                                    ConnectDevices.Add(devinfo);
+                                    DeviceInfoBase<T> dev = Activator.CreateInstance(infoType) as DeviceInfoBase<T>;
+                                    dev.SourceDevice = deviceinstance as PortObject;
+                                    dev.ConnectInfo = connectinfo;
+                                    dev.CreateDeviceInfoBehaviour();
+                                    dev.AutoConnectedAction(obj);
+
+                                    ConnectDevices.Add(dev);
                                     if (obj.DataCount() != 0)
                                     {
-                                        (devinfo.Device as PortObject).LoadParams(obj);
+                                        dev.Device.LoadParams(obj);
                                     }
                                 }
                             }
@@ -170,8 +215,6 @@ namespace ODMR_Lab
             unconnectedDeviceinfo = result;
             return ConnectDevices;
         }
-
-        protected abstract void AutoConnectedAction(FileObject file);
 
         /// <summary>
         /// 按照配置文件打开指定设备并导入参数
@@ -213,48 +256,35 @@ namespace ODMR_Lab
             }
 
             Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);
-            DeviceInfoBase<T> devinfo = null;
-            MainWindow.Handle.Dispatcher.Invoke(() =>
-            {
-                devinfo = (Activator.CreateInstance(infoType) as DeviceInfoBase<T>).CreateDeviceInfo((T)deviceinstance, connectinfo);
-            });
-            devinfo.Device = (T)deviceinstance;
-            devinfo.AutoConnectedAction(obj);
+            DeviceInfoBase<T> res = Activator.CreateInstance(infoType) as DeviceInfoBase<T>;
+            res.SourceDevice = deviceinstance as PortObject;
+            res.ConnectInfo = connectinfo;
+            res.CreateDeviceInfoBehaviour();
+            res.AutoConnectedAction(obj);
+
             if (obj.DataCount() != 0)
             {
-                (devinfo.Device as PortObject).LoadParams(obj);
+                res.Device.LoadParams(obj);
             }
 
-            return devinfo;
+            return res;
         }
+    }
 
-        private object lockobj = new object();
-
+    public abstract class DeviceElementInfoBase<T> : InfoBase
+    {
         /// <summary>
-        /// 使用设备,向设备写信息，当设备处于使用状态时其他无关操作会导致报错
+        /// 设备名
         /// </summary>
-        public bool BeginUse(bool showmessagebox = false, bool log = true)
+        public new T Device
         {
-            lock (lockobj)
+            get
             {
-                if (IsWriting)
-                {
-                    MessageLogger.AddLogger("设备", "未能成功获取设备" + Device.ProductName + ", 轴正在使用。", MessageTypes.Warning, showmessagebox, log);
-                    return false;
-                }
-                IsWriting = true;
-                return true;
+                return (T)SourceDevice;
             }
-        }
-
-        /// <summary>
-        /// 停止向设备写信息，当设备处于使用状态时其他无关操作会导致报错
-        /// </summary>
-        public void EndUse()
-        {
-            lock (lockobj)
+            set
             {
-                IsWriting = false;
+                SourceDevice = value;
             }
         }
     }

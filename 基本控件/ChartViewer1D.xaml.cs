@@ -237,6 +237,7 @@ namespace ODMR_Lab.基本控件
             }
         }
 
+        Thread UpdateThread = null;
         /// <summary>
         /// 从DataSource中同步数据并刷新绘图
         /// </summary>
@@ -247,7 +248,11 @@ namespace ODMR_Lab.基本控件
             //刷新数据显示
             UpdateDataDisplay();
 
-            Thread t = new Thread(() =>
+            while (UpdateThread != null && UpdateThread.ThreadState == ThreadState.Running)
+            {
+                Thread.Sleep(50);
+            }
+            UpdateThread = new Thread(() =>
             {
                 SelectedXdata = null;
                 foreach (var item in DataSource)
@@ -266,7 +271,7 @@ namespace ODMR_Lab.基本控件
                 bool HasName = false;
                 Dispatcher.Invoke(() =>
                 {
-                    HasName = chart.XAxisName == SelectedXdata.Name;
+                    HasName = (chart.XAxisName == SelectedXdata.Name);
                 });
                 if (HasName)
                 {
@@ -381,7 +386,7 @@ namespace ODMR_Lab.基本控件
                 });
 
             });
-            t.Start();
+            UpdateThread.Start();
         }
 
         /// <summary>

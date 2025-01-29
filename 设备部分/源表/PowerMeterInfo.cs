@@ -48,10 +48,8 @@ namespace ODMR_Lab.位移台部分
         {
         }
 
-        public override DeviceInfoBase<PowerSourceBase> CreateDeviceInfo(PowerSourceBase device, DeviceConnectInfo connectinfo)
+        public override void CreateDeviceInfoBehaviour()
         {
-            PowerMeterInfo info = new PowerMeterInfo() { Device = device, ConnectInfo = connectinfo };
-            return info;
         }
 
         protected override void AutoConnectedAction(FileObject file)

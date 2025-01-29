@@ -68,11 +68,12 @@ namespace ODMR_Lab.源表部分
             bool res = window.ShowDialog(out PortObject dev);
             if (res == true)
             {
-                PowerMeterInfo controller = (PowerMeterInfo)new PowerMeterInfo().CreateDeviceInfo(dev as PowerSourceBase, window.ConnectInfo);
+                PowerMeterInfo power = new PowerMeterInfo() { Device = dev as PowerSourceBase, ConnectInfo = window.ConnectInfo };
+                power.CreateDeviceInfoBehaviour();
 
-                controller.MaxSavePoint = Param.SamplePoint.Value;
+                power.MaxSavePoint = Param.SamplePoint.Value;
 
-                PowerMeterList.Add(controller);
+                PowerMeterList.Add(power);
 
                 RefreshPanels();
             }
