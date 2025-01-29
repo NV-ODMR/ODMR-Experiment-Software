@@ -47,12 +47,6 @@ namespace ODMR_Lab
             {
                 if (index < 0 || index > MainWindow.Dev_TemPeraPage.TemperatureControllers.Count - 1)
                 {
-                    MessageLogger.AddLogger("设备", "未找到对应的温控设备，序号：" + index.ToString(), MessageTypes.Warning, showmessagebox, log);
-                    return null;
-                }
-                if (MainWindow.Dev_TemPeraPage.TemperatureControllers[index].IsWriting)
-                {
-                    MessageLogger.AddLogger("设备", "未能成功获取温控设备" + MainWindow.Dev_TemPeraPage.TemperatureControllers[index].Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 return MainWindow.Dev_TemPeraPage.TemperatureControllers[index];
@@ -73,12 +67,6 @@ namespace ODMR_Lab
             {
                 if (!MainWindow.Dev_TemPeraPage.TemperatureControllers.Contains(device))
                 {
-                    MessageLogger.AddLogger("设备", "未找到对应的温控设备,名称：" + device.Device.ProductName.ToString(), MessageTypes.Warning, showmessagebox, log);
-                    return null;
-                }
-                if (device.IsWriting && mode != OperationMode.Read)
-                {
-                    MessageLogger.AddLogger("设备", "未能成功获取温控设备" + device.Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 return device;
@@ -101,15 +89,9 @@ namespace ODMR_Lab
                 {
                     if (tem.Device.ProductName == productName)
                     {
-                        if (tem.IsWriting && mode != OperationMode.Read)
-                        {
-                            MessageLogger.AddLogger("设备", "未能成功获取温控设备" + tem.Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
-                            return null;
-                        }
                         return tem;
                     }
                 }
-                MessageLogger.AddLogger("设备", "未找到对应的温控设备" + productName, MessageTypes.Warning, showmessagebox, log);
                 return null;
             }
             catch (Exception ex)

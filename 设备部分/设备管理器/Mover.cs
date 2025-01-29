@@ -55,11 +55,6 @@ namespace ODMR_Lab
                     {
                         if (item == device)
                         {
-                            if (item.IsWriting && mode != OperationMode.Read)
-                            {
-                                MessageLogger.AddLogger("设备", "未能成功获取位移台设备" + tem.Device.ProductName + "的" + item.Device.AxisName + "轴,轴正在使用。", MessageTypes.Warning, showmessagebox, log);
-                                return null;
-                            }
                             return item;
                         }
                     }
@@ -89,17 +84,10 @@ namespace ODMR_Lab
                     {
                         if (item.Device.AxisName == axisname && tem.Device.ProductName == productName)
                         {
-                            if (item.IsWriting && mode != OperationMode.Read)
-                            {
-                                MessageLogger.AddLogger("设备", "未能成功获取位移台设备" + tem.Device.ProductName + "的" + item.Device.AxisName + "轴,轴正在使用。", MessageTypes.Warning, showmessagebox, log);
-                                return null;
-                            }
                             return item;
                         }
                     }
                 }
-
-                MessageLogger.AddLogger("设备", "未找到对应的位移台设备" + productName + " " + axisname + "轴", MessageTypes.Warning, showmessagebox, log);
                 return null;
             }
             catch (Exception ex)
@@ -118,7 +106,6 @@ namespace ODMR_Lab
             {
                 if (part == PartTypes.None)
                 {
-                    MessageLogger.AddLogger("设备", "无法寻找未分配的位移台设备", MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
 
@@ -128,11 +115,6 @@ namespace ODMR_Lab
                     {
                         if (item.MoverType == moverType && item.PartType == part)
                         {
-                            if (item.IsWriting && mode != OperationMode.Read)
-                            {
-                                MessageLogger.AddLogger("设备", "未能成功获取位移台设备" + tem.Device.ProductName + "的" + item.Device.AxisName + "轴,轴正在使用。", MessageTypes.Warning, showmessagebox, log);
-                                return null;
-                            }
                             return item;
                         }
                     }
@@ -157,7 +139,6 @@ namespace ODMR_Lab
             {
                 if (part == PartTypes.None)
                 {
-                    MessageLogger.AddLogger("设备", "无法寻找未分配的位移台设备", MessageTypes.Warning, showmessagebox, log);
                     return infos;
                 }
 
@@ -167,10 +148,6 @@ namespace ODMR_Lab
                     {
                         if (item.PartType == part)
                         {
-                            if (item.IsWriting && mode != OperationMode.Read)
-                            {
-                                MessageLogger.AddLogger("设备", "未能成功获取位移台设备" + tem.Device.ProductName + "的" + item.Device.AxisName + "轴,轴正在使用。", MessageTypes.Warning, showmessagebox, log);
-                            }
                             infos.Add(item);
                         }
                     }

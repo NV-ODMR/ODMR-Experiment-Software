@@ -48,12 +48,10 @@ namespace ODMR_Lab
             {
                 if (!MainWindow.Dev_CameraPage.Cameras.Contains(device))
                 {
-                    MessageLogger.AddLogger("设备", "未找到对应的相机设备,名称：" + device.Device.ProductName.ToString(), MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 if (device.IsWriting && mode != OperationMode.Read)
                 {
-                    MessageLogger.AddLogger("设备", "未能成功获取相机设备" + device.Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 return device;
@@ -81,13 +79,11 @@ namespace ODMR_Lab
                     {
                         if (tem.IsWriting && mode != OperationMode.Read)
                         {
-                            MessageLogger.AddLogger("设备", "未能成功获取相机设备" + tem.Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
                             return null;
                         }
                         return tem;
                     }
                 }
-                MessageLogger.AddLogger("设备", "未找到对应的相机设备" + productName, MessageTypes.Warning, showmessagebox, log);
                 return null;
             }
             catch (Exception ex)
@@ -106,12 +102,10 @@ namespace ODMR_Lab
             {
                 if (index < 0 || index > MainWindow.Dev_CameraPage.Cameras.Count - 1)
                 {
-                    MessageLogger.AddLogger("设备", "未找到对应的相机设备，序号：" + index.ToString(), MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 if (MainWindow.Dev_TemPeraPage.TemperatureControllers[index].IsWriting && mode != OperationMode.Read)
                 {
-                    MessageLogger.AddLogger("设备", "未能成功获取相机设备" + MainWindow.Dev_TemPeraPage.TemperatureControllers[index].Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 return MainWindow.Dev_CameraPage.Cameras[index];

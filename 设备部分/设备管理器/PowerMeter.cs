@@ -49,12 +49,6 @@ namespace ODMR_Lab
             {
                 if (!MainWindow.Dev_PowerMeterPage.PowerMeterList.Contains(device))
                 {
-                    MessageLogger.AddLogger("设备", "未找到对应的波源设备,名称：" + device.Device.ProductName.ToString(), MessageTypes.Warning, showmessagebox, log);
-                    return null;
-                }
-                if (device.IsWriting && mode != OperationMode.Read)
-                {
-                    MessageLogger.AddLogger("设备", "未能成功获取波源设备" + device.Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 return device;
@@ -80,15 +74,9 @@ namespace ODMR_Lab
                 {
                     if (tem.Device.ProductName == productName)
                     {
-                        if (tem.IsWriting && mode != OperationMode.Read)
-                        {
-                            MessageLogger.AddLogger("设备", "未能成功获取波源设备" + tem.Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
-                            return null;
-                        }
                         return tem;
                     }
                 }
-                MessageLogger.AddLogger("设备", "未找到对应的波源设备" + productName, MessageTypes.Warning, showmessagebox, log);
                 return null;
             }
             catch (Exception ex)
@@ -107,12 +95,6 @@ namespace ODMR_Lab
             {
                 if (index < 0 || index > MainWindow.Dev_PowerMeterPage.PowerMeterList.Count - 1)
                 {
-                    MessageLogger.AddLogger("设备", "未找到对应的波源设备，序号：" + index.ToString(), MessageTypes.Warning, showmessagebox, log);
-                    return null;
-                }
-                if (MainWindow.Dev_PowerMeterPage.PowerMeterList[index].IsWriting && mode != OperationMode.Read)
-                {
-                    MessageLogger.AddLogger("设备", "未能成功获取波源设备" + MainWindow.Dev_PowerMeterPage.PowerMeterList[index].Device.ProductName + "，设备正在使用。", MessageTypes.Warning, showmessagebox, log);
                     return null;
                 }
                 return MainWindow.Dev_PowerMeterPage.PowerMeterList[index];
