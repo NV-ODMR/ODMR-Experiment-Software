@@ -38,7 +38,6 @@
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
     </control:ListViewer>
-    <control:DecoratedButton Name="TemplateBtn" Grid.Row="2" Grid.Column="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Click="NewConnect" Text="新建连接" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     <control:FontChangeText Name="TextTemplate" Width="100" Height="40" Visibility="Collapsed" BorderThickness="0">
         <control:FontChangeText.InnerTextBox>
             <TextBox Background="#FF4D4D4D" Text="111" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CaretBrush="White" Foreground="White"/>

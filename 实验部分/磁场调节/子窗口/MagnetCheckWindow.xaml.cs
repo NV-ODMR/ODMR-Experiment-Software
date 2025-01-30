@@ -303,6 +303,8 @@ namespace ODMR_Lab.磁场调节
                 MessageWindow.ShowTipWindow("移动并测量未完成:" + ex.Message, MainWindow.Handle);
             }
 
+            return null;
+
         }
         #endregion
     }
