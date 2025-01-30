@@ -135,26 +135,33 @@ namespace ODMR_Lab.位移台部分
         private void OpenLabelWindow(object sender, RoutedEventArgs e)
         {
             DecoratedButton btn = sender as DecoratedButton;
-            MoverTestWindow window = null;
-            if (btn.Name == "MagnetLabelBtn")
+            try
             {
-                window = new MoverTestWindow(PartTypes.Magnnet, "磁铁位移台设置窗口");
-            }
-            if (btn.Name == "PrbeLabelBtn")
-            {
-                window = new MoverTestWindow(PartTypes.Probe, "探针位移台设置窗口");
-            }
-            if (btn.Name == "SampleLabelBtn")
-            {
-                window = new MoverTestWindow(PartTypes.Sample, "样品位移台设置窗口");
-            }
-            if (btn.Name == "MicrowaveLabelBtn")
-            {
-                window = new MoverTestWindow(PartTypes.Microwave, "微波线位移台设置窗口");
-            }
+                MoverTestWindow window = null;
+                if (btn.Name == "MagnetLabelBtn")
+                {
+                    window = new MoverTestWindow(PartTypes.Magnnet, "磁铁位移台设置窗口");
+                }
+                if (btn.Name == "PrbeLabelBtn")
+                {
+                    window = new MoverTestWindow(PartTypes.Probe, "探针位移台设置窗口");
+                }
+                if (btn.Name == "SampleLabelBtn")
+                {
+                    window = new MoverTestWindow(PartTypes.Sample, "样品位移台设置窗口");
+                }
+                if (btn.Name == "MicrowaveLabelBtn")
+                {
+                    window = new MoverTestWindow(PartTypes.Microwave, "微波线位移台设置窗口");
+                }
 
-            window?.ShowDialog();
-            return;
+                window?.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageWindow.ShowTipWindow("设备被占用", MainWindow.Handle);
+                return;
+            }
         }
 
         #region 设备列表

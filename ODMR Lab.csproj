@@ -245,6 +245,7 @@
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="设备部分\相机\CameraInfo.cs" />
+    <Compile Include="设备部分\相机\FlipMotorInfo.cs" />
     <Compile Include="设备部分\相机\子窗口\CameraWindow.xaml.cs">
       <DependentUpon>CameraWindow.xaml</DependentUpon>
     </Compile>
@@ -255,6 +256,7 @@
     <Compile Include="设备部分\设备种类枚举\InfoBase.cs" />
     <Compile Include="设备部分\设备管理器\Camera.cs" />
     <Compile Include="设备部分\设备管理器\DeviceDispatcher.cs" />
+    <Compile Include="设备部分\设备管理器\Flip.cs" />
     <Compile Include="设备部分\设备管理器\Mover.cs" />
     <Compile Include="设备部分\设备管理器\PowerMeter.cs" />
     <Compile Include="设备部分\设备管理器\TemperatureController.cs" />

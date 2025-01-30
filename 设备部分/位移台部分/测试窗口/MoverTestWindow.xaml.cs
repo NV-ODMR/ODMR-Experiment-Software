@@ -31,7 +31,9 @@ namespace ODMR_Lab.位移台部分
             InitializeComponent();
             this.part = part;
             Title.Content = title;
-            List<NanoStageInfo> movers = DeviceDispatcher.TryGetMoverDevice(OperationMode.Read, part, false, true);
+            List<NanoStageInfo> movers = DeviceDispatcher.TryGetMoverDevice(part);
+            //占用设备
+            DeviceDispatcher.UseDevices(movers.Select(x => x as InfoBase).ToList());
             foreach (var item in movers)
             {
                 MoverLists.Children.Add(CreateMoverGridBar(item));
@@ -43,6 +45,9 @@ namespace ODMR_Lab.位移台部分
         private void Close(object sender, RoutedEventArgs e)
         {
             DisposeThread();
+            List<NanoStageInfo> movers = DeviceDispatcher.TryGetMoverDevice(part);
+            //解除占用
+            DeviceDispatcher.EndUseDevices(movers.Select(x => x as InfoBase).ToList());
             Close();
         }
 
@@ -171,7 +176,7 @@ namespace ODMR_Lab.位移台部分
                 {
                     try
                     {
-                        List<NanoStageInfo> movers = DeviceDispatcher.TryGetMoverDevice(OperationMode.Read, part, false, true);
+                        List<NanoStageInfo> movers = DeviceDispatcher.TryGetMoverDevice(part);
                         foreach (var item in movers)
                         {
                             double pos = item.Device.Position;

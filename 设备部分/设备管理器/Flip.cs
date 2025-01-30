@@ -1,6 +1,5 @@
-﻿using HardWares.源表;
-using ODMR_Lab.位移台部分;
-using ODMR_Lab.相机;
+﻿using ODMR_Lab.相机;
+using ODMR_Lab.设备部分.相机;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,16 +12,16 @@ namespace ODMR_Lab
     public partial class DeviceDispatcher
     {
         /// <summary>
-        /// 自动连接所有波源
+        /// 自动连接所有相机
         /// </summary>
         /// <param name="connectmessage"></param>
         /// <param name="unconnectmessage"></param>
-        private static void ScanPowerMeterDevices(out string connectmessage, out string unconnectmessage)
+        private static void ScanFlipDevices(out string connectmessage, out string unconnectmessage)
         {
             connectmessage = "";
             unconnectmessage = "";
-            MainWindow.Dev_PowerMeterPage.PowerMeterList = PowerMeterInfo.ConnectAllAndLoadParams(Path.Combine(Environment.CurrentDirectory, "DevParamDir"), out List<string> unconnectedDevices).Select(x => x as PowerMeterInfo).ToList();
-            foreach (var item in MainWindow.Dev_PowerMeterPage.PowerMeterList)
+            MainWindow.Dev_CameraPage.Flips = FlipMotorInfo.ConnectAllAndLoadParams(Path.Combine(Environment.CurrentDirectory, "DevParamDir"), out List<string> unconnectedDevices).Select(x => x as FlipMotorInfo).ToList();
+            foreach (var item in MainWindow.Dev_CameraPage.Flips)
             {
                 connectmessage += item.Device.ProductName + "\n";
             }
@@ -32,7 +31,7 @@ namespace ODMR_Lab
             }
             MainWindow.Handle.Dispatcher.Invoke(() =>
             {
-                MainWindow.Dev_PowerMeterPage.RefreshPanels();
+                MainWindow.Dev_CameraPage.RefreshPanels();
             });
         }
 
@@ -43,11 +42,11 @@ namespace ODMR_Lab
         /// <param name="showmessagebox"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static PowerMeterInfo TryGetPowerMeterDevice(PowerMeterInfo device)
+        public static FlipMotorInfo TryGetFlipDevice(FlipMotorInfo device)
         {
             try
             {
-                if (!MainWindow.Dev_PowerMeterPage.PowerMeterList.Contains(device))
+                if (!MainWindow.Dev_CameraPage.Flips.Contains(device))
                 {
                     return null;
                 }
@@ -66,11 +65,11 @@ namespace ODMR_Lab
         /// <param name="showmessagebox"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static PowerMeterInfo TryGetPowerMeterDevice(string productName)
+        public static FlipMotorInfo TryGetFlipDevice(string productName)
         {
             try
             {
-                foreach (var tem in MainWindow.Dev_PowerMeterPage.PowerMeterList)
+                foreach (var tem in MainWindow.Dev_CameraPage.Flips)
                 {
                     if (tem.Device.ProductName == productName)
                     {
@@ -89,15 +88,15 @@ namespace ODMR_Lab
         /// 获取相机设备(如果设备正在使用则生成一个错误提示)
         /// </summary>
         /// <returns></returns>
-        public static PowerMeterInfo TryGetPowerMeterDevice(int index)
+        public static FlipMotorInfo TryGetFlipDevice(int index)
         {
             try
             {
-                if (index < 0 || index > MainWindow.Dev_PowerMeterPage.PowerMeterList.Count - 1)
+                if (index < 0 || index > MainWindow.Dev_CameraPage.Flips.Count - 1)
                 {
                     return null;
                 }
-                return MainWindow.Dev_PowerMeterPage.PowerMeterList[index];
+                return MainWindow.Dev_CameraPage.Flips[index];
             }
             catch (Exception ex)
             {

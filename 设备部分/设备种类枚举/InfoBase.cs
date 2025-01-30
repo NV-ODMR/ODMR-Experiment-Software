@@ -30,7 +30,7 @@ namespace ODMR_Lab
         /// <summary>
         /// 使用设备,向设备写信息，当设备处于使用状态时其他无关操作会导致报错
         /// </summary>
-        public bool BeginUse()
+        public void BeginUse()
         {
             lock (lockobj)
             {
@@ -39,7 +39,7 @@ namespace ODMR_Lab
                     throw new Exception("未能成功获取设备," + "设备正在使用。");
                 }
                 IsWriting = true;
-                return true;
+                return;
             }
         }
 

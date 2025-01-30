@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using HardWares.仪器列表.电动翻转座;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
@@ -11,6 +12,7 @@ using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
 using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分.相机;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,6 +40,8 @@ namespace ODMR_Lab.相机
     public partial class DevicePage : PageBase
     {
         public List<CameraInfo> Cameras { get; set; } = new List<CameraInfo>();
+        public List<FlipMotorInfo> Flips { get; set; } = new List<FlipMotorInfo>();
+
 
         public DevicePage()
         {
@@ -52,7 +56,7 @@ namespace ODMR_Lab.相机
         {
         }
 
-        private void NewConnect(object sender, RoutedEventArgs e)
+        private void NewCameraConnect(object sender, RoutedEventArgs e)
         {
             ConnectWindow window = new ConnectWindow(typeof(CameraBase), MainWindow.Handle);
             bool res = window.ShowDialog(out PortObject dev);
@@ -69,13 +73,36 @@ namespace ODMR_Lab.相机
                 return;
             }
         }
+        private void NewFlipConnect(object sender, RoutedEventArgs e)
+        {
+            ConnectWindow window = new ConnectWindow(typeof(FlipMotorBase), MainWindow.Handle);
+            bool res = window.ShowDialog(out PortObject dev);
+            if (res == true)
+            {
+                FlipMotorInfo flips = new FlipMotorInfo() { Device = dev as FlipMotorBase, ConnectInfo = window.ConnectInfo };
+                flips.CreateDeviceInfoBehaviour();
+
+                Flips.Add(flips);
+                RefreshPanels();
+            }
+            else
+            {
+                return;
+            }
+        }
 
         public void RefreshPanels()
         {
-            DeviceList.ClearItems();
+            CameraList.ClearItems();
             foreach (var item in Cameras)
             {
-                DeviceList.AddItem(item, item.Device.ProductName);
+                CameraList.AddItem(item, item.Device.ProductName);
+            }
+
+            FlipList.ClearItems();
+            foreach (var item in Flips)
+            {
+                FlipList.AddItem(item, item.Device.ProductName, item.Device.Switch);
             }
         }
 
@@ -137,6 +164,55 @@ namespace ODMR_Lab.相机
             {
                 ParameterWindow window = new ParameterWindow(inf.Device.AvailableParameterNames());
                 window.ShowDialog();
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 翻转镜修改值
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        private void FlipList_ItemValueChanged(int arg1, int arg2, object arg3)
+        {
+            Task t = new Task(() =>
+            {
+                try
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        FlipList.IsEnabled = false;
+                    });
+                    FlipMotorInfo info = FlipList.GetTag(arg1) as FlipMotorInfo;
+                    info.Device.Switch = (bool)arg3;
+                }
+                catch (Exception) { }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        FlipList.IsEnabled = true;
+                    });
+                }
+            });
+            t.Start();
+        }
+
+
+        private void FlipContextMenuEvent(int arg1, int arg2, object arg3)
+        {
+            FlipMotorInfo inf = arg3 as FlipMotorInfo;
+            #region 关闭设备
+            if (arg1 == 0)
+            {
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+                {
+                    inf.CloseDeviceInfoAndSaveParams(out bool result);
+                    if (result == false) return;
+                    Flips.Remove(inf);
+                    RefreshPanels();
+                }
             }
             #endregion
         }

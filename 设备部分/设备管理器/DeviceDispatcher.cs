@@ -29,6 +29,10 @@ namespace ODMR_Lab
             ScanCameraDevices(out string appendconnected, out string appendunconnected);
             connectedmessage += appendconnected;
             unconnectmessage += appendunconnected;
+            //翻转镜
+            ScanFlipDevices(out appendconnected, out appendunconnected);
+            connectedmessage += appendconnected;
+            unconnectmessage += appendunconnected;
             //温控
             ScanTemperatureControllerDevices(out appendconnected, out appendunconnected);
             connectedmessage += appendconnected;
@@ -53,6 +57,11 @@ namespace ODMR_Lab
                 string path = MainWindow.Dev_CameraPage.Cameras[i].CloseDeviceInfoAndSaveParams(out bool result);
                 if (path == "") canclose = false;
             }
+            for (int i = 0; i < MainWindow.Dev_CameraPage.Flips.Count; i++)
+            {
+                string path = MainWindow.Dev_CameraPage.Flips[i].CloseDeviceInfoAndSaveParams(out bool result);
+                if (path == "") canclose = false;
+            }
             for (int i = 0; i < MainWindow.Dev_TemPeraPage.TemperatureControllers.Count; i++)
             {
                 string path = MainWindow.Dev_TemPeraPage.TemperatureControllers[i].CloseDeviceInfoAndSaveParams(out bool result);
@@ -71,12 +80,55 @@ namespace ODMR_Lab
 
             return canclose;
         }
-    }
 
-    public enum OperationMode
-    {
-        Write = 0,
-        Read = 1,
-        ReadWrite = 2
+        /// <summary>
+        /// 开始使用多个设备，如果其中有一个设备被占用则释放所有其他已被占用的设备，同时报错
+        /// </summary>
+        public static void UseDevices(params InfoBase[] devs)
+        {
+            UseDevices(devs.ToList());
+        }
+
+        /// <summary>
+        /// 开始使用多个设备，如果其中有一个设备被占用则释放所有其他已被占用的设备，同时报错
+        /// </summary>
+        public static void UseDevices(List<InfoBase> devs)
+        {
+            List<InfoBase> dvs = devs.ToList();
+            for (int i = 0; i < dvs.Count; i++)
+            {
+                try
+                {
+                    dvs[i].BeginUse();
+                }
+                catch (Exception)
+                {
+                    for (int j = 0; j < i; j++)
+                    {
+                        dvs[j].EndUse();
+                    }
+                    throw new Exception("设备被占用");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 开始使用多个设备，如果其中有一个设备被占用则释放所有其他已被占用的设备，同时报错
+        /// </summary>
+        public static void EndUseDevices(params InfoBase[] devs)
+        {
+            EndUseDevices(devs.ToList());
+        }
+
+        /// <summary>
+        /// 开始使用多个设备，如果其中有一个设备被占用则释放所有其他已被占用的设备，同时报错
+        /// </summary>
+        public static void EndUseDevices(List<InfoBase> devs)
+        {
+            foreach (var item in devs)
+            {
+                item.EndUse();
+            }
+        }
     }
 }

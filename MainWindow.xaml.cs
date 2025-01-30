@@ -341,7 +341,7 @@ namespace ODMR_Lab
                 CurrentPage = Dev_MoversPage;
                 PageContent.Children.Add(Dev_MoversPage);
             }
-            if (btn.Text == "相机")
+            if (btn.Text == "相机/翻转镜")
             {
                 CurrentPage = Dev_CameraPage;
                 PageContent.Children.Add(Dev_CameraPage);

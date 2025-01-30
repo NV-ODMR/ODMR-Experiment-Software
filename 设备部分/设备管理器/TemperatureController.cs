@@ -41,7 +41,7 @@ namespace ODMR_Lab
         /// 获取温控设备(如果设备正在使用则生成一个错误提示)
         /// </summary>
         /// <returns></returns>
-        public static TemperatureControllerInfo TryGetTemperatureDevice(int index, OperationMode mode, bool showmessagebox, bool log)
+        public static TemperatureControllerInfo TryGetTemperatureDevice(int index)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace ODMR_Lab
         /// 获取温控设备(如果设备正在使用则生成一个错误提示)
         /// </summary>
         /// <returns></returns>
-        public static TemperatureControllerInfo TryGetTemperatureDevice(TemperatureControllerInfo device, OperationMode mode, bool showmessagebox, bool log)
+        public static TemperatureControllerInfo TryGetTemperatureDevice(TemperatureControllerInfo device)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace ODMR_Lab
         /// 获取温控设备(如果设备正在使用则生成一个错误提示)
         /// </summary>
         /// <returns></returns>
-        public static TemperatureControllerInfo TryGetTemperatureDevice(string productName, OperationMode mode, bool showmessagebox, bool log)
+        public static TemperatureControllerInfo TryGetTemperatureDevice(string productName)
         {
             try
             {

@@ -244,6 +244,11 @@ namespace ODMR_Lab.磁场调节
         /// </summary>
         public CWPointObject MoveAndScan(double x, double y, double z, double a, Action StopMethod)
         {
+            NanoStageInfo moverx = null;
+            NanoStageInfo movery = null;
+            NanoStageInfo moverz = null;
+            NanoStageInfo movera = null;
+
             try
             {
                 MagnetScanConfigParams P = new MagnetScanConfigParams();
@@ -252,26 +257,29 @@ namespace ODMR_Lab.磁场调节
                     P.ReadFromPage(new FrameworkElement[] { ParentPage });
                 });
                 //移动位移台
-                var moverx = DeviceDispatcher.TryGetMoverDevice(P.XRelate.Value, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
+                moverx = DeviceDispatcher.TryGetMoverDevice(P.XRelate.Value, PartTypes.Magnnet);
                 if (moverx == null)
                 {
                     return null;
                 }
-                var movery = DeviceDispatcher.TryGetMoverDevice(P.YRelate.Value, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
+                movery = DeviceDispatcher.TryGetMoverDevice(P.YRelate.Value, PartTypes.Magnnet);
                 if (movery == null)
                 {
                     return null;
                 }
-                var moverz = DeviceDispatcher.TryGetMoverDevice(P.ZRelate.Value, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
+                moverz = DeviceDispatcher.TryGetMoverDevice(P.ZRelate.Value, PartTypes.Magnnet);
                 if (moverz == null)
                 {
                     return null;
                 }
-                var movera = DeviceDispatcher.TryGetMoverDevice(P.ARelate.Value, OperationMode.ReadWrite, PartTypes.Magnnet, true, true);
+                movera = DeviceDispatcher.TryGetMoverDevice(P.ARelate.Value, PartTypes.Magnnet);
                 if (movera == null)
                 {
                     return null;
                 }
+
+                DeviceDispatcher.UseDevices(moverx, movery, moverz, movera);
+
                 ScanHelper.Move(moverx, StopMethod, P.XRangeLo.Value, P.XRangeHi.Value, x, 10000);
                 ScanHelper.Move(movery, StopMethod, P.YRangeLo.Value, P.YRangeHi.Value, y, 10000);
                 ScanHelper.Move(moverz, StopMethod, P.ZRangeLo.Value, P.ZRangeHi.Value, z, 10000);
@@ -282,13 +290,19 @@ namespace ODMR_Lab.磁场调节
 
                 CWPointObject point = new CWPointObject(0, Math.Min(peaks[0], peaks[1]), Math.Max(peaks[0], peaks[1]), P.D.Value, freqs1, contracts1, freqs2, contracts2);
 
+                moverx.EndUse();
+                movery.EndUse();
+                moverz.EndUse();
+                movera.EndUse();
+
                 return point;
+
             }
             catch (Exception ex)
             {
                 MessageWindow.ShowTipWindow("移动并测量未完成:" + ex.Message, MainWindow.Handle);
-                return null;
             }
+
         }
         #endregion
     }

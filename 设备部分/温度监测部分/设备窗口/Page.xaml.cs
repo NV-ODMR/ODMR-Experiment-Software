@@ -217,8 +217,17 @@ namespace ODMR_Lab.温度监测部分
         private void ChangeControllerOutput(int arg1, int arg2, object arg3)
         {
             TemperatureControllerInfo inf = DeviceList.GetTag(arg1) as TemperatureControllerInfo;
-            TemperatureControllerInfo info = DeviceDispatcher.TryGetTemperatureDevice(inf, OperationMode.Write, true, true);
-            info.Device.OutputEnable = (bool)arg3;
+            try
+            {
+                inf.BeginUse();
+            }
+            catch (Exception ex)
+            {
+                MessageWindow.ShowTipWindow("设备正在使用", MainWindow.Handle);
+                return;
+            }
+            inf.Device.OutputEnable = (bool)arg3;
+            inf.EndUse();
         }
 
         private void CloseDevice(int arg1, int arg2, object arg3)

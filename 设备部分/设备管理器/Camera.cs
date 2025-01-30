@@ -42,15 +42,11 @@ namespace ODMR_Lab
         /// <param name="showmessagebox"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static CameraInfo TryGetCameraDevice(CameraInfo device, OperationMode mode, bool showmessagebox, bool log)
+        public static CameraInfo TryGetCameraDevice(CameraInfo device)
         {
             try
             {
                 if (!MainWindow.Dev_CameraPage.Cameras.Contains(device))
-                {
-                    return null;
-                }
-                if (device.IsWriting && mode != OperationMode.Read)
                 {
                     return null;
                 }
@@ -69,7 +65,7 @@ namespace ODMR_Lab
         /// <param name="showmessagebox"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static CameraInfo TryGetCameraDevice(string productName, OperationMode mode, bool showmessagebox, bool log)
+        public static CameraInfo TryGetCameraDevice(string productName)
         {
             try
             {
@@ -77,10 +73,6 @@ namespace ODMR_Lab
                 {
                     if (tem.Device.ProductName == productName)
                     {
-                        if (tem.IsWriting && mode != OperationMode.Read)
-                        {
-                            return null;
-                        }
                         return tem;
                     }
                 }
@@ -96,15 +88,11 @@ namespace ODMR_Lab
         /// 获取相机设备(如果设备正在使用则生成一个错误提示)
         /// </summary>
         /// <returns></returns>
-        public static CameraInfo TryGetCameraDevice(int index, OperationMode mode, bool showmessagebox, bool log)
+        public static CameraInfo TryGetCameraDevice(int index)
         {
             try
             {
                 if (index < 0 || index > MainWindow.Dev_CameraPage.Cameras.Count - 1)
-                {
-                    return null;
-                }
-                if (MainWindow.Dev_TemPeraPage.TemperatureControllers[index].IsWriting && mode != OperationMode.Read)
                 {
                     return null;
                 }

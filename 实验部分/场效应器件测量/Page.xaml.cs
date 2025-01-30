@@ -240,13 +240,16 @@ namespace ODMR_Lab.场效应器件测量
                 {
                     meter = VoltageSetDevice.SelectedItem.Tag as PowerMeterInfo;
                 });
-                //停止采样
-                meter = DeviceDispatcher.TryGetPowerMeterDevice(meter, OperationMode.Read, true, true);
-                if (meter == null)
+
+                try
                 {
+                    meter.BeginUse();
+                }
+                catch (Exception ex)
+                {
+                    MessageWindow.ShowTipWindow("设备正在使用", MainWindow.Handle);
                     return;
                 }
-                meter.BeginUse();
 
                 Dispatcher.Invoke(() =>
                 {
@@ -301,12 +304,15 @@ namespace ODMR_Lab.场效应器件测量
                     meter = VoltageSetDevice.SelectedItem.Tag as PowerMeterInfo;
                 });
                 //停止采样
-                meter = DeviceDispatcher.TryGetPowerMeterDevice(meter, OperationMode.Write, true, true);
-                if (meter == null)
+                try
                 {
+                    meter.BeginUse();
+                }
+                catch (Exception)
+                {
+                    MessageWindow.ShowTipWindow("设备正在使用", MainWindow.Handle);
                     return;
                 }
-                meter.BeginUse();
 
                 Dispatcher.Invoke(() =>
                 {

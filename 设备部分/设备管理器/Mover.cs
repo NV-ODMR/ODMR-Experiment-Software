@@ -45,7 +45,7 @@ namespace ODMR_Lab
         /// <param name="showmessagebox"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static NanoStageInfo TryGetMoverDevice(NanoStageInfo device, OperationMode mode, bool showmessagebox = false, bool log = true)
+        public static NanoStageInfo TryGetMoverDevice(NanoStageInfo device)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace ODMR_Lab
         /// <param name="showmessagebox"></param>
         /// <param name="log"></param>
         /// <returns></returns>
-        public static NanoStageInfo TryGetMoverDevice(string productName, OperationMode mode, string axisname, bool showmessagebox = false, bool log = true)
+        public static NanoStageInfo TryGetMoverDevice(string productName, string axisname)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace ODMR_Lab
         /// 获取位移台设备(如果设备正在使用则生成一个错误提示)
         /// </summary>
         /// <returns></returns>
-        public static NanoStageInfo TryGetMoverDevice(MoverTypes moverType, OperationMode mode, PartTypes part, bool showmessagebox = false, bool log = true)
+        public static NanoStageInfo TryGetMoverDevice(MoverTypes moverType, PartTypes part)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace ODMR_Lab
         /// 获取位移台设备(如果设备正在使用则生成一个错误提示)
         /// </summary>
         /// <returns></returns>
-        public static List<NanoStageInfo> TryGetMoverDevice(OperationMode mode, PartTypes part, bool showmessagebox = false, bool log = true)
+        public static List<NanoStageInfo> TryGetMoverDevice(PartTypes part)
         {
             List<NanoStageInfo> infos = new List<NanoStageInfo>();
             try
