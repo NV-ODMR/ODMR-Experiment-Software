@@ -180,11 +180,12 @@ namespace ODMR_Lab.相机
             {
                 try
                 {
+                    FlipMotorInfo info = null;
                     Dispatcher.Invoke(() =>
                     {
                         FlipList.IsEnabled = false;
+                        info = FlipList.GetTag(arg1) as FlipMotorInfo;
                     });
-                    FlipMotorInfo info = FlipList.GetTag(arg1) as FlipMotorInfo;
                     info.Device.Switch = (bool)arg3;
                 }
                 catch (Exception) { }
