@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Windows;
 using HardWares.纳米位移台.PI;
 using MathNet.Numerics;
 using ODMR_Lab.IO操作;

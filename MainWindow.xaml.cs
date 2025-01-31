@@ -31,6 +31,7 @@ using ODMR_Lab.实验部分.场效应器件测量;
 using Label = System.Windows.Controls.Label;
 using ODMR_Lab.Python管理器;
 using ODMR_Lab.IO操作;
+using Controls.Windows;
 
 namespace ODMR_Lab
 {

@@ -21,6 +21,7 @@ using System.Windows.Markup;
 using System.Windows.Forms;
 using PythonHandler;
 using System.IO;
+using Controls.Windows;
 
 namespace ODMR_Lab.数据处理
 {
@@ -38,8 +39,6 @@ namespace ODMR_Lab.数据处理
             WindowResizeHelper hel = new WindowResizeHelper();
             hel.RegisterWindow(this, 5, 40);
 
-            DataList.ItemSelected += ShowDataList;
-            DataList.ItemContextMenuSelected += DataListMenuEvents;
             ParentPage = parentPage;
         }
 
@@ -190,6 +189,8 @@ namespace ODMR_Lab.数据处理
 
             FuncInstance Func = null;
 
+            int timeout = 10000;
+
             string expression = "";
 
             if (CalculateSimple)
@@ -208,6 +209,11 @@ namespace ODMR_Lab.数据处理
                     MessageWindow.ShowTipWindow("未选择参与计算的函数", this);
                     return;
                 }
+                try
+                {
+                    timeout = int.Parse(PythonTimeout.Text);
+                }
+                catch (Exception) { }
                 Func = PyhtonFunc.SelectedItem.Tag as FuncInstance;
             }
             #endregion
@@ -226,7 +232,7 @@ namespace ODMR_Lab.数据处理
                     if (CalculateSimple)
                         CalculateSimple1DMapping(expression, numricChartData1D);
                     else
-                        CalculatePython1DMapping(Func, numricChartData1D);
+                        CalculatePython1DMapping(timeout, Func, numricChartData1D);
 
                     ParentDataSource.ChartDataSource1D.Add(numricChartData1D);
                     Dispatcher.Invoke(() =>
@@ -327,7 +333,7 @@ namespace ODMR_Lab.数据处理
         /// <summary>
         /// 计算Python脚本
         /// </summary>
-        private void CalculatePython1DMapping(FuncInstance Func, NumricChartData1D targetData)
+        private void CalculatePython1DMapping(int timeout, FuncInstance Func, NumricChartData1D targetData)
         {
 
             //获取数据和变量名
@@ -342,7 +348,7 @@ namespace ODMR_Lab.数据处理
 
             for (int i = 0; i < rows; i++)
             {
-                ChartData1D data = DataList.GetTag(i) as ChartData1D;
+                ChartData1D data = (DataList.GetTag(i) as List<object>)[0] as ChartData1D;
                 List<double> temp = new List<double>();
                 if (data is TimeChartData1D)
                 {
@@ -352,10 +358,12 @@ namespace ODMR_Lab.数据处理
                 {
                     temp.AddRange((data as NumricChartData1D).Data.Select(x => x));
                 }
-                VarNames.Add(DataList.GetCellValue(i, 1) as string);
+                Inpputvalues.Add(temp);
+                VarNames.Add((DataList.GetTag(i) as List<object>)[1] as string);
             }
 
-            targetData.Data.AddRange((Func.Excute(10000, Inpputvalues, VarNames) as List<object>).Select(x => (double)x).ToList());
+
+            targetData.Data.AddRange((Func.Excute(timeout, Inpputvalues, VarNames) as List<object>).Select(x => (double)x).ToList());
         }
 
         /// <summary>
@@ -438,5 +446,6 @@ namespace ODMR_Lab.数据处理
             }
         }
         #endregion
+
     }
 }

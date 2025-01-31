@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Windows;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;

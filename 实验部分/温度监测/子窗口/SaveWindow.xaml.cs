@@ -1,4 +1,5 @@
-﻿using HardWares.温度控制器.SRS_PTC10;
+﻿using Controls.Windows;
+using HardWares.温度控制器.SRS_PTC10;
 using Microsoft.Win32;
 using ODMR_Lab.Windows;
 using System;

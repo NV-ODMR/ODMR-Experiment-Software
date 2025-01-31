@@ -1,4 +1,5 @@
-﻿using ODMR_Lab.Windows;
+﻿using Controls.Windows;
+using ODMR_Lab.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace ODMR_Lab
         {
             if (Log)
             {
-                Messages.Add(new ODMR_Lab.Message(type, part, message));
+                Messages.Add(new Message(type, part, message));
             }
             if (ShowMessageBox)
             {

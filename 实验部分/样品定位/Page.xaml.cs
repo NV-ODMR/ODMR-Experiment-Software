@@ -38,6 +38,7 @@ using ODMR_Lab.实验部分.样品定位;
 using Label = System.Windows.Controls.Label;
 using ODMR_Lab.基本控件;
 using Clipboard = System.Windows.Clipboard;
+using Controls.Windows;
 
 namespace ODMR_Lab.样品定位
 {

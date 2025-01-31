@@ -1,4 +1,5 @@
 ﻿using Controls.Charts;
+using Controls.Windows;
 using ODMR_Lab.Python.LbviewHandler;
 using ODMR_Lab.Windows;
 using ODMR_Lab.位移台部分;

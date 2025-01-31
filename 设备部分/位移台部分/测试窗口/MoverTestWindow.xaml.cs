@@ -1,4 +1,5 @@
 ﻿using Controls;
+using Controls.Windows;
 using HardWares.纳米位移台;
 using ODMR_Lab.Windows;
 using System;

@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Windows;
 using HardWares.仪器列表.电动翻转座;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;

@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.Windows;
 using ODMR_Lab.实验类;

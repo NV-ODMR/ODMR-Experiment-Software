@@ -22,7 +22,7 @@
         <scroll:DecoratedButton Name="GraphBtn" KeepPressed="True" Click="ChangeView" Grid.Row="0" Grid.Column="0" TextAreaRatio="1" Text="图表" FontSize="14" CornerRadius="10,0,0,10" FontWeight="Bold" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF2593FF" PressedColor="#FF0071D4" MoveInForeground="White" PressedForeground="White"/>
         <scroll:DecoratedButton Name="DataBtn" Click="ChangeView" Grid.Row="1" Grid.Column="0" TextAreaRatio="1" Text="数据" FontSize="14" CornerRadius="10,0,0,10" FontWeight="Bold" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF2593FF" PressedColor="#FF0071D4" MoveInForeground="White" PressedForeground="White"/>
     </Grid>
-    <Grid Grid.Column="1" Name="ChartView" Visibility="Collapsed">
+    <Grid Grid.Column="1" Name="ChartView" Visibility="Visible">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="40"/>
@@ -106,7 +106,7 @@
             </scroll:AutoScrollViewer.Content>
         </scroll:AutoScrollViewer>
     </Grid>
-    <Grid Grid.Column="1" Name="DataView" Visibility="Visible">
+    <Grid Grid.Column="1" Name="DataView" Visibility="Collapsed">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>

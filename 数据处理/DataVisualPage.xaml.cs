@@ -40,6 +40,7 @@ using Window = System.Windows.Window;
 using DragEventArgs = System.Windows.DragEventArgs;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
+using Controls.Windows;
 
 namespace ODMR_Lab.数据处理
 {

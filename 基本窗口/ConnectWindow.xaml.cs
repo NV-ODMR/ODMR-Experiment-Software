@@ -20,6 +20,7 @@ using ODMR_Lab.Windows;
 using HardWares;
 using System.Threading;
 using ODMR_Lab;
+using Controls.Windows;
 
 namespace 温度监控程序.Windows
 {

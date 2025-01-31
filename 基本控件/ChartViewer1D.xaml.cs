@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Charts;
+using Controls.Windows;
 using ODMR_Lab.Windows;
 using System;
 using System.Collections.Generic;
