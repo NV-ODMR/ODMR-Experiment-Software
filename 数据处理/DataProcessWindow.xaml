@@ -51,35 +51,99 @@
 
             <Grid  Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="3">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="60"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
                     <RowDefinition/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
-                <Label Content="处理面板" Grid.ColumnSpan="3" Grid.Row="0" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                <Label Content="简单映射计算" Grid.ColumnSpan="2" Grid.Row="1" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                <control:DecoratedButton Grid.Column="2" TextAreaRatio="0" Grid.Row="1" Click="ShowSimpleMappingInformation" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/information.png" Margin="10"/>
-                <control:AlgebraBox Name="SimpleMappingBox" Grid.Row="2" Grid.ColumnSpan="3" FontSize="12" Background="#FF2E2E2E" Margin="5" TipBarBackground="#FF4D4D4D" TipBarSelectedColor="#FF0075DA" TipDiscriptionColor="White" Foreground="White" CaretColor="White"/>
-                <Label Grid.ColumnSpan="1" Content="数据分组" Grid.Row="4" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                <control:ComboBox Name="GroupName" Click="UpdateGroup" Margin="5" TextAreaRatio="0.9" IconMargin="2" ImagePlace="Right" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Background="#FF424242" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D" IconSource="/图片资源/downArrow.png"/>
-                <control:DecoratedButton Name="D1CalcBtn" Margin="5" Grid.Column="0" TextAreaRatio="1" Text="计算并添加" FontSize="12" Grid.ColumnSpan="3" Grid.Row="6" Click="Calculate1DSimpleMapping" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/information.png"/>
-                <TextBox x:Name="D1DataName" Height="30" Grid.Row="3" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Grid.Column="1" Grid.ColumnSpan="2" Margin="2"/>
-                <Label Grid.ColumnSpan="1" Content="新数据集名称" Grid.Row="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                <Label Content="处理面板" Grid.ColumnSpan="3" Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <control:DecoratedButton Name="SimpleBtn" Click="ChangePanel" Text="简单映射计算" KeepPressed="True" FontSize="13"  Grid.Row="1" Background="#FF424242" Foreground="White" MoveInForeground="White" PressedForeground="White" MoveInColor="#FF1CC0FF" PressedColor="#FF2F9FFF"/>
+                    <control:DecoratedButton Name="PythonBtn" Click="ChangePanel" Text="Python脚本" FontSize="13" Grid.Column="2" Grid.Row="1" Background="#FF424242" Foreground="White" MoveInForeground="White" PressedForeground="White" MoveInColor="#FF1CC0FF" PressedColor="#FF2F9FFF"/>
+                </Grid>
+                <control:AutoScrollViewer Name="scroll" Grid.Row="2" Grid.ColumnSpan="3">
+                    <control:AutoScrollViewer.Content>
+                        <Grid Width="{Binding ElementName=scroll, Path=ActualWidth}">
+                            <Grid Name="SimplePanel" Visibility="Collapsed">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="40"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="50"/>
+                                </Grid.ColumnDefinitions>
+                                <control:DecoratedButton Grid.Column="0" IconMargin="5" Grid.ColumnSpan="3" TextAreaRatio="0" Grid.Row="0" Click="ShowSimpleMappingInformation" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/information.png" Margin="5"/>
+                                <control:AlgebraBox Name="SimpleMappingBox" Grid.Row="2" Grid.ColumnSpan="3" FontSize="12" Background="#FF2E2E2E" Margin="2" TipBarBackground="#FF4D4D4D" TipBarSelectedColor="#FF0075DA" TipDiscriptionColor="White" Foreground="White" CaretColor="White"/>
+                                <Label Grid.Row="1" Content="表达式" FontSize="12" Margin="5" Grid.ColumnSpan="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF1A1A1A" Foreground="#FFFAFAFA"/>
+                            </Grid>
+                            <Grid Name="PythonPanel" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Visible">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="35"/>
+                                    <RowDefinition Height="120"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="50"/>
+                                </Grid.ColumnDefinitions>
+                                <control:DecoratedButton Grid.Column="2" Grid.ColumnSpan="1" TextAreaRatio="0" Grid.Row="3" Click="ShowPythonInformation" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconMargin="5" IconSource="/图片资源/information.png" Margin="5"/>
+                                <Label Grid.Row="0" Content="文件路径" FontSize="12" Margin="5" Grid.ColumnSpan="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF1A1A1A" Foreground="#FFFAFAFA"/>
+                                <Label Name="PythonFileDir" Grid.Row="1" Margin="5" Grid.ColumnSpan="2" FontSize="10" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFFAFAFA"/>
+                                <Label Content="函数名" Grid.Row="2" Margin="5" Grid.ColumnSpan="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                                <control:ComboBox Name="PyhtonFunc" FontSize="11" Margin="5" IconMargin="2" TextAreaRatio="0.9" ImagePlace="Right" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Background="#FF424242" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D" IconSource="/图片资源/downArrow.png"/>
+                                <control:DecoratedButton Grid.Column="2" TextAreaRatio="0" Grid.Row="1" Click="SelectPythonFilePath" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/directory.png" IconMargin="5" Margin="5"/>
+                                <Grid Grid.Row="4" Grid.ColumnSpan="3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <control:ListViewer Name="InputParam" HeaderHeight="30" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" ItemBarBackground="#FF1A1A1A" ItemBarSelectedColor="#FF4CA1FF">
+                                        <control:ListViewer.HeaderLabelTemplate>
+                                            <Label Content="输入参数" IsHitTestVisible="False" FontSize="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                                        </control:ListViewer.HeaderLabelTemplate>
+                                        <control:ListViewer.DataTemplate>
+                                            <control:ViewerTemplate Descriptions="输入参数" DataType="String" Editable="False" DataDisplayWidth="*"/>
+                                        </control:ListViewer.DataTemplate>
+                                        <control:ListViewer.UnEditableTextTemplate>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" TextAlignment="Center" TextWrapping="Wrap" Foreground="White"/>
+                                        </control:ListViewer.UnEditableTextTemplate>
+                                    </control:ListViewer>
+                                </Grid>
+                                <Label Content="超时时间(ms)" Grid.Row="3" Margin="5,5,5,5" Grid.ColumnSpan="1" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                                <TextBox Name="PythonTimeout" Grid.Column="1" Margin="5" Grid.Row="3" BorderThickness="0" FontSize="11" Text="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                            </Grid>
+                        </Grid>
+                    </control:AutoScrollViewer.Content>
+                </control:AutoScrollViewer>
+                <Label Grid.ColumnSpan="1" Content="数据分组" Grid.Row="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
+                <control:ComboBox Name="GroupName" Click="UpdateGroup" Margin="5" TextAreaRatio="0.9" IconMargin="2" ImagePlace="Right" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Background="#FF424242" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D" IconSource="/图片资源/downArrow.png"/>
+                <control:DecoratedButton Name="D1CalcBtn" Margin="5" Grid.Column="0" TextAreaRatio="1" Text="计算并添加" FontSize="11" Grid.ColumnSpan="3" Grid.Row="6" Click="Calculate1DMapping" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" IconSource="/图片资源/information.png"/>
+                <Label Grid.ColumnSpan="1" Content="新数据集名称" Grid.Row="4" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
                 <Label Grid.ColumnSpan="1" Content="数据类型" Grid.Row="5" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" Foreground="#FFFAFAFA"/>
-                <control:ComboBox x:Name="DataType" DefaultSelectIndex="0" Margin="5,5,5,5" TextAreaRatio="0.9" IconMargin="2" ImagePlace="Right" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Background="#FF424242" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D" IconSource="/图片资源/downArrow.png">
+                <TextBox x:Name="D1DataName" Height="30" Grid.Row="4" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Grid.Column="1" Grid.ColumnSpan="2" Margin="5"/>
+                <control:ComboBox x:Name="DataType" FontSize="12" Margin="5,5,5,5" TextAreaRatio="0.9" IconMargin="2" ImagePlace="Right" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Background="#FF424242" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D" IconSource="/图片资源/downArrow.png">
                     <control:ComboBox.Items>
-                        <control:DecoratedButton Text="X" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
-                        <control:DecoratedButton Text="Y" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
-                        <control:DecoratedButton Text="XY" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
+                        <control:DecoratedButton Text="X" FontSize="12" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
+                        <control:DecoratedButton Text="Y" FontSize="12" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
+                        <control:DecoratedButton Text="XY" FontSize="12" Background="#FF383838" PressedColor="#FF3E3E3E" PressedForeground="White" MoveInForeground="White" Foreground="White" MoveInColor="#FF4D4D4D"/>
                     </control:ComboBox.Items>
                 </control:ComboBox>
             </Grid>
