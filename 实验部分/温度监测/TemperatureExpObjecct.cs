@@ -24,7 +24,7 @@ namespace ODMR_Lab.实验部分.磁场调节
     /// <summary>
     /// 温度监控的文件类
     /// </summary>
-    public class TemperatureExpObject : ExperimentObject<TemperatureExpParams, TemperatureConfigParams>
+    public class TemperatureExpObject : ExperimentObject<CustomExpParams, TemperatureConfigParams>
     {
         #region 实验数据及IO部分
         /// <summary>
@@ -35,7 +35,7 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <summary>
         /// 参数列表
         /// </summary>
-        public override TemperatureExpParams Param { get; set; } = new TemperatureExpParams();
+        public override CustomExpParams Param { get; set; } = new CustomExpParams();
 
         /// <summary>
         /// 参数列表
@@ -101,17 +101,16 @@ namespace ODMR_Lab.实验部分.磁场调节
         #region 实验线程部分
         public override void ExperimentEvent()
         {
-            throw new NotImplementedException();
         }
 
         public override TemperatureConfigParams ReadConfig()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override List<InfoBase> GetDevices()
         {
-            throw new NotImplementedException();
+            return null;
         }
         #endregion
     }

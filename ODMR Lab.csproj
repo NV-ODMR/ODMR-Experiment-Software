@@ -124,6 +124,7 @@
     <Compile Include="MessageLogger.cs" />
     <Compile Include="PageBase.cs" />
     <Compile Include="Python\LabviewHandler\LabviewConverter.cs" />
+    <Compile Include="UI刷新部分\UIUpdater.cs" />
     <Compile Include="基本控件\ChartData1D.cs" />
     <Compile Include="基本控件\ChartData2D.cs" />
     <Compile Include="基本控件\ChartStyleParams.cs" />
@@ -196,6 +197,12 @@
     <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanAngle.cs" />
     <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanZ.cs" />
     <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanXY.cs" />
+    <Compile Include="实验部分\自定义实验\实验模板\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\自定义实验\实验模板\参数\CustomConfigParams.cs" />
+    <Compile Include="实验部分\自定义实验\实验模板\参数\CustomExpObject.cs" />
+    <Compile Include="实验部分\自定义实验\实验模板\参数\CustomExpParams.cs" />
     <Compile Include="扩展部分\Python管理器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -249,6 +256,7 @@
     <Compile Include="设备部分\相机\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="设备部分\设备种类枚举\DeviceConnectInfo.cs" />
     <Compile Include="设备部分\设备种类枚举\DeviceTypes.cs" />
     <Compile Include="设备部分\设备种类枚举\InfoBase.cs" />
     <Compile Include="设备部分\设备管理器\Camera.cs" />
@@ -324,6 +332,10 @@
     <Page Include="实验部分\磁场调节\子窗口\OffsetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="实验部分\自定义实验\实验模板\Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="扩展部分\Python管理器\Page.xaml">
       <Generator>MSBuild:Compile</Generator>

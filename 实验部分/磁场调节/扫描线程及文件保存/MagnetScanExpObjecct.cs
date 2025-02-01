@@ -480,37 +480,23 @@ namespace ODMR_Lab.实验部分.磁场调节
         #region 实验线程部分
         public DisplayPage ExpPage { get; set; } = null;
 
-        public Action<FrameworkElement, string> UISignal = null;
-
         public override void ExperimentEvent()
         {
-            bool iscontinue = true;
-            App.Current.Dispatcher.Invoke(() =>
+            if (MessageWindow.ShowMessageBox("提示", "执行扫描过程会清除当前记录的数据且不可恢复，是否继续?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
             {
-                if (MessageWindow.ShowMessageBox("提示", "执行扫描过程会清除当前记录的数据且不可恢复，是否继续?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
-                {
-                    #region 清除数据
-                    XPoints.Clear();
-                    YPoints.Clear();
-                    ZPoints.Clear();
-                    AnglePoints.Clear();
-                    CheckPoints.Clear();
-                    //刷新窗口
-                    UISignal.Invoke(null, "Clear Windows");
-                    #endregion
-                }
-                else
-                {
-                    iscontinue = false;
-                }
-            });
-            if (!iscontinue) return;
+                #region 清除数据
+                XPoints.Clear();
+                YPoints.Clear();
+                ZPoints.Clear();
+                AnglePoints.Clear();
+                CheckPoints.Clear();
+                //刷新窗口
+                ExpPage.ClearWindows();
+                #endregion
+            }
+            else { return; }
 
-            #region 刷新面板显示
-            UISignal.Invoke(null, "Set InitState");
-            #endregion
-
-            UISignal.Invoke(ExpPage.XState, "正在执行流程...");
+            UIUpdater.SetUIControl(ExpPage.XState, "正在执行流程...");
             //移动Z轴
             ScanHelper.Move(ZStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
             //旋转台移动到轴向沿Y
@@ -518,10 +504,10 @@ namespace ODMR_Lab.实验部分.磁场调节
             //X方向扫描
             ScanX();
             ExpPage.SetProgress("X", 100);
-            UISignal.Invoke(ExpPage.XState, "已完成，X方向磁场最大位置为：");
-            UISignal.Invoke(ExpPage.XLoc, Math.Round(Param.XLoc.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.XState, "已完成，X方向磁场最大位置为：");
+            UIUpdater.SetUIControl(ExpPage.XLoc, Math.Round(Param.XLoc.Value, 4).ToString());
 
-            UISignal.Invoke(ExpPage.YState, "正在执行流程...");
+            UIUpdater.SetUIControl(ExpPage.YState, "正在执行流程...");
             //旋转台移动到轴向沿X
             ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleY, 10000);
             //移动X到最大值
@@ -529,37 +515,37 @@ namespace ODMR_Lab.实验部分.磁场调节
             //Y方向扫描
             ScanY();
             ExpPage.SetProgress("Y", 100);
-            UISignal.Invoke(ExpPage.YState, "已完成,Y方向磁场最大位置为：");
-            UISignal.Invoke(ExpPage.YLoc, Math.Round(Param.YLoc.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.YState, "已完成,Y方向磁场最大位置为：");
+            UIUpdater.SetUIControl(ExpPage.YLoc, Math.Round(Param.YLoc.Value, 4).ToString());
 
-            UISignal.Invoke(ExpPage.ZState, "正在执行流程...");
+            UIUpdater.SetUIControl(ExpPage.ZState, "正在执行流程...");
             //移动Y到最大值
             ScanHelper.Move(YStage, JudgeThreadEndOrResume, Config.YRangeLo.Value, Config.YRangeHi.Value, Param.YLoc.Value, 10000);
             //Z扫描
             ScanZ();
             ExpPage.SetProgress("Z", 100);
-            UISignal.Invoke(ExpPage.ZState, "已完成,Z轴位置及对应的与NV距离分别为：");
-            UISignal.Invoke(ExpPage.ZDistance, Math.Round(Param.ZDistance.Value, 4).ToString());
-            UISignal.Invoke(ExpPage.ZLoc, Math.Round(Param.ZLoc.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.ZState, "已完成,Z轴位置及对应的与NV距离分别为：");
+            UIUpdater.SetUIControl(ExpPage.ZDistance, Math.Round(Param.ZDistance.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.ZLoc, Math.Round(Param.ZLoc.Value, 4).ToString());
 
-            UISignal.Invoke(ExpPage.AngleState, "正在执行流程...");
+            UIUpdater.SetUIControl(ExpPage.AngleState, "正在执行流程...");
             //角度扫描
             ScanHelper.Move(ZStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
             ScanAngle();
             ExpPage.SetProgress("A", 100);
-            UISignal.Invoke(ExpPage.AngleState, "已完成,NV的方位角θ和φ分别为:");
-            UISignal.Invoke(ExpPage.Phi1, Math.Round(Param.Phi1.Value, 4).ToString());
-            UISignal.Invoke(ExpPage.Phi2, Math.Round(Param.Phi2.Value, 4).ToString());
-            UISignal.Invoke(ExpPage.Theta1, Math.Round(Param.Theta1.Value, 4).ToString());
-            UISignal.Invoke(ExpPage.Theta2, Math.Round(Param.Theta2.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.AngleState, "已完成,NV的方位角θ和φ分别为:");
+            UIUpdater.SetUIControl(ExpPage.Phi1, Math.Round(Param.Phi1.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.Phi2, Math.Round(Param.Phi2.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.Theta1, Math.Round(Param.Theta1.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.Theta2, Math.Round(Param.Theta2.Value, 4).ToString());
 
-            UISignal.Invoke(ExpPage.CheckState, "正在执行流程...");
+            UIUpdater.SetUIControl(ExpPage.CheckState, "正在执行流程...");
             //角度检查
             CheckAngle();
             ExpPage.SetProgress("C", 100);
-            UISignal.Invoke(ExpPage.CheckState, "已完成,NV的方位角θ和φ分别为:");
-            UISignal.Invoke(ExpPage.CheckedTheta, Math.Round(Param.CheckedTheta.Value, 4).ToString());
-            UISignal.Invoke(ExpPage.CheckedPhi, Math.Round(Param.CheckedPhi.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.CheckState, "已完成,NV的方位角θ和φ分别为:");
+            UIUpdater.SetUIControl(ExpPage.CheckedTheta, Math.Round(Param.CheckedTheta.Value, 4).ToString());
+            UIUpdater.SetUIControl(ExpPage.CheckedPhi, Math.Round(Param.CheckedPhi.Value, 4).ToString());
             //计算目标位置
         }
 

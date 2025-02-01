@@ -55,15 +55,6 @@ namespace ODMR_Lab.实验部分.磁场调节
                 Param.Phi2.Value += 360;
             }
             #endregion
-
-            #region 在界面上更新
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                ExpPage.AngleWin.CWPoints.Clear(false);
-                ExpPage.AngleWin.CWPoints.AddRange(AnglePoints);
-                ExpPage.AngleWin.UpdateChartAndDataFlow(true);
-            });
-            #endregion
         }
     }
 }

@@ -53,6 +53,12 @@ namespace ODMR_Lab
                 IsWriting = false;
             }
         }
+
+        /// <summary>
+        /// 获取设备描述
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetDeviceDescription();
     }
 
     public abstract class DeviceInfoBase<T> : InfoBase

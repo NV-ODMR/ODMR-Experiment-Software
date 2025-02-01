@@ -212,73 +212,55 @@ namespace ODMR_Lab.磁场调节
             FileObj.ExpEndTimeLabel = EndTime;
             FileObj.ResumeButton = ResumeBtn;
             FileObj.StopButton = StopBtn;
-            FileObj.UISignal += SignalReceiver;
-            FileObj.ErrorStateEvent += ErrorEvent;
+
+            FileObj.InitEvent += InitWindows;
+            FileObj.ErrorStateEvent += InitWindows;
         }
 
-        private void ErrorEvent()
-        {
-            FileObj.UISignal.Invoke(null, "Set InitState");
-        }
-
-        private void SignalReceiver(FrameworkElement ele, string obj)
+        /// <summary>
+        /// 清除窗口数据
+        /// </summary>
+        public void ClearWindows()
         {
             Dispatcher.Invoke(() =>
             {
-                if (ele == null)
-                {
-                    #region 清除窗口数据
-                    if (obj == "Clear Windows")
-                    {
-                        XWin.CWPoints.Clear();
-                        XWin.UpdateChartAndDataFlow(true);
-                        YWin.CWPoints.Clear();
-                        YWin.UpdateChartAndDataFlow(true);
-                        AngleWin.CWPoints.Clear();
-                        AngleWin.UpdateChartAndDataFlow(true);
-                        ZWin.CWPoint1 = null;
-                        ZWin.CWPoint2 = null;
-                        ZWin.UpdateChartAndDataFlow(true);
-                        CheckWin.CWPoint1 = null;
-                        CheckWin.CWPoint2 = null;
-                        CheckWin.UpdateChartAndDataFlow(true);
-                        return;
-                    }
-                    #endregion
-                    #region 设置窗口初始状态
-                    if (obj == "Set InitState")
-                    {
-                        SetText(XLoc, "");
-                        SetText(YLoc, "");
-                        SetText(ZDistance, "");
-                        SetText(ZLoc, "");
-                        SetText(Theta1, "");
-                        SetText(Theta2, "");
-                        SetText(Phi1, "");
-                        SetText(Phi2, "");
-                        SetText(CheckedTheta, "");
-                        SetText(CheckedPhi, "");
-                        SetProgress("X", 0);
-                        SetProgress("Y", 0);
-                        SetProgress("Z", 0);
-                        SetProgress("A", 0);
-                        SetProgress("C", 0);
-                        return;
-                    }
-                    #endregion
-                    return;
-                }
-                if (ele is TextBlock)
-                {
-                    (ele as TextBlock).Text = obj;
-                }
-                if (ele is TextBox)
-                {
-                    (ele as TextBox).Text = obj;
-                }
-                #region 设置
-                #endregion
+                XWin.CWPoints.Clear();
+                XWin.UpdateChartAndDataFlow(true);
+                YWin.CWPoints.Clear();
+                YWin.UpdateChartAndDataFlow(true);
+                AngleWin.CWPoints.Clear();
+                AngleWin.UpdateChartAndDataFlow(true);
+                ZWin.CWPoint1 = null;
+                ZWin.CWPoint2 = null;
+                ZWin.UpdateChartAndDataFlow(true);
+                CheckWin.CWPoint1 = null;
+                CheckWin.CWPoint2 = null;
+                CheckWin.UpdateChartAndDataFlow(true);
+            });
+        }
 
+        /// <summary>
+        /// 初始化扫描状态
+        /// </summary>
+        public void InitWindows()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                SetText(XLoc, "");
+                SetText(YLoc, "");
+                SetText(ZDistance, "");
+                SetText(ZLoc, "");
+                SetText(Theta1, "");
+                SetText(Theta2, "");
+                SetText(Phi1, "");
+                SetText(Phi2, "");
+                SetText(CheckedTheta, "");
+                SetText(CheckedPhi, "");
+                SetProgress("X", 0);
+                SetProgress("Y", 0);
+                SetProgress("Z", 0);
+                SetProgress("A", 0);
+                SetProgress("C", 0);
             });
         }
 

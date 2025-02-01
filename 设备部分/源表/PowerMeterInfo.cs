@@ -79,5 +79,10 @@ namespace ODMR_Lab.位移台部分
             Times.Clear();
             CurrentBuffer.Clear();
         }
+
+        public override string GetDeviceDescription()
+        {
+            return Device.ProductName;
+        }
     }
 }

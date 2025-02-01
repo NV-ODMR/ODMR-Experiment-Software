@@ -53,6 +53,11 @@ namespace ODMR_Lab.位移台部分
                 obj.Descriptions.Add("AxisType " + item.Device.AxisName, Enum.GetName(item.MoverType.GetType(), item.MoverType));
             }
         }
+
+        public override string GetDeviceDescription()
+        {
+            return Device.ProductName;
+        }
     }
 
     public class NanoStageInfo : DeviceElementInfoBase<StageBase>
@@ -66,8 +71,6 @@ namespace ODMR_Lab.位移台部分
 
         public NanoMoverInfo Parent { get; set; } = null;
 
-        public StageBase Device { get; set; } = null;
-
         public NanoStageInfo(NanoMoverInfo info, StageBase stage)
         {
             Parent = info;
@@ -76,6 +79,11 @@ namespace ODMR_Lab.位移台部分
 
         public override void CreateDeviceInfoBehaviour()
         {
+        }
+
+        public override string GetDeviceDescription()
+        {
+            return Enum.GetName(PartType.GetType(), PartType) + ":" + Enum.GetName(MoverType.GetType(), MoverType) + ":" + Parent.Device.ProductName;
         }
     }
 

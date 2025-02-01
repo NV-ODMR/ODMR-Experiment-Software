@@ -9,6 +9,11 @@ namespace ODMR_Lab.设备部分.相机
         {
         }
 
+        public override string GetDeviceDescription()
+        {
+            return Device.ProductName;
+        }
+
         protected override void AutoConnectedAction(FileObject file)
         {
         }

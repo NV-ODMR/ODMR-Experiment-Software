@@ -104,6 +104,7 @@ namespace ODMR_Lab.磁场调节
             }
         }
 
+
         /// <summary>
         /// 刷新图表显示
         /// </summary>

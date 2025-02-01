@@ -11,12 +11,12 @@ namespace ODMR_Lab.IO操作
         /// <summary>
         /// 实验开始时间
         /// </summary>
-        public Param<string> ExpStartTime { get; set; } = new Param<string>("开始时间", "");
+        public Param<string> ExpStartTime { get; set; } = new Param<string>("开始时间", "", "ExpStartTime");
 
         /// <summary>
         /// 实验结束时间
         /// </summary>
-        public Param<string> ExpEndTime { get; set; } = new Param<string>("结束时间", "");
+        public Param<string> ExpEndTime { get; set; } = new Param<string>("结束时间", "", "ExpEndTime");
 
         public void SetStartTime(DateTime time)
         {

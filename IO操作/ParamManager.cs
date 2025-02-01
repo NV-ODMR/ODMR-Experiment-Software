@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CodeHelper;
 using ODMR_Lab.实验部分.场效应器件测量;
+using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.磁场调节;
 using ODMR_Lab.设备部分.源表;
 
@@ -51,6 +53,28 @@ namespace ODMR_Lab.IO操作
             WriteParamToFile(VP, fobj);
             #endregion
 
+            #region 自定义实验
+            MemberInfo[] info = typeof(MainWindow).GetMembers();
+            foreach (var item in info)
+            {
+                ODMR_Lab.自定义实验.DisplayPage page = null;
+                if (item.ReflectedType.Name == typeof(ODMR_Lab.自定义实验.DisplayPage).Name)
+                {
+                    if (item.MemberType == MemberTypes.Field)
+                    {
+                        page = (ODMR_Lab.自定义实验.DisplayPage)((FieldInfo)item).GetValue(MainWindow.Handle);
+                    }
+                    if (item.MemberType == MemberTypes.Property)
+                    {
+                        page = (ODMR_Lab.自定义实验.DisplayPage)((PropertyInfo)item).GetValue(MainWindow.Handle);
+                    }
+                    自定义实验.CustomConfigParams p = (自定义实验.CustomConfigParams)page.ExpObject.Config.Copy();
+                    p.ReadFromPage(new FrameworkElement[] { page }, false);
+                    WriteParamToFile(p, fobj);
+                }
+            }
+            #endregion
+
             if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "UIParam")))
             {
                 Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "UIParam"));
@@ -72,7 +96,7 @@ namespace ODMR_Lab.IO操作
             #region 设备参数
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
             ReadFromFile(P1, fobj);
-            P1.LoadToPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage });
+            P1.LoadToPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
             #endregion
 
             #region 磁场调节参数
@@ -84,16 +108,38 @@ namespace ODMR_Lab.IO操作
             #region 温度监控参数
             TemperatureConfigParams TP = new TemperatureConfigParams();
             ReadFromFile(TP, fobj);
-            TP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage, MainWindow.Exp_TemPeraPage.SetWindow });
+            TP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage, MainWindow.Exp_TemPeraPage.SetWindow }, false);
             #endregion
 
             #region 场效应器件测量参数
             IVMeasureConfigParams IVP = new IVMeasureConfigParams();
             ReadFromFile(IVP, fobj);
-            IVP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SourcePage });
+            IVP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
             VoltageSetConfigParams VP = new VoltageSetConfigParams();
             ReadFromFile(VP, fobj);
-            VP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SourcePage });
+            VP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
+            #endregion
+
+            #region 自定义实验
+            MemberInfo[] info = typeof(MainWindow).GetMembers();
+            foreach (var item in info)
+            {
+                ODMR_Lab.自定义实验.DisplayPage page = null;
+                if (item.ReflectedType.Name == typeof(ODMR_Lab.自定义实验.DisplayPage).Name)
+                {
+                    if (item.MemberType == MemberTypes.Field)
+                    {
+                        page = (ODMR_Lab.自定义实验.DisplayPage)((FieldInfo)item).GetValue(MainWindow.Handle);
+                    }
+                    if (item.MemberType == MemberTypes.Property)
+                    {
+                        page = (ODMR_Lab.自定义实验.DisplayPage)((PropertyInfo)item).GetValue(MainWindow.Handle);
+                    }
+                    自定义实验.CustomConfigParams p = (自定义实验.CustomConfigParams)page.ExpObject.Config.Copy();
+                    ReadFromFile(p, fobj);
+                    p.LoadToPage(new FrameworkElement[] { page }, false);
+                }
+            }
             #endregion
         }
 

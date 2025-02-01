@@ -85,6 +85,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             {
                 ExpPage.CheckWin.CWPoint1 = p1;
                 ExpPage.CheckWin.CWPoint2 = p2;
+                ExpPage.CheckWin.UpdateChartAndDataFlow(true);
             });
             #endregion
         }

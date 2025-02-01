@@ -109,6 +109,11 @@ namespace ODMR_Lab.温度监测部分
             }
         }
 
+        public override string GetDeviceDescription()
+        {
+            return Device.ProductName;
+        }
+
         protected override void AutoConnectedAction(FileObject file)
         {
         }

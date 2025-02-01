@@ -1,7 +1,9 @@
 ﻿using HardWares.温度控制器;
+using HardWares.端口基类;
 using ODMR_Lab.位移台部分;
 using ODMR_Lab.温度监测部分;
 using ODMR_Lab.相机;
+using ODMR_Lab.设备部分.设备种类枚举;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -129,6 +131,42 @@ namespace ODMR_Lab
             {
                 item.EndUse();
             }
+        }
+
+        /// <summary>
+        /// 获取设备
+        /// </summary>
+        /// <returns></returns>
+        public static dynamic GetDevices(DeviceTypes type)
+        {
+            if (type == DeviceTypes.相机)
+            {
+                return MainWindow.Dev_CameraPage.Cameras;
+            }
+
+            if (type == DeviceTypes.温控)
+            {
+                return MainWindow.Dev_TemPeraPage.TemperatureControllers; 
+            }
+
+            if (type == DeviceTypes.磁铁位移台)
+            {
+                return TryGetMoverDevice(PartTypes.Magnnet); 
+            }
+            if (type == DeviceTypes.探针位移台)
+            {
+                return TryGetMoverDevice(PartTypes.Probe); 
+            }
+            if (type == DeviceTypes.样品位移台)
+            {
+                return TryGetMoverDevice(PartTypes.Sample);
+            }
+            if (type == DeviceTypes.微波丝位移台)
+            {
+                return TryGetMoverDevice(PartTypes.Microwave);
+            }
+
+            return new List<InfoBase>();
         }
     }
 }

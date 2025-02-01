@@ -268,7 +268,11 @@ namespace ODMR_Lab
         public Label ExpStartTimeLabel { get; set; } = null;
         public Label ExpEndTimeLabel { get; set; } = null;
 
-        public event Action StartStateEvent = null;
+        /// <summary>
+        /// 初始化事件，在读取参数和获取设备后触发
+        /// </summary>
+        public event Action InitEvent = null;
+
         public event Action ResumeStateEvent = null;
         public event Action EndStateEvent = null;
         public event Action ErrorStateEvent = null;
@@ -287,7 +291,6 @@ namespace ODMR_Lab
                     if (item.Value == RunningBehaviours.DisableWhenRunning)
                         item.Key.IsEnabled = false;
                 }
-                StartStateEvent?.Invoke();
             });
         }
 
@@ -379,6 +382,8 @@ namespace ODMR_Lab
                         SetStopState();
                         return;
                     }
+
+                    InitEvent?.Invoke();
 
                     //设置实验时间
                     App.Current.Dispatcher.Invoke(() =>

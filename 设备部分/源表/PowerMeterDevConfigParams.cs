@@ -12,8 +12,8 @@ namespace ODMR_Lab.设备部分.源表
         /// <summary>
         /// 最大采样点数
         /// </summary>
-        public Param<int> SamplePoint { get; set; } = new Param<int>("最大采样点数", 100000);
+        public Param<int> SamplePoint { get; set; } = new Param<int>("最大采样点数", 100000, "SamplePoint");
 
-        public Param<double> SampleTime { get; set; } = new Param<double>("采样间隔（S）", 0.1);
+        public Param<double> SampleTime { get; set; } = new Param<double>("采样间隔（S）", 0.1, "SampleTime");
     }
 }
