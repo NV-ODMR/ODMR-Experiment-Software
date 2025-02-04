@@ -17,6 +17,12 @@ namespace ODMR_Lab.实验部分.自定义实验
     /// </summary>
     public abstract class CustomExpObject : ExperimentObject<CustomExpParams, CustomConfigParams>
     {
+
+        /// <summary>
+        /// 实验名称，显示在按钮中
+        /// </summary>
+        public abstract string ExperimentName { get; set; }
+
         /// <summary>
         /// 所属页面
         /// </summary>

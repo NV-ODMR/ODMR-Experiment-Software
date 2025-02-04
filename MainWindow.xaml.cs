@@ -76,6 +76,10 @@ namespace ODMR_Lab
 
         #endregion
 
+        #region 自定义实验页面
+        List<>
+        #endregion
+
         #region 扩展页面
         /// <summary>
         /// Python管理器
@@ -157,6 +161,13 @@ namespace ODMR_Lab
             Exp_MagnetControlPage.Init();
             Exp_SamplePage.Init();
             Exp_SourcePage.Init();
+
+            #region 自定义实验
+            //获取所有的自定义实验
+
+            #endregion
+
+            Ext_PythonPage.Init();
 
             AutoScrollViewer a = new AutoScrollViewer();
 

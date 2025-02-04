@@ -197,6 +197,7 @@
     <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanAngle.cs" />
     <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanZ.cs" />
     <Compile Include="实验部分\磁场调节\扫描线程及文件保存\ScanXY.cs" />
+    <Compile Include="实验部分\自定义实验\实验模板\CustomExperimentHelper.cs" />
     <Compile Include="实验部分\自定义实验\实验模板\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
