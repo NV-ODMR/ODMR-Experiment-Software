@@ -195,7 +195,7 @@ namespace ODMR_Lab
                                         }
                                         connectinfo = new DeviceConnectInfo(PortType.COM, obj.Descriptions["COMName"], obj.Descriptions["BaudRate"]);
                                     }
-                                    if (port == PortType.Socket)
+                                    if (port == PortType.TCPIP)
                                     {
 
                                     }
@@ -256,7 +256,7 @@ namespace ODMR_Lab
                 }
                 connectinfo = new DeviceConnectInfo(PortType.COM, obj.Descriptions["COMName"], obj.Descriptions["BaudRate"]);
             }
-            if (port == PortType.Socket)
+            if (port == PortType.TCPIP)
             {
 
             }

@@ -14,7 +14,7 @@ namespace ODMR_Lab.实验部分.自定义实验
         /// <returns></returns>
         public static List<CustomExpObject> GetAvailableCustomExperiments()
         {
-
+            return new List<CustomExpObject>();
         }
     }
 }

@@ -335,6 +335,7 @@ namespace ODMR_Lab.相机
         /// <returns></returns>
         private BitmapSource ClipImage(BitmapSource origin, Rect clipRange)
         {
+            origin.Freeze();
             if (!clipRange.IsEmpty)
             {
                 int x1 = (int)(clipRange.Left * origin.PixelWidth);
@@ -343,6 +344,7 @@ namespace ODMR_Lab.相机
                 int y2 = (int)(clipRange.Bottom * origin.PixelHeight);
                 Int32Rect cutrect = new Int32Rect(x1, y1, x2 - x1, y2 - y1);
                 CroppedBitmap cb = new CroppedBitmap(origin, cutrect);
+                cb.Freeze();
                 return cb;
             }
             return origin;

@@ -77,7 +77,6 @@ namespace ODMR_Lab
         #endregion
 
         #region 自定义实验页面
-        List<>
         #endregion
 
         #region 扩展页面
