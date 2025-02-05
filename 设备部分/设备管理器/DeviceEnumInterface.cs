@@ -31,12 +31,14 @@ namespace ODMR_Lab
 
             public Type DeviceInfoType = null;
 
-            public List<InfoBase> DeviceInfos { get; set; } = null;
-
             /// <summary>
             /// 设置设备事件
             /// </summary>
             public Action<List<InfoBase>> SetDevEvent = null;
+
+            public delegate List<InfoBase> GetDevHandler();
+
+            public GetDevHandler GetDevEvent = null;
         }
         private class DeviceDispatcherInfo<T> : DeviceDispatcherInfoBase
             where T : InfoBase
@@ -47,7 +49,6 @@ namespace ODMR_Lab
                 deviceType = type;
                 Page = page;
                 DeviceInfoType = typeof(T);
-                DeviceInfos = devinfos.Select(x => x as InfoBase).ToList();
             }
 
         }
@@ -87,48 +88,67 @@ namespace ODMR_Lab
             }
         }
 
+        private static bool CloseDevice(DeviceDispatcherInfoBase info)
+        {
+            List<InfoBase> infos = info.GetDevEvent();
+            foreach (var item in infos)
+            {
+                MethodInfo inf = item.GetType().GetMethod("CloseDeviceInfoAndSaveParams");
+                string path = inf.Invoke(item, new object[] { null }) as string;
+                if (path == "") return false;
+            }
+            return true;
+        }
+
         private static List<DeviceDispatcherInfoBase> DevInfos { get; set; } = new List<DeviceDispatcherInfoBase>()
         {
             //温控
             new DeviceDispatcherInfo<TemperatureControllerInfo>(DeviceTypes.温控,MainWindow.Dev_TemPeraPage,MainWindow.Dev_TemPeraPage.TemperatureControllers)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_TemPeraPage.TemperatureControllers=x.Select(v=>v as TemperatureControllerInfo).ToList())
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_TemPeraPage.TemperatureControllers=x.Select(v=>v as TemperatureControllerInfo).ToList()),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_TemPeraPage.TemperatureControllers.Select(x=>x as InfoBase).ToList(); })
             },
 
              //锁相放大器
             new DeviceDispatcherInfo<LockinInfo>(DeviceTypes.锁相放大器,MainWindow.Dev_RFSource_LockInPage,MainWindow.Dev_RFSource_LockInPage.LockIns)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.LockIns=x.Select(v=>v as LockinInfo).ToList())
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.LockIns=x.Select(v=>v as LockinInfo).ToList()),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_RFSource_LockInPage.LockIns.Select(x=>x as InfoBase).ToList(); })
             },
 
              //位移台
             new DeviceDispatcherInfo<NanoMoverInfo>(DeviceTypes.位移台,MainWindow.Dev_MoversPage,MainWindow.Dev_MoversPage.MoverList)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_MoversPage.MoverList=x.Select(v=>v as NanoMoverInfo).ToList())
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_MoversPage.MoverList=x.Select(v=>v as NanoMoverInfo).ToList()),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_MoversPage.MoverList.Select(x=>x as InfoBase).ToList(); })
             },
 
              //射频源
             new DeviceDispatcherInfo<RFSourceInfo>(DeviceTypes.射频源,MainWindow.Dev_RFSource_LockInPage,MainWindow.Dev_RFSource_LockInPage.RFSources)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.RFSources=x.Select(v=>v as RFSourceInfo).ToList())
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.RFSources=x.Select(v=>v as RFSourceInfo).ToList()),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_RFSource_LockInPage.RFSources.Select(x=>x as InfoBase).ToList(); })
             },
 
             //相机
             new DeviceDispatcherInfo<CameraInfo>(DeviceTypes.相机,MainWindow.Dev_CameraPage,MainWindow.Dev_CameraPage.Cameras)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_CameraPage.Cameras=x.Select(v=>v as CameraInfo).ToList())
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_CameraPage.Cameras=x.Select(v=>v as CameraInfo).ToList()),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_CameraPage.Cameras.Select(x=>x as InfoBase).ToList(); })
             },
 
             //翻转镜
             new DeviceDispatcherInfo<FlipMotorInfo>(DeviceTypes.翻转镜,MainWindow.Dev_CameraPage,MainWindow.Dev_CameraPage.Flips)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_CameraPage.Flips=x.Select(v=>v as FlipMotorInfo).ToList())
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_CameraPage.Flips=x.Select(v=>v as FlipMotorInfo).ToList()),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_CameraPage.Flips.Select(x=>x as InfoBase).ToList(); })
             },
 
             //源表
             new DeviceDispatcherInfo<PowerMeterInfo>(DeviceTypes.源表,MainWindow.Dev_PowerMeterPage,MainWindow.Dev_PowerMeterPage.PowerMeterList)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_PowerMeterPage.PowerMeterList=x.Select(v=>v as PowerMeterInfo).ToList())
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_PowerMeterPage.PowerMeterList=x.Select(v=>v as PowerMeterInfo).ToList()),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_PowerMeterPage.PowerMeterList.Select(x=>x as InfoBase).ToList(); })
             },
         };
 

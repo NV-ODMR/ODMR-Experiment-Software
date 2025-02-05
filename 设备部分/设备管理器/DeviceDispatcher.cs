@@ -45,30 +45,10 @@ namespace ODMR_Lab
         public static bool CloseDevicesAndSave()
         {
             bool canclose = true;
-            for (int i = 0; i < MainWindow.Dev_CameraPage.Cameras.Count; i++)
+            foreach (var item in DevInfos)
             {
-                string path = MainWindow.Dev_CameraPage.Cameras[i].CloseDeviceInfoAndSaveParams(out bool result);
-                if (path == "") canclose = false;
-            }
-            for (int i = 0; i < MainWindow.Dev_CameraPage.Flips.Count; i++)
-            {
-                string path = MainWindow.Dev_CameraPage.Flips[i].CloseDeviceInfoAndSaveParams(out bool result);
-                if (path == "") canclose = false;
-            }
-            for (int i = 0; i < MainWindow.Dev_TemPeraPage.TemperatureControllers.Count; i++)
-            {
-                string path = MainWindow.Dev_TemPeraPage.TemperatureControllers[i].CloseDeviceInfoAndSaveParams(out bool result);
-                if (path == "") canclose = false;
-            }
-            for (int i = 0; i < MainWindow.Dev_MoversPage.MoverList.Count; i++)
-            {
-                string path = MainWindow.Dev_MoversPage.MoverList[i].CloseDeviceInfoAndSaveParams(out bool result);
-                if (path == "") canclose = false;
-            }
-            for (int i = 0; i < MainWindow.Dev_PowerMeterPage.PowerMeterList.Count; i++)
-            {
-                string path = MainWindow.Dev_PowerMeterPage.PowerMeterList[i].CloseDeviceInfoAndSaveParams(out bool result);
-                if (path == "") canclose = false;
+                canclose = CloseDevice(item);
+                if (canclose == false) return canclose;
             }
 
             return canclose;
@@ -130,7 +110,7 @@ namespace ODMR_Lab
             List<InfoBase> infos = new List<InfoBase>();
             foreach (var item in DevInfos)
             {
-                if (item.deviceType == type) return item.DeviceInfos;
+                if (item.deviceType == type) return item.GetDevEvent();
             }
             return new List<InfoBase>();
         }
