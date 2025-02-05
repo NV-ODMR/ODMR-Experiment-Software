@@ -109,13 +109,6 @@ namespace ODMR_Lab
                 GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_TemPeraPage.TemperatureControllers.Select(x=>x as InfoBase).ToList(); })
             },
 
-             //锁相放大器
-            new DeviceDispatcherInfo<LockinInfo>(DeviceTypes.锁相放大器,MainWindow.Dev_RFSource_LockInPage,MainWindow.Dev_RFSource_LockInPage.LockIns)
-            {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.LockIns=x.Select(v=>v as LockinInfo).ToList()),
-                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_RFSource_LockInPage.LockIns.Select(x=>x as InfoBase).ToList(); })
-            },
-
              //位移台
             new DeviceDispatcherInfo<NanoMoverInfo>(DeviceTypes.位移台,MainWindow.Dev_MoversPage,MainWindow.Dev_MoversPage.MoverList)
             {
