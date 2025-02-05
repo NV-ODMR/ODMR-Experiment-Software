@@ -174,7 +174,10 @@ namespace ODMR_Lab.相机
                             Framerate.Content = "帧率:" + Math.Round(1000.0 / ((tik2 - tik1) / 10000.0), 3).ToString();
                         });
                     }
-                    catch (Exception e) { }
+                    catch (Exception e)
+                    {
+                        Thread.Sleep(40);
+                    }
                 }
             });
             CameraThread.Start();

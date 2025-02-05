@@ -1,4 +1,4 @@
-﻿<odmr_lab:PageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab" x:Class="ODMR_Lab.源表部分.DevicePage"
+﻿<odmr_lab:DevicePageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab.设备部分" x:Class="ODMR_Lab.源表部分.DevicePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -62,4 +62,4 @@
         <TextBox x:Name="SamplePoint" Margin="5" Width="100" Text="1000000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
         <control:DecoratedButton Click="ApplySet" Text="应用" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" Width="50" PressedForeground="#FFFAFAFA" Margin="10"/>
     </StackPanel>
-</odmr_lab:PageBase>
+</odmr_lab:DevicePageBase>

@@ -9,6 +9,7 @@ using HardWares.纳米位移台;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +34,7 @@ namespace ODMR_Lab.位移台部分
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class DevicePage : PageBase
+    public partial class DevicePage : DevicePageBase
     {
 
         public List<NanoMoverInfo> MoverList { get; set; } = new List<NanoMoverInfo>();
@@ -101,7 +102,7 @@ namespace ODMR_Lab.位移台部分
         }
 
 
-        public void RefreshPanels()
+        public override void RefreshPanels()
         {
             ProbeMoverList.ClearItems();
             SampleMoverList.ClearItems();

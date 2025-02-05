@@ -8,6 +8,7 @@ using HardWares.端口基类部分;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +33,7 @@ namespace ODMR_Lab.温度监测部分
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class DevicePage : PageBase
+    public partial class DevicePage : DevicePageBase
     {
         /// <summary>
         /// 温控列表
@@ -117,7 +118,7 @@ namespace ODMR_Lab.温度监测部分
             {
                 return;
             }
-            RefreshConnectedControllers();
+            RefreshPanels();
             RefreshChannelBtns();
         }
 
@@ -153,7 +154,7 @@ namespace ODMR_Lab.温度监测部分
             RefreshChannelBtns();
         }
 
-        public void RefreshChannelBtns()
+        private void RefreshChannelBtns()
         {
             Channels.Children.Clear();
             SelectedChannel.Children.Clear();
@@ -206,7 +207,7 @@ namespace ODMR_Lab.温度监测部分
             }
         }
 
-        public void RefreshConnectedControllers()
+        public override void RefreshPanels()
         {
             DeviceList.ClearItems();
             foreach (var item in TemperatureControllers)
@@ -240,7 +241,7 @@ namespace ODMR_Lab.温度监测部分
                 dev.CloseDeviceInfoAndSaveParams(out bool result);
                 if (result == false) return;
                 TemperatureControllers.Remove(dev);
-                RefreshConnectedControllers();
+                RefreshPanels();
                 RefreshChannelBtns();
                 return;
             }
@@ -263,7 +264,7 @@ namespace ODMR_Lab.温度监测部分
                     i--;
                 }
                 RefreshChannelBtns();
-                RefreshConnectedControllers();
+                RefreshPanels();
             }
         }
 

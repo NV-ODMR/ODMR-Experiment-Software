@@ -1,9 +1,13 @@
-﻿using HardWares.温度控制器;
+﻿using HardWares.仪器列表.电动翻转座;
+using HardWares.波源;
+using HardWares.温度控制器;
+using HardWares.相机_CCD_;
 using HardWares.端口基类;
+using HardWares.纳米位移台;
 using ODMR_Lab.位移台部分;
 using ODMR_Lab.温度监测部分;
 using ODMR_Lab.相机;
-using ODMR_Lab.设备部分.设备种类枚举;
+using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,26 +31,13 @@ namespace ODMR_Lab
         {
             string connectedmessage = "";
             string unconnectmessage = "";
-            //相机
-            ScanCameraDevices(out string appendconnected, out string appendunconnected);
-            connectedmessage += appendconnected;
-            unconnectmessage += appendunconnected;
-            //翻转镜
-            ScanFlipDevices(out appendconnected, out appendunconnected);
-            connectedmessage += appendconnected;
-            unconnectmessage += appendunconnected;
-            //温控
-            ScanTemperatureControllerDevices(out appendconnected, out appendunconnected);
-            connectedmessage += appendconnected;
-            unconnectmessage += appendunconnected;
-            //位移台
-            ScanMoverDevices(out appendconnected, out appendunconnected);
-            connectedmessage += appendconnected;
-            unconnectmessage += appendunconnected;
-            //源表
-            ScanPowerMeterDevices(out appendconnected, out appendunconnected);
-            connectedmessage += appendconnected;
-            unconnectmessage += appendunconnected;
+
+            foreach (var item in DevInfos)
+            {
+                ScanDevice(item, out string appendconnected, out string appendunconnected);
+                connectedmessage += appendconnected;
+                unconnectmessage += appendunconnected;
+            }
 
             return "已连接的设备:\n" + (connectedmessage == "" ? "无\n" : connectedmessage + "\n") + "未连接的设备:\n" + (unconnectmessage == "" ? "无\n" : unconnectmessage + "\n");
         }
@@ -133,40 +124,16 @@ namespace ODMR_Lab
             }
         }
 
-        /// <summary>
-        /// 获取设备
-        /// </summary>
-        /// <returns></returns>
-        public static dynamic GetDevices(DeviceTypes type)
+        #region 获取设备
+        public static List<InfoBase> GetDevice(DeviceTypes type)
         {
-            if (type == DeviceTypes.相机)
+            List<InfoBase> infos = new List<InfoBase>();
+            foreach (var item in DevInfos)
             {
-                return MainWindow.Dev_CameraPage.Cameras;
+                if (item.deviceType == type) return item.DeviceInfos;
             }
-
-            if (type == DeviceTypes.温控)
-            {
-                return MainWindow.Dev_TemPeraPage.TemperatureControllers; 
-            }
-
-            if (type == DeviceTypes.磁铁位移台)
-            {
-                return TryGetMoverDevice(PartTypes.Magnnet); 
-            }
-            if (type == DeviceTypes.探针位移台)
-            {
-                return TryGetMoverDevice(PartTypes.Probe); 
-            }
-            if (type == DeviceTypes.样品位移台)
-            {
-                return TryGetMoverDevice(PartTypes.Sample);
-            }
-            if (type == DeviceTypes.微波丝位移台)
-            {
-                return TryGetMoverDevice(PartTypes.Microwave);
-            }
-
             return new List<InfoBase>();
         }
+        #endregion
     }
 }

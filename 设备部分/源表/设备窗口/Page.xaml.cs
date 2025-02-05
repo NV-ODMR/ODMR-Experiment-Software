@@ -12,6 +12,7 @@ using ODMR_Lab.Windows;
 using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.源表;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace ODMR_Lab.源表部分
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class DevicePage : PageBase
+    public partial class DevicePage : DevicePageBase
     {
 
         public List<PowerMeterInfo> PowerMeterList { get; set; } = new List<PowerMeterInfo>();
@@ -84,7 +85,7 @@ namespace ODMR_Lab.源表部分
             }
         }
 
-        public void RefreshPanels()
+        public override void RefreshPanels()
         {
             DeviceList.ClearItems();
 

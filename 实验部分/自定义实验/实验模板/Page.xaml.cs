@@ -44,7 +44,7 @@ using System.Reflection;
 using ODMR_Lab.IO操作;
 using TextBox = System.Windows.Controls.TextBox;
 using ComboBox = Controls.ComboBox;
-using ODMR_Lab.设备部分.设备种类枚举;
+using ODMR_Lab.设备部分;
 
 namespace ODMR_Lab.自定义实验
 {
@@ -174,7 +174,7 @@ namespace ODMR_Lab.自定义实验
             box.Click += ((sender, e) =>
             {
                 box.Items.Clear();
-                var devs = DeviceDispatcher.GetDevices(type);
+                var devs = DeviceDispatcher.GetDevice(type);
                 foreach (var item in devs)
                 {
                     DecoratedButton btn = new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item };

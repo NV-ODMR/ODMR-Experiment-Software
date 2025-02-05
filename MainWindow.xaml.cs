@@ -32,6 +32,7 @@ using Label = System.Windows.Controls.Label;
 using ODMR_Lab.Python管理器;
 using ODMR_Lab.IO操作;
 using Controls.Windows;
+using System.Windows.Media.Animation;
 
 namespace ODMR_Lab
 {
@@ -53,6 +54,8 @@ namespace ODMR_Lab
         public static 相机.DevicePage Dev_CameraPage = new 相机.DevicePage();
 
         public static 源表部分.DevicePage Dev_PowerMeterPage = new 源表部分.DevicePage();
+
+        public static 射频源_锁相放大器.DevicePage Dev_RFSource_LockInPage = new 射频源_锁相放大器.DevicePage();
         #endregion
 
         #region 实验页面
@@ -362,6 +365,12 @@ namespace ODMR_Lab
                 CurrentPage = Dev_PowerMeterPage;
                 PageContent.Children.Add(Dev_PowerMeterPage);
             }
+            if (btn.Text == "射频源/Lock In")
+            {
+                CurrentPage = Dev_RFSource_LockInPage;
+                PageContent.Children.Add(Dev_RFSource_LockInPage);
+            }
+
         }
 
         private void ShowExpContent(object sender, RoutedEventArgs e)

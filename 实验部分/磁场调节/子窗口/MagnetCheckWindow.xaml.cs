@@ -258,22 +258,22 @@ namespace ODMR_Lab.磁场调节
                     P.ReadFromPage(new FrameworkElement[] { ParentPage });
                 });
                 //移动位移台
-                moverx = DeviceDispatcher.TryGetMoverDevice(P.XRelate.Value, PartTypes.Magnnet);
+                moverx = DeviceDispatcher.GetMoverDevice(P.XRelate.Value, PartTypes.Magnnet);
                 if (moverx == null)
                 {
                     return null;
                 }
-                movery = DeviceDispatcher.TryGetMoverDevice(P.YRelate.Value, PartTypes.Magnnet);
+                movery = DeviceDispatcher.GetMoverDevice(P.YRelate.Value, PartTypes.Magnnet);
                 if (movery == null)
                 {
                     return null;
                 }
-                moverz = DeviceDispatcher.TryGetMoverDevice(P.ZRelate.Value, PartTypes.Magnnet);
+                moverz = DeviceDispatcher.GetMoverDevice(P.ZRelate.Value, PartTypes.Magnnet);
                 if (moverz == null)
                 {
                     return null;
                 }
-                movera = DeviceDispatcher.TryGetMoverDevice(P.ARelate.Value, PartTypes.Magnnet);
+                movera = DeviceDispatcher.GetMoverDevice(P.ARelate.Value, PartTypes.Magnnet);
                 if (movera == null)
                 {
                     return null;

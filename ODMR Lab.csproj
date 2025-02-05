@@ -218,6 +218,7 @@
       <DependentUpon>DataVisualWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\UserCustomFileObject.cs" />
+    <Compile Include="设备部分\DevicePage.cs" />
     <Compile Include="设备部分\位移台部分\MoverInfo.cs" />
     <Compile Include="设备部分\位移台部分\测试窗口\MoverTestWindow.xaml.cs">
       <DependentUpon>MoverTestWindow.xaml</DependentUpon>
@@ -234,6 +235,11 @@
     <Compile Include="基本窗口\TimeWindow.xaml.cs">
       <DependentUpon>TimeWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="设备部分\射频源，锁相放大器\RFSourceInfo.cs" />
+    <Compile Include="设备部分\射频源，锁相放大器\LockInInfo.cs" />
+    <Compile Include="设备部分\射频源，锁相放大器\设备窗口\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="设备部分\温度监测部分\ChannelInfo.cs" />
     <Compile Include="设备部分\温度监测部分\控件\TemperaturePannel.xaml.cs">
       <DependentUpon>TemperaturePannel.xaml</DependentUpon>
@@ -249,23 +255,20 @@
     <Compile Include="设备部分\源表\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\相机\CameraInfo.cs" />
-    <Compile Include="设备部分\相机\FlipMotorInfo.cs" />
-    <Compile Include="设备部分\相机\子窗口\CameraWindow.xaml.cs">
+    <Compile Include="设备部分\相机，翻转镜\CameraInfo.cs" />
+    <Compile Include="设备部分\相机，翻转镜\FlipMotorInfo.cs" />
+    <Compile Include="设备部分\相机，翻转镜\子窗口\CameraWindow.xaml.cs">
       <DependentUpon>CameraWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\相机\设备窗口\Page.xaml.cs">
+    <Compile Include="设备部分\相机，翻转镜\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\设备种类枚举\DeviceConnectInfo.cs" />
-    <Compile Include="设备部分\设备种类枚举\DeviceTypes.cs" />
-    <Compile Include="设备部分\设备种类枚举\InfoBase.cs" />
-    <Compile Include="设备部分\设备管理器\Camera.cs" />
+    <Compile Include="设备部分\设备类\DeviceConnectInfo.cs" />
+    <Compile Include="设备部分\设备类\InfoBase.cs" />
     <Compile Include="设备部分\设备管理器\DeviceDispatcher.cs" />
-    <Compile Include="设备部分\设备管理器\Flip.cs" />
-    <Compile Include="设备部分\设备管理器\Mover.cs" />
-    <Compile Include="设备部分\设备管理器\PowerMeter.cs" />
-    <Compile Include="设备部分\设备管理器\TemperatureController.cs" />
+    <Compile Include="设备部分\设备管理器\DeviceEnumInterface.cs" />
+    <Compile Include="设备部分\设备管理器\DeviceTypes.cs" />
+    <Compile Include="设备部分\设备管理器\MoverSelector.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -374,6 +377,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="设备部分\射频源，锁相放大器\设备窗口\Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="设备部分\温度监测部分\控件\TemperaturePannel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -390,11 +397,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="设备部分\相机\子窗口\CameraWindow.xaml">
+    <Page Include="设备部分\相机，翻转镜\子窗口\CameraWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="设备部分\相机\设备窗口\Page.xaml">
+    <Page Include="设备部分\相机，翻转镜\设备窗口\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

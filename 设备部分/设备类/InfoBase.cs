@@ -141,14 +141,15 @@ namespace ODMR_Lab
         /// <summary>
         /// 尝试打开所有设备，导入参数
         /// </summary>
-        public static List<DeviceInfoBase<T>> ConnectAllAndLoadParams(string ParamFolder, out List<string> unconnectedDeviceinfo)
+        public static List<InfoBase> ConnectAllAndLoadParams(string ParamFolder, out List<string> connectedDeviceinfo, out List<string> unconnectedDeviceinfo)
         {
             if (!Directory.Exists(ParamFolder))
             {
                 Directory.CreateDirectory(ParamFolder);
             }
-            List<DeviceInfoBase<T>> ConnectDevices = new List<DeviceInfoBase<T>>();
+            List<InfoBase> ConnectDevices = new List<InfoBase>();
             List<string> result = new List<string>();
+            List<string> cresult = new List<string>();
             DirectoryInfo info = new DirectoryInfo(ParamFolder);
             FileInfo[] files = info.GetFiles();
             foreach (var item in files)
@@ -183,6 +184,10 @@ namespace ODMR_Lab
                                             result.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["USBConnectName"]);
                                             continue;
                                         }
+                                        else
+                                        {
+                                            cresult.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["USBConnectName"]);
+                                        }
                                         connectinfo = new DeviceConnectInfo(PortType.USB, obj.Descriptions["USBConnectName"]);
                                     }
                                     if (port == PortType.COM)
@@ -193,11 +198,15 @@ namespace ODMR_Lab
                                             result.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["COMName"]);
                                             continue;
                                         }
+                                        else
+                                        {
+                                            cresult.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["COMName"]);
+                                        }
                                         connectinfo = new DeviceConnectInfo(PortType.COM, obj.Descriptions["COMName"], obj.Descriptions["BaudRate"]);
                                     }
                                     if (port == PortType.TCPIP)
                                     {
-
+                                        throw new NotImplementedException();
                                     }
                                     Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);
                                     DeviceInfoBase<T> dev = Activator.CreateInstance(infoType) as DeviceInfoBase<T>;
@@ -219,6 +228,7 @@ namespace ODMR_Lab
                 }
             }
             unconnectedDeviceinfo = result;
+            connectedDeviceinfo = cresult;
             return ConnectDevices;
         }
 
