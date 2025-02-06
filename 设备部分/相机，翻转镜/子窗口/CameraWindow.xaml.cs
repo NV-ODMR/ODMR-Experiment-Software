@@ -171,7 +171,7 @@ namespace ODMR_Lab.相机
                         //计算帧率
                         Dispatcher.Invoke(() =>
                         {
-                            Framerate.Content = "帧率:" + Math.Round(1000.0 / ((tik2 - tik1) / 10000.0), 3).ToString();
+                            Framerate.Content = "帧率:" + Math.Round(1000.0 / ((tik2 - tik1) / 10000.0), 3).ToString() + "\t" + "未捕获帧数:" + Camera.Device.BrokenFrameCount.ToString();
                         });
                     }
                     catch (Exception e)
