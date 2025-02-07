@@ -127,7 +127,8 @@
     <Compile Include="UI刷新部分\UIUpdater.cs" />
     <Compile Include="基本控件\ChartData1D.cs" />
     <Compile Include="基本控件\ChartData2D.cs" />
-    <Compile Include="基本控件\ChartStyleParams.cs" />
+    <Compile Include="基本控件\Chart1DStyleParams.cs" />
+    <Compile Include="基本控件\Chart2DStyleParams.cs" />
     <Compile Include="基本控件\ChartViewer1D.xaml.cs">
       <DependentUpon>ChartViewer1D.xaml</DependentUpon>
     </Compile>

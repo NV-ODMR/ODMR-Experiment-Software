@@ -27,8 +27,6 @@ namespace ODMR_Lab.基本控件
 
         public ChartDataType DataAxisType { get; set; } = ChartDataType.XY;
 
-        public ChartViewer1D ParentChart { get; set; } = null;
-
         /// <summary>
         /// 分组名称
         /// </summary>

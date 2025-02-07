@@ -49,10 +49,6 @@ namespace ODMR_Lab.基本控件
         /// <param name="e"></param>
         private void UpdateDataPanel(object sender, RoutedEventArgs e)
         {
-            foreach (var item in DataSource)
-            {
-                item.ParentChart = this;
-            }
             UpdateGroups();
             UpdateDataPanel();
         }

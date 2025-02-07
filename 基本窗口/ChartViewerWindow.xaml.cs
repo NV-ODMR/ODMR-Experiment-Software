@@ -76,12 +76,23 @@ namespace ODMR_Lab.基本窗口
             {
                 C1D.DataSource.Clear(false);
                 C1D.DataSource.AddRange(data);
-                foreach (var item in data)
-                {
-                    item.ParentChart = C1D;
-                }
                 ContentPanel.Children.Add(C1D);
                 C1D.UpdateChartAndDataFlow(true);
+            }
+            Topmost = true;
+            Show();
+            Topmost = false;
+        }
+
+        ChartViewer2D C2D = new ChartViewer2D();
+        public void ShowAs2D(List<ChartData2D> data)
+        {
+            if (ContentPanel.Children.Count == 0)
+            {
+                C2D.DataSource.Clear(false);
+                C2D.DataSource.AddRange(data);
+                ContentPanel.Children.Add(C2D);
+                C2D.UpdateChartAndDataFlow();
             }
             Topmost = true;
             Show();
@@ -95,6 +106,11 @@ namespace ODMR_Lab.基本窗口
                 if (ContentPanel.Children[0] == C1D)
                 {
                     C1D.UpdateChartAndDataFlow(true);
+                }
+
+                if (ContentPanel.Children[0] == C2D)
+                {
+                    C2D.UpdateChartAndDataFlow();
                 }
             }
         }

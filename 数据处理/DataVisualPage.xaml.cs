@@ -79,7 +79,7 @@ namespace ODMR_Lab.数据处理
             }
             if (sender == BtnPlot2D)
             {
-                Plot2D.Visibility = Visibility.Hidden;
+                Plot1D.Visibility = Visibility.Hidden;
                 Plot2D.Visibility = Visibility.Visible;
                 BtnPlot1D.KeepPressed = false;
                 BtnPlot2D.KeepPressed = true;

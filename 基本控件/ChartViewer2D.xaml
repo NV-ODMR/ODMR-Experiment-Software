@@ -5,5 +5,73 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ODMR_Lab.基本控件"
       mc:Ignorable="d" 
+      xmlns:control="clr-namespace:Controls.Charts;assembly=Controls" xmlns:scroll="clr-namespace:Controls;assembly=Controls"
       d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Grid.Column="1" Name="ChartView" Visibility="Visible">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0"/>
+            <ColumnDefinition MinWidth="300" Width="2*"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition MinWidth="100" Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <control:ChartControl2DHeatMap Name="ChartObject" TitleSize="40" CrossHairLineThickness="1.5" SnapsToDevicePixels="True" AxisForeground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="1" AxisFontsize="16" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" CrossHairColor="Gainsboro"/>
+        <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <scroll:ComboBox Name="ChartGroups" DefaultSelectIndex="0" SelectionChanged="ChangeGroup" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
+            </scroll:ComboBox>
+            <scroll:ListViewer Grid.Row="1" Name="DataSet" Grid.RowSpan="2" MinItemWidth="150" ItemSelected="DataSet_ItemSelected" ItemBarSelectedColor="#FF0087E2" ItemBarBackground="#FF1A1A1A">
+                <scroll:ListViewer.DataTemplate>
+                    <scroll:ViewerTemplate Descriptions="数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
+                    <scroll:ViewerTemplate Descriptions="X点数" DataType="String" Editable="False" DataDisplayWidth="60" />
+                    <scroll:ViewerTemplate Descriptions="Y点数" DataType="String" Editable="False" DataDisplayWidth="60" />
+                </scroll:ListViewer.DataTemplate>
+                <scroll:ListViewer.HeaderLabelTemplate>
+                    <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                </scroll:ListViewer.HeaderLabelTemplate>
+                <scroll:ListViewer.UnEditableTextTemplate>
+                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
+                </scroll:ListViewer.UnEditableTextTemplate>
+                <scroll:ListViewer.EditableBooleanTemplate>
+                    <scroll:Chooser Width="30" Height="15"/>
+                </scroll:ListViewer.EditableBooleanTemplate>
+            </scroll:ListViewer>
+        </Grid>
+        <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <scroll:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="1" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
+            <scroll:DecoratedButton Margin="7" Click="Snap" Grid.Row="0" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="复制截图到剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
+            <scroll:DecoratedButton Margin="7" Click="SaveAsExternal" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="保存为文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/save.png"/>
+        </Grid>
+        <scroll:AutoScrollViewer Grid.Row="1" Grid.Column="1">
+            <scroll:AutoScrollViewer.Content>
+                <WrapPanel Orientation="Horizontal">
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="颜色类型" />
+                    <scroll:ComboBox Name="MapColorStyle" FontSize="11" DefaultSelectIndex="0" SelectionChanged="ApplyLineStyle" Width="70" Height="30" Margin="5" PanelWidth="60" TextAreaRatio="0.8" IconMargin="2" ImagePlace="Right" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
+                    </scroll:ComboBox>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="自适应值范围"/>
+                    <scroll:Chooser Name="AutoScale" Width="30" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="15" Margin="10"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="值上限"/>
+                    <TextBox x:Name="ValueHi" Text="1" LostFocus="ApplyLineStyle" KeyDown="ApplyLineStyleKey" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="60"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="值下限"/>
+                    <TextBox x:Name="ValueLo" Text="0" KeyDown="ApplyLineStyleKey" LostFocus="ApplyLineStyle" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="60"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="平滑"/>
+                    <scroll:Chooser Name="Smooth" Width="30" IsSelected="False" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="15" Margin="10"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="显示光标"/>
+                    <scroll:Chooser Name="Cursor" Width="30" IsSelected="False" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="15" Margin="10"/>
+                </WrapPanel>
+            </scroll:AutoScrollViewer.Content>
+        </scroll:AutoScrollViewer>
+    </Grid>
 </Grid>

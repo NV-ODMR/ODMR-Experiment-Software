@@ -42,7 +42,7 @@
         <control:AutoScrollViewer  Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" >
             <control:AutoScrollViewer.Content>
                 <StackPanel Name="PlotViewer" Orientation="Horizontal" Height="40" HorizontalAlignment="Left" VerticalAlignment="Stretch">
-                    <control:DecoratedButton Name="BtnPlot1D" Height="34" Width="100" Text="一维图" Margin="3" Click="SelectPanel" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                    <control:DecoratedButton Name="BtnPlot1D" KeepPressed="True" Height="34" Width="100" Text="一维图" Margin="3" Click="SelectPanel" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                     <control:DecoratedButton Name="BtnPlot2D" Height="34" Width="100" Text="二维图" Margin="3" Click="SelectPanel" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                     <control:DecoratedButton Margin="40,3,3,3" Click="OpenDataProcessWindow" Height="34" Width="140" Text="数据处理" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                     <control:DecoratedButton Margin="20,3,3,3" Name="ShowInPage" Click="ShowInWindowClick" Height="34" Width="140" Text="显示在独立窗口" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
@@ -50,8 +50,8 @@
             </control:AutoScrollViewer.Content>
         </control:AutoScrollViewer>
         <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="4" Grid.ColumnSpan="3">
-            <基本控件:ChartViewer1D x:Name="Plot1D"/>
-            <基本控件:ChartViewer2D x:Name="Plot2D" Visibility="Hidden"/>
+            <基本控件:ChartViewer1D x:Name="Plot1D" Visibility="Visible"/>
+            <基本控件:ChartViewer2D x:Name="Plot2D" Visibility="Collapsed"/>
         </Grid>
         <Label Name="CurrentFile" Content="无打开文件" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Row="0"/>
     </Grid>
