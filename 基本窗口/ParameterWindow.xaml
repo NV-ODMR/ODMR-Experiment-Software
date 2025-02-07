@@ -29,11 +29,7 @@
             </Controls:AutoScrollViewer.Content>
         </Controls:AutoScrollViewer>
         <Controls:DecoratedButton Name="ButtonTemplate" Visibility="Collapsed" ImagePlace="Right" IconMargin="10" Width="200" TextAreaRatio="0.7" Height="111" Background="#FF4D4D4D" MoveInColor="#FF989898" PressedColor="#FF5D5D5D" Foreground="White" PressedForeground="White" MoveInForeground="White" IconSource="/图片资源/downArrow.png"/>
-        <Controls:FontChangeText Name="TextTemplate" Width="100" Height="40" BorderThickness="0">
-            <Controls:FontChangeText.InnerTextBox>
-                <TextBox Background="#FF4D4D4D" Text="111" Visibility="Collapsed" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CaretBrush="White" Foreground="White"/>
-            </Controls:FontChangeText.InnerTextBox>
-        </Controls:FontChangeText>
+        <TextBox x:Name="TextTemplate" Grid.Row="1" Grid.Column="0" Background="#FF4D4D4D" TextAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="111" FontSize="12" Visibility="Collapsed" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CaretBrush="White" Foreground="White" BorderBrush="{x:Null}"/>
 
     </Grid>
 </Window>

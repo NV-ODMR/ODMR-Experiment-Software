@@ -72,7 +72,7 @@ namespace ODMR_Lab.位移台部分
             Grid grid = new Grid();
             grid.Tag = info;
             grid.Height = 50;
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(60) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(90) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(90) });
@@ -80,32 +80,48 @@ namespace ODMR_Lab.位移台部分
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(40) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(40) });
 
-            Label l = CreateLabelStyle();
+            Label l = new Label();
+            UIUpdater.CloneStyle(LabelTemplate, l);
+
             l.Content = info.Parent.Device.ProductName;
             grid.Children.Add(l);
             Grid.SetColumn(l, 0);
 
-            l = CreateLabelStyle();
+            l = new Label();
+            UIUpdater.CloneStyle(LabelTemplate, l);
+
             l.Content = info.Device.AxisName;
             grid.Children.Add(l);
             Grid.SetColumn(l, 1);
 
-            ComboBox box = CreateComboxStyle(info);
+            ComboBox box = new ComboBox();
+            box.Margin = new Thickness(5);
+            box.TemplateButton = BtnTemplate;
+            BtnTemplate.CloneStyleTo(box);
+            box.TextAreaRatio = BtnTemplate.TextAreaRatio;
+            box.IconSource = BtnTemplate.IconSource;
+            box.ImagePlace = BtnTemplate.ImagePlace;
+            BtnTemplate.IconMargin = BtnTemplate.IconMargin;
+            foreach (var item in Enum.GetNames(typeof(MoverTypes)))
+            {
+                box.Items.Add(new DecoratedButton() { Text = item });
+            }
+            box.Select(Enum.GetName(info.MoverType.GetType(), info.MoverType));
             grid.Children.Add(box);
             Grid.SetColumn(box, 2);
 
-            FontChangeText target = new FontChangeText();
+            TextBox target = new TextBox();
+            UIUpdater.CloneStyle(TextboxTemplate, target);
             target.Margin = new Thickness(5);
-            target.InnerTextBox.IsReadOnly = true;
+            target.IsReadOnly = true;
             target.Tag = info;
-            TextTemplate.CloneStyleTo(target);
             grid.Children.Add(target);
             Grid.SetColumn(target, 3);
 
-            FontChangeText text = new FontChangeText();
-            text.InnerTextBox.Text = "0.01";
+            TextBox text = new TextBox();
+            UIUpdater.CloneStyle(TextboxTemplate, text);
+            text.Text = "0.01";
             text.Margin = new Thickness(5);
-            TextTemplate.CloneStyleTo(text);
             grid.Children.Add(text);
             Grid.SetColumn(text, 4);
 
@@ -130,38 +146,6 @@ namespace ODMR_Lab.位移台部分
             return grid;
         }
 
-
-        private Label CreateLabelStyle()
-        {
-            Label l = new Label();
-            l.Foreground = Brushes.White;
-            l.FontSize = 10;
-            l.HorizontalAlignment = HorizontalAlignment.Stretch;
-            l.VerticalAlignment = VerticalAlignment.Stretch;
-            l.HorizontalContentAlignment = HorizontalAlignment.Center;
-            l.VerticalContentAlignment = VerticalAlignment.Center;
-            return l;
-        }
-
-        private ComboBox CreateComboxStyle(NanoStageInfo info)
-        {
-            ComboBox box = new ComboBox();
-            BtnTemplate.CloneStyleTo(box);
-            box.FontSize = 12;
-            box.TextAreaRatio = BtnTemplate.TextAreaRatio;
-            box.IconSource = BtnTemplate.IconSource;
-            box.ImagePlace = BtnTemplate.ImagePlace;
-            box.PanelWidth = 200;
-            box.IconMargin = BtnTemplate.IconMargin;
-            box.TemplateButton = BtnTemplate;
-            foreach (var item in Enum.GetNames(typeof(MoverTypes)))
-            {
-                box.Items.Add(new DecoratedButton() { Text = item });
-            }
-            box.Select(Enum.GetName(info.MoverType.GetType(), info.MoverType));
-            box.Margin = new Thickness(5);
-            return box;
-        }
         #endregion
 
 
@@ -183,10 +167,10 @@ namespace ODMR_Lab.位移台部分
                             double pos = item.Device.Position;
                             Dispatcher.Invoke(() =>
                             {
-                                FontChangeText text = GetTextbox(item);
+                                TextBox text = GetTextbox(item);
                                 if (text != null)
                                 {
-                                    text.InnerTextBox.Text = pos.ToString();
+                                    text.Text = pos.ToString();
                                 }
                             });
                         }
@@ -199,13 +183,13 @@ namespace ODMR_Lab.位移台部分
             listenthread.Start();
         }
 
-        private FontChangeText GetTextbox(NanoStageInfo mover)
+        private TextBox GetTextbox(NanoStageInfo mover)
         {
             foreach (var item in MoverLists.Children)
             {
                 if ((item as Grid).Tag as NanoStageInfo == mover)
                 {
-                    return ((item as Grid).Children[4] as FontChangeText);
+                    return ((item as Grid).Children[3] as TextBox);
                 }
             }
             return null;
@@ -225,10 +209,9 @@ namespace ODMR_Lab.位移台部分
 
         Thread MoveThread = null;
         bool IsMoveStopped = false;
-
         private void MoveLeft(object sender, RoutedEventArgs e)
         {
-            bool result = double.TryParse((((sender as DecoratedButton).Parent as Grid).Children[5] as FontChangeText).InnerTextBox.Text, out double step);
+            bool result = double.TryParse((((sender as DecoratedButton).Parent as Grid).Children[4] as TextBox).Text, out double step);
             NanoStageInfo info = (sender as DecoratedButton).Tag as NanoStageInfo;
             if (result == false) return;
             StageBase stage = info.Device;
@@ -259,7 +242,7 @@ namespace ODMR_Lab.位移台部分
 
         private void MoveRight(object sender, RoutedEventArgs e)
         {
-            bool result = double.TryParse((((sender as DecoratedButton).Parent as Grid).Children[5] as FontChangeText).InnerTextBox.Text, out double step);
+            bool result = double.TryParse((((sender as DecoratedButton).Parent as Grid).Children[4] as TextBox).Text, out double step);
             NanoStageInfo info = (sender as DecoratedButton).Tag as NanoStageInfo;
             if (result == false) return;
             StageBase stage = info.Device;

@@ -77,6 +77,20 @@ namespace ODMR_Lab
             target.CaretBrush = source.CaretBrush;
             target.SelectionBrush = source.SelectionBrush;
         }
+
+        public static void CloneStyle(Label source, Label target)
+        {
+            target.FontSize = source.FontSize;
+            target.FontWeight = source.FontWeight;
+            target.Foreground = source.Foreground;
+            target.HorizontalAlignment = source.HorizontalAlignment;
+            target.VerticalAlignment = source.VerticalAlignment;
+            target.Background = source.Background;
+            target.HorizontalContentAlignment = source.HorizontalContentAlignment;
+            target.VerticalContentAlignment = source.VerticalContentAlignment;
+            target.BorderBrush = source.BorderBrush;
+            target.BorderThickness = source.BorderThickness;
+        }
         #endregion
     }
 }

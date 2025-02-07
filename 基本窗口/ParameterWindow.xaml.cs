@@ -102,16 +102,14 @@ namespace ODMR_Lab.基本窗口
             }
             else
             {
-                FontChangeText font = new FontChangeText();
-                TextTemplate.CloneStyleTo(font);
-                font.HorizontalAlignment = HorizontalAlignment.Stretch;
-                font.VerticalAlignment = VerticalAlignment.Stretch;
-                font.InnerTextBox.Text = paramvalue.ToString();
+                TextBox font = new TextBox();
+                UIUpdater.CloneStyle(TextTemplate, font);
+                font.Text = paramvalue.ToString();
                 grid.Children.Add(font);
                 Grid.SetColumn(font, 1);
                 if (paramobj.IsReadOnly)
                 {
-                    font.IsHitTestVisible = false;
+                    font.IsReadOnly = true;
                 }
                 return grid;
             }
