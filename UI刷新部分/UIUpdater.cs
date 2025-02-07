@@ -75,6 +75,7 @@ namespace ODMR_Lab
             target.BorderBrush = source.BorderBrush;
             target.Background = source.Background;
             target.CaretBrush = source.CaretBrush;
+            target.Foreground=source.Foreground;
             target.SelectionBrush = source.SelectionBrush;
         }
 
