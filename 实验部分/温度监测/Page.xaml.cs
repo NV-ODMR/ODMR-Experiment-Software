@@ -178,7 +178,7 @@ namespace ODMR_Lab.温度监测部分
             }
             else
             {
-                MessageWindow.ShowTipWindow("采样时间间隔值必须是数字", MainWindow.Handle);
+                MessageWindow.ShowTipWindow("采样时间间隔值必须是数字", Window.GetWindow(this));
             }
         }
 
@@ -495,7 +495,7 @@ namespace ODMR_Lab.温度监测部分
             saveObject.WriteToFile(SavePath, saveFileName);
 
             TimeWindow window = new TimeWindow();
-            window.Owner = MainWindow.Handle;
+            window.Owner = Window.GetWindow(this);
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowWindow("文件保存成功");
         }

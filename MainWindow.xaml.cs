@@ -120,7 +120,6 @@ namespace ODMR_Lab
                         VerticalAlignment = VerticalAlignment.Center
                     });
             }
-            Data_Page.ParentWindow = DataWindow;
             if (DataWindow.VisualPage.Children.Contains(Data_Page) == false)
                 DataWindow.VisualPage.Children.Add(Data_Page);
             DataWindow.Show();
@@ -134,7 +133,6 @@ namespace ODMR_Lab
             if (DataWindow.VisualPage.Children.Count != 0)
             {
                 (DataWindow.VisualPage.Children[0] as DataVisualPage).ShowInPage.Visibility = Visibility.Visible;
-                (DataWindow.VisualPage.Children[0] as DataVisualPage).ParentWindow = Handle;
             }
             DataWindow.VisualPage.Children.Clear();
             if (CurrentPage == Data_Page)
@@ -282,7 +280,7 @@ namespace ODMR_Lab
                     }
                     catch (Exception ex)
                     {
-                        MessageWindow.ShowTipWindow("程序环境安装出现问题,即将退出：\n" + ex.Message, MainWindow.Handle);
+                        MessageWindow.ShowTipWindow("程序环境安装出现问题,即将退出：\n" + ex.Message, Window.GetWindow(this));
                         Environment.Exit(0);
                         return;
                     }

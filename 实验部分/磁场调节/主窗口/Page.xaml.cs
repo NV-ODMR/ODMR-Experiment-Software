@@ -41,6 +41,7 @@ using ODMR_Lab.实验部分.磁场调节.主窗口;
 using ODMR_Lab.实验类;
 using ODMR_Lab.Python管理器;
 using Controls.Windows;
+using Window = System.Windows.Window;
 
 namespace ODMR_Lab.磁场调节
 {
@@ -119,7 +120,7 @@ namespace ODMR_Lab.磁场调节
             {
                 double anglestart = double.Parse(AngleStart.Text);
                 OffsetWindow win = new OffsetWindow(this);
-                win.Owner = MainWindow.Handle;
+                win.Owner = Window.GetWindow(this);
                 win.ShowDialog();
                 if (!double.IsNaN(win.OffsetX))
                 {
@@ -162,7 +163,7 @@ namespace ODMR_Lab.磁场调节
         /// <param name="e"></param>
         private void ShowAxisRelateInform(object sender, RoutedEventArgs e)
         {
-            MessageWindow.ShowMessageBox("提示", "磁场定位中的坐标轴名称及方向规定", MessageBoxButton.OK, source: new BitmapImage(new Uri(Path.Combine(Environment.CurrentDirectory, "图片资源", "Setup.png"))), owner: MainWindow.Handle);
+            MessageWindow.ShowMessageBox("提示", "磁场定位中的坐标轴名称及方向规定", MessageBoxButton.OK, source: new BitmapImage(new Uri(Path.Combine(Environment.CurrentDirectory, "图片资源", "Setup.png"))), owner: Window.GetWindow(this));
         }
 
         private void OpenWindow(object sender, MouseButtonEventArgs e)
@@ -371,7 +372,7 @@ namespace ODMR_Lab.磁场调节
             if (result)
             {
                 TimeWindow w = new TimeWindow();
-                w.Owner = MainWindow.Handle;
+                w.Owner = Window.GetWindow(this);
                 w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 w.ShowWindow("文件已保存");
             }
@@ -379,7 +380,7 @@ namespace ODMR_Lab.磁场调节
 
         private void LoadFile(object sender, RoutedEventArgs e)
         {
-            if (MessageWindow.ShowMessageBox("提示", "当前结果将被清空，是否继续？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.No)
+            if (MessageWindow.ShowMessageBox("提示", "当前结果将被清空，是否继续？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.No)
             {
                 return;
             }

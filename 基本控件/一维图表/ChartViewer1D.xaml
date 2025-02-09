@@ -79,6 +79,7 @@
                 <scroll:ListViewer.ItemContextMenu>
                     <scroll:ContextMenu>
                         <scroll:ContextMenu.Items>
+                            <scroll:DecoratedButton Text="拟合信息" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                             <scroll:DecoratedButton Text="删除" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                             <scroll:DecoratedButton Text="参数设置" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                         </scroll:ContextMenu.Items>

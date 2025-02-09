@@ -106,7 +106,7 @@ namespace ODMR_Lab.温度监测部分
 
         private void NewConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(TemperatureControllerBase), MainWindow.Handle);
+            ConnectWindow window = new ConnectWindow(typeof(TemperatureControllerBase), Window.GetWindow(this));
             bool res = window.ShowDialog(out PortObject dev);
             if (res == true)
             {
@@ -236,7 +236,7 @@ namespace ODMR_Lab.温度监测部分
         {
             if (arg3 == null) return;
             TemperatureControllerInfo dev = arg3 as TemperatureControllerInfo;
-            if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+            if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
             {
                 dev.CloseDeviceInfoAndSaveParams(out bool result);
                 if (result == false) return;
@@ -254,7 +254,7 @@ namespace ODMR_Lab.温度监测部分
         /// <param name="e"></param>
         private void ClearConnect(object sender, RoutedEventArgs e)
         {
-            if (MessageWindow.ShowMessageBox("提示", "确定要关闭所有设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+            if (MessageWindow.ShowMessageBox("提示", "确定要关闭所有设备吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
             {
                 for (int i = 0; i < TemperatureControllers.Count; i++)
                 {

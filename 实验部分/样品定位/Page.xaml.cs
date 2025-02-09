@@ -39,6 +39,7 @@ using Label = System.Windows.Controls.Label;
 using ODMR_Lab.基本控件;
 using Clipboard = System.Windows.Clipboard;
 using Controls.Windows;
+using Window = System.Windows.Window;
 
 namespace ODMR_Lab.样品定位
 {
@@ -89,7 +90,7 @@ namespace ODMR_Lab.样品定位
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("打开图片出现错误:" + ex.Message, MainWindow.Handle);
+                MessageWindow.ShowTipWindow("打开图片出现错误:" + ex.Message, Window.GetWindow(this));
             }
         }
 
@@ -109,7 +110,7 @@ namespace ODMR_Lab.样品定位
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("打开图片出现错误:" + ex.Message, MainWindow.Handle);
+                MessageWindow.ShowTipWindow("打开图片出现错误:" + ex.Message, Window.GetWindow(this));
             }
         }
 
@@ -513,7 +514,7 @@ namespace ODMR_Lab.样品定位
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow(ex.Message, MainWindow.Handle);
+                MessageWindow.ShowTipWindow(ex.Message, Window.GetWindow(this));
             }
         }
 
@@ -529,7 +530,7 @@ namespace ODMR_Lab.样品定位
         {
             MessageWindow.ShowTipWindow("样品定位说明:\n" + "1.一般使用方法：原图片为显微镜下样品照片，目标图片为其他视野下的图片，设置每组关联点后自行输入位移台示数。\n" +
                 "2.位移台坐标轴规定：目标图片的方向应与源图片的朝向保持一致，XY坐标系可以自行规定，但是必须是右手系。自行规定的坐标轴正向必须是位移台示数增加的方向。位移台的方向规定可以在“设备”中的位移台界面进行设置。",
-                MainWindow.Handle);
+                Window.GetWindow(this));
         }
 
         /// <summary>
@@ -539,7 +540,7 @@ namespace ODMR_Lab.样品定位
         /// <param name="e"></param>
         private void ShowReverseInformation(object sender, RoutedEventArgs e)
         {
-            MessageWindow.ShowTipWindow("当X或Y方向位移台示数的增加方向和原图像的像素增加方向不一致时要勾选对应的反转选项。", MainWindow.Handle);
+            MessageWindow.ShowTipWindow("当X或Y方向位移台示数的增加方向和原图像的像素增加方向不一致时要勾选对应的反转选项。", Window.GetWindow(this));
         }
 
         #region 按键事件

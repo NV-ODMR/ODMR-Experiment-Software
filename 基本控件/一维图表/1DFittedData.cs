@@ -22,13 +22,16 @@ namespace ODMR_Lab.基本控件.一维图表
 
         public string FitName { get; set; } = "";
 
-        public FittedData1D(ChartData1D xData, ChartData1D yData, NormalRealFunction fitFunction, string fitName)
+        public FittedData1D(string expression, ChartData1D xData, ChartData1D yData, NormalRealFunction fitFunction, string fitName)
         {
+            Expression = expression;
             XData = xData;
             YData = yData;
             FitFunction = fitFunction;
             FitName = fitName;
         }
+
+        public string Expression { get; set; } = "";
 
         public bool IsDisplay { get; set; } = false;
 

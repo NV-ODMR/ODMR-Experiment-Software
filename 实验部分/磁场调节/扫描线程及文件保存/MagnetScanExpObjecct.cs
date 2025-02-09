@@ -24,6 +24,7 @@ using System.Windows.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using ComboBox = Controls.ComboBox;
 using DisplayPage = ODMR_Lab.磁场调节.DisplayPage;
+using Window = System.Windows.Window;
 
 namespace ODMR_Lab.实验部分.磁场调节
 {

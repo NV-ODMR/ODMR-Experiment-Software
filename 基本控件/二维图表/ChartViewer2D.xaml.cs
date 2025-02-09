@@ -233,7 +233,7 @@ namespace ODMR_Lab.基本控件
         {
             Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(ChartObject));
             TimeWindow window = new TimeWindow();
-            window.Owner = MainWindow.Handle;
+            window.Owner = Window.GetWindow(this);
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowWindow("截图已复制到剪切板");
         }
@@ -294,7 +294,7 @@ namespace ODMR_Lab.基本控件
                         wr.Write(save);
                     }
                     TimeWindow win = new TimeWindow();
-                    win.Owner = MainWindow.Handle;
+                    win.Owner = Window.GetWindow(this);
                     win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     win.ShowWindow("文件已保存");
                 }

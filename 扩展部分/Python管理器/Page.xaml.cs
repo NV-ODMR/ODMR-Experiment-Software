@@ -44,7 +44,7 @@ namespace ODMR_Lab.Python管理器
 
         private bool DeleteConfirm(string packagename)
         {
-            if (MessageWindow.ShowMessageBox("提示", "确定要删除包" + packagename + "吗?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+            if (MessageWindow.ShowMessageBox("提示", "确定要删除包" + packagename + "吗?", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
             { return true; }
             return false;
         }

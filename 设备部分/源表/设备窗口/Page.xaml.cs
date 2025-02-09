@@ -66,7 +66,7 @@ namespace ODMR_Lab.源表部分
         #region 设备部分
         private void NewConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(PowerSourceBase), MainWindow.Handle);
+            ConnectWindow window = new ConnectWindow(typeof(PowerSourceBase), Window.GetWindow(this));
             bool res = window.ShowDialog(out PortObject dev);
             if (res == true)
             {
@@ -106,7 +106,7 @@ namespace ODMR_Lab.源表部分
             #region 关闭设备
             if (arg1 == 0)
             {
-                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
                 {
                     info.CloseDeviceInfoAndSaveParams(out bool result);
                     if (result == false)
@@ -146,7 +146,7 @@ namespace ODMR_Lab.源表部分
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("参数格式错误", MainWindow.Handle);
+                MessageWindow.ShowTipWindow("参数格式错误", Window.GetWindow(this));
             }
         }
 

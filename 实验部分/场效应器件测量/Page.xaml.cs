@@ -180,14 +180,14 @@ namespace ODMR_Lab.场效应器件测量
                 if (result)
                 {
                     TimeWindow win = new TimeWindow();
-                    win.Owner = MainWindow.Handle;
+                    win.Owner = Window.GetWindow(this);
                     win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     win.ShowWindow("文件已保存");
                 }
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("文件保存未完成:\n" + ex.Message, MainWindow.Handle);
+                MessageWindow.ShowTipWindow("文件保存未完成:\n" + ex.Message, Window.GetWindow(this));
             }
         }
         #endregion
@@ -222,7 +222,7 @@ namespace ODMR_Lab.场效应器件测量
 
         private void ShowLimitInformation(object sender, RoutedEventArgs e)
         {
-            MessageWindow.ShowTipWindow("当指示灯为绿色时表示未限流，红色表示限流", MainWindow.Handle);
+            MessageWindow.ShowTipWindow("当指示灯为绿色时表示未限流，红色表示限流", Window.GetWindow(this));
         }
 
 
@@ -248,7 +248,7 @@ namespace ODMR_Lab.场效应器件测量
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("设备正在使用", MainWindow.Handle);
+                    MessageWindow.ShowTipWindow("设备正在使用", Window.GetWindow(this));
                     return;
                 }
 
@@ -294,7 +294,7 @@ namespace ODMR_Lab.场效应器件测量
             }
             catch (Exception)
             {
-                MessageWindow.ShowTipWindow("参数格式错误", MainWindow.Handle);
+                MessageWindow.ShowTipWindow("参数格式错误", Window.GetWindow(this));
             }
 
             Thread t = new Thread(() =>
@@ -311,7 +311,7 @@ namespace ODMR_Lab.场效应器件测量
                 }
                 catch (Exception)
                 {
-                    MessageWindow.ShowTipWindow("设备正在使用", MainWindow.Handle);
+                    MessageWindow.ShowTipWindow("设备正在使用", Window.GetWindow(this));
                     return;
                 }
 

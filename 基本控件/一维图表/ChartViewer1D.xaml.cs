@@ -33,8 +33,6 @@ namespace ODMR_Lab.基本控件
     /// </summary>
     public partial class ChartViewer1D : Grid
     {
-        public Window ParentWindow { get; set; } = null;
-
         public ChartViewer1D()
         {
             InitializeComponent();
@@ -420,7 +418,7 @@ namespace ODMR_Lab.基本控件
         {
             Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chart));
             TimeWindow window = new TimeWindow();
-            window.Owner = MainWindow.Handle;
+            window.Owner = Window.GetWindow(this);
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowWindow("截图已复制到剪切板");
         }
@@ -428,7 +426,7 @@ namespace ODMR_Lab.基本控件
         private void FitCurve(object sender, RoutedEventArgs e)
         {
             CurveFitWindow win = new CurveFitWindow();
-            win.Owner = ParentWindow;
+            win.Owner = Window.GetWindow(this);
             win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             FittedData1D data = win.ShowDialog(DataSource);
             if (data == null) return;
@@ -589,13 +587,13 @@ namespace ODMR_Lab.基本控件
                         wr.Write(save);
                     }
                     TimeWindow win = new TimeWindow();
-                    win.Owner = MainWindow.Handle;
+                    win.Owner = Window.GetWindow(this);
                     win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     win.ShowWindow("文件已保存");
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("文件未成功保存，原因：" + ex.Message, ParentWindow);
+                    MessageWindow.ShowTipWindow("文件未成功保存，原因：" + ex.Message, Window.GetWindow(this));
                 }
             }
 
@@ -653,7 +651,20 @@ namespace ODMR_Lab.基本控件
             #region 删除
             if (arg1 == 0)
             {
-                if (MessageWindow.ShowMessageBox("提示", "确定要删除吗？", MessageBoxButton.YesNo, owner: ParentWindow) == MessageBoxResult.Yes)
+                FittedData1D d = arg3 as FittedData1D;
+                string pcontent = "";
+                int pcount = d.FitFunction.GetParamCount();
+                for (int i = 0; i < pcount; i++)
+                {
+                    var p = d.FitFunction.FindParamAt(i);
+                    pcontent += p.Key + "\t\t" + p.Value.ToString() + "\n";
+                }
+
+                MessageWindow.ShowTipWindow("函数信息：\n表达式:" + d.Expression + "\n\n" + "参数值：\n" + pcontent, Window.GetWindow(this));
+            }
+            if (arg1 == 1)
+            {
+                if (MessageWindow.ShowMessageBox("提示", "确定要删除吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
                 {
                     FitData.Remove(arg3 as FittedData1D);
                     UpdateDataPanel();
@@ -661,10 +672,10 @@ namespace ODMR_Lab.基本控件
                 }
             }
             //参数设置
-            if (arg1 == 1)
+            if (arg1 == 2)
             {
                 FitCurveParamSetWindow win = new FitCurveParamSetWindow();
-                win.Owner = ParentWindow;
+                win.Owner = Window.GetWindow(this);
                 win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 FittedData1D d = arg3 as FittedData1D;
                 win.ShowDialog(d.LoRange, d.HiRange, d.SampleCount);

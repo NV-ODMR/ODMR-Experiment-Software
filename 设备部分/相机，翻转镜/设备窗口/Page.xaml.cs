@@ -60,7 +60,7 @@ namespace ODMR_Lab.相机
 
         private void NewCameraConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(CameraBase), MainWindow.Handle);
+            ConnectWindow window = new ConnectWindow(typeof(CameraBase), Window.GetWindow(this));
             bool res = window.ShowDialog(out PortObject dev);
             if (res == true)
             {
@@ -77,7 +77,7 @@ namespace ODMR_Lab.相机
         }
         private void NewFlipConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(FlipMotorBase), MainWindow.Handle);
+            ConnectWindow window = new ConnectWindow(typeof(FlipMotorBase), Window.GetWindow(this));
             bool res = window.ShowDialog(out PortObject dev);
             if (res == true)
             {
@@ -135,7 +135,7 @@ namespace ODMR_Lab.相机
             #region 关闭设备
             if (arg1 == 0)
             {
-                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
                 {
                     inf.CloseDeviceInfoAndSaveParams(out bool result);
                     if (result == false) return;
@@ -209,7 +209,7 @@ namespace ODMR_Lab.相机
             #region 关闭设备
             if (arg1 == 0)
             {
-                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
                 {
                     inf.CloseDeviceInfoAndSaveParams(out bool result);
                     if (result == false) return;

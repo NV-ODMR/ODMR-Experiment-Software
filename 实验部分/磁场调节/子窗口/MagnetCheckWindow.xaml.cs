@@ -186,7 +186,7 @@ namespace ODMR_Lab.磁场调节
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("移动目标位置非法，无法进行移动", MainWindow.Handle);
+                MessageWindow.ShowTipWindow("移动目标位置非法，无法进行移动", Window.GetWindow(this));
                 return;
             }
 
@@ -224,7 +224,7 @@ namespace ODMR_Lab.磁场调节
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("移动目标位置非法，无法进行移动", MainWindow.Handle);
+                MessageWindow.ShowTipWindow("移动目标位置非法，无法进行移动", Window.GetWindow(this));
                 return;
             }
 
@@ -311,7 +311,7 @@ namespace ODMR_Lab.磁场调节
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("移动并测量未完成:" + ex.Message, MainWindow.Handle);
+                MessageWindow.ShowTipWindow("移动并测量未完成:" + ex.Message, Window.GetWindow(this));
             }
 
             return null;

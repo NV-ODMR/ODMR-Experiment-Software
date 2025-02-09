@@ -46,20 +46,20 @@ namespace ODMR_Lab.Python.LbviewHandler
             Frequences = new List<double>();
             Contracts = new List<double>();
 
-            #region 测试代码，生成随机结果
-            double cc = r.Next(0, 40);
-            fitpeaks.Add(2870 - cc);
-            fitpeaks.Add(2870 + cc);
-            fitcontracts.Add(0.7);
-            fitcontracts.Add(0.7);
-            for (int i = 0; i < 10; i++)
-            {
-                Frequences.Add(r.NextDouble());
-                Contracts.Add(r.NextDouble());
-            }
-            exc = null;
-            return;
-            #endregion
+            //#region 测试代码，生成随机结果
+            //double cc = r.Next(0, 40);
+            //fitpeaks.Add(2870 - cc);
+            //fitpeaks.Add(2870 + cc);
+            //fitcontracts.Add(0.7);
+            //fitcontracts.Add(0.7);
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Frequences.Add(r.NextDouble());
+            //    Contracts.Add(r.NextDouble());
+            //}
+            //exc = null;
+            //return;
+            //#endregion
 
             try
             {

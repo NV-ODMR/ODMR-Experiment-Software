@@ -51,22 +51,10 @@ namespace ODMR_Lab.数据处理
     {
         public List<DataVisualSource> Source { get; set; } = new List<DataVisualSource>();
 
-        private Window parentWindow = null;
-        public Window ParentWindow
-        {
-            get { return parentWindow; }
-            set
-            {
-                parentWindow = value;
-                Plot1D.ParentWindow = value;
-                Plot2D.ParentWindow = value;
-            }
-        }
 
         public DataVisualPage()
         {
             InitializeComponent();
-            ParentWindow = MainWindow.Handle;
         }
 
         public override void Init()
@@ -144,7 +132,7 @@ namespace ODMR_Lab.数据处理
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("打开文件失败,原因:\n" + ex.Message, ParentWindow);
+                    MessageWindow.ShowTipWindow("打开文件失败,原因:\n" + ex.Message, Window.GetWindow(this));
                 }
             }
             try
@@ -179,7 +167,7 @@ namespace ODMR_Lab.数据处理
                 {
                     if (saveFileDialog.FileName == item)
                     {
-                        MessageWindow.ShowTipWindow("文件" + item + "已打开，无法进行覆盖", ParentWindow);
+                        MessageWindow.ShowTipWindow("文件" + item + "已打开，无法进行覆盖", Window.GetWindow(this));
                         return;
                     }
                 }
@@ -189,13 +177,13 @@ namespace ODMR_Lab.数据处理
                     obj.WriteToFile(Path.GetDirectoryName(saveFileDialog.FileName), Path.GetFileName(saveFileDialog.FileName));
 
                     TimeWindow win = new TimeWindow();
-                    win.Owner = ParentWindow;
+                    win.Owner = Window.GetWindow(this);
                     win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     win.ShowWindow("文件已保存");
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("文件保存失败,原因：" + ex.Message, ParentWindow);
+                    MessageWindow.ShowTipWindow("文件保存失败,原因：" + ex.Message, Window.GetWindow(this));
                 }
             }
         }
@@ -211,11 +199,11 @@ namespace ODMR_Lab.数据处理
             if (ind == -1) return;
             if (File.Exists(OpenedFiles[ind]) == false)
             {
-                MessageWindow.ShowTipWindow("没有找到文件,文件可能已经被移动或删除", ParentWindow);
+                MessageWindow.ShowTipWindow("没有找到文件,文件可能已经被移动或删除", Window.GetWindow(this));
             }
             if (ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(OpenedFiles[ind]) != ExperimentFileTypes.自定义数据)
             {
-                MessageWindow.ShowTipWindow("原始实验数据仅支持读取，无法进行编辑操作，请先将文件另存为自定义数据后再进行操作", ParentWindow);
+                MessageWindow.ShowTipWindow("原始实验数据仅支持读取，无法进行编辑操作，请先将文件另存为自定义数据后再进行操作", Window.GetWindow(this));
                 return;
             }
             try
@@ -225,13 +213,13 @@ namespace ODMR_Lab.数据处理
                 obj.WriteToFile(Path.GetDirectoryName(OpenedFiles[ind]), Path.GetFileName(OpenedFiles[ind]));
 
                 TimeWindow win = new TimeWindow();
-                win.Owner = ParentWindow;
+                win.Owner = Window.GetWindow(this);
                 win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 win.ShowWindow("文件已保存");
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("文件保存失败,原因：" + ex.Message, ParentWindow);
+                MessageWindow.ShowTipWindow("文件保存失败,原因：" + ex.Message, Window.GetWindow(this));
             }
         }
 
