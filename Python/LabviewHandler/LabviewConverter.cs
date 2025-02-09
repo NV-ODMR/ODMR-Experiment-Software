@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using PythonHandler;
+using MathNet.Numerics;
 
 namespace ODMR_Lab.Python.LbviewHandler
 {
@@ -30,6 +31,7 @@ namespace ODMR_Lab.Python.LbviewHandler
             {
                 exc = ex;
             }
+
         }
 
         static Random r = new Random();
@@ -45,13 +47,14 @@ namespace ODMR_Lab.Python.LbviewHandler
             Contracts = new List<double>();
 
             #region 测试代码，生成随机结果
-            fitpeaks.Add(r.Next((int)startFreq, (int)endFreq));
-            fitpeaks.Add(r.Next((int)startFreq, (int)endFreq));
-            fitcontracts.Add(r.NextDouble());
-            fitcontracts.Add(r.NextDouble());
+            double cc = r.Next(0, 40);
+            fitpeaks.Add(2870 - cc);
+            fitpeaks.Add(2870 + cc);
+            fitcontracts.Add(0.7);
+            fitcontracts.Add(0.7);
             for (int i = 0; i < 10; i++)
             {
-                Frequences.Add(r.Next(2200, 3100));
+                Frequences.Add(r.NextDouble());
                 Contracts.Add(r.NextDouble());
             }
             exc = null;
@@ -108,39 +111,5 @@ namespace ODMR_Lab.Python.LbviewHandler
             }
         }
 
-
-        #region 数学计算部分
-        /// <summary>
-        /// 第一类椭圆积分
-        /// </summary>
-        /// <param name="k"></param>
-        /// <returns></returns>
-        public static double EllipseE(double k)
-        {
-            try
-            {
-                dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "GetE", TimeSpan.FromSeconds(5), k);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return double.NaN;
-            }
-        }
-
-        public static double EllipseK(double k)
-        {
-            try
-            {
-                dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "GetK", TimeSpan.FromSeconds(5), k);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return double.NaN;
-            }
-        }
-
-        #endregion
     }
 }

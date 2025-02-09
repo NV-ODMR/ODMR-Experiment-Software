@@ -48,20 +48,6 @@ namespace ODMR_Lab.实验部分.磁场调节
         }
 
         /// <summary>
-        /// 寻找Z方向的根
-        /// </summary>
-        /// <param name="M"></param>
-        /// <param name="z1"></param>
-        /// <param name="z2"></param>
-        /// <param name="ratiovalue"></param>
-        /// <returns></returns>
-        public static double FindRoot(double Radius, double Length, double z1, double z2, double ratiovalue)
-        {
-            dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Magnet.py"), "FindRoot", TimeSpan.FromSeconds(5), Radius, Length, z1, z2, ratiovalue);
-            return result;
-        }
-
-        /// <summary>
         /// 获取初始偏移量
         /// </summary>
         /// <param name="angle1">初始角度</param>
@@ -114,25 +100,6 @@ namespace ODMR_Lab.实验部分.磁场调节
             return new List<double>() { dx, dy };
         }
 
-
-        /// <summary>
-        /// 指定方向和给定的Z方向距离，找出对应方向上的磁场，相对于角度基准点（磁铁朝向为X轴）要转动的角度，以及XY平面上相对于原点的坐标
-        /// </summary>
-        /// <param name="r0"></param>
-        /// <param name="l0"></param>
-        /// <param name="targetthe"></param>
-        /// <param name="targetphi"></param>
-        /// <param name="distance"></param>
-        public static dynamic FindDire(double r0, double l0, double targetthe, double targetphi, double distance)
-        {
-            dynamic result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Magnet.py"), "FindDire", TimeSpan.FromSeconds(5), r0, l0, targetthe, targetphi, distance);
-            List<double> res = new List<double>();
-            foreach (var item in result)
-            {
-                res.Add((double)item);
-            }
-            return res;
-        }
 
         private static void TotalCW(out List<double> peaks, out List<double> freqs1, out List<double> contracts1, out List<double> freqs2, out List<double> contracts2)
         {
@@ -316,21 +283,6 @@ namespace ODMR_Lab.实验部分.磁场调节
         }
 
         /// <summary>
-        /// 三角函数拟合
-        /// </summary>
-        /// <returns></returns>
-        public static List<double> FitSinCurve(List<double> x, List<double> y)
-        {
-            var result = Python_NetInterpretor.ExcuteFunction(Path.Combine(Environment.CurrentDirectory, "Python", "LabviewHandler", "Math.py"), "FitSinData", TimeSpan.FromMilliseconds(100000), x, y);
-            List<double> res = new List<double>();
-            foreach (var item in result)
-            {
-                res.Add((double)item);
-            }
-            return res;
-        }
-
-        /// <summary>
         /// 根据参数计算可能的两个NV朝向对应的XYZ和角度位移台位置
         /// </summary>
         /// <param name="P"></param>
@@ -344,8 +296,9 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <param name="angle2"></param>
         public static void CalculatePossibleLocs(MagnetScanConfigParams Config, MagnetScanExpParams Param, out double x1, out double y1, out double z1, out double angle1, out double x2, out double y2, out double z2, out double angle2)
         {
+            Magnet m = new Magnet(Config.MRadius.Value, Config.MLength.Value, 1);
             #region 第一个方向
-            List<double> res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Param.Theta1.Value, Param.Phi1.Value, Param.ZDistance.Value);
+            List<double> res = m.FindDire(Param.Theta1.Value, Param.Phi1.Value, Param.ZDistance.Value);
             double ang = res[0] * GetReverseNum(Config.ReverseA.Value);
             double dx = res[1] * GetReverseNum(Config.ReverseX.Value);
             double dy = res[2] * GetReverseNum(Config.ReverseY.Value);
@@ -360,7 +313,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             }
             if (Math.Abs(ang) > 150)
             {
-                res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Math.PI - Param.Theta1.Value, Param.Phi1.Value - Math.PI, Param.ZDistance.Value);
+                res = m.FindDire(Math.PI - Param.Theta1.Value, Param.Phi1.Value - Math.PI, Param.ZDistance.Value);
                 ang = res[0] * GetReverseNum(Config.ReverseA.Value);
                 dx = res[1] * GetReverseNum(Config.ReverseX.Value);
                 dy = res[2] * GetReverseNum(Config.ReverseY.Value);
@@ -375,7 +328,7 @@ namespace ODMR_Lab.实验部分.磁场调节
                 }
             }
             //根据需要移动的角度进行偏心修正
-            List<double> re = MagnetAutoScanHelper.GetTargetOffset(Config, ang);
+            List<double> re = GetTargetOffset(Config, ang);
             x1 = Param.XLoc.Value + re[0] + dx;
             y1 = Param.YLoc.Value + re[1] + dy;
             z1 = Param.ZLoc.Value;
@@ -384,7 +337,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             #endregion
 
             #region 第二个方向
-            res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Param.Theta2.Value, Param.Phi1.Value, Param.ZDistance.Value);
+            res = m.FindDire(Param.Theta2.Value, Param.Phi1.Value, Param.ZDistance.Value);
             ang = res[0] * GetReverseNum(Config.ReverseA.Value);
             dx = res[1] * GetReverseNum(Config.ReverseX.Value);
             dy = res[2] * GetReverseNum(Config.ReverseY.Value);
@@ -399,7 +352,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             }
             if (Math.Abs(ang) > 150)
             {
-                res = MagnetAutoScanHelper.FindDire(Config.MRadius.Value, Config.MLength.Value, Math.PI - Param.Theta2.Value, Param.Phi1.Value - Math.PI, Param.ZDistance.Value);
+                res = m.FindDire(Math.PI - Param.Theta2.Value, Param.Phi1.Value - Math.PI, Param.ZDistance.Value);
                 ang = res[0] * GetReverseNum(Config.ReverseA.Value);
                 dx = res[1] * GetReverseNum(Config.ReverseX.Value);
                 dy = res[2] * GetReverseNum(Config.ReverseY.Value);
@@ -447,7 +400,9 @@ namespace ODMR_Lab.实验部分.磁场调节
 
                 double zdis = GetReverseNum(CP.ReverseZ.Value) * (currentzloc - EP.ZLoc.Value) + EP.ZDistance.Value;
 
-                List<double> res = MagnetAutoScanHelper.FindDire(CP.MRadius.Value, CP.MLength.Value, the, phi, currentzloc);
+                Magnet m = new Magnet(CP.MRadius.Value, CP.MLength.Value, 1);
+
+                List<double> res = m.FindDire(the, phi, currentzloc);
                 double ang = res[0];
                 double dx = res[1];
                 double dy = res[2];
@@ -463,15 +418,15 @@ namespace ODMR_Lab.实验部分.磁场调节
                 double doffx = doffs[0];
                 double doffy = doffs[1];
 
-                if (ang > 150)
-                    ang -= 360;
-                if (ang < -150)
-                    ang += 360;
+                if (ang1 > 150)
+                    ang1 -= 360;
+                if (ang1 < -150)
+                    ang1 += 360;
 
                 //角度超量程,取等效位置
-                if (Math.Abs(ang) > 150)
+                if (Math.Abs(ang1) > 150)
                 {
-                    res = MagnetAutoScanHelper.FindDire(CP.MRadius.Value, CP.MLength.Value, 180 - the, phi + 180, zdis);
+                    res = m.FindDire(180 - the, phi + 180, zdis);
                     ang = res[0];
                     dx = res[1];
                     dy = res[2];
@@ -483,10 +438,10 @@ namespace ODMR_Lab.实验部分.磁场调节
                     ang *= GetReverseNum(CP.ReverseA.Value);
                     ang1 = CP.AngleStart.Value + ang;
 
-                    if (ang > 150)
-                        ang -= 360;
-                    if (ang < -150)
-                        ang += 360;
+                    if (ang1 > 150)
+                        ang1 -= 360;
+                    if (ang1 < -150)
+                        ang1 += 360;
 
                     //根据需要移动的角度进行偏心修正
                     doffs = MagnetAutoScanHelper.GetTargetOffset(CP, ang1);

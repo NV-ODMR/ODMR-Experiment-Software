@@ -1,5 +1,7 @@
-﻿using ODMR_Lab.位移台部分;
+﻿using MathLib.NormalMath.Decimal;
+using ODMR_Lab.位移台部分;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.数据处理;
 using ODMR_Lab.磁场调节;
 using System;
 using System.Collections.Generic;
@@ -34,9 +36,12 @@ namespace ODMR_Lab.实验部分.磁场调节
             {
                 locs[i] = GetReverseNum(Config.ReverseA.Value) * locs[i] - Config.AngleY;
             }
-            List<double> result = MagnetAutoScanHelper.FitSinCurve(locs, sindata);
-            double amplitude = result[0];
-            double phase = result[1];
+            CurveFitting curve = new CurveFitting("a*Cos((x-b)*pi/180)+c", "x", new List<string>() { "a", "b", "c" });
+
+            Dictionary<string, double> result = curve.FitCurve(locs, sindata, new List<double>() { (sindata.Max() - sindata.Min()) / 2, 180, sindata.Average() }, new List<double>() { double.PositiveInfinity, 180, double.PositiveInfinity }, AlgorithmType.LevenbergMarquardt);
+
+            double amplitude = result["a"];
+            double phase = result["b"];
             double B = bs.Average();
             //拟合参数A
             double sint = amplitude / B;
@@ -50,7 +55,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             {
                 Param.Phi2.Value -= 360;
             }
-            while (Param.Phi2.Value < 360)
+            while (Param.Phi2.Value < -360)
             {
                 Param.Phi2.Value += 360;
             }

@@ -63,10 +63,10 @@ namespace ODMR_Lab.磁场调节
         {
             InitializeComponent();
 
-            LineCW1 = new NumricChartData1D("CW1", "角度检验数据", ChartDataType.Y);
-            LineCW2 = new NumricChartData1D("CW2", "角度检验数据", ChartDataType.Y);
-            Freq1 = new NumricChartData1D("Freq1", "角度检验数据", ChartDataType.X);
-            Freq2 = new NumricChartData1D("Freq2", "角度检验数据", ChartDataType.X);
+            LineCW1 = new NumricChartData1D("CW1", "角度校验点1", ChartDataType.Y);
+            LineCW2 = new NumricChartData1D("CW2", "角度校验点2", ChartDataType.Y);
+            Freq1 = new NumricChartData1D("Freq1", "角度校验点1", ChartDataType.X);
+            Freq2 = new NumricChartData1D("Freq2", "角度校验点2", ChartDataType.X);
 
             CWChart.DataSource.AddRange(new List<ChartData1D>() { LineCW1, LineCW2, Freq1, Freq2 });
             CWChart.UpdateChartAndDataFlow(true);
@@ -118,31 +118,41 @@ namespace ODMR_Lab.磁场调节
         /// </summary>
         public void UpdateCalculate()
         {
+            try
+            {
+                MagnetScanConfigParams Cp = new MagnetScanConfigParams();
+                Cp.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
+                MagnetScanExpParams Pp = new MagnetScanExpParams();
+                Pp.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
+                MagnetAutoScanHelper.CalculatePossibleLocs(Cp, Pp, out double x1, out double y1, out double z1, out double angle1, out double x2, out double y2, out double z2, out double angle2);
+                UpdateCalculateView(x1, y1, z1, angle1, x2, y2, z2, angle2);
+            }
+            catch (Exception ex)
+            {
+                if (IsVisible == true)
+                {
+                    MessageWindow.ShowTipWindow("参数格式错误，磁场预测计算未完成", this);
+                }
+            }
+        }
+
+        public void UpdateCalculateView(double x1, double y1, double z1, double angle1, double x2, double y2, double z2, double angle2)
+        {
             Dispatcher.Invoke(() =>
             {
-                try
-                {
-                    MagnetScanConfigParams Cp = new MagnetScanConfigParams();
-                    Cp.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
-                    MagnetScanExpParams Pp = new MagnetScanExpParams();
-                    Pp.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
-                    MagnetAutoScanHelper.CalculatePossibleLocs(Cp, Pp, out double x1, out double y1, out double z1, out double angle1, out double x2, out double y2, out double z2, out double angle2);
-                    PredictParams.ClearItems();
-                    PredictParams.AddItem(null, x1, y1, z1, angle1);
-                    PredictParams.AddItem(null, x2, y2, z2, angle2);
-                }
-                catch (Exception ex)
-                {
-                    if (IsVisible == true)
-                    {
-                        MessageWindow.ShowTipWindow("参数格式错误，磁场预测计算未完成", this);
-                    }
-                }
+                PredictParams.ClearItems();
+                PredictParams.AddItem(null, x1, y1, z1, angle1);
+                PredictParams.AddItem(null, x2, y2, z2, angle2);
             });
         }
 
         private void SelectCW(int arg1, object arg2)
         {
+            CWPointObject obj = (arg2 as CWPointObject);
+            Freq1.Data = obj.CW1Freqs;
+            Freq2.Data = obj.CW2Freqs;
+            LineCW1.Data = obj.CW1Values;
+            LineCW2.Data = obj.CW2Values;
             UpdateChartAndDataFlow(true);
         }
 
@@ -308,5 +318,10 @@ namespace ODMR_Lab.磁场调节
 
         }
         #endregion
+
+        private void ReCalculate(object sender, RoutedEventArgs e)
+        {
+            UpdateCalculate();
+        }
     }
 }

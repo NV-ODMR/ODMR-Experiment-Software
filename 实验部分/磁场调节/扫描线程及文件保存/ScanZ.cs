@@ -80,7 +80,9 @@ namespace ODMR_Lab.实验部分.磁场调节
                     Param.ZLoc.Value = cp2.MoverLoc;
                 }
             }
-            Param.ZDistance.Value = MagnetAutoScanHelper.FindRoot(Config.MRadius.Value, Config.MLength.Value, cp1.MoverLoc, cp2.MoverLoc, ratio);
+
+            Param.ZDistance.Value = new Magnet(Config.MRadius.Value, Config.MLength.Value, 1).FindZRoot(cp1.MoverLoc, cp2.MoverLoc, ratio);
+
             #endregion
         }
 

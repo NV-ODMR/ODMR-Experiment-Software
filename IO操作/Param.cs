@@ -276,14 +276,12 @@ namespace ODMR_Lab.IO操作
         {
             foreach (string keyseg in des.Keys)
             {
-                if (keyseg.Contains(PropertyName + "→"))
+                if (keyseg.Contains(PropertyName + "→" + Description))
                 {
-                    Description = keyseg.Split('→')[1];
-
                     SetUnknownParamValue(this, des[keyseg]);
-                }
 
-                return;
+                    return;
+                }
             }
         }
 

@@ -41,7 +41,7 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -69,21 +69,21 @@
       <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.6.0\lib\net462\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Drawing.Common.8.0.0\lib\net462\System.Drawing.Common.dll</HintPath>
+    <Reference Include="System.Drawing.Common, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Drawing.Common.9.0.1\lib\net462\System.Drawing.Common.dll</HintPath>
     </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.6.0\lib\net462\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.6.0\lib\net462\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.4.3.1\lib\net462\System.Runtime.dll</HintPath>
@@ -93,8 +93,8 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.1.0\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -125,16 +125,6 @@
     <Compile Include="PageBase.cs" />
     <Compile Include="Python\LabviewHandler\LabviewConverter.cs" />
     <Compile Include="UI刷新部分\UIUpdater.cs" />
-    <Compile Include="基本控件\ChartData1D.cs" />
-    <Compile Include="基本控件\ChartData2D.cs" />
-    <Compile Include="基本控件\Chart1DStyleParams.cs" />
-    <Compile Include="基本控件\Chart2DStyleParams.cs" />
-    <Compile Include="基本控件\ChartViewer1D.xaml.cs">
-      <DependentUpon>ChartViewer1D.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="基本控件\ChartViewer2D.xaml.cs">
-      <DependentUpon>ChartViewer2D.xaml</DependentUpon>
-    </Compile>
     <Compile Include="基本控件\DataListViewer.xaml.cs">
       <DependentUpon>DataListViewer.xaml</DependentUpon>
     </Compile>
@@ -142,9 +132,27 @@
     <Compile Include="基本控件\LabeledImage.xaml.cs">
       <DependentUpon>LabeledImage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="基本控件\一维图表\1DFittedData.cs" />
+    <Compile Include="基本控件\一维图表\Chart1DStyleParams.cs" />
+    <Compile Include="基本控件\一维图表\ChartData1D.cs" />
+    <Compile Include="基本控件\一维图表\ChartViewer1D.xaml.cs">
+      <DependentUpon>ChartViewer1D.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="基本控件\一维图表\FitCurveParamSetWindow.xaml.cs">
+      <DependentUpon>FitCurveParamSetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="基本控件\二维图表\Chart2DStyleParams.cs" />
+    <Compile Include="基本控件\二维图表\ChartData2D.cs" />
+    <Compile Include="基本控件\二维图表\ChartViewer2D.xaml.cs">
+      <DependentUpon>ChartViewer2D.xaml</DependentUpon>
+    </Compile>
     <Compile Include="基本窗口\ChartViewerWindow.xaml.cs">
       <DependentUpon>ChartViewerWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="基本窗口\数据拟合\CurveFitWindow.xaml.cs">
+      <DependentUpon>CurveFitWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="基本窗口\数据拟合\FitFunc.cs" />
     <Compile Include="实验类\ExperimentObject.cs" />
     <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\场效应器件测量\IVMeasureExpObject.cs" />
@@ -173,6 +181,7 @@
       <DependentUpon>SaveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\磁场调节\CWObject.cs" />
+    <Compile Include="实验部分\磁场调节\Magnet.cs" />
     <Compile Include="实验部分\磁场调节\MagnetAutoScanHelper.cs" />
     <Compile Include="实验部分\磁场调节\主窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -282,14 +291,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="基本控件\ChartViewer1D.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="基本控件\ChartViewer2D.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="基本控件\DataListViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -298,9 +299,25 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="基本控件\一维图表\ChartViewer1D.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="基本控件\一维图表\FitCurveParamSetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="基本控件\二维图表\ChartViewer2D.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="基本窗口\ChartViewerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="基本窗口\数据拟合\CurveFitWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="实验部分\场效应器件测量\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -526,12 +543,6 @@
     <Content Include="Python\LabviewHandler\CWVI.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Python\LabviewHandler\Magnet.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Python\LabviewHandler\Math.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Python\LabviewHandler\InitLabview.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -545,6 +556,9 @@
     <Resource Include="图片资源\extension.png" />
     <Resource Include="图片资源\rightarrow.png" />
     <Resource Include="图片资源\python.png" />
+    <Content Include="Python\Magnet.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="图片资源\Setup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

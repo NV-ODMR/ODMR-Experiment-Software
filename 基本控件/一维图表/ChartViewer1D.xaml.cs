@@ -3,6 +3,8 @@ using Controls;
 using Controls.Charts;
 using Controls.Windows;
 using ODMR_Lab.Windows;
+using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.基本窗口.数据拟合;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +42,7 @@ namespace ODMR_Lab.基本控件
             InitDataView();
             //数据改变事件
             DataSource.ItemChanged += UpdateDataPanel;
+            FitData.ItemChanged += UpdateDataPanel;
         }
 
         /// <summary>
@@ -61,6 +64,17 @@ namespace ODMR_Lab.基本控件
             set
             {
                 dataSource = value;
+                UpdateDataPanel(this, new RoutedEventArgs());
+            }
+        }
+
+        private ItemsList<FittedData1D> fitData = new ItemsList<FittedData1D>();
+        public ItemsList<FittedData1D> FitData
+        {
+            get { return fitData; }
+            set
+            {
+                fitData = value;
                 UpdateDataPanel(this, new RoutedEventArgs());
             }
         }
@@ -208,6 +222,31 @@ namespace ODMR_Lab.基本控件
                     }
                 }
             }
+
+            FitDataSet.ClearItems();
+            foreach (var item in FitData)
+            {
+                FitDataSet.AddItem(item, item.ToString(), item.FitFunction.ScanArea[0].LowerLimit, item.FitFunction.ScanArea[0].UpperLimit, item.FitFunction.ScanArea[0].ScanPrecision);
+                if (item.IsDisplay) { FitDataSet.MultiSelect(FitDataSet.GetRowCount() - 1, false); }
+                else
+                {
+                    FitDataSet.MultiUnSelect(FitDataSet.GetRowCount() - 1, false);
+                }
+            }
+        }
+
+        private void SelectedFitData(int ind, object obj)
+        {
+            (obj as FittedData1D).IsDisplay = true;
+            UpdateDataPanel();
+            UpdateChartAndDataFlow(true);
+        }
+
+        private void UnSelectedFitData(int ind, object obj)
+        {
+            (obj as FittedData1D).IsDisplay = false;
+            UpdateDataPanel();
+            UpdateChartAndDataFlow(true);
         }
 
         /// <summary>
@@ -265,105 +304,53 @@ namespace ODMR_Lab.基本控件
                     });
                     return;
                 }
+
                 bool HasName = false;
                 Dispatcher.Invoke(() =>
                 {
                     HasName = (chart.XAxisName == SelectedXdata.Name);
                 });
-                if (HasName)
-                {
-                    //不需要改变所有线
-                    for (int i = 0; i < chart.DataList.Count; i++)
-                    {
-                        chart.DataList[i].Smooth = IsSmooth.IsSelected;
-                        chart.DataList[i].LineThickness = StyleParam.LineWidth.Value;
-                        bool exist = false;
-                        foreach (var item in DataSource)
-                        {
-                            if (item is TimeChartData1D) continue;
-                            NumricChartData1D temp = item as NumricChartData1D;
-                            if (item.IsSelectedAsY && item.Name == chart.DataList[i].Name)
-                            {
-                                exist = true;
-                                if (SelectedXdata is NumricChartData1D)
-                                {
-                                    (chart.DataList[i] as NumricDataSeries).ClearData();
-                                    (chart.DataList[i] as NumricDataSeries).AddDatas((SelectedXdata as NumricChartData1D).Data, temp.Data);
-                                }
-                                if (SelectedXdata is TimeChartData1D)
-                                {
-                                    (chart.DataList[i] as TimeDataSeries).ClearData();
-                                    (chart.DataList[i] as TimeDataSeries).AddDatas((SelectedXdata as TimeChartData1D).Data, temp.Data);
-                                }
-                                break;
-                            }
-                        }
-                        if (exist == false)
-                        {
-                            //旧线不包括在新线中
-                            chart.DataList.RemoveAt(i);
-                            --i;
-                        }
-                    }
 
-                    //添加进之前没有的线
-                    foreach (var item in DataSource)
-                    {
-                        if (item is TimeChartData1D) continue;
-                        NumricChartData1D temp = item as NumricChartData1D;
-                        bool exist = false;
-                        for (int i = 0; i < chart.DataList.Count; i++)
-                        {
-                            if (item.IsSelectedAsY && item.Name == chart.DataList[i].Name)
-                            {
-                                exist = true;
-                            }
-                        }
-                        if (exist == false && item.IsSelectedAsY)
-                        {
-                            //添加新线进入图表
-                            if (SelectedXdata is NumricChartData1D)
-                            {
-                                if ((SelectedXdata as NumricChartData1D).Data.Count != (item as NumricChartData1D).Data.Count) continue;
-                                NumricDataSeries ser = new NumricDataSeries(temp.Name);
-                                ser.AddDatas((SelectedXdata as NumricChartData1D).Data, temp.Data);
-                                chart.DataList.Add(ser);
-                            }
-                            if (SelectedXdata is TimeChartData1D)
-                            {
-                                if ((SelectedXdata as TimeChartData1D).Data.Count != (item as NumricChartData1D).Data.Count) continue;
-                                TimeDataSeries ser = new TimeDataSeries(temp.Name) { };
-                                ser.AddDatas((SelectedXdata as TimeChartData1D).Data, temp.Data);
-                                chart.DataList.Add(ser);
-                            }
-                        }
-                    }
-                }
-                else
+                ///刷新要添加的线
+                List<ChartData1D> DataToAdd = DataSource.Where(x => x.IsSelectedAsY).ToList();
+
+                List<DataSeries> PlotData = new List<DataSeries>();
+                foreach (var item in DataToAdd)
                 {
-                    chart.DataList.Clear();
-                    foreach (var item in DataSource)
+                    DataSeries data = null;
+                    if (SelectedXdata is TimeChartData1D) data = new TimeDataSeries(item.Name);
+                    if (SelectedXdata is NumricChartData1D) data = new NumricDataSeries(item.Name);
+                    data.LineColor = item.DisplayColor;
+                    data.AddRawDatas(SelectedXdata.GetDataCopyAsDouble().ToList(), item.GetDataCopyAsDouble().ToList());
+                    //检查是否在原来的线中
+                    int ind = chart.DataList.FindIndex(x => item.Name == x.Name);
+                    if (ind != -1)
                     {
-                        if (item.IsSelectedAsY)
-                        {
-                            if (item is TimeChartData1D) continue;
-                            NumricChartData1D temp = item as NumricChartData1D;
-                            //添加新线进入图表
-                            if (SelectedXdata is NumricChartData1D)
-                            {
-                                NumricDataSeries ser = new NumricDataSeries(temp.Name);
-                                ser.AddDatas((SelectedXdata as NumricChartData1D).Data, temp.Data);
-                                chart.DataList.Add(ser);
-                            }
-                            if (SelectedXdata is TimeChartData1D)
-                            {
-                                TimeDataSeries ser = new TimeDataSeries(temp.Name);
-                                ser.AddDatas((SelectedXdata as TimeChartData1D).Data, temp.Data);
-                                chart.DataList.Add(ser);
-                            }
-                        }
+                        data.LineThickness = chart.DataList[ind].LineThickness;
+                        data.MarkerSize = chart.DataList[ind].MarkerSize;
+                        data.Smooth = chart.DataList[ind].Smooth;
+                        data.Name = chart.DataList[ind].Name;
+                    }
+                    else
+                    {
+                        //不在原来的线中
+                        data.Smooth = StyleParam.IsSmooth.Value;
+                        data.MarkerSize = StyleParam.PointSize.Value;
+                        data.LineThickness = StyleParam.LineWidth.Value;
+                    }
+                    PlotData.Add(data);
+                }
+
+                //刷新拟合线
+                foreach (var item in FitData)
+                {
+                    if (item.IsDisplay && item.XData == SelectedXdata)
+                    {
+                        item.FittedData.Name = item.FitName;
+                        PlotData.Add(item.FittedData);
                     }
                 }
+                chart.DataList = PlotData;
 
                 Dispatcher.Invoke(() =>
                 {
@@ -437,15 +424,21 @@ namespace ODMR_Lab.基本控件
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowWindow("截图已复制到剪切板");
         }
-        #endregion
 
-        private void chart_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        private void FitCurve(object sender, RoutedEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                chart.RefreshPlotWithAutoScaleY();
-            }
+            CurveFitWindow win = new CurveFitWindow();
+            win.Owner = ParentWindow;
+            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            FittedData1D data = win.ShowDialog(DataSource);
+            if (data == null) return;
+            FitData.Add(data);
+            data.IsDisplay = true;
+            UpdateDataPanel();
+            UpdateChartAndDataFlow(true);
         }
+
+        #endregion
 
         #region 图表样式设置
         Chart1DStyleParams StyleParam = (Chart1DStyleParams)Chart1DStyleParams.GlobalChartPlotParam.Copy();
@@ -648,5 +641,50 @@ namespace ODMR_Lab.基本控件
             }
         }
         #endregion
+
+        /// <summary>
+        /// 拟合参数菜单
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        private void FitDataMenu(int arg1, int arg2, object arg3)
+        {
+            #region 删除
+            if (arg1 == 0)
+            {
+                if (MessageWindow.ShowMessageBox("提示", "确定要删除吗？", MessageBoxButton.YesNo, owner: ParentWindow) == MessageBoxResult.Yes)
+                {
+                    FitData.Remove(arg3 as FittedData1D);
+                    UpdateDataPanel();
+                    UpdateChartAndDataFlow(true);
+                }
+            }
+            //参数设置
+            if (arg1 == 1)
+            {
+                FitCurveParamSetWindow win = new FitCurveParamSetWindow();
+                win.Owner = ParentWindow;
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                FittedData1D d = arg3 as FittedData1D;
+                win.ShowDialog(d.LoRange, d.HiRange, d.SampleCount);
+                Thread t = new Thread(() =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        FitDataSet.IsEnabled = false;
+                    });
+                    d.UpdatePoint(win.Lo, win.Hi, win.Count);
+                    Dispatcher.Invoke(() =>
+                    {
+                        UpdateDataPanel();
+                        UpdateChartAndDataFlow(true);
+                        FitDataSet.IsEnabled = true;
+                    });
+                });
+                t.Start();
+            }
+            #endregion
+        }
     }
 }

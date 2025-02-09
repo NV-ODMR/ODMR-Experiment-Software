@@ -33,6 +33,8 @@ using ODMR_Lab.Python管理器;
 using ODMR_Lab.IO操作;
 using Controls.Windows;
 using System.Windows.Media.Animation;
+using System.Collections;
+using MathLib.NormalMath.Decimal;
 
 namespace ODMR_Lab
 {
@@ -145,9 +147,8 @@ namespace ODMR_Lab
 
         public MainWindow()
         {
-            InitializeComponent();
-
             Handle = this;
+            InitializeComponent();
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 

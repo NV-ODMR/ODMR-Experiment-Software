@@ -17,13 +17,14 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// </summary>
         private void CheckAngle()
         {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                ExpPage.CheckWin.UpdateCalculate();
-                ExpPage.CheckWin.UpdateChartAndDataFlow(true);
-            });
             ///刷新计算结果
             MagnetAutoScanHelper.CalculatePossibleLocs(Config, Param, out double x1, out double y1, out double z1, out double a1, out double x2, out double y2, out double z2, out double a2);
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ExpPage.CheckWin.UpdateCalculateView(x1, y1, z1, a1, x2, y2, z2, a2);
+                ExpPage.CheckWin.UpdateChartAndDataFlow(true);
+            });
 
             #region 移动并测量第一个点
             ScanHelper.Move(XStage, JudgeThreadEndOrResume, Config.XRangeLo.Value, Config.XRangeHi.Value, x1, 10000);
@@ -53,7 +54,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             MagnetAutoScanHelper.TotalCWPeaks2OrException(out peaks, out freqs1, out contracts1, out freqs2, out contracts2);
 
             CWPointObject p2 = new CWPointObject(0, Math.Min(peaks[0], peaks[1]), Math.Max(peaks[0], peaks[1]), Config.D.Value, freqs1, contracts1, freqs2, contracts2);
-            CheckPoints.Add(p1);
+            CheckPoints.Add(p2);
             App.Current.Dispatcher.Invoke(() =>
             {
                 ExpPage.CheckWin.CWPoint2 = p2;
@@ -70,13 +71,13 @@ namespace ODMR_Lab.实验部分.磁场调节
             double v2 = p2.Bp / p2.B;
             if (v1 < v2)
             {
-                Param.CheckedPhi = Param.Phi1;
-                Param.CheckedTheta = Param.Theta1;
+                Param.CheckedPhi.Value = Param.Phi1.Value;
+                Param.CheckedTheta.Value = Param.Theta1.Value;
             }
             else
             {
-                Param.CheckedPhi = Param.Phi2;
-                Param.CheckedTheta = Param.Theta2;
+                Param.CheckedPhi.Value = Param.Phi2.Value;
+                Param.CheckedTheta.Value = Param.Theta2.Value;
             }
             #endregion 
 

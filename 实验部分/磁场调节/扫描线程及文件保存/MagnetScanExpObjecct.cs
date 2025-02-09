@@ -170,7 +170,7 @@ namespace ODMR_Lab.实验部分.磁场调节
                     List<double> values1 = fobj.ExtractDouble("CContract1_" + i.ToString());
                     List<double> freqs2 = fobj.ExtractDouble("CFreq2_" + i.ToString());
                     List<double> values2 = fobj.ExtractDouble("CContract2_" + i.ToString());
-                    ZPoints.Add(new CWPointObject(cpos[i], ccw1s[i], ccw2s[i], 2870, freqs1, values1, freqs2, values2));
+                    CheckPoints.Add(new CWPointObject(cpos[i], ccw1s[i], ccw2s[i], 2870, freqs1, values1, freqs2, values2));
                 }
             }
             #endregion

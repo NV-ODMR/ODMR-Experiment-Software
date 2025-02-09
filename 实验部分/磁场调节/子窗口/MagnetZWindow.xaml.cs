@@ -57,10 +57,11 @@ namespace ODMR_Lab.磁场调节
         {
             InitializeComponent();
 
-            LineCW1 = new NumricChartData1D("CW1", "CW扫描数据", ChartDataType.Y);
-            LineCW2 = new NumricChartData1D("CW2", "CW扫描数据", ChartDataType.Y);
-            Freq1 = new NumricChartData1D("Freq1", "CW扫描数据", ChartDataType.X);
-            Freq2 = new NumricChartData1D("Freq2", "CW扫描数据", ChartDataType.X);
+            LineCW1 = new NumricChartData1D("CW1", "Z方向扫描点1", ChartDataType.Y);
+            LineCW2 = new NumricChartData1D("CW2", "Z方向扫描点2", ChartDataType.Y);
+            Freq1 = new NumricChartData1D("Freq1", "Z方向扫描点1", ChartDataType.X);
+            Freq2 = new NumricChartData1D("Freq2", "Z方向扫描点2", ChartDataType.X);
+            CWChart.DataSource.AddRange(new List<NumricChartData1D> { LineCW1, LineCW2, Freq1, Freq2 });
 
             ParentPage = parent;
             Title = windowtitle;

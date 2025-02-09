@@ -150,6 +150,7 @@ namespace ODMR_Lab.磁场调节
                 YPre.Content = Math.Round(d.YLocPredictOutPut, 5).ToString();
                 ZPre.Content = Math.Round(d.ZLocPredictOutPut, 5).ToString();
                 AnglePre.Content = Math.Round(d.ALocPredictOutPut, 5).ToString();
+                BPre.Content = Math.Round(d.PredictB, 5).ToString();
             }
             catch (Exception ex) { return; }
         }
@@ -373,6 +374,21 @@ namespace ODMR_Lab.磁场调节
                 w.Owner = MainWindow.Handle;
                 w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 w.ShowWindow("文件已保存");
+            }
+        }
+
+        private void LoadFile(object sender, RoutedEventArgs e)
+        {
+            if (MessageWindow.ShowMessageBox("提示", "当前结果将被清空，是否继续？", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.No)
+            {
+                return;
+            }
+            MagnetScanExpObject obj = new MagnetScanExpObject();
+            bool result = obj.ReadFromExplorer();
+            if (result != false)
+            {
+                FileObj = obj;
+                obj.LoadToWindow(this);
             }
         }
     }

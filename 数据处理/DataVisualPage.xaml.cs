@@ -51,11 +51,22 @@ namespace ODMR_Lab.数据处理
     {
         public List<DataVisualSource> Source { get; set; } = new List<DataVisualSource>();
 
-        public Window ParentWindow { get; set; } = null;
+        private Window parentWindow = null;
+        public Window ParentWindow
+        {
+            get { return parentWindow; }
+            set
+            {
+                parentWindow = value;
+                Plot1D.ParentWindow = value;
+                Plot2D.ParentWindow = value;
+            }
+        }
 
         public DataVisualPage()
         {
             InitializeComponent();
+            ParentWindow = MainWindow.Handle;
         }
 
         public override void Init()

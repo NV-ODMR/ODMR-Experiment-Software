@@ -23,7 +23,7 @@ namespace ODMR_Lab.IO操作
         public Dictionary<string, string> GenerateTaggedDescriptions()
         {
             Dictionary<string, string> dic = GenerateDescription();
-            Dictionary<string, string> tar = GenerateDescription();
+            Dictionary<string, string> tar = new Dictionary<string, string>();
             foreach (var item in dic)
             {
                 tar.Add(item.Key + "@@" + GetType().Name, item.Value);

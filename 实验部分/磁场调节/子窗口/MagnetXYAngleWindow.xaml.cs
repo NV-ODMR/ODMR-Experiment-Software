@@ -109,8 +109,8 @@ namespace ODMR_Lab.磁场调节
                     Math.Round(CWPoints[i].MoverLoc, 4),
                     Math.Round(CWPoints[i].CW1, 4),
                     Math.Round(CWPoints[i].CW2, 4),
-                    Math.Round(CWPoints[i].Bp, 4),
                     Math.Round(CWPoints[i].Bv, 4),
+                    Math.Round(CWPoints[i].Bp, 4),
                     Math.Round(CWPoints[i].B, 4));
             }
         }

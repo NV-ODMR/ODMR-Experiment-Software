@@ -161,6 +161,11 @@ namespace ODMR_Lab.基本窗口
                         p.WriteValue(Convert.ChangeType((g.Children[1] as FontChangeText).InnerTextBox.Text, p.ParamType));
                         (g.Children[1] as FontChangeText).InnerTextBox.Text = p.ReadValue().ToString();
                     }
+                    if (g.Children[1] is TextBox)
+                    {
+                        p.WriteValue(Convert.ChangeType((g.Children[1] as TextBox).Text, p.ParamType));
+                        (g.Children[1] as TextBox).Text = p.ReadValue().ToString();
+                    }
                 }
                 catch (Exception exc)
                 {

@@ -81,7 +81,7 @@
                 <Controls:DecoratedButton x:Name="P1Btn" Grid.Column="2" Grid.Row="5" Margin="5" Grid.ColumnSpan="2" Click="MovetoP2"  Text="移动并测量" FontWeight="Thin" FontSize="11" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                 <Controls:DecoratedButton x:Name="P2Btn" Grid.Column="2" FontSize="11" Margin="5" Grid.Row="4" Grid.ColumnSpan="2" Text="移动并测量" Click="MovetoP1" FontWeight="Thin" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
 
-                <Controls:DecoratedButton Grid.Column="10" Margin="5" Grid.Row="1" Grid.RowSpan="2" FontSize="11" Text="重新计算" Click="MovetoP1" FontWeight="Thin" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <Controls:DecoratedButton Grid.Column="10" Margin="5" Grid.Row="1" Grid.RowSpan="2" FontSize="11" Text="重新计算" Click="ReCalculate" FontWeight="Thin" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
 
             </Grid>
             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Grid.Row="2" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="White"><Run Text="C"/><LineBreak/><Run Text="W"/><LineBreak/><Run Text="结"/><LineBreak/><Run Text="果"/></TextBlock>

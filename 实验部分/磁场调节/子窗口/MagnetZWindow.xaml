@@ -43,7 +43,7 @@
                     <Label Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="White" FontWeight="Bold" FontSize="12" Background="#FF1F1F1F"/>
                 </Controls:ListViewer.HeaderLabelTemplate>
                 <Controls:ListViewer.UnEditableTextTemplate>
-                    <TextBlock TextAlignment="Center" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextWrapping="Wrap" Foreground="White" FontWeight="Normal" FontSize="11"/>
+                    <TextBlock TextAlignment="Center" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" TextWrapping="Wrap" Foreground="White" FontWeight="Normal" FontSize="11"/>
                 </Controls:ListViewer.UnEditableTextTemplate>
             </Controls:ListViewer>
             <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Grid.Row="2" HorizontalAlignment="Center" FontSize="18" FontWeight="Bold" Foreground="White"><Run Text="C"/><LineBreak/><Run Text="W"/><LineBreak/><Run Text="结"/><LineBreak/><Run Text="果"/></TextBlock>
