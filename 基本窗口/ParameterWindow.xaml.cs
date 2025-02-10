@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -137,6 +138,7 @@ namespace ODMR_Lab.基本窗口
         private void Apply(object sender, RoutedEventArgs e)
         {
             string result = "";
+            #region 设置参数
             foreach (var item in paramsPanel.Children)
             {
                 Grid g = item as Grid;
@@ -147,32 +149,63 @@ namespace ODMR_Lab.基本窗口
                     if (g.Children[1] is ComboBox)
                     {
                         p.WriteValue(Enum.Parse(p.ParamType, (g.Children[1] as ComboBox).SelectedItem.Text));
+                        continue;
+                    }
+                    if (g.Children[1] is Chooser)
+                    {
+                        p.WriteValue((g.Children[1] as Chooser).IsSelected);
+                        continue;
+                    }
+                    if (g.Children[1] is FontChangeText)
+                    {
+                        p.WriteValue(Convert.ChangeType((g.Children[1] as FontChangeText).InnerTextBox.Text, p.ParamType));
+                    }
+                    if (g.Children[1] is TextBox)
+                    {
+                        p.WriteValue(Convert.ChangeType((g.Children[1] as TextBox).Text, p.ParamType));
+                    }
+                }
+                catch (Exception exc)
+                {
+                    result += "参数" + p.Description + "未成功设置" + "\n";
+                }
+            }
+            #endregion
+            Thread.Sleep(100);
+            #region 读取参数
+            foreach (var item in paramsPanel.Children)
+            {
+                Grid g = item as Grid;
+                Parameter p = g.Tag as Parameter;
+                if (p.IsReadOnly) continue;
+                try
+                {
+                    if (g.Children[1] is ComboBox)
+                    {
                         //更新参数
                         (g.Children[1] as ComboBox).Select(Enum.GetName(p.ParamType, (int)p.ReadValue()));
                         continue;
                     }
                     if (g.Children[1] is Chooser)
                     {
-                        p.WriteValue((g.Children[1] as Chooser).IsSelected);
                         (g.Children[1] as Chooser).IsSelected = p.ReadValue();
                         continue;
                     }
                     if (g.Children[1] is FontChangeText)
                     {
-                        p.WriteValue(Convert.ChangeType((g.Children[1] as FontChangeText).InnerTextBox.Text, p.ParamType));
                         (g.Children[1] as FontChangeText).InnerTextBox.Text = p.ReadValue().ToString();
                     }
                     if (g.Children[1] is TextBox)
                     {
-                        p.WriteValue(Convert.ChangeType((g.Children[1] as TextBox).Text, p.ParamType));
                         (g.Children[1] as TextBox).Text = p.ReadValue().ToString();
                     }
                 }
                 catch (Exception exc)
                 {
-                    result += "参数" + p.Description + "未成功设置,错误原因" + exc.Message + "\n";
+                    result += "参数" + p.Description + "未成功读取" + "\n";
                 }
             }
+            #endregion
             if (result == "") result = "参数设置成功";
             MessageWindow.ShowTipWindow(result, this);
         }
