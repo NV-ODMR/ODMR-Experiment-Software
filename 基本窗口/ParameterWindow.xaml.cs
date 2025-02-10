@@ -91,6 +91,7 @@ namespace ODMR_Lab.基本窗口
                 chooser.Height = 30;
                 chooser.HorizontalAlignment = HorizontalAlignment.Center;
                 chooser.VerticalAlignment = VerticalAlignment.Center;
+                chooser.HasAnimation = false;
                 chooser.IsSelected = (bool)paramvalue;
                 grid.Children.Add(chooser);
                 Grid.SetColumn(chooser, 1);
