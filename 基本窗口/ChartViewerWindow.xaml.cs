@@ -74,11 +74,11 @@ namespace ODMR_Lab.基本窗口
         {
             if (ContentPanel.Children.Count == 0)
             {
-                C1D.DataSource.Clear(false);
-                C1D.DataSource.AddRange(data);
                 ContentPanel.Children.Add(C1D);
-                C1D.UpdateChartAndDataFlow(true);
             }
+            C1D.DataSource.Clear(false);
+            C1D.DataSource.AddRange(data);
+            C1D.UpdateChartAndDataFlow(true);
             Topmost = true;
             Show();
             Topmost = false;
@@ -89,11 +89,11 @@ namespace ODMR_Lab.基本窗口
         {
             if (ContentPanel.Children.Count == 0)
             {
-                C2D.DataSource.Clear(false);
-                C2D.DataSource.AddRange(data);
                 ContentPanel.Children.Add(C2D);
-                C2D.UpdateChartAndDataFlow();
             }
+            C2D.DataSource.Clear(false);
+            C2D.DataSource.AddRange(data);
+            C2D.UpdateChartAndDataFlow();
             Topmost = true;
             Show();
             Topmost = false;
