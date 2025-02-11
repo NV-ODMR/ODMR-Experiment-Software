@@ -79,8 +79,8 @@ namespace ODMR_Lab.温度监测部分
                         item.Value.Text = Math.Round(v, 7).ToString() + (item.Tag as OutputChannelInfo).Channel.Unit;
                     }
                 }
+                Chart.UpdateChartAndDataFlow(false);
             });
-            Chart.UpdateChartAndDataFlow(false);
         }
 
 
