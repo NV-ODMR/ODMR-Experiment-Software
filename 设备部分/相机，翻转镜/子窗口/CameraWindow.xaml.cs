@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using HardWares.Windows;
 using HardWares.相机_CCD_;
 using HardWares.端口基类;
 using ODMR_Lab.Windows;
@@ -237,7 +238,7 @@ namespace ODMR_Lab.相机
 
         private void SetParams(object sender, RoutedEventArgs e)
         {
-            ParameterWindow window = new ParameterWindow(Camera.Device.AvailableParameterNames());
+            ParameterWindow window = new ParameterWindow(Camera.Device, Window.GetWindow(this));
             window.Owner = this;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();

@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares.Windows;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
@@ -30,7 +31,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 温度监控程序.Windows;
 using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.源表部分
@@ -66,11 +66,11 @@ namespace ODMR_Lab.源表部分
         #region 设备部分
         private void NewConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(PowerSourceBase), Window.GetWindow(this));
-            bool res = window.ShowDialog(out PortObject dev);
+            ConnectWindow window = new ConnectWindow(typeof(PowerSourceBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                PowerMeterInfo power = new PowerMeterInfo() { Device = dev as PowerSourceBase, ConnectInfo = window.ConnectInfo };
+                PowerMeterInfo power = new PowerMeterInfo() { Device = window.ConnectedDevice as PowerSourceBase, ConnectInfo = window.ConnectInfo };
                 power.CreateDeviceInfoBehaviour();
 
                 power.MaxSavePoint = Param.SamplePoint.Value;
@@ -122,7 +122,7 @@ namespace ODMR_Lab.源表部分
             #region 参数设置
             if (arg1 == 1)
             {
-                ParameterWindow window = new ParameterWindow(info.Device.AvailableParameterNames());
+                ParameterWindow window = new ParameterWindow(info.Device, Window.GetWindow(this));
                 window.ShowDialog();
             }
             #endregion

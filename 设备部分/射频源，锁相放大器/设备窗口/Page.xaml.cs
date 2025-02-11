@@ -1,8 +1,10 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares.Lock_In;
+using HardWares.Windows;
 using HardWares.仪器列表.电动翻转座;
-using HardWares.波源;
+using HardWares.射频源;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
@@ -32,7 +34,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 温度监控程序.Windows;
 using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.射频源_锁相放大器
@@ -61,11 +62,11 @@ namespace ODMR_Lab.射频源_锁相放大器
 
         private void NewRFSourceConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(RFSignalGeneratorBase), Window.GetWindow(this));
-            bool res = window.ShowDialog(out PortObject dev);
+            ConnectWindow window = new ConnectWindow(typeof(RFSourceBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                RFSourceInfo rfsource = new RFSourceInfo() { Device = dev as RFSignalGeneratorBase, ConnectInfo = window.ConnectInfo };
+                RFSourceInfo rfsource = new RFSourceInfo() { Device = window.ConnectedDevice as RFSourceBase, ConnectInfo = window.ConnectInfo };
                 rfsource.CreateDeviceInfoBehaviour();
 
                 RFSources.Add(rfsource);
@@ -78,11 +79,11 @@ namespace ODMR_Lab.射频源_锁相放大器
         }
         private void NewLockInConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(FlipMotorBase), Window.GetWindow(this));
-            bool res = window.ShowDialog(out PortObject dev);
+            ConnectWindow window = new ConnectWindow(typeof(LockInBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                LockinInfo lockin = new LockinInfo() { Device = dev as FlipMotorBase, ConnectInfo = window.ConnectInfo };
+                LockinInfo lockin = new LockinInfo() { Device = window.ConnectedDevice as LockInBase, ConnectInfo = window.ConnectInfo };
                 lockin.CreateDeviceInfoBehaviour();
 
                 LockIns.Add(lockin);
@@ -135,7 +136,7 @@ namespace ODMR_Lab.射频源_锁相放大器
             #region 参数设置
             if (arg1 == 1)
             {
-                ParameterWindow window = new ParameterWindow(inf.Device.AvailableParameterNames());
+                ParameterWindow window = new ParameterWindow(inf.Device, Window.GetWindow(this));
                 window.ShowDialog();
             }
             #endregion
@@ -161,7 +162,7 @@ namespace ODMR_Lab.射频源_锁相放大器
             #region 参数设置
             if (arg1 == 1)
             {
-                ParameterWindow window = new ParameterWindow(inf.Device.AvailableParameterNames());
+                ParameterWindow window = new ParameterWindow(inf.Device, Window.GetWindow(this));
                 window.ShowDialog();
             }
             #endregion

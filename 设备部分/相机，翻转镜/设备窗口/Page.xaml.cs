@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares.Windows;
 using HardWares.仪器列表.电动翻转座;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
@@ -31,7 +32,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 温度监控程序.Windows;
 using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.相机
@@ -60,11 +60,11 @@ namespace ODMR_Lab.相机
 
         private void NewCameraConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(CameraBase), Window.GetWindow(this));
-            bool res = window.ShowDialog(out PortObject dev);
+            ConnectWindow window = new ConnectWindow(typeof(CameraBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                CameraInfo camera = new CameraInfo() { Device = dev as CameraBase, ConnectInfo = window.ConnectInfo };
+                CameraInfo camera = new CameraInfo() { Device = window.ConnectedDevice as CameraBase, ConnectInfo = window.ConnectInfo };
                 camera.CreateDeviceInfoBehaviour();
 
                 Cameras.Add(camera);
@@ -77,11 +77,11 @@ namespace ODMR_Lab.相机
         }
         private void NewFlipConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(FlipMotorBase), Window.GetWindow(this));
-            bool res = window.ShowDialog(out PortObject dev);
+            ConnectWindow window = new ConnectWindow(typeof(FlipMotorBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                FlipMotorInfo flips = new FlipMotorInfo() { Device = dev as FlipMotorBase, ConnectInfo = window.ConnectInfo };
+                FlipMotorInfo flips = new FlipMotorInfo() { Device = window.ConnectedDevice as FlipMotorBase, ConnectInfo = window.ConnectInfo };
                 flips.CreateDeviceInfoBehaviour();
 
                 Flips.Add(flips);
@@ -164,7 +164,7 @@ namespace ODMR_Lab.相机
             #region 参数设置
             if (arg1 == 2)
             {
-                ParameterWindow window = new ParameterWindow(inf.Device.AvailableParameterNames());
+                ParameterWindow window = new ParameterWindow(inf.Device, Window.GetWindow(this));
                 window.ShowDialog();
             }
             #endregion

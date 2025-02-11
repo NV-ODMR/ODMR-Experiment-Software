@@ -29,7 +29,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 温度监控程序.Windows;
 using System.Windows.Forms;
 using ContextMenu = Controls.ContextMenu;
 using Label = System.Windows.Controls.Label;

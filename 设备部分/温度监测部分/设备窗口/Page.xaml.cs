@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares.Windows;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.端口基类;
@@ -25,7 +26,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 温度监控程序.Windows;
 using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.温度监测部分
@@ -94,23 +94,23 @@ namespace ODMR_Lab.温度监测部分
             List<Parameter> param = new List<Parameter>();
             if (data is OutputChannelInfo)
             {
-                param = (data as OutputChannelInfo).Channel.GetAvailableParams();
+                ParameterWindow window = new ParameterWindow((data as OutputChannelInfo).Channel, Window.GetWindow(this));
+                window.ShowDialog();
             }
             if (data is SensorChannelInfo)
             {
-                param = (data as SensorChannelInfo).Channel.GetAvailableParams();
+                ParameterWindow window = new ParameterWindow((data as SensorChannelInfo).Channel, Window.GetWindow(this));
+                window.ShowDialog();
             }
-            ParameterWindow window = new ParameterWindow(param);
-            window.ShowDialog();
         }
 
         private void NewConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(TemperatureControllerBase), Window.GetWindow(this));
-            bool res = window.ShowDialog(out PortObject dev);
+            ConnectWindow window = new ConnectWindow(typeof(TemperatureControllerBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                TemperatureControllerInfo info = new TemperatureControllerInfo() { Device = (TemperatureControllerBase)dev, ConnectInfo = window.ConnectInfo };
+                TemperatureControllerInfo info = new TemperatureControllerInfo() { Device = (TemperatureControllerBase)window.ConnectedDevice, ConnectInfo = window.ConnectInfo };
                 info.CreateDeviceInfoBehaviour();
                 TemperatureControllers.Add(info);
             }

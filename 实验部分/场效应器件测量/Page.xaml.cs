@@ -30,7 +30,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 温度监控程序.Windows;
 using ContextMenu = Controls.ContextMenu;
 using Path = System.IO.Path;
 

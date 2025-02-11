@@ -1,16 +1,17 @@
 ﻿using CodeHelper;
 using HardWares;
+using HardWares.射频源;
+using HardWares.射频源.Rigol_DSG_3060;
 using HardWares.相机_CCD_;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HardWares.波源;
 
 namespace ODMR_Lab.射频源_锁相放大器
 {
-    public class RFSourceInfo : DeviceInfoBase<RFSignalGeneratorBase>
+    public class RFSourceInfo : DeviceInfoBase<RFSourceBase>
     {
 
         public override void CreateDeviceInfoBehaviour()

@@ -2,6 +2,7 @@
 using HardWares;
 using HardWares.相机_CCD_;
 using HardWares.端口基类;
+using HardWares.端口基类部分.设备信息;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -79,7 +80,7 @@ namespace ODMR_Lab
             }
         }
 
-        public DeviceConnectInfo ConnectInfo { get; set; } = null;
+        public DeviceInfoBase ConnectInfo { get; set; } = null;
 
         protected abstract void CloseFileAction(FileObject obj);
 
@@ -107,14 +108,20 @@ namespace ODMR_Lab
                 obj.Descriptions.Add("PortType", Enum.GetName(dev.PortType.GetType(), dev.PortType));
                 obj.Descriptions.Add("DeviceType", dev.GetType().ToString());
                 obj.Descriptions.Add("DeviceInfoType", GetType().ToString());
-                if (dev.PortType == PortType.USB)
+                obj.Descriptions.Add("DevName", ConnectInfo.DeviceName);
+                if (ConnectInfo is USBDeviceInfo)
                 {
-                    obj.Descriptions.Add("USBConnectName", ConnectInfo.USBName);
+                    obj.Descriptions.Add("USBConnectName", (ConnectInfo as USBDeviceInfo).USBIdentification);
                 }
-                if (dev.PortType == PortType.COM)
+                if (ConnectInfo is COMDeviceInfo)
                 {
-                    obj.Descriptions.Add("COMName", ConnectInfo.COMName);
-                    obj.Descriptions.Add("BaudRate", ConnectInfo.COMBaud);
+                    obj.Descriptions.Add("COMName", (ConnectInfo as COMDeviceInfo).COMName);
+                    obj.Descriptions.Add("BaudRate", (ConnectInfo as COMDeviceInfo).BaudRate.ToString());
+                }
+                if (ConnectInfo is COMDeviceInfo)
+                {
+                    obj.Descriptions.Add("TCPIPAddress", (ConnectInfo as COMDeviceInfo).COMName);
+                    obj.Descriptions.Add("TCPIPPort", (ConnectInfo as COMDeviceInfo).BaudRate.ToString());
                 }
                 if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "DevParamDir")))
                 {
@@ -174,40 +181,34 @@ namespace ODMR_Lab
                                     var deviceinstance = Activator.CreateInstance(device.Value);
                                     bool connectresult = false;
 
-                                    DeviceConnectInfo connectinfo = null;
+                                    DeviceInfoBase connectinfo = null;
 
                                     if (port == PortType.USB)
                                     {
-                                        connectresult = (deviceinstance as WinUSBOuterInterface).ConnectUSB(obj.Descriptions["USBConnectName"], out Exception exc);
-                                        if (connectresult == false)
-                                        {
-                                            result.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["USBConnectName"]);
-                                            continue;
-                                        }
-                                        else
-                                        {
-                                            cresult.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["USBConnectName"]);
-                                        }
-                                        connectinfo = new DeviceConnectInfo(PortType.USB, obj.Descriptions["USBConnectName"]);
+                                        connectinfo = new USBDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["USBConnectName"]);
+                                        connectresult = (deviceinstance as WinUSBOuterInterface).ConnectUSB(connectinfo as USBDeviceInfo, out Exception exc);
                                     }
                                     if (port == PortType.COM)
                                     {
-                                        connectresult = (deviceinstance as COMOuterInterface).ConnectCOM(obj.Descriptions["COMName"], int.Parse(obj.Descriptions["BaudRate"]), out Exception exc);
-                                        if (connectresult == false)
-                                        {
-                                            result.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["COMName"]);
-                                            continue;
-                                        }
-                                        else
-                                        {
-                                            cresult.Add((deviceinstance as PortObject).ProductIdentifier + ":\t\t" + obj.Descriptions["COMName"]);
-                                        }
-                                        connectinfo = new DeviceConnectInfo(PortType.COM, obj.Descriptions["COMName"], obj.Descriptions["BaudRate"]);
+                                        connectinfo = new COMDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["COMName"], int.Parse(obj.Descriptions["BaudRate"]));
+                                        connectresult = (deviceinstance as COMOuterInterface).ConnectCOM(connectinfo as COMDeviceInfo, out Exception exc);
                                     }
                                     if (port == PortType.TCPIP)
                                     {
-                                        throw new NotImplementedException();
+                                        connectinfo = new TCPIPDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["TCPIPAddress"], int.Parse(obj.Descriptions["TCPIPPort"]));
+                                        connectresult = (deviceinstance as TCPIPOuterInterface).ConnectTCPIP(connectinfo as TCPIPDeviceInfo, out Exception exc);
                                     }
+
+                                    if (connectresult == false)
+                                    {
+                                        result.Add(connectinfo.DeviceName);
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        cresult.Add(connectinfo.DeviceName);
+                                    }
+
                                     Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);
                                     DeviceInfoBase<T> dev = Activator.CreateInstance(infoType) as DeviceInfoBase<T>;
                                     dev.SourceDevice = deviceinstance as PortObject;
@@ -246,29 +247,27 @@ namespace ODMR_Lab
             var deviceinstance = Activator.CreateInstance(deviceType);
             bool connectresult = false;
 
-            DeviceConnectInfo connectinfo = null;
+            DeviceInfoBase connectinfo = null;
 
             if (port == PortType.USB)
             {
-                connectresult = (deviceinstance as WinUSBOuterInterface).ConnectUSB(obj.Descriptions["USBConnectName"], out Exception exc);
-                if (connectresult == false)
-                {
-                    throw new Exception("设备连接失败");
-                }
-                connectinfo = new DeviceConnectInfo(PortType.USB, obj.Descriptions["USBConnectName"]);
+                connectinfo = new USBDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["USBConnectName"]);
+                connectresult = (deviceinstance as WinUSBOuterInterface).ConnectUSB(connectinfo as USBDeviceInfo, out Exception exc);
             }
             if (port == PortType.COM)
             {
-                connectresult = (deviceinstance as COMOuterInterface).ConnectCOM(obj.Descriptions["COMName"], int.Parse(obj.Descriptions["BaudRate"]), out Exception exc);
-                if (connectresult == false)
-                {
-                    throw new Exception("设备连接失败");
-                }
-                connectinfo = new DeviceConnectInfo(PortType.COM, obj.Descriptions["COMName"], obj.Descriptions["BaudRate"]);
+                connectinfo = new COMDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["COMName"], int.Parse(obj.Descriptions["BaudRate"]));
+                connectresult = (deviceinstance as COMOuterInterface).ConnectCOM(connectinfo as COMDeviceInfo, out Exception exc);
             }
             if (port == PortType.TCPIP)
             {
+                connectinfo = new TCPIPDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["TCPIPAddress"], int.Parse(obj.Descriptions["TCPIPPort"]));
+                connectresult = (deviceinstance as TCPIPOuterInterface).ConnectTCPIP(connectinfo as TCPIPDeviceInfo, out Exception exc);
+            }
 
+            if (connectresult == false)
+            {
+                throw new Exception("设备连接失败");
             }
 
             Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);

@@ -1,9 +1,10 @@
 ﻿using CodeHelper;
+using HardWares.Lock_In;
 using HardWares.仪器列表.电动翻转座;
 
 namespace ODMR_Lab.设备部分.相机
 {
-    public class LockinInfo : DeviceInfoBase<FlipMotorBase>
+    public class LockinInfo : DeviceInfoBase<LockInBase>
     {
         public override void CreateDeviceInfoBehaviour()
         {

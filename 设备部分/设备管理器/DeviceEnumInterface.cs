@@ -1,5 +1,4 @@
-﻿using HardWares.波源;
-using HardWares.纳米位移台;
+﻿using HardWares.纳米位移台;
 using HardWares.温度控制器;
 using HardWares.相机_CCD_;
 using HardWares.仪器列表.电动翻转座;

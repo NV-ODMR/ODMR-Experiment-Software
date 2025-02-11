@@ -1,5 +1,4 @@
 ﻿using HardWares.仪器列表.电动翻转座;
-using HardWares.波源;
 using HardWares.温度控制器;
 using HardWares.相机_CCD_;
 using HardWares.端口基类;

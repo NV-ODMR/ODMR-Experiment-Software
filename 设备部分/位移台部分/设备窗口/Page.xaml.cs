@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares.Windows;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.端口基类;
@@ -26,7 +27,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 温度监控程序.Windows;
 using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.位移台部分
@@ -55,13 +55,13 @@ namespace ODMR_Lab.位移台部分
 
         private void NewConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(NanoControllerBase), Window.GetWindow(this));
-            bool res = window.ShowDialog(out PortObject dev);
+            ConnectWindow window = new ConnectWindow(typeof(NanoControllerBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
                 DecoratedButton btn = sender as DecoratedButton;
 
-                NanoMoverInfo controller = new NanoMoverInfo() { Device = dev as NanoControllerBase, ConnectInfo = window.ConnectInfo };
+                NanoMoverInfo controller = new NanoMoverInfo() { Device = window.ConnectedDevice as NanoControllerBase, ConnectInfo = window.ConnectInfo };
                 controller.CreateDeviceInfoBehaviour();
                 if (btn.Name == "MagnetBtn")
                 {
@@ -98,7 +98,6 @@ namespace ODMR_Lab.位移台部分
             {
                 return;
             }
-            NanoControllerBase tem = dev as NanoControllerBase;
         }
 
 
@@ -185,7 +184,7 @@ namespace ODMR_Lab.位移台部分
             #region 参数设置
             if (arg1 == 1)
             {
-                ParameterWindow window = new ParameterWindow(info.Device.AvailableParameterNames());
+                ParameterWindow window = new ParameterWindow(info.Device);
                 window.ShowDialog();
             }
             #endregion
