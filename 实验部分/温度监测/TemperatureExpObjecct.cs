@@ -46,7 +46,7 @@ namespace ODMR_Lab.实验部分.磁场调节
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.温度监测数据;
 
         /// <summary>
-        /// 读取温度数据文件到
+        /// 读取温度数据文件
         /// </summary>
         /// <param name="fobj"></param>
         protected override void InnerRead(FileObject fobj)

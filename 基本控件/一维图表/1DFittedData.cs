@@ -60,8 +60,8 @@ namespace ODMR_Lab.基本控件.一维图表
             SampleCount = count;
             var xs = Enumerable.Range(0, count).Select(x => lo + x * (hi - lo) / (count - 1));
             var res = xs.Select(x => FitFunction.GetRawValueAt(new List<double>() { x }).Content.Last());
-            FittedData.ClearData();
-            FittedData.AddDatas(xs.ToList(), res.ToList());
+            FittedData.X = xs.ToList();
+            FittedData.Y = res.ToList();
         }
     }
 }

@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -140,6 +140,9 @@
     </Compile>
     <Compile Include="基本控件\一维图表\FitCurveParamSetWindow.xaml.cs">
       <DependentUpon>FitCurveParamSetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="基本控件\一维图表\TimeChartViewer1D.xaml.cs">
+      <DependentUpon>TimeChartViewer1D.xaml</DependentUpon>
     </Compile>
     <Compile Include="基本控件\二维图表\Chart2DStyleParams.cs" />
     <Compile Include="基本控件\二维图表\ChartData2D.cs" />
@@ -299,6 +302,10 @@
     <Page Include="基本控件\一维图表\FitCurveParamSetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="基本控件\一维图表\TimeChartViewer1D.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="基本控件\二维图表\ChartViewer2D.xaml">
       <Generator>MSBuild:Compile</Generator>

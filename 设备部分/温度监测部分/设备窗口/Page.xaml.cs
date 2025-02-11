@@ -292,7 +292,8 @@ namespace ODMR_Lab.温度监测部分
                             {
                                 double value = TemperatureControllers[i].SensorsInfo[j].Channel.Temperature;
                                 if (double.IsNaN(value)) continue;
-                                TemperatureControllers[i].SensorsInfo[j].PlotLine.AddData(DateTime.Now, value);
+                                TemperatureControllers[i].SensorsInfo[j].Time.Data.Add(DateTime.Now);
+                                TemperatureControllers[i].SensorsInfo[j].Value.Data.Add(value);
                             }
                         }
 
@@ -302,7 +303,8 @@ namespace ODMR_Lab.温度监测部分
                             {
                                 double value = TemperatureControllers[i].OutputsInfo[j].Channel.Power;
                                 if (double.IsNaN(value)) continue;
-                                TemperatureControllers[i].OutputsInfo[j].PlotLine.AddData(DateTime.Now, value);
+                                TemperatureControllers[i].OutputsInfo[j].Time.Data.Add(DateTime.Now);
+                                TemperatureControllers[i].OutputsInfo[j].Value.Data.Add(value);
                             }
                         }
                     }

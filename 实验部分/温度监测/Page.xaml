@@ -3,8 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
-      mc:Ignorable="d" 
+      xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件"
+                    mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       >
     <Grid.RowDefinitions>
@@ -35,36 +35,7 @@
             <control:DecoratedButton Click="ShowPlot" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="图表视图" CornerRadius="10,0,0,10" FontSize="22" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF1F1F1F" Foreground="LightGray" MoveInColor="#FF55AAFF" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="417" BorderBrush="#FFE0E0E0" BorderMoveColor="Black"/>
         </Grid>
         <Grid Name="PlotView" Visibility="Visible" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="40"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="150"/>
-            </Grid.ColumnDefinitions>
-            <chart:ChartControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Name="PlotChart" LegendFontsize="13" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="11" MouseMove="PlotChart_MouseMove" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" ZoomY="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" AxisForeground="#FFFAFAFA" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA">
-            </chart:ChartControl>
-            <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="40"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="0.5*"/>
-                </Grid.ColumnDefinitions>
-                <Label Content="通道列表" Grid.Row="0" HorizontalContentAlignment="Center" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA"/>
-                <control:AutoScrollViewer x:Name="autoScrollViewer1" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <control:AutoScrollViewer.Content>
-                        <WrapPanel Name="LegendContent"  Orientation="Vertical" Width="{Binding ActualWidth, ElementName=autoScrollViewer1, Mode=OneWay}">
-                        </WrapPanel>
-                    </control:AutoScrollViewer.Content>
-                </control:AutoScrollViewer>
-                <control:DecoratedButton Margin="5" Click="ResizePlot" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/resize.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                <control:DecoratedButton Margin="5" Click="SnapPlot" Grid.Row="2" Grid.Column="1" IconMargin="4" TextAreaRatio="0" ToolTip="截取图表至剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/snap.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-            </Grid>
+            <基本控件:TimeChartViewer1D x:Name="Chart"/>
         </Grid>
         <Grid Name="NumricView" Visibility="Hidden" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
             <control:AutoScrollViewer x:Name="autoScrollViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

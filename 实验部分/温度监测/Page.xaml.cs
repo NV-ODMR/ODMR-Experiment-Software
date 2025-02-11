@@ -54,6 +54,8 @@ namespace ODMR_Lab.温度监测部分
             CreateAutoSaveThread();
         }
 
+        List<ChannelInfo> SelectedInfos = new List<ChannelInfo>();
+
         public override void CloseBehaviour()
         {
             AutoSaveThread?.Abort();
@@ -66,32 +68,19 @@ namespace ODMR_Lab.温度监测部分
             {
                 foreach (TemperaturePannel item in NumricPanel.Children)
                 {
-                    (item.Tag as ChannelInfo).PlotLine.GetData(out IEnumerable<DateTime> dx, out IEnumerable<double> dy);
-                    if (dx.Count() == 0) continue;
+                    if ((item.Tag as ChannelInfo).Value.Data.Count == 0) continue;
+                    double v = (item.Tag as ChannelInfo).Value.Data.Last();
                     if (item.Tag is SensorChannelInfo)
                     {
-                        item.Value.Text = Math.Round(dy.Last(), 7).ToString() + (item.Tag as SensorChannelInfo).Channel.Unit;
+                        item.Value.Text = Math.Round(v, 7).ToString() + (item.Tag as SensorChannelInfo).Channel.Unit;
                     }
                     if (item.Tag is OutputChannelInfo)
                     {
-                        item.Value.Text = Math.Round(dy.Last(), 7).ToString() + (item.Tag as OutputChannelInfo).Channel.Unit;
+                        item.Value.Text = Math.Round(v, 7).ToString() + (item.Tag as OutputChannelInfo).Channel.Unit;
                     }
                 }
             });
-            PlotChart.RefreshPlotWithAutoScaleY();
-        }
-
-        private void PlotChart_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            PlotChart.RefreshPlotWithAutoScaleY();
-        }
-
-        private void PlotChart_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                PlotChart.RefreshPlotWithAutoScaleY();
-            }
+            Chart.UpdateChartAndDataFlow(false);
         }
 
 
@@ -128,28 +117,6 @@ namespace ODMR_Lab.温度监测部分
             SaveWindow window = new SaveWindow(this);
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.Show();
-        }
-
-        /// <summary>
-        /// 重新设置图表范围
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ResizePlot(object sender, RoutedEventArgs e)
-        {
-            PlotChart.RefreshPlotWithAutoScale();
-        }
-
-        /// <summary>
-        /// 截图到剪切板
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SnapPlot(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(PlotChart));
-            TimeWindow window = new TimeWindow();
-            window.ShowWindow("截图已复制到剪切板");
         }
 
         #endregion
@@ -190,7 +157,7 @@ namespace ODMR_Lab.温度监测部分
         /// </summary>
         private void RefreshChooserLegends(List<ChannelInfo> datas)
         {
-            LegendContent.Children.Clear();
+            SelectedInfos = datas;
             NumricPanel.Children.Clear();
             foreach (var item in datas)
             {
@@ -202,130 +169,24 @@ namespace ODMR_Lab.温度监测部分
                     pannel = new TemperaturePannel(TemperaturePannel.PanelType.Temperature, item.Name) { Margin = new Thickness(10) };
                 pannel.Tag = item;
                 NumricPanel.Children.Add(pannel);
-
-
-                StackPanel panel = new StackPanel();
-                panel.Orientation = System.Windows.Controls.Orientation.Horizontal;
-                panel.Margin = new Thickness(5);
-
-                TextBlock block = new TextBlock();
-                block.Text = item.Name;
-                block.FontSize = 18;
-                if (item is SensorChannelInfo)
-                {
-                    block.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF4FC058"));
-                }
-                if (item is OutputChannelInfo)
-                {
-                    block.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFC0A916"));
-                }
-                block.Width = 50;
-                block.FontWeight = FontWeights.Bold;
-                block.TextWrapping = TextWrapping.Wrap;
-                block.VerticalAlignment = VerticalAlignment.Center;
-
-                panel.Children.Add(block);
-
-                Chooser choose = new Chooser();
-                if (item is SensorChannelInfo)
-                {
-                    choose.ChooseBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF4FC058"));
-                    choose.UnChooseBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF2E2E2E"));
-                }
-                if (item is OutputChannelInfo)
-                {
-                    choose.ChooseBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFC0A916"));
-                    choose.UnChooseBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF2E2E2E"));
-                }
-                choose.Height = 30;
-                choose.Width = 50;
-                choose.Margin = new Thickness(5);
-                choose.Tag = item;
-                choose.IsSelected = PlotChart.DataList.Contains(item.PlotLine);
-                choose.Selected += ChangeLine;
-                choose.UnSelected += ChangeLine;
-
-                panel.Children.Add(choose);
-
-                LegendContent.Children.Add(panel);
-                panel.Tag = item;
             }
 
-            for (int i = 0; i < PlotChart.DataList.Count; i++)
+            List<KeyValuePair<TimeChartData1D, NumricChartData1D>> newsource = new List<KeyValuePair<TimeChartData1D, NumricChartData1D>>();
+
+            foreach (var item in datas)
             {
-                bool isinData = false;
-                foreach (var item in datas)
+                int ind = Chart.DataSource.FindIndex(x => x.Value.Name == item.Name);
+                if (ind != -1)
                 {
-                    if (PlotChart.DataList[i] == item.PlotLine)
-                    {
-                        isinData = true;
-                    }
+                    newsource.Add(Chart.DataSource[ind]);
                 }
-                if (!isinData)
+                else
                 {
-                    PlotChart.DataList.RemoveAt(i);
-                    --i;
+                    newsource.Add(new KeyValuePair<TimeChartData1D, NumricChartData1D>(item.Time, item.Value));
                 }
             }
-        }
 
-        /// <summary>
-        /// 修改显示
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        private void ChangeLine(object sender, RoutedEventArgs e)
-        {
-            Chooser chooser = sender as Chooser;
-            if (chooser.IsSelected)
-            {
-                AddLine(chooser.Tag as ChannelInfo);
-            }
-            else
-            {
-                DeleteLine(chooser.Tag as ChannelInfo);
-            }
-        }
-
-        /// <summary>
-        /// 添加直线
-        /// </summary>
-        /// <param name="data"></param>
-        public void AddLine(ChannelInfo data)
-        {
-            if (data is SensorChannelInfo)
-            {
-                if (PlotChart.DataList.Contains((data as SensorChannelInfo).PlotLine))
-                    return;
-                PlotChart.DataList.Add((data as SensorChannelInfo).PlotLine);
-            }
-            if (data is OutputChannelInfo)
-            {
-                if (PlotChart.DataList.Contains((data as OutputChannelInfo).PlotLine))
-                    return;
-                PlotChart.DataList.Add((data as OutputChannelInfo).PlotLine);
-            }
-            PlotChart.RefreshPlotWithAutoScale();
-            return;
-        }
-
-        /// <summary>
-        /// 删除直线
-        /// </summary>
-        /// <param name="data"></param>
-        public void DeleteLine(ChannelInfo data)
-        {
-            if (data is SensorChannelInfo)
-            {
-                PlotChart.DataList.Remove((data as SensorChannelInfo).PlotLine);
-            }
-            if (data is OutputChannelInfo)
-            {
-                PlotChart.DataList.Remove((data as OutputChannelInfo).PlotLine);
-            }
-            PlotChart.RefreshPlotWithAutoScale();
-            return;
+            Chart.UpdateChartAndDataFlow(false);
         }
         #endregion
 
@@ -395,19 +256,16 @@ namespace ODMR_Lab.温度监测部分
                             {
                                 lock (lockobj)
                                 {
-                                    foreach (var item in LegendContent.Children)
+                                    foreach (var item in Chart.DataSource)
                                     {
-                                        ((item as StackPanel).Tag as ChannelInfo).PlotLine.ClearData();
+                                        item.Key.Data.Clear();
+                                        item.Value.Data.Clear();
                                     }
                                     Dispatcher.Invoke(() =>
                                     {
-                                        PlotChart.RefreshPlotWithAutoScale();
+                                        Chart.UpdateChartAndDataFlow(true);
                                     });
                                 }
-                                Dispatcher.Invoke(() =>
-                                {
-                                    ResizePlot(null, new RoutedEventArgs());
-                                });
                             }
                         }
                     }
@@ -427,29 +285,28 @@ namespace ODMR_Lab.温度监测部分
         public void Save(string SavePath, string Filename = "")
         {
             saveObject = new TemperatureExpObject();
-            if (LegendContent.Children.Count == 0)
+            if (Chart.DataSource.Count == 0)
             {
                 throw new Exception("没有需要保存的数据");
             }
-            DateTime mintime = DateTime.MaxValue;
-            DateTime maxtime = DateTime.MinValue;
+            double mintime = double.MaxValue;
+            double maxtime = double.MinValue;
             #region 获取最早和最晚日期,设备名称
             List<string> DeviceNames = new List<string>();
-            foreach (var item in LegendContent.Children)
+            foreach (var item in SelectedInfos)
             {
-                ChannelInfo info = (item as StackPanel).Tag as ChannelInfo;
-                if (!DeviceNames.Contains(info.ParentInfo.Device.ProductName))
+                if (!DeviceNames.Contains(item.ParentInfo.Device.ProductName))
                 {
-                    DeviceNames.Add(info.ParentInfo.Device.ProductName);
+                    DeviceNames.Add(item.ParentInfo.Device.ProductName);
                 }
-                info.PlotLine.GetData(out IEnumerable<DateTime> x, out IEnumerable<double> y);
-                if (x.ElementAt(0) < mintime)
+                var time = item.Time.GetDataCopyAsDouble().ToList();
+                if (time.ElementAt(0) < mintime)
                 {
-                    mintime = x.ElementAt(0);
+                    mintime = time.ElementAt(0);
                 }
-                if (x.ElementAt(x.Count() - 1) > maxtime)
+                if (time.ElementAt(time.Count() - 1) > maxtime)
                 {
-                    maxtime = x.ElementAt(x.Count() - 1);
+                    maxtime = time.ElementAt(time.Count() - 1);
                 }
             }
 
@@ -460,27 +317,14 @@ namespace ODMR_Lab.温度监测部分
             }
             if (saveObject.Param.DeviceName.Value != "") saveObject.Param.DeviceName.Value = saveObject.Param.DeviceName.Value.Remove(saveObject.Param.DeviceName.Value.Length - 1, 1);
 
-            saveObject.Param.SetStartTime(mintime);
-            saveObject.Param.SetEndTime(maxtime);
+            saveObject.Param.SetStartTime(DateTime.FromOADate(mintime));
+            saveObject.Param.SetEndTime(DateTime.FromOADate(maxtime));
             #endregion
 
-            //温度通道
-            foreach (var item in LegendContent.Children)
+            foreach (var item in Chart.DataSource)
             {
-                ChannelInfo data = (item as StackPanel).Tag as ChannelInfo;
-
-                data.PlotLine.GetData(out IEnumerable<DateTime> x, out IEnumerable<double> y);
-
-                if (data is SensorChannelInfo)
-                {
-                    saveObject.SelectedChannelsData.Add(new NumricChartData1D(data.Name + "—温度(" + (data as SensorChannelInfo).Channel.Unit + ")", "温度监测数据") { Data = new List<double>(y.ToArray()) });
-                    saveObject.SelectedChannelsData.Add(new TimeChartData1D(data.Name + "—时间", "温度监测数据") { Data = new List<DateTime>(x.ToArray()) });
-                }
-                if (data is OutputChannelInfo)
-                {
-                    saveObject.SelectedChannelsData.Add(new NumricChartData1D(data.Name + "—功率(" + (data as OutputChannelInfo).Channel.Unit + ")", "温度监测数据") { Data = new List<double>(y.ToArray()) });
-                    saveObject.SelectedChannelsData.Add(new TimeChartData1D(data.Name + "—时间", "温度监测数据") { Data = new List<DateTime>(x.ToArray()) });
-                }
+                saveObject.SelectedChannelsData.Add(new NumricChartData1D(item.Value.Name, item.Value.GroupName) { Data = new List<double>(item.Value.Data.ToArray()) });
+                saveObject.SelectedChannelsData.Add(new TimeChartData1D(item.Value.Name + "—时间", item.Value.GroupName) { Data = new List<DateTime>(item.Key.Data.ToArray()) });
             }
 
             string saveFileName = Filename;

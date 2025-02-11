@@ -31,24 +31,9 @@ namespace ODMR_Lab.基本控件
     /// <summary>
     /// ChartViewer1D.xaml 的交互逻辑
     /// </summary>
-    public partial class ChartViewer1D : Grid
+    public partial class TimeChartViewer1D : Grid
     {
-        /// <summary>
-        /// 是否仅为时间轴
-        /// </summary>
-        public bool IsOnlyTime
-        {
-            get { return (bool)GetValue(IsOnlyTimeProperty); }
-            set { SetValue(IsOnlyTimeProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for IsOnlyTime.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsOnlyTimeProperty =
-            DependencyProperty.Register("IsOnlyTime", typeof(bool), typeof(ChartViewer1D), new PropertyMetadata(false));
-
-
-
-        public ChartViewer1D()
+        public TimeChartViewer1D()
         {
             InitializeComponent();
             InitChartView();
@@ -56,7 +41,6 @@ namespace ODMR_Lab.基本控件
             //数据改变事件
             DataSource.ItemChanged += UpdateDataPanel;
             FitData.ItemChanged += UpdateDataPanel;
-            OnlyTimeDataSource.ItemChanged += UpdateDataPanel;
         }
 
         /// <summary>
@@ -71,8 +55,11 @@ namespace ODMR_Lab.基本控件
         }
 
         #region 一维图表数据
-        private ItemsList<ChartData1D> dataSource = new ItemsList<ChartData1D>();
-        public ItemsList<ChartData1D> DataSource
+        private ItemsList<KeyValuePair<TimeChartData1D, NumricChartData1D>> dataSource = new ItemsList<KeyValuePair<TimeChartData1D, NumricChartData1D>>();
+        /// <summary>
+        /// 数据源，横轴的所有设置无效
+        /// </summary>
+        public ItemsList<KeyValuePair<TimeChartData1D, NumricChartData1D>> DataSource
         {
             get { return dataSource; }
             set
@@ -92,12 +79,6 @@ namespace ODMR_Lab.基本控件
                 UpdateDataPanel(this, new RoutedEventArgs());
             }
         }
-
-        /// <summary>
-        /// 仅时间轴数据
-        /// </summary>
-        public ItemsList<KeyValuePair<TimeChartData1D, NumricChartData1D>> OnlyTimeDataSource { get; set; } = new ItemsList<KeyValuePair<TimeChartData1D, NumricChartData1D>>();
-
         public ChartData1D SelectedXdata { get; set; } = null;
         #endregion
 
@@ -149,9 +130,9 @@ namespace ODMR_Lab.基本控件
         {
             #region 查找所有GroupNames
             HashSet<string> groups = new HashSet<string>();
-            foreach (ChartData1D data in DataSource)
+            foreach (var data in DataSource)
             {
-                groups.Add(data.GroupName);
+                groups.Add(data.Value.GroupName);
             }
             ChartGroups.Items.Clear();
             foreach (var item in groups)
@@ -207,12 +188,12 @@ namespace ODMR_Lab.基本控件
 
                 foreach (var item in DataSource)
                 {
-                    if (item.GroupName != GroupName)
+                    if (item.Value.GroupName != GroupName)
                     {
                         continue;
                     }
-                    DataNames.AddItem(item, item.Name, item.GetCount());
-                    if (item.IsInDataDisplay)
+                    DataNames.AddItem(item, item.Value.Name, item.Value.GetCount());
+                    if (item.Value.IsInDataDisplay)
                     {
                         DataNames.Select(DataNames.GetRowCount() - 1);
                     }
@@ -222,23 +203,16 @@ namespace ODMR_Lab.基本控件
             {
                 string GroupName = ChartGroups.SelectedItem.Tag as string;
 
-                XDataSet.ClearItems();
-                YDataSet.ClearItems();
+                TimeDataSet.ClearItems();
 
                 foreach (var item in DataSource)
                 {
-                    if (item.GroupName != GroupName)
+                    if (item.Value.GroupName != GroupName)
                     {
-                        item.IsSelectedAsX = false;
-                        item.IsSelectedAsY = false;
+                        item.Value.IsSelectedAsY = false;
                         continue;
                     }
-                    if (item.DataAxisType != ChartDataType.Y || (item is TimeChartData1D))
-                        XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
-                    if (item is NumricChartData1D && item.DataAxisType != ChartDataType.X)
-                    {
-                        YDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
-                    }
+                    TimeDataSet.AddItem(item, item.Value.Name, item.Value.GetCount().ToString(), item.Value.IsSelectedAsY);
                 }
             }
 
@@ -282,14 +256,10 @@ namespace ODMR_Lab.基本控件
         /// </summary>
         private void UpdateDataPoint()
         {
-            for (int i = 0; i < XDataSet.GetRowCount(); i++)
+            for (int i = 0; i < TimeDataSet.GetRowCount(); i++)
             {
-                XDataSet.SetCelValue(i, 1, (XDataSet.GetTag(i) as ChartData1D).GetCount());
-            }
-
-            for (int i = 0; i < YDataSet.GetRowCount(); i++)
-            {
-                YDataSet.SetCelValue(i, 1, (YDataSet.GetTag(i) as ChartData1D).GetCount());
+                var item = (KeyValuePair<TimeChartData1D, NumricChartData1D>)TimeDataSet.GetTag(i);
+                TimeDataSet.SetCelValue(i, 1, item.Value.GetCount().ToString());
             }
         }
 
@@ -310,47 +280,18 @@ namespace ODMR_Lab.基本控件
             }
             UpdateThread = new Thread(() =>
             {
-                SelectedXdata = null;
-                foreach (var item in DataSource)
-                {
-                    if (item.IsSelectedAsX) SelectedXdata = item;
-                }
-                if (SelectedXdata == null)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        chart.DataList.Clear();
-                        chart.RefreshPlotWithAutoScaleY();
-                    });
-                    return;
-                }
-
-                bool HasName = false;
-                Dispatcher.Invoke(() =>
-                {
-                    HasName = (chart.XAxisName == SelectedXdata.Name);
-                });
-
                 ///刷新要添加的线
-                List<ChartData1D> DataToAdd = DataSource.Where(x => x.IsSelectedAsY).ToList();
+                List<KeyValuePair<TimeChartData1D, NumricChartData1D>> DataToAdd = DataSource.Where(x => x.Value.IsSelectedAsY).ToList();
 
-                List<DataSeries> PlotData = new List<DataSeries>();
+                List<TimeDataSeries> PlotData = new List<TimeDataSeries>();
                 foreach (var item in DataToAdd)
                 {
-                    DataSeries data = null;
-                    if (SelectedXdata is TimeChartData1D) data = new TimeDataSeries(item.Name)
-                    {
-                        X = (SelectedXdata as TimeChartData1D).Data,
-                        Y = item.GetDataCopyAsDouble().ToList()
-                    };
-                    if (SelectedXdata is NumricChartData1D) data = new NumricDataSeries(item.Name)
-                    {
-                        X = (SelectedXdata as NumricChartData1D).Data,
-                        Y = item.GetDataCopyAsDouble().ToList()
-                    };
-                    data.LineColor = item.DisplayColor;
+                    TimeDataSeries data = null;
+                    data.LineColor = item.Value.DisplayColor;
+                    data.X = item.Key.Data;
+                    data.Y = item.Value.Data;
                     //检查是否在原来的线中
-                    int ind = chart.DataList.FindIndex(x => item.Name == x.Name);
+                    int ind = chart.DataList.FindIndex(x => item.Value.Name == x.Name);
                     if (ind != -1)
                     {
                         data.LineThickness = chart.DataList[ind].LineThickness;
@@ -374,10 +315,10 @@ namespace ODMR_Lab.基本控件
                     if (item.IsDisplay && item.XData == SelectedXdata)
                     {
                         item.FittedData.Name = item.FitName;
-                        PlotData.Add(item.FittedData);
+                        PlotData.Add(new TimeDataSeries("", item.FittedData.X.Select(x => DateTime.FromOADate(x)).ToList(), item.FittedData.Y));
                     }
                 }
-                chart.DataList = PlotData;
+                chart.DataList = PlotData.Select(x => x as DataSeries).ToList();
 
                 Dispatcher.Invoke(() =>
                 {
@@ -413,26 +354,10 @@ namespace ODMR_Lab.基本控件
 
         #region 图表显示数据选择部分
 
-        private void XDataSelectionChanged(int arg1, int arg2, object arg3)
-        {
-            int count = XDataSet.GetRowCount();
-            for (int i = 0; i < count; i++)
-            {
-                ChartData1D dat = XDataSet.GetTag(i) as ChartData1D;
-                dat.IsSelectedAsX = false;
-            }
-
-            ChartData1D data = XDataSet.GetTag(arg1) as ChartData1D;
-            data.IsSelectedAsX = (bool)arg3;
-
-            UpdateDataPanel();
-            UpdateChartAndDataFlow(true);
-        }
-
         private void YDataSelectionChanged(int arg1, int arg2, object arg3)
         {
-            ChartData1D data = YDataSet.GetTag(arg1) as ChartData1D;
-            data.IsSelectedAsY = (bool)arg3;
+            var data = (KeyValuePair<TimeChartData1D, NumricChartData1D>)TimeDataSet.GetTag(arg1);
+            data.Value.IsSelectedAsY = (bool)arg3;
             UpdateChartAndDataFlow(true);
         }
         #endregion
@@ -538,18 +463,10 @@ namespace ODMR_Lab.基本控件
             string namestr = "";
             foreach (var item in DataSource)
             {
-                if (item is TimeChartData1D)
-                {
-                    int count = (item as TimeChartData1D).Data.Count;
-                    if (maxcount < count) maxcount = count;
-                }
-                if (item is NumricChartData1D)
-                {
-                    int count = (item as NumricChartData1D).Data.Count;
-                    if (maxcount < count) maxcount = count;
-                }
+                int count = item.Value.Data.Count;
+                if (maxcount < count) maxcount = count;
 
-                namestr += item.Name + "\t";
+                namestr += item.Value.Name + " time" + "\t" + item.Value.Name + "\t";
             }
 
             if (namestr != "")
@@ -565,29 +482,23 @@ namespace ODMR_Lab.基本控件
                 string temp = "";
                 foreach (var item in DataSource)
                 {
-                    if (item is TimeChartData1D)
+                    List<DateTime> data = item.Key.Data;
+                    if (i > data.Count - 1)
                     {
-                        List<DateTime> data = (item as TimeChartData1D).Data;
-                        if (i > data.Count - 1)
-                        {
-                            temp += "" + "\t";
-                        }
-                        else
-                        {
-                            temp += data[i].ToString("yyyy/MM/dd HH:mm:ss:fff") + "\t";
-                        }
+                        temp += "" + "\t";
                     }
-                    if (item is NumricChartData1D)
+                    else
                     {
-                        List<double> data = (item as NumricChartData1D).Data;
-                        if (i > data.Count - 1)
-                        {
-                            temp += "" + "\t";
-                        }
-                        else
-                        {
-                            temp += data[i].ToString() + "\t";
-                        }
+                        temp += data[i].ToString("yyyy/MM/dd HH:mm:ss:fff") + "\t";
+                    }
+                    List<double> ddata = item.Value.Data;
+                    if (i > ddata.Count - 1)
+                    {
+                        temp += "" + "\t";
+                    }
+                    else
+                    {
+                        temp += ddata[i].ToString() + "\t";
                     }
                 }
                 if (temp != "")
@@ -642,28 +553,36 @@ namespace ODMR_Lab.基本控件
 
         private void DataNames_MultiItemSelected(int arg1, object arg2)
         {
-            ChartData1D data = (arg2 as ChartData1D);
-            data.IsInDataDisplay = true;
+            var data = (KeyValuePair<TimeChartData1D, NumricChartData1D>)arg2;
+            data.Value.IsInDataDisplay = true;
             foreach (var item in DataPanel.Children)
             {
-                if ((item as DataListViewer).Data == data) return;
+                if ((item as DataListViewer).Data == data.Value) return;
             }
             DataListViewer v = new DataListViewer();
-            v.Data = data;
-            v.UpdatePointList(0, data.GroupName + ":" + data.Name);
+            v.Data = data.Key;
+            v.UpdatePointList(0, data.Value.GroupName + ":" + data.Value.Name + " 时间值");
+            v.Width = 250;
+            DataPanel.Children.Add(v);
+            v = new DataListViewer();
+            v.Data = data.Value;
+            v.UpdatePointList(0, data.Value.GroupName + ":" + data.Value.Name);
             v.Width = 250;
             DataPanel.Children.Add(v);
         }
         private void DataNames_MultiItemUnSelected(int arg1, object arg2)
         {
-            ChartData1D data = (arg2 as ChartData1D);
-            data.IsInDataDisplay = false;
+            var data = (KeyValuePair<TimeChartData1D, NumricChartData1D>)arg2;
+            data.Value.IsInDataDisplay = false;
             foreach (var item in DataPanel.Children)
             {
-                if ((item as DataListViewer).Data == data)
+                if ((item as DataListViewer).Data == data.Key)
                 {
                     DataPanel.Children.Remove(item as DataListViewer);
-                    return;
+                };
+                if ((item as DataListViewer).Data == data.Value)
+                {
+                    DataPanel.Children.Remove(item as DataListViewer);
                 };
             }
         }

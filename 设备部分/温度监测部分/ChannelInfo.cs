@@ -12,6 +12,7 @@ using ODMR_Lab.Windows;
 using System.Windows;
 using CodeHelper;
 using System.IO;
+using ODMR_Lab.基本控件;
 
 namespace ODMR_Lab.温度监测部分
 {
@@ -21,7 +22,9 @@ namespace ODMR_Lab.温度监测部分
 
         public bool IsSelected { get; set; } = false;
 
-        public TimeDataSeries PlotLine { get; protected set; } = null;
+        public TimeChartData1D Time { get; protected set; } = new TimeChartData1D("", "");
+
+        public NumricChartData1D Value { get; protected set; } = new NumricChartData1D("", "");
 
         public DecoratedButton DisplayBtn { get; set; } = null;
 
@@ -46,10 +49,9 @@ namespace ODMR_Lab.温度监测部分
         public SensorChannelInfo(TemperatureControllerInfo parentinfo, SensorChannelBase channel, string name, DecoratedButton btn) : base(name, btn)
         {
             Channel = channel;
-            PlotLine = new TimeDataSeries(channel.Name)
-            {
-                LineThickness = 3,
-            };
+            Name = name;
+            Value.Name = name + "温度数据(" + channel.Unit + ")";
+            Value.GroupName = "温度监测数据";
             ParentInfo = parentinfo;
         }
 
@@ -65,10 +67,9 @@ namespace ODMR_Lab.温度监测部分
         public OutputChannelInfo(TemperatureControllerInfo parentinfo, OutputChannelBase channel, string name, DecoratedButton btn) : base(name, btn)
         {
             Channel = channel;
-            PlotLine = new TimeDataSeries(channel.Name)
-            {
-                LineThickness = 3
-            };
+            Name = name;
+            Value.Name = name + "输出数据(" + channel.Unit + ")";
+            Value.GroupName = "温度监测数据";
             ParentInfo = parentinfo;
         }
     }

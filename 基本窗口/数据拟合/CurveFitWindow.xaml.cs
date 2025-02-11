@@ -3,6 +3,7 @@ using Controls;
 using Controls.Windows;
 using MathLib.NormalMath.Decimal;
 using MathLib.NormalMath.Decimal.Function;
+using ODMR_Lab.Properties;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
@@ -276,8 +277,17 @@ namespace ODMR_Lab.基本窗口.数据拟合
                 {
                     throw new Exception("未选择数据源");
                 }
-                xs = (XDataSourceBox.SelectedItem.Tag as ChartData1D).GetDataCopyAsDouble();
-                ys = (YDataSourceBox.SelectedItem.Tag as ChartData1D).GetDataCopyAsDouble();
+                if (NumricDataSource.Visibility == Visibility.Visible)
+                {
+                    xs = (XDataSourceBox.SelectedItem.Tag as ChartData1D).GetDataCopyAsDouble();
+                    ys = (YDataSourceBox.SelectedItem.Tag as ChartData1D).GetDataCopyAsDouble();
+                }
+                if (TimeDataSource.Visibility == Visibility.Visible)
+                {
+                    var dat = (KeyValuePair<TimeChartData1D, NumricChartData1D>)TimeDataSourceBox.SelectedItem.Tag;
+                    xs = dat.Key.GetDataCopyAsDouble();
+                    ys = dat.Value.GetDataCopyAsDouble();
+                }
                 if (xs.Length != ys.Length)
                 {
                     throw new Exception("XY数据源的数据个数不相同，无法拟合");
@@ -306,6 +316,8 @@ namespace ODMR_Lab.基本窗口.数据拟合
 
         public FittedData1D ShowDialog(List<ChartData1D> sources)
         {
+            TimeDataSource.Visibility = Visibility.Hidden;
+            NumricDataSource.Visibility = Visibility.Visible;
             XDataSourceBox.Items.Clear();
             YDataSourceBox.Items.Clear();
             foreach (var item in sources)
@@ -317,6 +329,22 @@ namespace ODMR_Lab.基本窗口.数据拟合
                 if (item.IsSelectedAsY)
                 {
                     YDataSourceBox.Items.Add(new DecoratedButton() { Text = item.GroupName + "→" + item.Name, Tag = item });
+                }
+            }
+            ShowDialog();
+            return Func;
+        }
+
+        public FittedData1D ShowDialog(List<KeyValuePair<TimeChartData1D, NumricChartData1D>> timesources)
+        {
+            TimeDataSource.Visibility = Visibility.Visible;
+            NumricDataSource.Visibility = Visibility.Hidden;
+            TimeDataSourceBox.Items.Clear();
+            foreach (var item in timesources)
+            {
+                if (item.Value.IsSelectedAsX)
+                {
+                    TimeDataSourceBox.Items.Add(new DecoratedButton() { Text = item.Value.GroupName + "→" + item.Value.Name, Tag = item });
                 }
             }
             ShowDialog();
