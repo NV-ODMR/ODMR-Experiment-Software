@@ -84,21 +84,21 @@ namespace ODMR_Lab.实验部分.位移台界面
 
                       try
                       {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleX, MoverPart);
+                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleY, MoverPart);
                           ayv = dev.Device.Position.ToString();
                       }
                       catch (Exception) { }
 
                       try
                       {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleX, MoverPart);
+                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleZ, MoverPart);
                           azv = dev.Device.Position.ToString();
                       }
                       catch (Exception) { }
 
                       Dispatcher.Invoke(() =>
                       {
-                          AngleLocs.Text = "X:  " + axv + "  Y:  " + axv + "  Z:  " + axv;
+                          AngleLocs.Text = "X:  " + axv + "  Y:  " + ayv + "  Z:  " + azv;
                       });
 
                       Thread.Sleep(100);
