@@ -260,6 +260,12 @@ namespace ODMR_Lab.基本控件
                 var item = (KeyValuePair<TimeChartData1D, NumricChartData1D>)TimeDataSet.GetTag(i);
                 TimeDataSet.SetCelValue(i, 1, item.Value.GetCount().ToString());
             }
+
+            for (int i = 0; i < DataNames.GetRowCount(); i++)
+            {
+                var item = (KeyValuePair<TimeChartData1D, NumricChartData1D>)DataNames.GetTag(i);
+                DataNames.SetCelValue(i, 1, item.Value.GetCount().ToString());
+            }
         }
 
         Thread UpdateThread = null;
@@ -285,25 +291,23 @@ namespace ODMR_Lab.基本控件
                 List<TimeDataSeries> PlotData = new List<TimeDataSeries>();
                 foreach (var item in DataToAdd)
                 {
-                    TimeDataSeries data = new TimeDataSeries(item.Value.Name, item.Key.Data, item.Value.Data);
-                    data.LineColor = item.Value.DisplayColor;
                     //检查是否在原来的线中
                     int ind = chart.DataList.FindIndex(x => item.Value.Name == x.Name);
                     if (ind != -1)
                     {
-                        data.LineThickness = chart.DataList[ind].LineThickness;
-                        data.MarkerSize = chart.DataList[ind].MarkerSize;
-                        data.Smooth = chart.DataList[ind].Smooth;
-                        data.Name = chart.DataList[ind].Name;
+                        PlotData.Add(chart.DataList[ind] as TimeDataSeries);
+                        continue;
                     }
                     else
                     {
+                        TimeDataSeries data = new TimeDataSeries(item.Value.Name, item.Key.Data, item.Value.Data);
+                        data.LineColor = item.Value.DisplayColor;
                         //不在原来的线中
                         data.Smooth = StyleParam.IsSmooth.Value;
                         data.MarkerSize = StyleParam.PointSize.Value;
                         data.LineThickness = StyleParam.LineWidth.Value;
+                        PlotData.Add(data);
                     }
-                    PlotData.Add(data);
                 }
 
                 //刷新拟合线
@@ -567,15 +571,17 @@ namespace ODMR_Lab.基本控件
         {
             var data = (KeyValuePair<TimeChartData1D, NumricChartData1D>)arg2;
             data.Value.IsInDataDisplay = false;
-            foreach (var item in DataPanel.Children)
+            for (int i = 0; i < DataPanel.Children.Count; i++)
             {
-                if ((item as DataListViewer).Data == data.Key)
+                if ((DataPanel.Children[i] as DataListViewer).Data == data.Key)
                 {
-                    DataPanel.Children.Remove(item as DataListViewer);
+                    DataPanel.Children.Remove(DataPanel.Children[i] as DataListViewer);
+                    --i;
                 };
-                if ((item as DataListViewer).Data == data.Value)
+                if ((DataPanel.Children[i] as DataListViewer).Data == data.Value)
                 {
-                    DataPanel.Children.Remove(item as DataListViewer);
+                    DataPanel.Children.Remove(DataPanel.Children[i] as DataListViewer);
+                    --i;
                 };
             }
         }
