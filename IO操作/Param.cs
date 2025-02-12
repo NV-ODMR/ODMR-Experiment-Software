@@ -146,8 +146,6 @@ namespace ODMR_Lab.IO操作
         /// </summary>
         public GridLength RowLength { get; set; } = new GridLength(1, GridUnitType.Star);
 
-        public string GroupName { get; set; } = "";
-
         #region 从页面中读取和写入页面
         /// <summary>
         /// 从页面读取值
@@ -320,6 +318,8 @@ namespace ODMR_Lab.IO操作
                 RawValue = value;
             }
         }
+
+        public string GroupName { get; private set; }
 
         public Param(string description, T value, string propertyName, string groupname = "")
         {

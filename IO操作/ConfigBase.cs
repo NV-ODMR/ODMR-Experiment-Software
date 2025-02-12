@@ -20,13 +20,13 @@ namespace ODMR_Lab.IO操作
         /// <summary>
         /// 生成带参数类型的描述
         /// </summary>
-        public Dictionary<string, string> GenerateTaggedDescriptions()
+        public Dictionary<string, string> GenerateTaggedDescriptions(string identify = "")
         {
             Dictionary<string, string> dic = GenerateDescription();
             Dictionary<string, string> tar = new Dictionary<string, string>();
             foreach (var item in dic)
             {
-                tar.Add(item.Key + "@@" + GetType().Name, item.Value);
+                tar.Add(item.Key + "@@" + GetType().Name + "@@" + identify, item.Value);
             }
             return tar;
         }
@@ -34,14 +34,14 @@ namespace ODMR_Lab.IO操作
         /// <summary>
         /// 从带参数类型的描述中读取值
         /// </summary>
-        public void ReadFromTaggedDescriptions(Dictionary<string, string> des)
+        public void ReadFromTaggedDescriptions(Dictionary<string, string> des, string identify)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
             foreach (var item in des)
             {
-                if (item.Key.Contains("@@" + GetType().Name))
+                if (item.Key.Contains("@@" + GetType().Name + "@@" + identify))
                 {
-                    dic.Add(item.Key.Replace("@@" + GetType().Name, ""), item.Value);
+                    dic.Add(item.Key.Replace("@@" + GetType().Name + "@@" + identify, ""), item.Value);
                 }
             }
             ReadFromDescription(dic);

@@ -80,6 +80,11 @@ namespace ODMR_Lab
         /// </summary>
         public static 场效应器件测量.DisplayPage Exp_SourcePage = new 场效应器件测量.DisplayPage();
 
+        /// <summary>
+        /// 位移台控制
+        /// </summary>
+        public static 位移台界面.DisplayPage Exp_StagePage = new 位移台界面.DisplayPage();
+
         #endregion
 
         #region 自定义实验页面
@@ -92,7 +97,6 @@ namespace ODMR_Lab
         public static Python管理器.ExtPage Ext_PythonPage = new Python管理器.ExtPage();
 
         #endregion
-
 
         #region 数据处理部分
         public static bool IsInWindow { get; set; } = false;
@@ -399,6 +403,11 @@ namespace ODMR_Lab
             {
                 CurrentPage = Exp_TemPeraPage;
                 PageContent.Children.Add(Exp_TemPeraPage);
+            }
+            if (btn.Text == "位移台控制界面")
+            {
+                CurrentPage = Exp_StagePage;
+                PageContent.Children.Add(Exp_StagePage);
             }
             if (btn.Text == "磁场定位")
             {

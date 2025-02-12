@@ -41,19 +41,19 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -66,7 +66,7 @@
     </Reference>
     <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -159,6 +159,16 @@
     <Compile Include="实验类\ExperimentObject.cs" />
     <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\ExpPageBase.cs" />
+    <Compile Include="实验部分\位移台界面\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\位移台界面\StageControlPanel.xaml.cs">
+      <DependentUpon>StageControlPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\位移台界面\StepSelector.xaml.cs">
+      <DependentUpon>StepSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\位移台界面\参数\StageControlConfigParams.cs" />
     <Compile Include="实验部分\场效应器件测量\IVMeasureExpObject.cs" />
     <Compile Include="实验部分\场效应器件测量\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -319,6 +329,18 @@
     <Page Include="基本窗口\数据拟合\CurveFitWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\位移台界面\Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\位移台界面\StageControlPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="实验部分\位移台界面\StepSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\场效应器件测量\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -552,6 +574,8 @@
     <Content Include="Python\Magnet.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="图片资源\rotateX.png" />
+    <Resource Include="图片资源\rotateY.png" />
     <Content Include="图片资源\Setup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

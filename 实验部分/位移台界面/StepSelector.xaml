@@ -1,0 +1,29 @@
+﻿<Grid x:Class="ODMR_Lab.实验部分.位移台界面.StepSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ODMR_Lab.实验部分.位移台界面" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      mc:Ignorable="d" 
+             d:DesignHeight="70" d:DesignWidth="150">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1"/>
+        <ColumnDefinition Width="100"/>
+        <ColumnDefinition Width="1"/>
+        <ColumnDefinition/>
+        <ColumnDefinition Width="1"/>
+    </Grid.ColumnDefinitions>
+    <Label Background="#FF4D4D4D" Grid.Column="0"/>
+    <Label Background="#FF4D4D4D" Grid.Column="2"/>
+    <Label Background="#FF4D4D4D" Grid.Column="4"/>
+    <WrapPanel Width="80" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <control:DecoratedButton Name="Btn1" KeepPressed="True" Margin="5" Width="30" Height="20" Click="Select" TextAreaRatio="1" IconMargin="10" Text="0.001" FontSize="9" FontWeight="Thin" Background="#FF383838" Foreground="White" MoveInColor="#FF35A1FF" PressedColor="#FF0079E2" MoveInForeground="White" PressedForeground="White"/>
+        <control:DecoratedButton Name="Btn2" Margin="5"  Width="30" Height="20" Click="Select" TextAreaRatio="1" IconMargin="10" Text="0.005" FontSize="9" FontWeight="Thin" Background="#FF383838" Foreground="White" MoveInColor="#FF35A1FF" PressedColor="#FF0079E2" MoveInForeground="White" PressedForeground="White"/>
+        <control:DecoratedButton Name="Btn3" Margin="5" Width="30" Height="20" Click="Select" TextAreaRatio="1" IconMargin="10" Text="0.01" FontSize="9" FontWeight="Thin" Background="#FF383838" Foreground="White" MoveInColor="#FF35A1FF" PressedColor="#FF0079E2" MoveInForeground="White" PressedForeground="White"/>
+        <control:DecoratedButton Name="Btn4" Margin="5" Width="30" Height="20" Click="Select" TextAreaRatio="1" IconMargin="10" Text="0.05" FontSize="9" FontWeight="Thin" Background="#FF383838" Foreground="White" MoveInColor="#FF35A1FF" PressedColor="#FF0079E2" MoveInForeground="White" PressedForeground="White"/>
+    </WrapPanel>
+    <WrapPanel Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
+        <control:DecoratedButton Name="CustomBtn" Margin="5" Width="30" Height="20" Click="Select" TextAreaRatio="1" IconMargin="10" Text="自定义" FontSize="9" FontWeight="Thin" Background="#FF383838" Foreground="White" MoveInColor="#FF35A1FF" PressedColor="#FF0079E2" MoveInForeground="White" PressedForeground="White"/>
+        <TextBox x:Name="CustomValue" Height="20" BorderThickness="0" FontSize="9" Text="0.003" FontWeight="Thin" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
+    </WrapPanel>
+</Grid>

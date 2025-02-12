@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CodeHelper;
+using ODMR_Lab.实验部分.位移台界面.参数;
 using ODMR_Lab.实验部分.场效应器件测量;
 using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.磁场调节;
@@ -51,6 +52,21 @@ namespace ODMR_Lab.IO操作
             VP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
             WriteParamToFile(IVP, fobj);
             WriteParamToFile(VP, fobj);
+            #endregion
+
+            #region 位移台控制参数
+            StageControlConfigParams SCP = new StageControlConfigParams();
+            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.ProbePanel }, false);
+            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.ProbePanel.Name);
+            SCP = new StageControlConfigParams();
+            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MagnetPanel }, false);
+            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MagnetPanel.Name);
+            SCP = new StageControlConfigParams();
+            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.SamplePanel }, false);
+            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.SamplePanel.Name);
+            SCP = new StageControlConfigParams();
+            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
+            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
             #endregion
 
             #region 自定义实验
@@ -120,6 +136,21 @@ namespace ODMR_Lab.IO操作
             VP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
             #endregion
 
+            #region 位移台控制参数
+            StageControlConfigParams SCP = new StageControlConfigParams();
+            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.ProbePanel.Name);
+            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.ProbePanel }, false);
+            SCP = new StageControlConfigParams();
+            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MagnetPanel.Name);
+            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MagnetPanel }, false);
+            SCP = new StageControlConfigParams();
+            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.SamplePanel.Name);
+            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.SamplePanel }, false);
+            SCP = new StageControlConfigParams();
+            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
+            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
+            #endregion
+
             #region 自定义实验
             MemberInfo[] info = typeof(MainWindow).GetMembers();
             foreach (var item in info)
@@ -143,18 +174,24 @@ namespace ODMR_Lab.IO操作
             #endregion
         }
 
-        private static void WriteParamToFile(ConfigBase Base, FileObject fobj)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="Base"></param>
+        /// <param name="fobj"></param>
+        /// <param name="identify">标识符，当同一个控件中存在多个相同子控件，并且需要写入文件的属性在子空间中时需要使用设置此参数进行区分</param>
+        private static void WriteParamToFile(ConfigBase Base, FileObject fobj, string identify = "")
         {
-            Dictionary<string, string> value = Base.GenerateTaggedDescriptions();
+            Dictionary<string, string> value = Base.GenerateTaggedDescriptions(identify);
             foreach (var item in value)
             {
                 fobj.Descriptions.Add(item.Key, item.Value);
             }
         }
 
-        private static void ReadFromFile(ConfigBase Base, FileObject fobj)
+        private static void ReadFromFile(ConfigBase Base, FileObject fobj, string identify = "")
         {
-            Base.ReadFromTaggedDescriptions(fobj.Descriptions);
+            Base.ReadFromTaggedDescriptions(fobj.Descriptions, identify);
         }
     }
 }
