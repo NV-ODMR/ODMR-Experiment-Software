@@ -55,11 +55,19 @@ namespace ODMR_Lab.位移台界面
         }
         public override void Init()
         {
+            ProbePanel.MoverPart = PartTypes.Probe;
+            MWPanel.MoverPart = PartTypes.Microwave;
+            SamplePanel.MoverPart = PartTypes.Sample;
+            MagnetPanel.MoverPart = PartTypes.Magnnet;
         }
 
 
         public override void CloseBehaviour()
         {
+            ProbePanel.CloseThread();
+            MagnetPanel.CloseThread();
+            MWPanel.CloseThread();
+            SamplePanel.CloseThread();
         }
 
         public override void UpdateParam()

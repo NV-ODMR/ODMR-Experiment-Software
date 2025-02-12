@@ -24,6 +24,6 @@
     </WrapPanel>
     <WrapPanel Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
         <control:DecoratedButton Name="CustomBtn" Margin="5" Width="30" Height="20" Click="Select" TextAreaRatio="1" IconMargin="10" Text="自定义" FontSize="9" FontWeight="Thin" Background="#FF383838" Foreground="White" MoveInColor="#FF35A1FF" PressedColor="#FF0079E2" MoveInForeground="White" PressedForeground="White"/>
-        <TextBox x:Name="CustomValue" Height="20" BorderThickness="0" FontSize="9" Text="0.003" FontWeight="Thin" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
+        <TextBox x:Name="CustomValue" Height="20" BorderThickness="0" FontSize="9" Text="0.1" FontWeight="Thin" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White" Margin="5,5,5,5"/>
     </WrapPanel>
 </Grid>

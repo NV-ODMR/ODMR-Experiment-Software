@@ -120,19 +120,19 @@ namespace ODMR_Lab
                 }
                 if (ConnectInfo is TCPIPDeviceInfo)
                 {
-                    obj.Descriptions.Add("TCPIPAddress", (ConnectInfo as COMDeviceInfo).COMName);
-                    obj.Descriptions.Add("TCPIPPort", (ConnectInfo as COMDeviceInfo).BaudRate.ToString());
+                    obj.Descriptions.Add("TCPIPAddress", (ConnectInfo as TCPIPDeviceInfo).IPAddress);
+                    obj.Descriptions.Add("TCPIPPort", (ConnectInfo as TCPIPDeviceInfo).Port.ToString());
                 }
                 if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "DevParamDir")))
                 {
                     Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "DevParamDir"));
                 }
 
-                StringBuilder rBuilder = new StringBuilder(Path.Combine(dev.ProductIdentifier + "_" + dev.ProductName));
+                string rBuilder = Path.Combine(dev.ProductIdentifier + "_" + dev.ProductName);
                 foreach (char rinvalidChar in Path.GetInvalidFileNameChars())
-                    rBuilder.Replace(rinvalidChar.ToString(), string.Empty);
+                    rBuilder.Replace(rinvalidChar.ToString(), "");
 
-                string path = Path.Combine(Path.Combine(Environment.CurrentDirectory, "DevParamDir", rBuilder.ToString()));
+                string path = Path.Combine(Path.Combine(Environment.CurrentDirectory, "DevParamDir", rBuilder.ToString().Trim()));
                 obj.SaveToFile(path);
                 IsSucceedClosed = true;
                 return path + ".userdat";

@@ -20,7 +20,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="XY" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" FontSize="13" FontWeight="Bold" Foreground="#FFFAFAFA"/>
+        <TextBlock Name="XYLocs" Text="XY" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA"/>
         <Grid Grid.Row="1" Height="150" Width="150">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -64,7 +64,7 @@
                 </control:DecoratedButton.RenderTransform>
             </control:DecoratedButton>
         </Grid>
-        <TextBlock Text="Z" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" FontSize="13" FontWeight="Bold" Foreground="#FFFAFAFA"/>
+        <TextBlock Name="ZLocs" Text="Z" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA"/>
         <Grid Grid.Row="1" Height="100" Width="80" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -176,7 +176,7 @@
                 </control:DecoratedButton>
             </Grid>
         </Grid>
-        <TextBlock Text="Angle" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="1" Grid.Column="2" FontSize="13" FontWeight="Bold" Foreground="#FFFAFAFA"/>
+        <TextBlock Name="AngleLocs" Text="Angle" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="1" Grid.Column="2" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA"/>
 
         <TextBlock Text="反转轴XY" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" FontWeight="Bold" Foreground="#FFFAFAFA"/>
         <TextBlock Text="反转轴Z" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" FontWeight="Bold" Foreground="#FFFAFAFA"/>
