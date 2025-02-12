@@ -577,11 +577,13 @@ namespace ODMR_Lab.基本控件
                 {
                     DataPanel.Children.Remove(DataPanel.Children[i] as DataListViewer);
                     --i;
+                    continue;
                 };
                 if ((DataPanel.Children[i] as DataListViewer).Data == data.Value)
                 {
                     DataPanel.Children.Remove(DataPanel.Children[i] as DataListViewer);
                     --i;
+                    continue;
                 };
             }
         }

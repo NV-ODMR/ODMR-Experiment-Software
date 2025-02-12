@@ -155,46 +155,42 @@ namespace ODMR_Lab.温度监测部分
             {
                 foreach (var channel in item.SensorsInfo)
                 {
-                    DecoratedButton btn = channel.DisplayBtn;
-                    if (btn.Tag == null)
-                    {
-                        SensorButtonTemplate.CloneStyleTo(btn);
-                        btn.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                        btn.Height = 50;
-                        btn.Tag = channel;
-                        CreateBtnMenu(btn.Tag as SensorChannelInfo).ApplyToControl(btn);
-                        btn.Click += ChangeChannelPanel;
-                    }
+                    DecoratedButton btn = new DecoratedButton();
+                    btn.Text = channel.ParentInfo.Device.ProductName + ":" + channel.Name;
+                    SensorButtonTemplate.CloneStyleTo(btn);
+                    btn.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+                    btn.Height = 50;
+                    btn.Tag = channel;
+                    CreateBtnMenu(channel).ApplyToControl(btn);
+                    btn.Click += ChangeChannelPanel;
 
                     if (channel.IsSelected)
                     {
-                        SelectedChannel.Children.Add(channel.DisplayBtn);
+                        SelectedChannel.Children.Add(btn);
                     }
                     else
                     {
-                        Channels.Children.Add(channel.DisplayBtn);
+                        Channels.Children.Add(btn);
                     }
                 }
                 foreach (var channel in item.OutputsInfo)
                 {
-                    DecoratedButton btn = channel.DisplayBtn;
-                    if (btn.Tag == null)
-                    {
-                        OutputbtnTemplate.CloneStyleTo(btn);
-                        btn.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-                        btn.Height = 50;
-                        btn.Tag = channel;
-                        CreateBtnMenu(btn.Tag as OutputChannelInfo).ApplyToControl(btn);
-                        btn.Click += ChangeChannelPanel;
-                    }
+                    DecoratedButton btn = new DecoratedButton();
+                    btn.Text = channel.ParentInfo.Device.ProductName + ":" + channel.Name;
+                    OutputbtnTemplate.CloneStyleTo(btn);
+                    btn.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+                    btn.Height = 50;
+                    btn.Tag = channel;
+                    CreateBtnMenu(channel).ApplyToControl(btn);
+                    btn.Click += ChangeChannelPanel;
 
                     if (channel.IsSelected)
                     {
-                        SelectedChannel.Children.Add(channel.DisplayBtn);
+                        SelectedChannel.Children.Add(btn);
                     }
                     else
                     {
-                        Channels.Children.Add(channel.DisplayBtn);
+                        Channels.Children.Add(btn);
                     }
                 }
             }
@@ -207,6 +203,7 @@ namespace ODMR_Lab.温度监测部分
             {
                 DeviceList.AddItem(item, item.Device.ProductName, item.Device.OutputEnable);
             }
+            RefreshChannelBtns();
         }
 
         private void ChangeControllerOutput(int arg1, int arg2, object arg3)

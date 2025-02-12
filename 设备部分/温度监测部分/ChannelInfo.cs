@@ -26,14 +26,11 @@ namespace ODMR_Lab.温度监测部分
 
         public NumricChartData1D Value { get; protected set; } = new NumricChartData1D("", "");
 
-        public DecoratedButton DisplayBtn { get; set; } = null;
-
         public string Name
         { get; set; } = "";
 
-        public ChannelInfo(string name, DecoratedButton btn)
+        public ChannelInfo(string name)
         {
-            DisplayBtn = btn;
             Name = name;
         }
     }
@@ -46,7 +43,7 @@ namespace ODMR_Lab.温度监测部分
         public SensorChannelBase Channel { get; private set; } = null;
 
 
-        public SensorChannelInfo(TemperatureControllerInfo parentinfo, SensorChannelBase channel, string name, DecoratedButton btn) : base(name, btn)
+        public SensorChannelInfo(TemperatureControllerInfo parentinfo, SensorChannelBase channel, string name) : base(name)
         {
             Channel = channel;
             Name = name;
@@ -64,7 +61,7 @@ namespace ODMR_Lab.温度监测部分
         /// </summary>
         public OutputChannelBase Channel { get; private set; } = null;
 
-        public OutputChannelInfo(TemperatureControllerInfo parentinfo, OutputChannelBase channel, string name, DecoratedButton btn) : base(name, btn)
+        public OutputChannelInfo(TemperatureControllerInfo parentinfo, OutputChannelBase channel, string name) : base(name)
         {
             Channel = channel;
             Name = name;
@@ -92,20 +89,15 @@ namespace ODMR_Lab.温度监测部分
         /// <returns></returns>
         public override void CreateDeviceInfoBehaviour()
         {
-            DevicePage devpage = MainWindow.Dev_TemPeraPage;
             //添加通道按钮
             foreach (var item in Device.SensorChannels)
             {
-                DecoratedButton btn = new DecoratedButton();
-                btn.Text = Device.ProductName + ":" + item.Name;
-                SensorChannelInfo sensorinfo = new SensorChannelInfo(this, item, Device.ProductName + "_" + item.Name, btn);
+                SensorChannelInfo sensorinfo = new SensorChannelInfo(this, item, item.Name);
                 SensorsInfo.Add(sensorinfo);
             }
             foreach (var item in Device.OutputChannels)
             {
-                DecoratedButton btn = new DecoratedButton();
-                btn.Text = Device.ProductName + ":" + item.Name;
-                OutputChannelInfo outputinfo = new OutputChannelInfo(this, item, Device.ProductName + "_" + item.Name, btn);
+                OutputChannelInfo outputinfo = new OutputChannelInfo(this, item, item.Name);
                 OutputsInfo.Add(outputinfo);
             }
         }
