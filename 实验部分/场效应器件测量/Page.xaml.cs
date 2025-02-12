@@ -38,7 +38,7 @@ namespace ODMR_Lab.场效应器件测量
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class DisplayPage : PageBase
+    public partial class DisplayPage : ExpPageBase
     {
 
         public List<PowerMeterInfo> PowerMeterList { get; set; } = new List<PowerMeterInfo>();
@@ -64,6 +64,10 @@ namespace ODMR_Lab.场效应器件测量
             CurrentLimitListener.Abort();
             while (CurrentLimitListener.ThreadState == ThreadState.Running) Thread.Sleep(10);
             IVMeasureObj?.Dispose();
+        }
+
+        public override void UpdateParam()
+        {
         }
 
         #region IV测量部分

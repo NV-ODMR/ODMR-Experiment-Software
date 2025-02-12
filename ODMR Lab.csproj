@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+      <HintPath>..\C#Codes\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -158,6 +158,7 @@
     <Compile Include="基本窗口\数据拟合\FitFunc.cs" />
     <Compile Include="实验类\ExperimentObject.cs" />
     <Compile Include="实验类\RunningBehaviours.cs" />
+    <Compile Include="实验部分\ExpPageBase.cs" />
     <Compile Include="实验部分\场效应器件测量\IVMeasureExpObject.cs" />
     <Compile Include="实验部分\场效应器件测量\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>

@@ -79,7 +79,6 @@ namespace ODMR_Lab.基本控件
                 UpdateDataPanel(this, new RoutedEventArgs());
             }
         }
-        public ChartData1D SelectedXdata { get; set; } = null;
         #endregion
 
         #region 视图切换
@@ -286,10 +285,8 @@ namespace ODMR_Lab.基本控件
                 List<TimeDataSeries> PlotData = new List<TimeDataSeries>();
                 foreach (var item in DataToAdd)
                 {
-                    TimeDataSeries data = null;
+                    TimeDataSeries data = new TimeDataSeries(item.Value.Name, item.Key.Data, item.Value.Data);
                     data.LineColor = item.Value.DisplayColor;
-                    data.X = item.Key.Data;
-                    data.Y = item.Value.Data;
                     //检查是否在原来的线中
                     int ind = chart.DataList.FindIndex(x => item.Value.Name == x.Name);
                     if (ind != -1)
@@ -312,18 +309,14 @@ namespace ODMR_Lab.基本控件
                 //刷新拟合线
                 foreach (var item in FitData)
                 {
-                    if (item.IsDisplay && item.XData == SelectedXdata)
-                    {
-                        item.FittedData.Name = item.FitName;
-                        PlotData.Add(new TimeDataSeries("", item.FittedData.X.Select(x => DateTime.FromOADate(x)).ToList(), item.FittedData.Y));
-                    }
+                    item.FittedData.Name = item.FitName;
+                    PlotData.Add(new TimeDataSeries("", item.FittedData.X.Select(x => DateTime.FromOADate(x)).ToList(), item.FittedData.Y));
                 }
                 chart.DataList = PlotData.Select(x => x as DataSeries).ToList();
 
                 Dispatcher.Invoke(() =>
                 {
-                    if (SelectedXdata == null) return;
-                    chart.XAxisName = SelectedXdata.Name;
+                    chart.XAxisName = "时间";
 
                     ApplyChartStyle(StyleParam);
 

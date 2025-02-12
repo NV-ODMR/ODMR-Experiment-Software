@@ -46,7 +46,7 @@ namespace ODMR_Lab.样品定位
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class DisplayPage : PageBase
+    public partial class DisplayPage : ExpPageBase
     {
 
         public CorrelatePointCollection CorrelatePointCollection { get; set; } = new CorrelatePointCollection();
@@ -71,6 +71,10 @@ namespace ODMR_Lab.样品定位
 
 
         public override void CloseBehaviour()
+        {
+        }
+
+        public override void UpdateParam()
         {
         }
 

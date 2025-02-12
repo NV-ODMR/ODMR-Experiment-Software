@@ -51,8 +51,13 @@ namespace ODMR_Lab.自定义实验
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class DisplayPage : PageBase
+    public partial class DisplayPage : ExpPageBase
     {
+
+        public override void UpdateParam()
+        {
+        }
+
         /// <summary>
         /// 实验对象
         /// </summary>
@@ -195,6 +200,5 @@ namespace ODMR_Lab.自定义实验
         public override void CloseBehaviour()
         {
         }
-
     }
 }

@@ -35,6 +35,7 @@ using Controls.Windows;
 using System.Windows.Media.Animation;
 using System.Collections;
 using MathLib.NormalMath.Decimal;
+using System.Reflection;
 
 namespace ODMR_Lab
 {
@@ -46,7 +47,7 @@ namespace ODMR_Lab
 
         public static MainWindow Handle { get; set; } = null;
 
-        public static PageBase CurrentPage = null;
+        public static PageBase CurrentPage { get; set; } = null;
 
         #region 设备页面
         public static 温度监测部分.DevicePage Dev_TemPeraPage = new 温度监测部分.DevicePage();
@@ -153,24 +154,18 @@ namespace ODMR_Lab
             WindowResizeHelper hel = new WindowResizeHelper();
             hel.RegisterWindow(this, 5, 30);
 
-            Dev_TemPeraPage.Init();
-            Dev_CameraPage.Init();
-            Dev_MoversPage.Init();
-            Dev_PowerMeterPage.Init();
-
-            Exp_TemPeraPage.Init();
-            Exp_MagnetControlPage.Init();
-            Exp_SamplePage.Init();
-            Exp_SourcePage.Init();
+            #region 调用页面的初始化方法
+            var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
+            foreach (var item in pages)
+            {
+                (item.GetValue(this) as PageBase)?.Init();
+            }
+            #endregion
 
             #region 自定义实验
             //获取所有的自定义实验
 
             #endregion
-
-            Ext_PythonPage.Init();
-
-            AutoScrollViewer a = new AutoScrollViewer();
 
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
         }
@@ -190,6 +185,13 @@ namespace ODMR_Lab
                 if (!canclose) return;
                 //保存界面参数
                 ParamManager.SaveParams();
+                #region 调用页面的中止方法
+                var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
+                foreach (var item in pages)
+                {
+                    (item.GetValue(this) as PageBase).CloseBehaviour();
+                }
+                #endregion
                 Close();
                 Environment.Exit(0);
             }
@@ -200,6 +202,13 @@ namespace ODMR_Lab
             MessageWindow.ShowTipWindow("程序运行出现异常,即将退出,异常原因：\n" + ((Exception)e.ExceptionObject).Message, this);
             PrintStacktrace((Exception)e.ExceptionObject);
             DeviceDispatcher.CloseDevicesAndSave();
+            #region 调用页面的中止方法
+            var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
+            foreach (var item in pages)
+            {
+                (item.GetValue(this) as PageBase).CloseBehaviour();
+            }
+            #endregion
             //保存界面参数
             ParamManager.SaveParams();
         }
@@ -249,6 +258,13 @@ namespace ODMR_Lab
         {
             #region 加载参数
             ParamManager.ReadAndLoadParams();
+            #endregion
+            #region 调用页面的参数同步方法
+            var pages = GetType().GetFields().Where(x => typeof(ExpPageBase).IsAssignableFrom(x.FieldType));
+            foreach (var item in pages)
+            {
+                (item.GetValue(this) as ExpPageBase).UpdateParam();
+            }
             #endregion
             #region 自动连接设备
             MessageBoxResult res = MessageWindow.ShowMessageBox("自动连接", "是否自动尝试连接上次关闭时保存的所有设备?", MessageBoxButton.YesNo, owner: this);

@@ -480,6 +480,7 @@ namespace ODMR_Lab
 
         public void Dispose()
         {
+            if (ExpThread == null) return;
             ExpThread.Abort();
             while (ExpThread.ThreadState == ThreadState.Running)
             {

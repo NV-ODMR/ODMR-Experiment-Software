@@ -48,7 +48,7 @@ namespace ODMR_Lab.磁场调节
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class DisplayPage : PageBase
+    public partial class DisplayPage : ExpPageBase
     {
         public MagnetXYAngleWindow XWin { get; set; } = null;
         public MagnetXYAngleWindow YWin { get; set; } = null;
@@ -107,6 +107,10 @@ namespace ODMR_Lab.磁场调节
         public override void CloseBehaviour()
         {
             FileObj?.Dispose();
+        }
+
+        public override void UpdateParam()
+        {
         }
 
         /// <summary>

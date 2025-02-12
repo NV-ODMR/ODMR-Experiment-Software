@@ -28,7 +28,7 @@ namespace ODMR_Lab.温度监测部分
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
-    public partial class TemperaturePage : PageBase
+    public partial class TemperaturePage : ExpPageBase
     {
         /// <summary>
         /// 线程锁
@@ -48,10 +48,13 @@ namespace ODMR_Lab.温度监测部分
         {
             MainWindow.Dev_TemPeraPage.DataChangedEvent += RefreshChooserLegends;
 
-            MainWindow.Dev_TemPeraPage.ChartUpdateEvent += RefreshChart;
-
             //创建自动保存线程
             CreateAutoSaveThread();
+
+            TemperatureExpObj.Config.ReadFromPage(new FrameworkElement[] { this });
+
+            CreateSampleThread();
+
         }
 
         List<ChannelInfo> SelectedInfos = new List<ChannelInfo>();
@@ -59,28 +62,12 @@ namespace ODMR_Lab.温度监测部分
         public override void CloseBehaviour()
         {
             AutoSaveThread?.Abort();
+
+            SampleThread?.Abort();
         }
 
-        private void RefreshChart()
+        public override void UpdateParam()
         {
-            //刷新界面UI
-            Dispatcher.Invoke(() =>
-            {
-                foreach (TemperaturePannel item in NumricPanel.Children)
-                {
-                    if ((item.Tag as ChannelInfo).Value.Data.Count == 0) continue;
-                    double v = (item.Tag as ChannelInfo).Value.Data.Last();
-                    if (item.Tag is SensorChannelInfo)
-                    {
-                        item.Value.Text = Math.Round(v, 7).ToString() + (item.Tag as SensorChannelInfo).Channel.Unit;
-                    }
-                    if (item.Tag is OutputChannelInfo)
-                    {
-                        item.Value.Text = Math.Round(v, 7).ToString() + (item.Tag as OutputChannelInfo).Channel.Unit;
-                    }
-                }
-                Chart.UpdateChartAndDataFlow(false);
-            });
         }
 
 
@@ -122,11 +109,6 @@ namespace ODMR_Lab.温度监测部分
         #endregion
 
         #region 数据采集
-        /// <summary>
-        /// 采样时间间隔
-        /// </summary>
-        public double SampleTime { get; set; } = 1;
-
 
         /// <summary>
         /// 设置采样时间
@@ -137,7 +119,7 @@ namespace ODMR_Lab.温度监测部分
         {
             if (double.TryParse(SampleTimeText.Text, out double value))
             {
-                SampleTime = value;
+                TemperatureExpObj.Config.SampleTimeText.Value = value;
                 TimeWindow window = new TimeWindow();
                 window.Owner = null;
                 window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -185,6 +167,8 @@ namespace ODMR_Lab.温度监测部分
                     newsource.Add(new KeyValuePair<TimeChartData1D, NumricChartData1D>(item.Time, item.Value));
                 }
             }
+            Chart.DataSource.Clear(false);
+            Chart.DataSource.AddRange(newsource);
 
             Chart.UpdateChartAndDataFlow(false);
         }
@@ -276,7 +260,7 @@ namespace ODMR_Lab.温度监测部分
         }
 
 
-        TemperatureExpObject saveObject = new TemperatureExpObject();
+        TemperatureExpObject TemperatureExpObj = new TemperatureExpObject();
         /// <summary>
         /// 保存文件
         /// </summary>
@@ -284,7 +268,7 @@ namespace ODMR_Lab.温度监测部分
         /// <param name="e"></param>
         public void Save(string SavePath, string Filename = "")
         {
-            saveObject = new TemperatureExpObject();
+            TemperatureExpObj = new TemperatureExpObject();
             if (Chart.DataSource.Count == 0)
             {
                 throw new Exception("没有需要保存的数据");
@@ -310,21 +294,21 @@ namespace ODMR_Lab.温度监测部分
                 }
             }
 
-            saveObject.Param.DeviceName.Value = "";
+            TemperatureExpObj.Param.DeviceName.Value = "";
             foreach (var device in DeviceNames)
             {
-                saveObject.Param.DeviceName.Value += device + ",";
+                TemperatureExpObj.Param.DeviceName.Value += device + ",";
             }
-            if (saveObject.Param.DeviceName.Value != "") saveObject.Param.DeviceName.Value = saveObject.Param.DeviceName.Value.Remove(saveObject.Param.DeviceName.Value.Length - 1, 1);
+            if (TemperatureExpObj.Param.DeviceName.Value != "") TemperatureExpObj.Param.DeviceName.Value = TemperatureExpObj.Param.DeviceName.Value.Remove(TemperatureExpObj.Param.DeviceName.Value.Length - 1, 1);
 
-            saveObject.Param.SetStartTime(DateTime.FromOADate(mintime));
-            saveObject.Param.SetEndTime(DateTime.FromOADate(maxtime));
+            TemperatureExpObj.Param.SetStartTime(DateTime.FromOADate(mintime));
+            TemperatureExpObj.Param.SetEndTime(DateTime.FromOADate(maxtime));
             #endregion
 
             foreach (var item in Chart.DataSource)
             {
-                saveObject.SelectedChannelsData.Add(new NumricChartData1D(item.Value.Name, item.Value.GroupName) { Data = new List<double>(item.Value.Data.ToArray()) });
-                saveObject.SelectedChannelsData.Add(new TimeChartData1D(item.Value.Name + "—时间", item.Value.GroupName) { Data = new List<DateTime>(item.Key.Data.ToArray()) });
+                TemperatureExpObj.SelectedChannelsData.Add(new NumricChartData1D(item.Value.Name, item.Value.GroupName) { Data = new List<double>(item.Value.Data.ToArray()) });
+                TemperatureExpObj.SelectedChannelsData.Add(new TimeChartData1D(item.Value.Name + "—时间", item.Value.GroupName) { Data = new List<DateTime>(item.Key.Data.ToArray()) });
             }
 
             string saveFileName = Filename;
@@ -336,7 +320,7 @@ namespace ODMR_Lab.温度监测部分
                 saveFileName += " " + mintime.ToString("yyyy-MM-dd HH-mm-ss-FFF");
             }
 
-            saveObject.WriteToFile(SavePath, saveFileName);
+            TemperatureExpObj.WriteToFile(SavePath, saveFileName);
 
             TimeWindow window = new TimeWindow();
             window.Owner = Window.GetWindow(this);
@@ -352,6 +336,63 @@ namespace ODMR_Lab.温度监测部分
         private void ExportClick(object sender, RoutedEventArgs e)
         {
             SetWindow.ShowDialog();
+        }
+        #endregion
+
+        #region 温度采样部分
+
+        /// <summary>
+        /// 采样线程
+        /// </summary>
+        public Thread SampleThread = null;
+
+        /// <summary>
+        /// 创建采样线程
+        /// </summary>
+        public void CreateSampleThread()
+        {
+            SampleThread = new Thread(() =>
+            {
+                while (true)
+                {
+                    for (int i = 0; i < SelectedInfos.Count; ++i)
+                    {
+                        double value = double.NaN;
+                        if (SelectedInfos[i] is SensorChannelInfo)
+                        {
+                            value = (SelectedInfos[i] as SensorChannelInfo).Channel.Temperature;
+                        }
+                        if (SelectedInfos[i] is OutputChannelInfo)
+                        {
+                            value = (SelectedInfos[i] as OutputChannelInfo).Channel.Power;
+                        }
+
+                        SelectedInfos[i].Time.Data.Add(DateTime.Now);
+                        SelectedInfos[i].Value.Data.Add(value);
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            foreach (TemperaturePannel item in NumricPanel.Children)
+                            {
+                                if ((item.Tag as ChannelInfo).Value.Data.Count == 0) continue;
+                                double v = (item.Tag as ChannelInfo).Value.Data.Last();
+                                if (item.Tag is SensorChannelInfo)
+                                {
+                                    item.Value.Text = Math.Round(v, 7).ToString() + (item.Tag as SensorChannelInfo).Channel.Unit;
+                                }
+                                if (item.Tag is OutputChannelInfo)
+                                {
+                                    item.Value.Text = Math.Round(v, 7).ToString() + (item.Tag as OutputChannelInfo).Channel.Unit;
+                                }
+                            }
+                            Chart.UpdateChartAndDataFlow(false);
+                        });
+                    }
+                    Thread.Sleep((int)(10 + TemperatureExpObj.Config.SampleTimeText.Value * 1000));
+                }
+            });
+
+            SampleThread.Start();
         }
         #endregion
 

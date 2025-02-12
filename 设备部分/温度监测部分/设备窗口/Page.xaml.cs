@@ -45,11 +45,6 @@ namespace ODMR_Lab.温度监测部分
         /// </summary>
         public event Action<List<ChannelInfo>> DataChangedEvent = null;
 
-        /// <summary>
-        /// 当需要刷新图表时触发的事件
-        /// </summary>
-        public event Action ChartUpdateEvent = null;
-
 
         public DevicePage()
         {
@@ -58,12 +53,10 @@ namespace ODMR_Lab.温度监测部分
 
         public override void Init()
         {
-            CreateSampleThread();
         }
 
         public override void CloseBehaviour()
         {
-            SampleThread?.Abort();
         }
 
         private ContextMenu CreateBtnMenu(ChannelInfo data)
@@ -267,54 +260,5 @@ namespace ODMR_Lab.温度监测部分
                 RefreshPanels();
             }
         }
-
-        #region 温度采样部分
-
-        /// <summary>
-        /// 采样线程
-        /// </summary>
-        public Thread SampleThread = null;
-
-        /// <summary>
-        /// 创建采样线程
-        /// </summary>
-        public void CreateSampleThread()
-        {
-            SampleThread = new Thread(() =>
-            {
-                while (true)
-                {
-                    for (int i = 0; i < TemperatureControllers.Count; ++i)
-                    {
-                        for (int j = 0; j < TemperatureControllers[i].SensorsInfo.Count; j++)
-                        {
-                            if (TemperatureControllers[i].SensorsInfo[j].IsSelected)
-                            {
-                                double value = TemperatureControllers[i].SensorsInfo[j].Channel.Temperature;
-                                if (double.IsNaN(value)) continue;
-                                TemperatureControllers[i].SensorsInfo[j].Time.Data.Add(DateTime.Now);
-                                TemperatureControllers[i].SensorsInfo[j].Value.Data.Add(value);
-                            }
-                        }
-
-                        for (int j = 0; j < TemperatureControllers[i].OutputsInfo.Count; j++)
-                        {
-                            if (TemperatureControllers[i].OutputsInfo[j].IsSelected)
-                            {
-                                double value = TemperatureControllers[i].OutputsInfo[j].Channel.Power;
-                                if (double.IsNaN(value)) continue;
-                                TemperatureControllers[i].OutputsInfo[j].Time.Data.Add(DateTime.Now);
-                                TemperatureControllers[i].OutputsInfo[j].Value.Data.Add(value);
-                            }
-                        }
-                    }
-                    ChartUpdateEvent?.Invoke();
-                    Thread.Sleep((int)(10 + MainWindow.Exp_TemPeraPage.SampleTime * 1000));
-                }
-            });
-
-            SampleThread.Start();
-        }
-        #endregion
     }
 }
