@@ -118,7 +118,7 @@ namespace ODMR_Lab
                     obj.Descriptions.Add("COMName", (ConnectInfo as COMDeviceInfo).COMName);
                     obj.Descriptions.Add("BaudRate", (ConnectInfo as COMDeviceInfo).BaudRate.ToString());
                 }
-                if (ConnectInfo is COMDeviceInfo)
+                if (ConnectInfo is TCPIPDeviceInfo)
                 {
                     obj.Descriptions.Add("TCPIPAddress", (ConnectInfo as COMDeviceInfo).COMName);
                     obj.Descriptions.Add("TCPIPPort", (ConnectInfo as COMDeviceInfo).BaudRate.ToString());
