@@ -483,19 +483,15 @@ namespace ODMR_Lab.实验部分.磁场调节
 
         public override void ExperimentEvent()
         {
-            if (MessageWindow.ShowMessageBox("提示", "执行扫描过程会清除当前记录的数据且不可恢复，是否继续?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
-            {
-                #region 清除数据
-                XPoints.Clear();
-                YPoints.Clear();
-                ZPoints.Clear();
-                AnglePoints.Clear();
-                CheckPoints.Clear();
-                //刷新窗口
-                ExpPage.ClearWindows();
-                #endregion
-            }
-            else { return; }
+            #region 清除数据
+            XPoints.Clear();
+            YPoints.Clear();
+            ZPoints.Clear();
+            AnglePoints.Clear();
+            CheckPoints.Clear();
+            //刷新窗口
+            ExpPage.ClearWindows();
+            #endregion
 
             UIUpdater.SetUIControl(ExpPage.XState, "正在执行流程...");
             //移动Z轴
@@ -567,6 +563,15 @@ namespace ODMR_Lab.实验部分.磁场调节
             P.AngleY = P.AngleStart.Value;
             P.AngleX = P.AngleY + 90;
             return P;
+        }
+
+        public override bool PreConfirmProcedure()
+        {
+            if (MessageWindow.ShowMessageBox("提示", "执行扫描过程会清除当前记录的数据且不可恢复，是否继续?", MessageBoxButton.YesNo, owner: MainWindow.Handle) == MessageBoxResult.Yes)
+            {
+                return true;
+            }
+            else { return false; }
         }
 
         private NanoStageInfo XStage { get; set; } = new NanoStageInfo(new NanoMoverInfo(), null);

@@ -1,4 +1,5 @@
 ﻿using CodeHelper;
+using Controls.Windows;
 using HardWares.源表;
 using ODMR_Lab.位移台部分;
 using ODMR_Lab.场效应器件测量;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows;
 
 namespace ODMR_Lab.实验部分.场效应器件测量
 {
@@ -219,12 +221,14 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             IVMeasureConfigParams P = new IVMeasureConfigParams();
             P.ReadFromPage(new System.Windows.FrameworkElement[] { ExpPage });
             List<double> scanpoints = new List<double>() { 0 };
+            string scams = "";
             foreach (var item in ExpPage.ScanPointPanel.Children)
             {
                 try
                 {
                     double value = double.Parse((item as TextBox).Text);
                     scanpoints.Add(value);
+                    scams += value.ToString() + "V\n";
                 }
                 catch (Exception)
                 {
@@ -232,7 +236,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
                 }
             }
 
-            Config.ScanPoints = scanpoints;
+            P.ScanPoints = scanpoints;
             return P;
         }
 
@@ -245,6 +249,30 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             }
             Dev = ExpPage.IVDevice.SelectedItem.Tag as PowerMeterInfo;
             return new List<InfoBase>() { Dev };
+        }
+
+        public override bool PreConfirmProcedure()
+        {
+            string scams = "";
+            foreach (var item in ExpPage.ScanPointPanel.Children)
+            {
+                try
+                {
+                    double value = double.Parse((item as TextBox).Text);
+                    scams += value.ToString() + "V\n";
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+
+            if (MessageWindow.ShowMessageBox("提示", "扫描路径点:\n" + scams + "确定要继续吗?此操作将设置源表电压为非零值", MessageBoxButton.YesNo, owner: Window.GetWindow(ExpPage)) == MessageBoxResult.Yes)
+            {
+                return true;
+            }
+
+            return false;
         }
         #endregion
     }

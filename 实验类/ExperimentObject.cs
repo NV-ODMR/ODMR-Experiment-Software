@@ -348,6 +348,12 @@ namespace ODMR_Lab
                 return;
             }
             SetStartState();
+            if (PreConfirmProcedure() == false)
+            {
+                //设值结束状态
+                SetStopState();
+                return;
+            }
             ExpThread = new Thread(() =>
             {
                 try
@@ -368,11 +374,13 @@ namespace ODMR_Lab
                         return;
                     }
 
+                    List<InfoBase> Devices = new List<InfoBase>();
                     try
                     {
                         App.Current.Dispatcher.Invoke(() =>
                         {
-                            UseDevices();
+                            Devices = GetDevices();
+                            DeviceDispatcher.UseDevices(Devices);
                         });
                     }
                     catch (Exception ex)
@@ -406,7 +414,7 @@ namespace ODMR_Lab
                     //设值结束状态
                     SetStopState();
                     //结束占用设备
-                    UnUseDevices();
+                    DeviceDispatcher.EndUseDevices(Devices);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         Param.SetEndTime(DateTime.Now);
@@ -419,8 +427,6 @@ namespace ODMR_Lab
                 catch (Exception ex)
                 {
                     MessageWindow.ShowTipWindow("定位过程发生异常,已结束定位过程：\n" + ex.Message, MainWindow.Handle);
-                    //结束占用设备
-                    UnUseDevices();
                     //设值结束状态
                     SetStopState();
                     ErrorStateEvent?.Invoke();
@@ -501,42 +507,14 @@ namespace ODMR_Lab
         public abstract ConfigType ReadConfig();
 
         /// <summary>
+        /// 进行实验前的确认操作,如果不继续则返回false
+        /// </summary>
+        public abstract bool PreConfirmProcedure();
+
+        /// <summary>
         /// 提供实验需要的设备,返回的对象必须是DeviceInfoBase类
         /// </summary>
         public abstract List<InfoBase> GetDevices();
-
-        /// <summary>
-        /// 占用设备
-        /// </summary>
-        private void UseDevices()
-        {
-            //占用设备
-            List<InfoBase> devs = GetDevices();
-            for (int i = 0; i < devs.Count; i++)
-            {
-                try
-                {
-                    devs[i].BeginUse();
-                }
-                catch (Exception ex)
-                {
-                    for (int j = 0; j < i; j++)
-                    {
-                        devs[j].EndUse();
-                    }
-                    throw ex;
-                }
-            }
-        }
-
-        private void UnUseDevices()
-        {
-            List<InfoBase> devs = GetDevices();
-            foreach (var item in devs)
-            {
-                item.EndUse();
-            }
-        }
         #endregion
 
     }

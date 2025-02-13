@@ -63,34 +63,6 @@ namespace ODMR_Lab.位移台部分
 
                 NanoMoverInfo controller = new NanoMoverInfo() { Device = window.ConnectedDevice as NanoControllerBase, ConnectInfo = window.ConnectInfo };
                 controller.CreateDeviceInfoBehaviour();
-                if (btn.Name == "MagnetBtn")
-                {
-                    foreach (var item in controller.Stages)
-                    {
-                        item.PartType = PartTypes.Magnnet;
-                    }
-                }
-                if (btn.Name == "SampleBtn")
-                {
-                    foreach (var item in controller.Stages)
-                    {
-                        item.PartType = PartTypes.Sample;
-                    }
-                }
-                if (btn.Name == "MicrowaveBtn")
-                {
-                    foreach (var item in controller.Stages)
-                    {
-                        item.PartType = PartTypes.Microwave;
-                    }
-                }
-                if (btn.Name == "ProbeBtn")
-                {
-                    foreach (var item in controller.Stages)
-                    {
-                        item.PartType = PartTypes.Probe;
-                    }
-                }
                 MoverList.Add(controller);
                 RefreshPanels();
             }
@@ -107,6 +79,7 @@ namespace ODMR_Lab.位移台部分
             SampleMoverList.ClearItems();
             MWMoverList.ClearItems();
             MagnetMoverList.ClearItems();
+            DeviceList.ClearItems();
 
             foreach (var item in MoverList)
             {
@@ -127,6 +100,10 @@ namespace ODMR_Lab.位移台部分
                     if (stage.PartType == PartTypes.Microwave)
                     {
                         MWMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                    }
+                    if (stage.PartType == PartTypes.None)
+                    {
+                        DeviceList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
                     }
                 }
             }
@@ -186,6 +163,45 @@ namespace ODMR_Lab.位移台部分
             {
                 ParameterWindow window = new ParameterWindow(info.Device);
                 window.ShowDialog();
+            }
+            #endregion
+            #region 设置为探针位移台或者设置为空位移台
+            if (arg1 == 2)
+            {
+                var dev = (arg3 as NanoStageInfo);
+                if (dev.PartType == PartTypes.None)
+                {
+                    (arg3 as NanoStageInfo).PartType = PartTypes.Probe;
+                    RefreshPanels();
+                    return;
+                }
+                if (dev.PartType != PartTypes.None)
+                {
+                    (arg3 as NanoStageInfo).PartType = PartTypes.None;
+                    RefreshPanels();
+                    return;
+                }
+            }
+            #endregion
+            #region 设置为磁铁位移台
+            if (arg1 == 2)
+            {
+                (arg3 as NanoStageInfo).PartType = PartTypes.Magnnet;
+                RefreshPanels();
+            }
+            #endregion
+            #region 设置为样品位移台
+            if (arg1 == 3)
+            {
+                (arg3 as NanoStageInfo).PartType = PartTypes.Sample;
+                RefreshPanels();
+            }
+            #endregion
+            #region 设置为微波位移台
+            if (arg1 == 4)
+            {
+                (arg3 as NanoStageInfo).PartType = PartTypes.Microwave;
+                RefreshPanels();
             }
             #endregion
         }

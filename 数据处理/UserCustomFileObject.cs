@@ -113,6 +113,11 @@ namespace ODMR_Lab.数据处理
         {
             return null;
         }
+
+        public override bool PreConfirmProcedure()
+        {
+            return true;
+        }
         #endregion
     }
 }

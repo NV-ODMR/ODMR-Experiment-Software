@@ -112,6 +112,11 @@ namespace ODMR_Lab.实验部分.磁场调节
         {
             return null;
         }
+
+        public override bool PreConfirmProcedure()
+        {
+            return true;
+        }
         #endregion
     }
 }

@@ -38,6 +38,10 @@ namespace ODMR_Lab.实验部分.位移台界面
               {
                   while (true)
                   {
+                      if (MoverPart == PartTypes.Magnnet)
+                      {
+                          int u = 0;
+                      }
                       string xv = "";
                       string yv = "";
                       string zv = "";
