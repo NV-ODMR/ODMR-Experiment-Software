@@ -27,96 +27,74 @@ namespace ODMR_Lab.实验部分.位移台界面
         public StageControlPanel()
         {
             InitializeComponent();
-            CreateListener();
         }
 
-        Thread ListenThread = null;
-
-        public void CreateListener()
+        public void UpdateListenerState()
         {
-            ListenThread = new Thread(() =>
-              {
-                  while (true)
-                  {
-                      if (MoverPart == PartTypes.Magnnet)
-                      {
-                          int u = 0;
-                      }
-                      string xv = "";
-                      string yv = "";
-                      string zv = "";
-                      string axv = "";
-                      string ayv = "";
-                      string azv = "";
-                      try
-                      {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.X, MoverPart);
-                          xv = dev.Device.Position.ToString();
-                      }
-                      catch (Exception) { }
+            string xv = "";
+            string yv = "";
+            string zv = "";
+            string axv = "";
+            string ayv = "";
+            string azv = "";
+            try
+            {
+                var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.X, MoverPart);
+                xv = dev.Device.Position.ToString();
+            }
+            catch (Exception) { }
 
-                      try
-                      {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.Y, MoverPart);
-                          yv = dev.Device.Position.ToString();
-                      }
-                      catch (Exception) { }
+            try
+            {
+                var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.Y, MoverPart);
+                yv = dev.Device.Position.ToString();
+            }
+            catch (Exception) { }
 
-                      Dispatcher.Invoke(() =>
-                      {
-                          XYLocs.Text = "X:  " + xv + "  Y:  " + yv;
-                      });
+            Dispatcher.Invoke(() =>
+            {
+                XYLocs.Text = "X:  " + xv + "  Y:  " + yv;
+            });
 
-                      try
-                      {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.Z, MoverPart);
-                          zv = dev.Device.Position.ToString();
-                      }
-                      catch (Exception) { }
+            try
+            {
+                var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.Z, MoverPart);
+                zv = dev.Device.Position.ToString();
+            }
+            catch (Exception) { }
 
-                      Dispatcher.Invoke(() =>
-                      {
-                          ZLocs.Text = "Z:  " + zv;
-                      });
+            Dispatcher.Invoke(() =>
+            {
+                ZLocs.Text = "Z:  " + zv;
+            });
 
-                      try
-                      {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleX, MoverPart);
-                          axv = dev.Device.Position.ToString();
-                      }
-                      catch (Exception) { }
+            try
+            {
+                var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleX, MoverPart);
+                axv = dev.Device.Position.ToString();
+            }
+            catch (Exception) { }
 
-                      try
-                      {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleY, MoverPart);
-                          ayv = dev.Device.Position.ToString();
-                      }
-                      catch (Exception) { }
+            try
+            {
+                var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleY, MoverPart);
+                ayv = dev.Device.Position.ToString();
+            }
+            catch (Exception) { }
 
-                      try
-                      {
-                          var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleZ, MoverPart);
-                          azv = dev.Device.Position.ToString();
-                      }
-                      catch (Exception) { }
+            try
+            {
+                var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleZ, MoverPart);
+                azv = dev.Device.Position.ToString();
+            }
+            catch (Exception) { }
 
-                      Dispatcher.Invoke(() =>
-                      {
-                          AngleLocs.Text = "X:  " + axv + "  Y:  " + ayv + "  Z:  " + azv;
-                      });
-
-                      Thread.Sleep(100);
-                  }
-              });
-            ListenThread.Start();
+            Dispatcher.Invoke(() =>
+            {
+                AngleLocs.Text = "X:  " + axv + "  Y:  " + ayv + "  Z:  " + azv;
+            });
         }
 
-        public void CloseThread()
-        {
-            if (ListenThread == null) return;
-            ListenThread?.Abort();
-            while (ListenThread.ThreadState == ThreadState.Running) Thread.Sleep(30);
-        }
 
         public PartTypes MoverPart = PartTypes.None;
 

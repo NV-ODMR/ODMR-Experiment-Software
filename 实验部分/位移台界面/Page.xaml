@@ -10,8 +10,10 @@
       >
     <control:AutoScrollViewer Name="scroll">
         <control:AutoScrollViewer.Content>
-            <Grid MinHeight="800" MinWidth="700"  Width="{Binding ElementName=scroll, Path=ActualWidth}" Height="{Binding ElementName=scroll, Path=ActualHeight}">
+            <Grid MinHeight="1200" MinWidth="700"  Width="{Binding ElementName=scroll, Path=ActualWidth}" Height="{Binding ElementName=scroll, Path=ActualHeight}">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition/>
                     <RowDefinition Height="40"/>
                     <RowDefinition/>
                     <RowDefinition Height="40"/>
@@ -25,6 +27,7 @@
                 <TextBlock Text="样品" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="1" FontSize="18" FontWeight="Bold" Foreground="#FFFAFAFA"/>
                 <TextBlock Text="磁铁" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1" FontSize="18" FontWeight="Bold" Foreground="#FFFAFAFA"/>
                 <TextBlock Text="微波器件" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="1" FontSize="18" FontWeight="Bold" Foreground="#FFFAFAFA"/>
+                <TextBlock Text="镜头" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="1" FontSize="18" FontWeight="Bold" Foreground="#FFFAFAFA"/>
                 <Border Grid.Row="1" BorderThickness="2" BorderBrush="#FF4D4D4D">
                     <位移台界面:StageControlPanel x:Name="ProbePanel"/>
                 </Border>
@@ -36,6 +39,9 @@
                 </Border>
                 <Border Grid.Row="3" Grid.Column="1" BorderThickness="2" BorderBrush="#FF4D4D4D">
                     <位移台界面:StageControlPanel x:Name="MWPanel"/>
+                </Border>
+                <Border Grid.Row="5" Grid.Column="0" BorderThickness="2" BorderBrush="#FF4D4D4D">
+                    <位移台界面:StageControlPanel x:Name="LenPanel"/>
                 </Border>
             </Grid>
         </control:AutoScrollViewer.Content>

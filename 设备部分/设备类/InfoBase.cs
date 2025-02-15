@@ -148,15 +148,15 @@ namespace ODMR_Lab
         /// <summary>
         /// 尝试打开所有设备，导入参数
         /// </summary>
-        public static List<InfoBase> ConnectAllAndLoadParams(string ParamFolder, out List<string> connectedDeviceinfo, out List<string> unconnectedDeviceinfo)
+        public static List<InfoBase> ConnectAllAndLoadParams(string ParamFolder, out List<KeyValuePair<Type, DeviceInfoBase>> connectedDeviceinfo, out List<KeyValuePair<Type, DeviceInfoBase>> unconnectedDeviceinfo)
         {
             if (!Directory.Exists(ParamFolder))
             {
                 Directory.CreateDirectory(ParamFolder);
             }
+            connectedDeviceinfo = new List<KeyValuePair<Type, DeviceInfoBase>>();
+            unconnectedDeviceinfo = new List<KeyValuePair<Type, DeviceInfoBase>>();
             List<InfoBase> ConnectDevices = new List<InfoBase>();
-            List<string> result = new List<string>();
-            List<string> cresult = new List<string>();
             DirectoryInfo info = new DirectoryInfo(ParamFolder);
             FileInfo[] files = info.GetFiles();
             foreach (var item in files)
@@ -201,12 +201,12 @@ namespace ODMR_Lab
 
                                     if (connectresult == false)
                                     {
-                                        result.Add(connectinfo.DeviceName);
+                                        unconnectedDeviceinfo.Add(new KeyValuePair<Type, DeviceInfoBase>(device.Value, connectinfo));
                                         continue;
                                     }
                                     else
                                     {
-                                        cresult.Add(connectinfo.DeviceName);
+                                        connectedDeviceinfo.Add(new KeyValuePair<Type, DeviceInfoBase>(device.Value, connectinfo));
                                     }
 
                                     Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);
@@ -228,8 +228,6 @@ namespace ODMR_Lab
                     catch (Exception) { }
                 }
             }
-            unconnectedDeviceinfo = result;
-            connectedDeviceinfo = cresult;
             return ConnectDevices;
         }
 

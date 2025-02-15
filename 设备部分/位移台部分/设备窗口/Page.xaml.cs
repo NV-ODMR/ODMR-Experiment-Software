@@ -101,6 +101,10 @@ namespace ODMR_Lab.位移台部分
                     {
                         MWMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
                     }
+                    if (stage.PartType == PartTypes.Len)
+                    {
+                        LenMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                    }
                     if (stage.PartType == PartTypes.None)
                     {
                         DeviceList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
@@ -132,7 +136,10 @@ namespace ODMR_Lab.位移台部分
                 {
                     window = new MoverTestWindow(PartTypes.Microwave, "微波线位移台设置窗口");
                 }
-
+                if (btn.Name == "LenLabelBtn")
+                {
+                    window = new MoverTestWindow(PartTypes.Len, "镜头位移台设置窗口");
+                }
                 window?.ShowDialog();
             }
             catch (Exception ex)
@@ -201,6 +208,13 @@ namespace ODMR_Lab.位移台部分
             if (arg1 == 4)
             {
                 (arg3 as NanoStageInfo).PartType = PartTypes.Microwave;
+                RefreshPanels();
+            }
+            #endregion
+            #region 设置为微波位移台
+            if (arg1 == 5)
+            {
+                (arg3 as NanoStageInfo).PartType = PartTypes.Len;
                 RefreshPanels();
             }
             #endregion

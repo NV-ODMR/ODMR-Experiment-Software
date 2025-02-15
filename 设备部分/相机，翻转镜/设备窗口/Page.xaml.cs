@@ -154,7 +154,7 @@ namespace ODMR_Lab.相机
                 }
                 else
                 {
-                    CameraWindow window = new CameraWindow(inf);
+                    CameraWindow window = new CameraWindow(this, inf);
                     inf.DisplayWindow = window;
                     window.Show();
                 }

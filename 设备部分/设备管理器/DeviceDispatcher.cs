@@ -2,6 +2,7 @@
 using HardWares.温度控制器;
 using HardWares.相机_CCD_;
 using HardWares.端口基类;
+using HardWares.端口基类部分.设备信息;
 using HardWares.纳米位移台;
 using ODMR_Lab.位移台部分;
 using ODMR_Lab.温度监测部分;
@@ -39,6 +40,24 @@ namespace ODMR_Lab
             }
 
             return "已连接的设备:\n" + (connectedmessage == "" ? "无\n" : connectedmessage + "\n") + "未连接的设备:\n" + (unconnectmessage == "" ? "无\n" : unconnectmessage + "\n");
+        }
+
+        /// <summary>
+        /// 添加设备
+        /// </summary>
+        public static string AppendDevices()
+        {
+            string connectedmessage = "";
+            string unconnectmessage = "";
+
+            foreach (var item in DevInfos)
+            {
+                ScanDevice(item, out string appendconnected, out string appendunconnected);
+                connectedmessage += appendconnected;
+                unconnectmessage += appendunconnected;
+            }
+
+            return "新增的设备:\n" + (connectedmessage == "" ? "无\n" : connectedmessage + "\n");
         }
 
         public static bool CloseDevicesAndSave()

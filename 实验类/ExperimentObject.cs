@@ -287,9 +287,9 @@ namespace ODMR_Lab
                 foreach (var item in ControlStates)
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
-                        item.Key.IsEnabled = true;
+                        item.Key.IsHitTestVisible = true;
                     if (item.Value == RunningBehaviours.DisableWhenRunning)
-                        item.Key.IsEnabled = false;
+                        item.Key.IsHitTestVisible = false;
                 }
             });
         }
@@ -304,9 +304,9 @@ namespace ODMR_Lab
                 foreach (var item in ControlStates)
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
-                        item.Key.IsEnabled = true;
+                        item.Key.IsHitTestVisible = true;
                     if (item.Value == RunningBehaviours.DisableWhenRunning)
-                        item.Key.IsEnabled = false;
+                        item.Key.IsHitTestVisible = false;
                 }
                 ResumeStateEvent?.Invoke();
             });
@@ -322,9 +322,9 @@ namespace ODMR_Lab
                 foreach (var item in ControlStates)
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
-                        item.Key.IsEnabled = false;
+                        item.Key.IsHitTestVisible = false;
                     if (item.Value == RunningBehaviours.DisableWhenRunning)
-                        item.Key.IsEnabled = true;
+                        item.Key.IsHitTestVisible = true;
                 }
                 EndStateEvent?.Invoke();
             });

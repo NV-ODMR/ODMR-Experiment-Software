@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls"
         mc:Ignorable="d"
-        Title="数据预览窗口" Height="805" Width="1280" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+        Title="数据预览窗口" Height="805" Width="1280" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>

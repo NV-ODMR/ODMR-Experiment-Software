@@ -36,6 +36,7 @@ using System.Windows.Media.Animation;
 using System.Collections;
 using MathLib.NormalMath.Decimal;
 using System.Reflection;
+using HardWares.端口基类部分.设备信息;
 
 namespace ODMR_Lab
 {
@@ -271,42 +272,36 @@ namespace ODMR_Lab
             }
             #endregion
             #region 自动连接设备
-            MessageBoxResult res = MessageWindow.ShowMessageBox("自动连接", "是否自动尝试连接上次关闭时保存的所有设备?", MessageBoxButton.YesNo, owner: this);
+            UpdateLayout();
+            Thread t = new Thread(() =>
             {
-                UpdateLayout();
-                Thread t = new Thread(() =>
+                try
                 {
-                    try
+                    MessageWindow window = null;
+                    Dispatcher.Invoke(() =>
                     {
-                        if (res == MessageBoxResult.Yes)
-                        {
-                            MessageWindow window = null;
-                            Dispatcher.Invoke(() =>
-                            {
-                                IsEnabled = false;
-                                window = new MessageWindow("自动连接", "正在自动连接设备...", MessageBoxButton.OK, false, false);
-                                window.Owner = this;
-                                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                                window.Show();
-                            });
-                            string connectresult = DeviceDispatcher.ScanDevices();
-                            Dispatcher.Invoke(() =>
-                            {
-                                window.Close();
-                                MessageWindow.ShowMessageBox("自动连接", connectresult, MessageBoxButton.OK, true, owner: this);
-                                IsEnabled = true;
-                            });
-                        }
-                    }
-                    catch (Exception ex)
+                        IsEnabled = false;
+                        window = new MessageWindow("自动连接", "正在自动连接设备...", MessageBoxButton.OK, false, false);
+                        window.Owner = this;
+                        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        window.Show();
+                    });
+                    string connectresult = DeviceDispatcher.ScanDevices();
+                    Dispatcher.Invoke(() =>
                     {
-                        MessageWindow.ShowTipWindow("程序环境安装出现问题,即将退出：\n" + ex.Message, Window.GetWindow(this));
-                        Environment.Exit(0);
-                        return;
-                    }
-                });
-                t.Start();
-            }
+                        window.Close();
+                        MessageWindow.ShowMessageBox("自动连接", connectresult, MessageBoxButton.OK, true, owner: this);
+                        IsEnabled = true;
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageWindow.ShowTipWindow("程序环境安装出现问题,即将退出：\n" + ex.Message, Window.GetWindow(this));
+                    Environment.Exit(0);
+                    return;
+                }
+            });
+            t.Start();
             #endregion
         }
 
@@ -440,6 +435,28 @@ namespace ODMR_Lab
                 CurrentPage = Ext_PythonPage;
                 PageContent.Children.Add(Ext_PythonPage);
             }
+        }
+
+        private void AutoConnect(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(() =>
+            {
+                MessageWindow win = null;
+                Dispatcher.Invoke(() =>
+                {
+                    win = new MessageWindow("自动连接", "正在搜索设备", MessageBoxButton.OK, false, false);
+                    win.Owner = this;
+                    win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    win.Show();
+                });
+                string result = DeviceDispatcher.AppendDevices();
+                Dispatcher.Invoke(() =>
+                {
+                    win.Close();
+                    MessageWindow.ShowTipWindow(result, this);
+                });
+            });
+            t.Start();
         }
     }
 }

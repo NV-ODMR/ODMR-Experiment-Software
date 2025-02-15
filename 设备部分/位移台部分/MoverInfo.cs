@@ -148,5 +148,9 @@ namespace ODMR_Lab.位移台部分
         /// 磁铁部分
         /// </summary>
         Magnnet = 3,
+        /// <summary>
+        /// 镜头部分
+        /// </summary>
+        Len = 4,
     }
 }

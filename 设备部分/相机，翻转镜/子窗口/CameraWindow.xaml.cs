@@ -35,13 +35,17 @@ namespace ODMR_Lab.相机
     /// </summary>
     public partial class CameraWindow : Window
     {
-        CameraInfo Camera { get; set; } = null;
+        DevicePage CameraPage { get; set; } = null;
 
-        public CameraWindow(CameraInfo camera)
+        CameraInfo Camera = null;
+
+        public CameraWindow(DevicePage camera, CameraInfo info)
         {
             InitializeComponent();
 
-            Camera = camera;
+            CameraPage = camera;
+            Camera = info;
+
 
             WindowResizeHelper hel = new WindowResizeHelper();
             hel.RegisterWindow(this, 5, 30);
@@ -50,8 +54,8 @@ namespace ODMR_Lab.相机
 
             CreateCameraThread();
 
-            CameraPixelHeight = camera.Device.CameraPixelHeightCount;
-            CameraPixelHeight = camera.Device.CameraPixelWidthCount;
+            CameraPixelHeight = info.Device.CameraPixelHeightCount;
+            CameraPixelHeight = info.Device.CameraPixelWidthCount;
         }
 
         /// <summary>
@@ -224,14 +228,19 @@ namespace ODMR_Lab.相机
                 WindowState state = Camera.DisplayWindow.WindowState;
                 string path = Camera.CloseDeviceInfoAndSaveParams(out bool result);
                 if (result == false) { return; }
-                Camera = (CameraInfo)CameraInfo.OpenAndLoadParams(path, Camera.Device.GetType());
-                Camera.DisplayWindow = new CameraWindow(Camera);
-                Camera.DisplayWindow.Left = x;
-                Camera.DisplayWindow.Top = y;
-                Camera.DisplayWindow.Width = width;
-                Camera.DisplayWindow.Height = height;
-                Camera.DisplayWindow.WindowState = state;
-                Camera.DisplayWindow.Show();
+
+                int ind = CameraPage.Cameras.IndexOf(Camera);
+
+                var newcam = (CameraInfo)CameraInfo.OpenAndLoadParams(path, Camera.Device.GetType());
+                CameraPage.Cameras[ind] = newcam;
+                CameraPage.CameraList.SetTag(ind, newcam);
+                newcam.DisplayWindow = new CameraWindow(CameraPage, newcam);
+                newcam.DisplayWindow.Left = x;
+                newcam.DisplayWindow.Top = y;
+                newcam.DisplayWindow.Width = width;
+                newcam.DisplayWindow.Height = height;
+                newcam.DisplayWindow.WindowState = state;
+                newcam.DisplayWindow.Show();
             }
             catch (Exception exc) { }
         }
