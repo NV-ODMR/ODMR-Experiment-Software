@@ -162,9 +162,9 @@ namespace ODMR_Lab.相机
                         long tik1 = DateTime.Now.Ticks;
 
                         BitmapSource image = Camera.Device.GrabFrame(2000);
+                        image = ClipImage(image, ClipImageBound);
                         Dispatcher.Invoke(() =>
                         {
-                            image = ClipImage(image, ClipImageBound);
                             DisplayArea.SetSource(image);
                         });
                         Thread.Sleep(40);

@@ -37,12 +37,12 @@ namespace ODMR_Lab.实验部分.扫描基方法
             while (det > maxStep)
             {
                 target0 += sgn * maxStep;
-                mover.Device.MoveToAndWait(target, timeout);
+                mover.Device.MoveToAndWait(target, timeout, false);
                 StopMethod?.Invoke();
                 det -= maxStep;
                 Thread.Sleep(50);
             }
-            mover.Device.MoveToAndWait(target0 + sgn * det, timeout);
+            mover.Device.MoveToAndWait(target0 + sgn * det, timeout, false);
             StopMethod?.Invoke();
         }
     }

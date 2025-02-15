@@ -135,7 +135,7 @@ namespace ODMR_Lab.实验部分.位移台界面
                         try
                         {
                             DeviceDispatcher.UseDevices(stage);
-                            stage.Device.MoveStepAndWait((ispositive ? 1 : -1) * step * (isreverse ? 1 : -1), 50);
+                            stage.Device.MoveStepAndWait((ispositive ? 1 : -1) * step * (isreverse ? 1 : -1), 50, true);
                             DeviceDispatcher.EndUseDevices(stage);
                         }
                         catch (Exception e) { }
