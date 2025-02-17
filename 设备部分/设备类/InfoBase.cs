@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ODMR_Lab
+namespace ODMR_Lab.设备部分
 {
     public abstract class InfoBase
     {

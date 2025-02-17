@@ -2,22 +2,24 @@
 using HardWares.温度控制器;
 using HardWares.相机_CCD_;
 using HardWares.仪器列表.电动翻转座;
-using ODMR_Lab.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ODMR_Lab.相机;
 using ODMR_Lab.温度监测部分;
-using ODMR_Lab.设备部分.相机;
 using System.IO;
-using ODMR_Lab.射频源_锁相放大器;
 using ODMR_Lab.设备部分;
 using System.Reflection;
 using HardWares.端口基类部分.设备信息;
+using ODMR_Lab.设备部分.位移台部分;
+using ODMR_Lab.设备部分.射频源_锁相放大器;
+using ODMR_Lab.设备部分.光子探测器;
+using ODMR_Lab.设备部分.相机_翻转镜;
+using ODMR_Lab.设备部分.温控;
+using ODMR_Lab.设备部分.源表;
 
-namespace ODMR_Lab
+namespace ODMR_Lab.设备部分
 {
     public partial class DeviceDispatcher
     {
@@ -142,6 +144,12 @@ namespace ODMR_Lab
             {
                 SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_PowerMeterPage.PowerMeterList.AddRange(x.Select(v=>v as PowerMeterInfo).ToList())),
                 GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_PowerMeterPage.PowerMeterList.Select(x=>x as InfoBase).ToList(); })
+            },
+            //APD
+            new DeviceDispatcherInfo<APDInfo>(DeviceTypes.光子计数器,MainWindow.Dev_APDPage,MainWindow.Dev_APDPage.APDs)
+            {
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_APDPage.APDs.AddRange(x.Select(v=>v as APDInfo).ToList())),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_APDPage.APDs.Select(x=>x as InfoBase).ToList(); })
             },
         };
 

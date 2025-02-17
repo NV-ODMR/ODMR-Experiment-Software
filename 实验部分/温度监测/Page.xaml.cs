@@ -6,6 +6,7 @@ using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.磁场调节;
+using ODMR_Lab.设备部分.温控;
 using System;
 using System.Collections.Generic;
 using System.IO;

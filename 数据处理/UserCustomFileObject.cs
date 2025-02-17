@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;

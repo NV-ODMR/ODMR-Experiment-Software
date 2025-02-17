@@ -1,5 +1,4 @@
 ﻿using MathLib.NormalMath.Decimal;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.磁场调节;

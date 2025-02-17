@@ -14,7 +14,7 @@ using CodeHelper;
 using System.IO;
 using ODMR_Lab.基本控件;
 
-namespace ODMR_Lab.温度监测部分
+namespace ODMR_Lab.设备部分.温控
 {
     public abstract class ChannelInfo
     {

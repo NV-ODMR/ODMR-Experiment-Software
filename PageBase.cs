@@ -30,6 +30,12 @@ namespace ODMR_Lab
         /// </summary>
         public abstract void CloseBehaviour();
 
+        /// <summary>
+        /// 更新UI参数到后台
+        /// </summary>
+        public abstract void UpdateParam();
+
+
         public abstract string PageName { get; set; }
 
         public EmptyWindow DisplayWindow = null;

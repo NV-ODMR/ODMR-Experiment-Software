@@ -11,6 +11,7 @@ using ODMR_Lab.实验部分.位移台界面.参数;
 using ODMR_Lab.实验部分.场效应器件测量;
 using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.磁场调节;
+using ODMR_Lab.设备部分.光子探测器;
 using ODMR_Lab.设备部分.源表;
 
 namespace ODMR_Lab.IO操作
@@ -28,6 +29,10 @@ namespace ODMR_Lab.IO操作
             FileObject fobj = new FileObject();
 
             #region 设备参数
+            APDDevConfigParams APD1 = new APDDevConfigParams();
+            APD1.ReadFromPage(new FrameworkElement[] { MainWindow.Dev_APDPage }, false);
+            WriteParamToFile(APD1, fobj);
+
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
             P1.ReadFromPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
             WriteParamToFile(P1, fobj);

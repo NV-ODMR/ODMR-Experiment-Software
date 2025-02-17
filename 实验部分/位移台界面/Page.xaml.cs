@@ -3,7 +3,6 @@ using Controls;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.实验部分.磁场调节;
 using System;
 using System.CodeDom;
@@ -40,6 +39,7 @@ using ODMR_Lab.基本控件;
 using Clipboard = System.Windows.Clipboard;
 using Controls.Windows;
 using Window = System.Windows.Window;
+using ODMR_Lab.设备部分.位移台部分;
 
 namespace ODMR_Lab.位移台界面
 {

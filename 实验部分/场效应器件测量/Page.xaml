@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
-      xmlns:panel="clr-namespace:ODMR_Lab.源表部分"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       >
@@ -45,8 +44,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Label Foreground="White" Height="30" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10" Content="源表设备"/>
-                <control:ComboBox Name="IVDevice" Height="30" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="5" Background="#FF2E2E2E" Margin="10" ImagePlace="Right" Click="UpdateDeviceList" IconMargin="4" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="#FF4D4D4D" PressedForeground="White" PressedColor="#FF2E2E2E"/>
+                <Label Foreground="White" Height="30" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Content="源表设备"/>
+                <control:ComboBox Name="IVDevice" Height="30" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="5" Background="#FF2E2E2E" Margin="5" ImagePlace="Right" Click="UpdateDeviceList" IconMargin="4" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="#FF4D4D4D" PressedForeground="White" PressedColor="#FF2E2E2E"/>
                 <Label Foreground="White" Height="30" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,10,10,10" Content="扫描路径(V)"/>
                 <control:AutoScrollViewer Name="scroll" Margin="10" Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="4" Background="#FF2E2E2E">
                     <control:AutoScrollViewer.Content>

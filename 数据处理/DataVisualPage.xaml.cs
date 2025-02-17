@@ -8,7 +8,6 @@ using HardWares.端口基类部分;
 using HardWares.纳米位移台;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.场效应器件测量;
@@ -63,6 +62,10 @@ namespace ODMR_Lab.数据处理
         }
 
         public override void CloseBehaviour()
+        {
+        }
+
+        public override void UpdateParam()
         {
         }
 

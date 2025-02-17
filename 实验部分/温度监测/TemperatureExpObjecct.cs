@@ -7,6 +7,7 @@ using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.温度监测部分;
 using ODMR_Lab.磁场调节;
+using ODMR_Lab.设备部分;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;

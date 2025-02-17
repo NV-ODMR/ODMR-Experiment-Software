@@ -18,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ComboBox = Controls.ComboBox;
 
-namespace ODMR_Lab.位移台部分
+namespace ODMR_Lab.设备部分.位移台部分
 {
     /// <summary>
     /// MoverTestWindow.xaml 的交互逻辑

@@ -1,7 +1,6 @@
 ﻿using CodeHelper;
 using Controls.Windows;
 using HardWares.源表;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.场效应器件测量;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.数据处理;
@@ -13,6 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
+using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.源表;
 
 namespace ODMR_Lab.实验部分.场效应器件测量
 {

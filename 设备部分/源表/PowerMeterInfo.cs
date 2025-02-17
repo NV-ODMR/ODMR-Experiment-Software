@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HardWares.源表;
+using ODMR_Lab.设备部分;
 
-namespace ODMR_Lab.位移台部分
+namespace ODMR_Lab.设备部分.源表
 {
 
     /// <summary>
-    /// 位移台信息，包含位移台方向和是否反向的信息
+    /// 源表
     /// </summary>
     public class PowerMeterInfo : DeviceInfoBase<PowerSourceBase>
     {

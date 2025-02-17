@@ -1,4 +1,4 @@
-﻿<odmr_lab:DevicePageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab.设备部分" x:Class="ODMR_Lab.温度监测部分.DevicePage"
+﻿<odmr_lab:DevicePageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab.设备部分" x:Class="ODMR_Lab.设备部分.温控.DevicePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

@@ -29,7 +29,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ContextMenu = Controls.ContextMenu;
 
-namespace ODMR_Lab.位移台部分
+namespace ODMR_Lab.设备部分.位移台部分
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑
@@ -50,6 +50,10 @@ namespace ODMR_Lab.位移台部分
         }
 
         public override void CloseBehaviour()
+        {
+        }
+
+        public override void UpdateParam()
         {
         }
 

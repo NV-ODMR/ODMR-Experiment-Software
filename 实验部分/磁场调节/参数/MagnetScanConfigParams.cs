@@ -1,5 +1,5 @@
 ﻿using ODMR_Lab.IO操作;
-using ODMR_Lab.位移台部分;
+using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;

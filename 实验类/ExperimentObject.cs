@@ -5,6 +5,7 @@ using ODMR_Lab.IO操作;
 using ODMR_Lab.Windows;
 using ODMR_Lab.实验类;
 using ODMR_Lab.数据处理;
+using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.IO;

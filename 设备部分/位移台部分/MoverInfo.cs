@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ODMR_Lab.位移台部分
+namespace ODMR_Lab.设备部分.位移台部分
 {
 
     /// <summary>

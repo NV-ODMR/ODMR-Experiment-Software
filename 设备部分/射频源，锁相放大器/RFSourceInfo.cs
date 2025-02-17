@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ODMR_Lab.射频源_锁相放大器
+namespace ODMR_Lab.设备部分.射频源_锁相放大器
 {
     public class RFSourceInfo : DeviceInfoBase<RFSourceBase>
     {

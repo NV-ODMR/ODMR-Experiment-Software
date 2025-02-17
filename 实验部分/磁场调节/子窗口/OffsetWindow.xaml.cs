@@ -1,7 +1,6 @@
 ﻿using Controls.Windows;
 using MathNet.Numerics.Distributions;
 using ODMR_Lab.Windows;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.实验部分.磁场调节;
 using System;
 using System.Collections.Generic;

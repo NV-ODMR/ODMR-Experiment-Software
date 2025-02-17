@@ -250,6 +250,11 @@
       <DependentUpon>DataVisualPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\UserCustomFileObject.cs" />
+    <Compile Include="设备部分\APD\APDInfo.cs" />
+    <Compile Include="设备部分\APD\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="设备部分\APD\APDDevConfigParams.cs" />
     <Compile Include="设备部分\DevicePage.cs" />
     <Compile Include="设备部分\位移台部分\MoverInfo.cs" />
     <Compile Include="设备部分\位移台部分\测试窗口\MoverTestWindow.xaml.cs">
@@ -411,6 +416,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="数据处理\DataVisualPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="设备部分\APD\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

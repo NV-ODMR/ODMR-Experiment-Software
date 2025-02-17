@@ -8,9 +8,5 @@ namespace ODMR_Lab
 {
     public abstract class ExpPageBase : PageBase
     {
-        /// <summary>
-        /// 更新UI参数到后台
-        /// </summary>
-        public abstract void UpdateParam();
     }
 }

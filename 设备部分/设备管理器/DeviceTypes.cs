@@ -38,6 +38,10 @@ namespace ODMR_Lab.设备部分
         /// <summary>
         /// 锁相放大器
         /// </summary>
-        锁相放大器 = 9
+        锁相放大器 = 9,
+        /// <summary>
+        /// 光子计数器
+        /// </summary>
+        光子计数器 = 10
     }
 }

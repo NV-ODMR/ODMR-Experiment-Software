@@ -1,42 +1,17 @@
 ﻿using ODMR_Lab.温度监测部分;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using CodeHelper;
 using Controls;
-using ODMR_Lab.Windows;
 using System.IO;
-using System.Windows.Forms;
-using ODMR_Lab.相机;
-using HardWares.相机_CCD_;
-using Path = System.IO.Path;
 using System.Threading;
-using ODMR_Lab.Python.LbviewHandler;
-using ODMR_Lab.实验部分.磁场调节;
-using ODMR_Lab.基本窗口;
-using ODMR_Lab.基本控件;
 using ODMR_Lab.数据处理;
-using ODMR_Lab.实验部分.场效应器件测量;
-using Label = System.Windows.Controls.Label;
-using ODMR_Lab.Python管理器;
 using ODMR_Lab.IO操作;
 using Controls.Windows;
-using System.Windows.Media.Animation;
-using System.Collections;
-using MathLib.NormalMath.Decimal;
-using System.Reflection;
-using HardWares.端口基类部分.设备信息;
+using ODMR_Lab.设备部分;
 
 namespace ODMR_Lab
 {
@@ -51,15 +26,17 @@ namespace ODMR_Lab
         public static PageBase CurrentPage { get; set; } = null;
 
         #region 设备页面
-        public static 温度监测部分.DevicePage Dev_TemPeraPage = new 温度监测部分.DevicePage();
+        public static 设备部分.温控.DevicePage Dev_TemPeraPage = new 设备部分.温控.DevicePage();
 
-        public static 位移台部分.DevicePage Dev_MoversPage = new 位移台部分.DevicePage();
+        public static 设备部分.位移台部分.DevicePage Dev_MoversPage = new 设备部分.位移台部分.DevicePage();
 
-        public static 相机.DevicePage Dev_CameraPage = new 相机.DevicePage();
+        public static 设备部分.相机_翻转镜.DevicePage Dev_CameraPage = new 设备部分.相机_翻转镜.DevicePage();
 
-        public static 源表部分.DevicePage Dev_PowerMeterPage = new 源表部分.DevicePage();
+        public static 设备部分.源表.DevicePage Dev_PowerMeterPage = new 设备部分.源表.DevicePage();
 
-        public static 射频源_锁相放大器.DevicePage Dev_RFSource_LockInPage = new 射频源_锁相放大器.DevicePage();
+        public static 设备部分.射频源_锁相放大器.DevicePage Dev_RFSource_LockInPage = new 设备部分.射频源_锁相放大器.DevicePage();
+
+        public static 设备部分.光子探测器.DevicePage Dev_APDPage = new 设备部分.光子探测器.DevicePage();
         #endregion
 
         #region 实验页面
@@ -224,10 +201,10 @@ namespace ODMR_Lab
             ParamManager.ReadAndLoadParams();
             #endregion
             #region 调用页面的参数同步方法
-            var pages = GetType().GetFields().Where(x => typeof(ExpPageBase).IsAssignableFrom(x.FieldType));
+            var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
             foreach (var item in pages)
             {
-                (item.GetValue(this) as ExpPageBase).UpdateParam();
+                (item.GetValue(this) as PageBase).UpdateParam();
             }
             #endregion
             #region 自动连接设备
@@ -334,6 +311,11 @@ namespace ODMR_Lab
             {
                 CurrentPage = Dev_RFSource_LockInPage;
                 AddPageToView(Dev_RFSource_LockInPage);
+            }
+            if (btn.Text == "光子计数器")
+            {
+                CurrentPage = Dev_APDPage;
+                AddPageToView(Dev_APDPage);
             }
         }
 

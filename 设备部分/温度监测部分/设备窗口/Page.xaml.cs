@@ -28,7 +28,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ContextMenu = Controls.ContextMenu;
 
-namespace ODMR_Lab.温度监测部分
+namespace ODMR_Lab.设备部分.温控
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑
@@ -257,6 +257,10 @@ namespace ODMR_Lab.温度监测部分
                 RefreshChannelBtns();
                 RefreshPanels();
             }
+        }
+
+        public override void UpdateParam()
+        {
         }
     }
 }

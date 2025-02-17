@@ -4,9 +4,7 @@ using HardWares.相机_CCD_;
 using HardWares.端口基类;
 using HardWares.端口基类部分.设备信息;
 using HardWares.纳米位移台;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.温度监测部分;
-using ODMR_Lab.相机;
 using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
@@ -17,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace ODMR_Lab
+namespace ODMR_Lab.设备部分
 {
     /// <summary>
     /// 设备管理器

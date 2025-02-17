@@ -14,10 +14,8 @@ using HardWares.端口基类部分;
 using HardWares.纳米位移台;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.相机;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,7 +34,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ContextMenu = Controls.ContextMenu;
 
-namespace ODMR_Lab.射频源_锁相放大器
+namespace ODMR_Lab.设备部分.射频源_锁相放大器
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑
@@ -58,6 +56,10 @@ namespace ODMR_Lab.射频源_锁相放大器
         }
 
         public override void CloseBehaviour()
+        {
+        }
+
+        public override void UpdateParam()
         {
         }
 

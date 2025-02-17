@@ -28,7 +28,7 @@ using Cursors = System.Windows.Input.Cursors;
 using Image = System.Windows.Controls.Image;
 using Point = System.Windows.Point;
 
-namespace ODMR_Lab.相机
+namespace ODMR_Lab.设备部分.相机_翻转镜
 {
     /// <summary>
     /// CameraWindow.xaml 的交互逻辑

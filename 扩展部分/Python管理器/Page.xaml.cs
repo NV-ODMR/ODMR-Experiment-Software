@@ -56,5 +56,9 @@ namespace ODMR_Lab.Python管理器
         public override void CloseBehaviour()
         {
         }
+
+        public override void UpdateParam()
+        {
+        }
     }
 }

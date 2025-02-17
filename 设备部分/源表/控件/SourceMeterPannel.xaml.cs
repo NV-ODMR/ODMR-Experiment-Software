@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ODMR_Lab.源表部分
+namespace ODMR_Lab.设备部分.源表
 {
     /// <summary>
     /// TemperaturePannel.xaml 的交互逻辑

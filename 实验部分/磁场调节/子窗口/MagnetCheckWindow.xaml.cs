@@ -2,10 +2,11 @@
 using Controls.Windows;
 using ODMR_Lab.Python.LbviewHandler;
 using ODMR_Lab.Windows;
-using ODMR_Lab.位移台部分;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.磁场调节;
+using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;

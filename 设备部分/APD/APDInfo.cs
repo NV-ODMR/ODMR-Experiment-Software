@@ -1,31 +1,20 @@
 ﻿using CodeHelper;
 using HardWares;
+using HardWares.APD;
+using HardWares.APD.Exclitas_SPCM_AQRH;
 using HardWares.相机_CCD_;
-using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ODMR_Lab.设备部分.相机_翻转镜
+namespace ODMR_Lab.设备部分.光子探测器
 {
-    public class CameraInfo : DeviceInfoBase<CameraBase>
+    public class APDInfo : DeviceInfoBase<APDBase>
     {
-
-        public CameraWindow DisplayWindow { get; set; } = null;
-
         public override void CreateDeviceInfoBehaviour()
         {
-            CloseDeviceEvent += new Action(() =>
-            {
-                if (DisplayWindow != null && DisplayWindow.IsActive)
-                {
-                    DisplayWindow.CancelThread();
-                    DisplayWindow.Close();
-                    DisplayWindow = null;
-                }
-            });
         }
 
         public override string GetDeviceDescription()
