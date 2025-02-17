@@ -43,6 +43,7 @@ namespace ODMR_Lab.射频源_锁相放大器
     /// </summary>
     public partial class DevicePage : DevicePageBase
     {
+        public override string PageName { get; set; } = "射频源/锁相放大器";
         public List<RFSourceInfo> RFSources { get; set; } = new List<RFSourceInfo>();
         public List<LockinInfo> LockIns { get; set; } = new List<LockinInfo>();
 
@@ -52,7 +53,7 @@ namespace ODMR_Lab.射频源_锁相放大器
             InitializeComponent();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 

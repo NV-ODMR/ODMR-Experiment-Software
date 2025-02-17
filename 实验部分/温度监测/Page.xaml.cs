@@ -30,6 +30,8 @@ namespace ODMR_Lab.温度监测部分
     /// </summary>
     public partial class TemperaturePage : ExpPageBase
     {
+        public override string PageName { get; set; } = "温度监测";
+
         /// <summary>
         /// 线程锁
         /// </summary>
@@ -44,7 +46,7 @@ namespace ODMR_Lab.温度监测部分
             SetWindow = new SaveWindow(this);
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
             MainWindow.Dev_TemPeraPage.DataChangedEvent += RefreshChooserLegends;
 

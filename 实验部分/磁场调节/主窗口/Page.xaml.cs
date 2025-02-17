@@ -50,6 +50,8 @@ namespace ODMR_Lab.磁场调节
     /// </summary>
     public partial class DisplayPage : ExpPageBase
     {
+
+        public override string PageName { get; set; } = "磁场调节";
         public MagnetXYAngleWindow XWin { get; set; } = null;
         public MagnetXYAngleWindow YWin { get; set; } = null;
         public MagnetZWindow ZWin { get; set; } = null;
@@ -100,7 +102,7 @@ namespace ODMR_Lab.磁场调节
             InitExperimentConfigs();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 

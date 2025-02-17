@@ -40,6 +40,7 @@ namespace ODMR_Lab.源表部分
     /// </summary>
     public partial class DevicePage : DevicePageBase
     {
+        public override string PageName { get; set; } = "源表";
 
         public List<PowerMeterInfo> PowerMeterList { get; set; } = new List<PowerMeterInfo>();
 
@@ -53,7 +54,7 @@ namespace ODMR_Lab.源表部分
             InitializeComponent();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
             CreateMeasureThread();
         }

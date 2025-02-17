@@ -48,12 +48,14 @@ namespace ODMR_Lab.位移台界面
     /// </summary>
     public partial class DisplayPage : ExpPageBase
     {
+        public override string PageName { get; set; } = "位移台控制台";
+
         public DisplayPage()
         {
             InitializeComponent();
-
         }
-        public override void Init()
+
+        public override void InnerInit()
         {
             ProbePanel.MoverPart = PartTypes.Probe;
             MWPanel.MoverPart = PartTypes.Microwave;

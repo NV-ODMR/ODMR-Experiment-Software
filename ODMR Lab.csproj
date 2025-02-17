@@ -152,6 +152,9 @@
     <Compile Include="基本窗口\ChartViewerWindow.xaml.cs">
       <DependentUpon>ChartViewerWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="基本窗口\EmptyWindow.xaml.cs">
+      <DependentUpon>EmptyWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="基本窗口\数据拟合\CurveFitWindow.xaml.cs">
       <DependentUpon>CurveFitWindow.xaml</DependentUpon>
     </Compile>
@@ -177,6 +180,14 @@
     <Compile Include="实验部分\场效应器件测量\参数\IVMeasureExpParams.cs" />
     <Compile Include="实验部分\场效应器件测量\参数\VoltageSetConfigParams.cs" />
     <Compile Include="实验部分\场效应器件测量\参数\VoltageSetExpParams.cs" />
+    <Compile Include="实验部分\序列编辑器\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\序列编辑器\SequenceData.cs" />
+    <Compile Include="实验部分\序列编辑器\SequenceDataAssemble.cs" />
+    <Compile Include="实验部分\序列编辑器\SequenceFileWindow.xaml.cs">
+      <DependentUpon>SequenceFileWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="实验部分\扫描基方法\Scan1DBase.cs" />
     <Compile Include="实验部分\扫描基方法\Scan2DBase.cs" />
     <Compile Include="实验部分\扫描基方法\ScanHelper.cs" />
@@ -237,9 +248,6 @@
     <Compile Include="数据处理\DataVisualSource.cs" />
     <Compile Include="数据处理\DataVisualPage.xaml.cs">
       <DependentUpon>DataVisualPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="数据处理\DataVisualWindow.xaml.cs">
-      <DependentUpon>DataVisualWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\UserCustomFileObject.cs" />
     <Compile Include="设备部分\DevicePage.cs" />
@@ -326,6 +334,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="基本窗口\EmptyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="基本窗口\数据拟合\CurveFitWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -345,6 +357,14 @@
     <Page Include="实验部分\场效应器件测量\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\序列编辑器\Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\序列编辑器\SequenceFileWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\样品定位\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -393,10 +413,6 @@
     <Page Include="数据处理\DataVisualPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="数据处理\DataVisualWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="设备部分\位移台部分\测试窗口\MoverTestWindow.xaml">
       <SubType>Designer</SubType>

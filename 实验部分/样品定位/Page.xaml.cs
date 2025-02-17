@@ -48,7 +48,7 @@ namespace ODMR_Lab.样品定位
     /// </summary>
     public partial class DisplayPage : ExpPageBase
     {
-
+        public override string PageName { get; set; } = "样品定位";
         public CorrelatePointCollection CorrelatePointCollection { get; set; } = new CorrelatePointCollection();
 
         public DisplayPage()
@@ -65,7 +65,7 @@ namespace ODMR_Lab.样品定位
         {
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 

@@ -41,6 +41,8 @@ namespace ODMR_Lab.场效应器件测量
     public partial class DisplayPage : ExpPageBase
     {
 
+        public override string PageName { get; set; } = "场效应器件测量";
+
         public List<PowerMeterInfo> PowerMeterList { get; set; } = new List<PowerMeterInfo>();
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace ODMR_Lab.场效应器件测量
             InitIVThread();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
             CreateCurrentLimitListener();
         }

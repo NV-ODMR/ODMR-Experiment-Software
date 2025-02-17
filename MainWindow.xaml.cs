@@ -86,6 +86,11 @@ namespace ODMR_Lab
         /// </summary>
         public static 位移台界面.DisplayPage Exp_StagePage = new 位移台界面.DisplayPage();
 
+        /// <summary>
+        /// 位移台控制
+        /// </summary>
+        public static 序列编辑器.DisplayPage Exp_SequencePage = new 序列编辑器.DisplayPage();
+
         #endregion
 
         #region 自定义实验页面
@@ -100,53 +105,7 @@ namespace ODMR_Lab
         #endregion
 
         #region 数据处理部分
-        public static bool IsInWindow { get; set; } = false;
-
-        public static DataVisualPage Data_Page { get; set; } = new DataVisualPage();
-
-        public static DataVisualWindow DataWindow { get; set; } = new DataVisualWindow();
-
-        /// <summary>
-        /// 设置数据页面显示在独立窗口中
-        /// </summary>
-        public void SetShowInWindow()
-        {
-            Data_Page.ShowInPage.Visibility = Visibility.Collapsed;
-            if (CurrentPage == Data_Page)
-            {
-                PageContent.Children.Remove(Data_Page);
-                PageContent.Children.Add(
-                    new Label()
-                    {
-                        FontSize = 40,
-                        FontWeight = FontWeights.Bold,
-                        Content = "正在独立窗口中显示",
-                        Foreground = Brushes.White,
-                        HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    });
-            }
-            if (DataWindow.VisualPage.Children.Contains(Data_Page) == false)
-                DataWindow.VisualPage.Children.Add(Data_Page);
-            DataWindow.Show();
-        }
-
-        /// <summary>
-        /// 设置数据页面显示在主窗口页面中
-        /// </summary>
-        public void SetShowInPage()
-        {
-            if (DataWindow.VisualPage.Children.Count != 0)
-            {
-                (DataWindow.VisualPage.Children[0] as DataVisualPage).ShowInPage.Visibility = Visibility.Visible;
-            }
-            DataWindow.VisualPage.Children.Clear();
-            if (CurrentPage == Data_Page)
-            {
-                PageContent.Children.Clear();
-                PageContent.Children.Add(Data_Page);
-            }
-        }
+        public static DataVisualPage Data_Page = new DataVisualPage();
         #endregion
 
         public MainWindow()
@@ -335,15 +294,7 @@ namespace ODMR_Lab
                 CurrentPage = Data_Page;
                 GeneralGrid.ColumnDefinitions[1].Width = new GridLength(0);
                 PageContent.Children.Clear();
-
-                if (Data_Page.ShowInPage.Visibility == Visibility.Visible)
-                {
-                    SetShowInPage();
-                }
-                else
-                {
-                    SetShowInWindow();
-                }
+                AddPageToView(Data_Page);
             }
             if (btn.Text == "扩展")
             {
@@ -362,29 +313,28 @@ namespace ODMR_Lab
             if (btn.Text == "温度控制器")
             {
                 CurrentPage = Dev_TemPeraPage;
-                PageContent.Children.Add(Dev_TemPeraPage);
+                AddPageToView(Dev_TemPeraPage);
             }
             if (btn.Text == "位移台")
             {
                 CurrentPage = Dev_MoversPage;
-                PageContent.Children.Add(Dev_MoversPage);
+                AddPageToView(Dev_MoversPage);
             }
             if (btn.Text == "相机/翻转镜")
             {
                 CurrentPage = Dev_CameraPage;
-                PageContent.Children.Add(Dev_CameraPage);
+                AddPageToView(Dev_CameraPage);
             }
             if (btn.Text == "源表")
             {
                 CurrentPage = Dev_PowerMeterPage;
-                PageContent.Children.Add(Dev_PowerMeterPage);
+                AddPageToView(Dev_PowerMeterPage);
             }
             if (btn.Text == "射频源/Lock In")
             {
                 CurrentPage = Dev_RFSource_LockInPage;
-                PageContent.Children.Add(Dev_RFSource_LockInPage);
+                AddPageToView(Dev_RFSource_LockInPage);
             }
-
         }
 
         private void ShowExpContent(object sender, RoutedEventArgs e)
@@ -397,29 +347,34 @@ namespace ODMR_Lab
             if (btn.Text == "温度监测")
             {
                 CurrentPage = Exp_TemPeraPage;
-                PageContent.Children.Add(Exp_TemPeraPage);
+                AddPageToView(Exp_TemPeraPage);
+            }
+            if (btn.Text == "序列编辑器")
+            {
+                CurrentPage = Exp_SequencePage;
+                AddPageToView(Exp_SequencePage);
             }
             if (btn.Text == "位移台控制界面")
             {
                 CurrentPage = Exp_StagePage;
-                PageContent.Children.Add(Exp_StagePage);
+                AddPageToView(Exp_StagePage);
             }
             if (btn.Text == "磁场定位")
             {
                 CurrentPage = Exp_MagnetControlPage;
-                PageContent.Children.Add(Exp_MagnetControlPage);
+                AddPageToView(Exp_MagnetControlPage);
             }
 
             if (btn.Text == "样品定位")
             {
                 CurrentPage = Exp_SamplePage;
-                PageContent.Children.Add(Exp_SamplePage);
+                AddPageToView(Exp_SamplePage);
             }
 
             if (btn.Text == "场效应器件测量")
             {
                 CurrentPage = Exp_SourcePage;
-                PageContent.Children.Add(Exp_SourcePage);
+                AddPageToView(Exp_SourcePage);
             }
         }
 
@@ -433,8 +388,34 @@ namespace ODMR_Lab
             if (btn.Text == "Python管理器")
             {
                 CurrentPage = Ext_PythonPage;
-                PageContent.Children.Add(Ext_PythonPage);
+                AddPageToView(Ext_PythonPage);
             }
+        }
+
+        public void AddPageToView(PageBase page)
+        {
+            if (page != CurrentPage) return;
+            PageContent.Children.Clear();
+            if (!page.IsDisplayedInPage)
+            {
+                DisplayInWindowBtn.Visibility = Visibility.Hidden;
+                PageContent.Children.Add(new TextBlock()
+                {
+                    Text = "正在独立窗口中显示...",
+                    FontSize = 40,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = Brushes.White,
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextAlignment = TextAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap
+                });
+                DisplayInWindowBtn.Visibility = Visibility.Hidden;
+                return;
+            }
+            DisplayInWindowBtn.Visibility = Visibility.Visible;
+            PageContent.Children.Add(page);
+            return;
         }
 
         private void AutoConnect(object sender, RoutedEventArgs e)
@@ -457,6 +438,19 @@ namespace ODMR_Lab
                 });
             });
             t.Start();
+        }
+
+        /// <summary>
+        /// 在独立窗口中显示
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowInWindow(object sender, RoutedEventArgs e)
+        {
+            if (CurrentPage != null && CurrentPage.IsDisplayedInPage == true)
+            {
+                CurrentPage.IsDisplayedInPage = false;
+            }
         }
     }
 }

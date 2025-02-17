@@ -41,6 +41,8 @@ namespace ODMR_Lab.相机
     /// </summary>
     public partial class DevicePage : DevicePageBase
     {
+        public override string PageName { get; set; } = "相机";
+
         public List<CameraInfo> Cameras { get; set; } = new List<CameraInfo>();
         public List<FlipMotorInfo> Flips { get; set; } = new List<FlipMotorInfo>();
 
@@ -50,7 +52,7 @@ namespace ODMR_Lab.相机
             InitializeComponent();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 

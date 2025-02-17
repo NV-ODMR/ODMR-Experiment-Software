@@ -35,6 +35,7 @@ namespace ODMR_Lab.温度监测部分
     /// </summary>
     public partial class DevicePage : DevicePageBase
     {
+        public override string PageName { get; set; } = "温度控制器";
         /// <summary>
         /// 温控列表
         /// </summary>
@@ -51,7 +52,7 @@ namespace ODMR_Lab.温度监测部分
             InitializeComponent();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 

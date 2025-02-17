@@ -27,14 +27,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ContextMenu = Controls.ContextMenu;
 
-namespace ODMR_Lab.Python管理器
+namespace ODMR_Lab.序列编辑器
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
     public partial class ExtPage : PageBase
     {
-        public override string PageName { get; set; } = "Python管理器";
 
         public ExtPage()
         {
@@ -49,7 +48,7 @@ namespace ODMR_Lab.Python管理器
             return false;
         }
 
-        public override void InnerInit()
+        public override void Init()
         {
         }
 

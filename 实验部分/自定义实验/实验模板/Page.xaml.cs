@@ -53,6 +53,10 @@ namespace ODMR_Lab.自定义实验
     /// </summary>
     public partial class DisplayPage : ExpPageBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public override string PageName { get; set; } = "自定义实验";
 
         public override void UpdateParam()
         {
@@ -192,7 +196,7 @@ namespace ODMR_Lab.自定义实验
             return g;
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 

@@ -13,20 +13,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ODMR_Lab.数据处理
+namespace ODMR_Lab.基本窗口
 {
     /// <summary>
-    /// DataVisualWindow.xaml 的交互逻辑
+    /// EmptyWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class DataVisualWindow : Window
+    public partial class EmptyWindow : Window
     {
-        public bool IsDataPanelInWindow { get; set; } = false;
+        PageBase ParentPage = null;
 
-        public DataVisualWindow()
+        public EmptyWindow(string wintitle, PageBase parent)
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
             hel.RegisterWindow(this, 5, 40);
+            Title = wintitle;
+            title.Content = "     " + wintitle;
+            ParentPage = parent;
         }
 
         /// <summary>
@@ -39,6 +42,11 @@ namespace ODMR_Lab.数据处理
             WindowState = WindowState.Minimized;
         }
 
+        /// <summary>
+        /// 最小化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Maximize(object sender, RoutedEventArgs e)
         {
             if (WindowState == WindowState.Maximized)
@@ -57,15 +65,9 @@ namespace ODMR_Lab.数据处理
 
         private void Close(object sender, RoutedEventArgs e)
         {
-            MainWindow.Handle.SetShowInPage();
+            ParentPage.IsDisplayedInPage = true;
             Hide();
         }
 
-        public new void Show()
-        {
-            Topmost = true;
-            base.Show();
-            Topmost = false;
-        }
     }
 }

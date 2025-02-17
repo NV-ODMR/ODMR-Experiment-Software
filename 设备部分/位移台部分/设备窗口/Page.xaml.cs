@@ -38,14 +38,14 @@ namespace ODMR_Lab.位移台部分
     {
 
         public List<NanoMoverInfo> MoverList { get; set; } = new List<NanoMoverInfo>();
-
+        public override string PageName { get; set; } = "位移台";
 
         public DevicePage()
         {
             InitializeComponent();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 

@@ -48,6 +48,8 @@ namespace ODMR_Lab.数据处理
     /// </summary>
     public partial class DataVisualPage : PageBase
     {
+        public override string PageName { get; set; } = "数据可视化";
+
         public List<DataVisualSource> Source { get; set; } = new List<DataVisualSource>();
 
 
@@ -56,7 +58,7 @@ namespace ODMR_Lab.数据处理
             InitializeComponent();
         }
 
-        public override void Init()
+        public override void InnerInit()
         {
         }
 
@@ -387,11 +389,6 @@ namespace ODMR_Lab.数据处理
             {
                 Plot1D.SelectGroup(source.ChartDataSource1D[0].GroupName);
             }
-        }
-
-        private void ShowInWindowClick(object sender, RoutedEventArgs e)
-        {
-            MainWindow.Handle.SetShowInWindow();
         }
 
         /// <summary>
