@@ -57,6 +57,9 @@
         <control:ListViewer.EditableBooleanTemplate>
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
+        <control:ListViewer.EditableBoxTemplate>
+            <TextBox BorderThickness="0" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" CaretBrush="White"/>
+        </control:ListViewer.EditableBoxTemplate>
     </control:ListViewer>
     <control:DecoratedButton Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" Click="ApplyChannels" Text="应用设置" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
 

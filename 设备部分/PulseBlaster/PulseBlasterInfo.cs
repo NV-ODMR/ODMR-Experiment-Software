@@ -7,7 +7,7 @@ namespace ODMR_Lab.设备部分.板卡
 {
     public class PulseBlasterInfo : DeviceInfoBase<PulseBlasterBase>
     {
-        public List<KeyValuePair<string, int>> ChannelDescriptions { get; set; }
+        public List<KeyValuePair<string, int>> ChannelDescriptions { get; set; } = new List<KeyValuePair<string, int>>();
 
         public override void CreateDeviceInfoBehaviour()
         {

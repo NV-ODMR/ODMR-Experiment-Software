@@ -52,22 +52,12 @@ namespace ODMR_Lab.实验部分.位移台界面
             }
             catch (Exception) { }
 
-            Dispatcher.Invoke(() =>
-            {
-                XYLocs.Text = "X:  " + xv + "  Y:  " + yv;
-            });
-
             try
             {
                 var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.Z, MoverPart);
                 zv = dev.Device.Position.ToString();
             }
             catch (Exception) { }
-
-            Dispatcher.Invoke(() =>
-            {
-                ZLocs.Text = "Z:  " + zv;
-            });
 
             try
             {
@@ -92,6 +82,8 @@ namespace ODMR_Lab.实验部分.位移台界面
 
             Dispatcher.Invoke(() =>
             {
+                XYLocs.Text = "X:  " + xv + "  Y:  " + yv;
+                ZLocs.Text = "Z:  " + zv;
                 AngleLocs.Text = "X:  " + axv + "  Y:  " + ayv + "  Z:  " + azv;
             });
         }
