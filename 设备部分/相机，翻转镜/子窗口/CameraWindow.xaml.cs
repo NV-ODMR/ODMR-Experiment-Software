@@ -166,9 +166,9 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                         long tik1 = DateTime.Now.Ticks;
 
                         BitmapSource image = Camera.Device.GrabFrame(2000);
-                        image = ClipImage(image, ClipImageBound);
                         Dispatcher.Invoke(() =>
                         {
+                            image = ClipImage(image, ClipImageBound);
                             DisplayArea.SetSource(image);
                         });
                         Thread.Sleep(40);
@@ -348,19 +348,22 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
         /// <returns></returns>
         private BitmapSource ClipImage(BitmapSource origin, Rect clipRange)
         {
-            origin.Freeze();
-            if (!clipRange.IsEmpty)
+            BitmapSource res = null;
+            Dispatcher.Invoke(() =>
             {
-                int x1 = (int)(clipRange.Left * origin.PixelWidth);
-                int x2 = (int)(clipRange.Right * origin.PixelWidth);
-                int y1 = (int)(clipRange.Top * origin.PixelHeight);
-                int y2 = (int)(clipRange.Bottom * origin.PixelHeight);
-                Int32Rect cutrect = new Int32Rect(x1, y1, x2 - x1, y2 - y1);
-                CroppedBitmap cb = new CroppedBitmap(origin, cutrect);
-                cb.Freeze();
-                return cb;
-            }
-            return origin;
+                if (!clipRange.IsEmpty)
+                {
+                    int x1 = (int)(clipRange.Left * origin.PixelWidth);
+                    int x2 = (int)(clipRange.Right * origin.PixelWidth);
+                    int y1 = (int)(clipRange.Top * origin.PixelHeight);
+                    int y2 = (int)(clipRange.Bottom * origin.PixelHeight);
+                    Int32Rect cutrect = new Int32Rect(x1, y1, x2 - x1, y2 - y1);
+                    CroppedBitmap cb = new CroppedBitmap(origin, cutrect);
+                    res = cb;
+                }
+                res = origin;
+            });
+            return res;
         }
 
         private void GetRatioPoint(Image image, Point p, out Point ratioPoint)
