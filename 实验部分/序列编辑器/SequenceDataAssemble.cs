@@ -1,4 +1,5 @@
 ﻿using CodeHelper;
+using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,7 +46,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 var peakspans = obj.ExtractString("ChannelName→" + names[i] + "→" + "Spans").Select(x => int.Parse(x)).ToList();
                 var peaksteps = obj.ExtractString("ChannelName→" + names[i] + "→" + "Steps").Select(x => int.Parse(x)).ToList();
 
-                SequenceChannelData channeldata = new SequenceChannelData(names[i]);
+                SequenceChannelData channeldata = new SequenceChannelData((SequenceChannel)Enum.Parse(typeof(SequenceChannel), names[i]));
 
                 for (int j = 0; j < peaknames.Count; j++)
                 {
@@ -67,23 +68,78 @@ namespace ODMR_Lab.实验部分.序列编辑器
             obj.Descriptions.Add("SequenceAssembleName", Name);
             obj.Descriptions.Add("SequenceAssembleLoopCount", LoopCount.ToString());
 
-            var datanames = Channels.Select(x => x.Name).ToList();
+            var datanames = Channels.Select(x => Enum.GetName(x.ChannelInd.GetType(), x.ChannelInd)).ToList();
             obj.WriteStringData("ChannelNames", datanames);
             foreach (var item in Channels)
             {
+                string chname = Enum.GetName(item.ChannelInd.GetType(), item.ChannelInd);
                 var peaknames = item.Peaks.Select(x => x.PeakName.ToString()).ToList();
                 var peakvalues = item.Peaks.Select(x => Enum.GetName(typeof(WaveValues), x.WaveValue)).ToList();
                 var peaksteps = item.Peaks.Select(x => x.Step.ToString()).ToList();
                 var peakspans = item.Peaks.Select(x => x.PeakSpan.ToString()).ToList();
-                obj.WriteStringData("ChannelName→" + item.Name + "→" + "PeakNames", peaknames);
-                obj.WriteStringData("ChannelName→" + item.Name + "→" + "PeakValues", peakvalues);
-                obj.WriteStringData("ChannelName→" + item.Name + "→" + "Spans", peakspans);
-                obj.WriteStringData("ChannelName→" + item.Name + "→" + "Steps", peaksteps);
+                obj.WriteStringData("ChannelName→" + chname + "→" + "PeakNames", peaknames);
+                obj.WriteStringData("ChannelName→" + chname + "→" + "PeakValues", peakvalues);
+                obj.WriteStringData("ChannelName→" + chname + "→" + "Spans", peakspans);
+                obj.WriteStringData("ChannelName→" + chname + "→" + "Steps", peaksteps);
             }
 
             //保存到目标文件夹
             DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
             obj.SaveToFile(Path.Combine(info.FullName, Name.ToString()));
+        }
+
+        /// <summary>
+        /// 转换成PB指令
+        /// </summary>
+        /// <returns></returns>
+        public List<CommandLine> ConvertToCommandLine(out string ComandInformation)
+        {
+            ComandInformation = "";
+            List<CommandLine> line = new List<CommandLine>();
+            for (int i = 0; i < LoopCount; i++)
+            {
+                //找1脉冲的时间点
+                HashSet<int> OneTimes = new HashSet<int>();
+                foreach (var wave in Channels)
+                {
+                    int time = 0;
+                    foreach (var peak in wave.Peaks)
+                    {
+                        if (peak.WaveValue == WaveValues.One)
+                        {
+                            OneTimes.Add(time);
+                            time += peak.PeakSpan + peak.Step * i;
+                            OneTimes.Add(time);
+                        }
+                        time += peak.PeakSpan + peak.Step * i;
+                    }
+                }
+                //时间从低到高排序
+                var sortedTimes = OneTimes.ToList();
+                sortedTimes.Sort();
+                for (int j = 0; j < sortedTimes.Count - 1; j++)
+                {
+                    List<int> HighChannelIndexes = new List<int>();
+                    foreach (var ch in Channels)
+                    {
+                        if (ch.IsWaveOne(sortedTimes[j], sortedTimes[j + 1], i))
+                        {
+                            HighChannelIndexes.Add((int)ch.ChannelInd);
+                        }
+                    }
+                    CommandLine singlecommand = new CommandLine(HighChannelIndexes, sortedTimes[j + 1] - sortedTimes[j]) { CommandTpye = CommandTypes.Continue };
+                    //打印指令结果
+                    ComandInformation += "Channels:";
+                    foreach (var item in HighChannelIndexes)
+                    {
+                        ComandInformation += item.ToString() + "\t";
+                    }
+                    ComandInformation += "\t";
+                    ComandInformation += "TimeSpan:" + (sortedTimes[j + 1] - sortedTimes[j]).ToString() + "\n";
+                    line.Add(singlecommand);
+                }
+            }
+            return line;
         }
     }
 }

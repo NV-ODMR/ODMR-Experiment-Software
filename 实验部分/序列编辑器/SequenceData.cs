@@ -13,22 +13,46 @@ namespace ODMR_Lab.实验部分.序列编辑器
         /// <summary>
         /// 序列名称
         /// </summary>
-        public string Name { get; set; } = "";
+        public SequenceChannel ChannelInd { get; set; } = SequenceChannel.None;
 
         /// <summary>
         /// 峰位置，键值为起始时间
         /// </summary>
         public List<SequenceWaveSeg> Peaks { get; set; } = new List<SequenceWaveSeg>();
 
-        public SequenceChannelData(string name)
+        public SequenceChannelData(SequenceChannel channel)
         {
-            Name = name;
-            ChannelWaveData = new NumricDataSeries(name) { LineThickness = 3, LineColor = CodeHelper.ColorHelper.GenerateHighContrastColor(Colors.Black) };
+            ChannelInd = channel;
+            ChannelWaveData = new NumricDataSeries("") { LineThickness = 3, LineColor = CodeHelper.ColorHelper.GenerateHighContrastColor(Colors.Black) };
         }
 
         public NumricDataSeries ChannelWaveData { get; set; }
 
         public bool IsDisplay { get; set; } = false;
+
+        /// <summary>
+        /// 判断在给定时间段内是否是1脉冲
+        /// </summary>
+        /// <param name="timestart"></param>
+        /// <param name="timeend"></param>
+        /// <param name="loopcount"></param>
+        /// <returns></returns>
+        public bool IsWaveOne(int timestart, int timeend, int loopcount)
+        {
+            int time = 0;
+            foreach (var item in Peaks)
+            {
+                int segstart = time;
+                int segend = time + item.PeakSpan + item.Step * loopcount;
+                if (timestart >= segstart && timeend <= segend && item.WaveValue == WaveValues.One)
+                {
+                    return true;
+                }
+                time += item.PeakSpan + item.Step * loopcount;
+            }
+
+            return false;
+        }
     }
 
     /// <summary>

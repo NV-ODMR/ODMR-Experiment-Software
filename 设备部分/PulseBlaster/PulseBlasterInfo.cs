@@ -26,6 +26,7 @@ namespace ODMR_Lab.设备部分.板卡
         {
             var indexes = file.ExtractDouble("ChannelIndexes");
             var descripts = file.ExtractString("ChannelDescriptions");
+            ChannelDescriptions.Clear();
             for (int i = 0; i < Device.ChannelInds.Count(); i++)
             {
                 if (indexes.Contains(Device.ChannelInds.ElementAt(i)))

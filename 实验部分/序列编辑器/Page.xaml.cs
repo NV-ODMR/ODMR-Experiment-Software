@@ -70,6 +70,18 @@ namespace ODMR_Lab.序列编辑器
         }
         #endregion
 
+        private string GetChannelDescription(SequenceChannel ChannelInd)
+        {
+            string desc = "Undefined";
+            if (MainWindow.Dev_PBPage.PBs.Count != 0)
+            {
+                desc = MainWindow.Dev_PBPage.PBs[0].FindDescriptionOfChannel((int)ChannelInd);
+                if (desc == "")
+                    desc = "Undefined";
+            }
+
+            return desc;
+        }
 
         SequenceDataAssemble Sequence { get; set; } = new SequenceDataAssemble();
         public void UpdateSequenceData()
@@ -80,7 +92,9 @@ namespace ODMR_Lab.序列编辑器
                 ChannelPanel.ClearItems();
                 foreach (var item in Sequence.Channels)
                 {
-                    ChannelPanel.AddItem(item, item.Name, item.IsDisplay);
+
+                    var desc = GetChannelDescription(item.ChannelInd);
+                    ChannelPanel.AddItem(item, item.ChannelInd, desc, item.IsDisplay);
                 }
                 #endregion
                 SignalPanel.ClearItems();
@@ -109,7 +123,7 @@ namespace ODMR_Lab.序列编辑器
 
             foreach (var item in Sequence.Channels)
             {
-                item.ChannelWaveData.Name = item.Name;
+                item.ChannelWaveData.Name = Enum.GetName(item.ChannelInd.GetType(), item.ChannelInd);
                 item.ChannelWaveData.X.Clear();
                 item.ChannelWaveData.Y.Clear();
                 if (item.Peaks.Count == 0) continue;
@@ -144,18 +158,12 @@ namespace ODMR_Lab.序列编辑器
             foreach (var item in Sequence.Channels)
             {
                 if (item.ChannelWaveData.GetXCount() == 0) continue;
-                if (item.ChannelWaveData.X.Last() < maxtime)
+                if (item.ChannelWaveData.X.Last() <= maxtime)
                 {
-                    if (item.ChannelWaveData.Y.Last() == 1)
-                    {
-                        item.ChannelWaveData.X.Add(maxtime);
-                        item.ChannelWaveData.Y.Add(1);
-                    }
-                    if (item.ChannelWaveData.Y.Last() == 0)
-                    {
-                        item.ChannelWaveData.X.Add(maxtime);
-                        item.ChannelWaveData.Y.Add(0);
-                    }
+                    item.ChannelWaveData.X.Add(item.ChannelWaveData.X.Last());
+                    item.ChannelWaveData.Y.Add(0);
+                    item.ChannelWaveData.X.Add(maxtime);
+                    item.ChannelWaveData.Y.Add(0);
                 }
             }
 
@@ -192,7 +200,7 @@ namespace ODMR_Lab.序列编辑器
         #region 新建波形和通道
         private void NewChannel(object sender, RoutedEventArgs e)
         {
-            Sequence.Channels.Add(new SequenceChannelData("newch"));
+            Sequence.Channels.Add(new SequenceChannelData(SequenceChannel.None));
             UpdateSequenceData();
         }
 
@@ -268,6 +276,8 @@ namespace ODMR_Lab.序列编辑器
                 win.Owner = Window.GetWindow(this);
                 win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 win.ShowWindow("序列已保存");
+                a.ConvertToCommandLine(out string commandinform);
+
             }
             catch (Exception ex)
             {
@@ -329,8 +339,9 @@ namespace ODMR_Lab.序列编辑器
             try
             {
                 var channel = ChannelPanel.GetTag(arg1) as SequenceChannelData;
-                channel.Name = ChannelPanel.GetCellValue(arg1, 0) as string;
-                channel.IsDisplay = (bool)ChannelPanel.GetCellValue(arg1, 1);
+                channel.ChannelInd = (SequenceChannel)Enum.Parse(typeof(SequenceChannel), ChannelPanel.GetCellValue(arg1, 0) as string);
+                channel.IsDisplay = (bool)ChannelPanel.GetCellValue(arg1, 2);
+                ChannelPanel.SetCelValue(arg1, 1, GetChannelDescription(channel.ChannelInd));
                 RefreshPlot(int.Parse(CurrentLoopIndex.Text));
             }
             catch (Exception) { }
@@ -370,6 +381,11 @@ namespace ODMR_Lab.序列编辑器
                 seg.ParentChannel.Peaks.Insert(arg1, new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, seg.ParentChannel));
                 UpdatePeakData();
             }
+        }
+
+        private void ChannelPanel_ItemValueChanged_1(int arg1, int arg2, object arg3)
+        {
+
         }
     }
 }

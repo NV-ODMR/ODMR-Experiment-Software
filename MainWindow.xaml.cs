@@ -123,9 +123,9 @@ namespace ODMR_Lab
         {
             if (MessageWindow.ShowMessageBox("提示", "确定要关闭吗?", MessageBoxButton.YesNo, owner: this) == MessageBoxResult.Yes)
             {
-                Hide();
                 bool canclose = DeviceDispatcher.CloseDevicesAndSave();
                 if (!canclose) return;
+                Hide();
                 //保存界面参数
                 ParamManager.SaveParams();
                 #region 调用页面的中止方法

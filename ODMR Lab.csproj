@@ -204,6 +204,7 @@
     <Compile Include="实验部分\序列编辑器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\序列编辑器\SequenceChannel.cs" />
     <Compile Include="实验部分\序列编辑器\SequenceData.cs" />
     <Compile Include="实验部分\序列编辑器\SequenceDataAssemble.cs" />
     <Compile Include="实验部分\序列编辑器\SequenceFileWindow.xaml.cs">

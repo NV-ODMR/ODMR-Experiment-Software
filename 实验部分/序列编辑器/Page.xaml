@@ -29,7 +29,7 @@
             <Label Grid.Column="4" Content="序列名称:" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
             <Label Name="SequenceFileName" Grid.Column="5" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
         </Grid>
-        <Grid Name="SequencePanel" Visibility="Collapsed" Grid.Row="1">
+        <Grid Name="SequencePanel" Visibility="Visible" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -59,7 +59,8 @@
                 </Grid.RowDefinitions>
                 <control:ListViewer Grid.Row="0" Grid.Column="0" Margin="5" Name="ChannelPanel" ItemContextMenuSelected="ChannelPanel_ItemContextMenuSelected" HeaderHeight="30" ItemHeight="30" MinItemWidth="150"  ItemSelected="ChannelPanel_ItemSelected" ItemValueChanged="ChannelPanel_ItemValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
                     <control:ListViewer.DataTemplate>
-                        <control:ViewerTemplate Descriptions="通道名" DataType="String" Editable="True" DataDisplayWidth="*" />
+                        <control:ViewerTemplate Descriptions="通道号" DataType="Enum" Editable="True" DataDisplayWidth="*" />
+                        <control:ViewerTemplate Descriptions="通道名" DataType="String" Editable="False" DataDisplayWidth="*" />
                         <control:ViewerTemplate Descriptions="显示" DataType="Bool" Editable="True" DataDisplayWidth="40" />
                     </control:ListViewer.DataTemplate>
                     <control:ListViewer.ItemContextMenu>
@@ -72,6 +73,13 @@
                     <control:ListViewer.HeaderLabelTemplate>
                         <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
                     </control:ListViewer.HeaderLabelTemplate>
+                    <control:ListViewer.EnumComboBoxTemplate>
+                        <control:ComboBox FontSize="10" Grid.Column="0" TextAreaRatio="1" Margin="4" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White">
+                            <control:ComboBox.TemplateButton>
+                                <control:DecoratedButton FontSize="10" Grid.Column="0" TextAreaRatio="1" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF359BFF" PressedColor="#FF0076D0" MoveInForeground="White" PressedForeground="White"/>
+                            </control:ComboBox.TemplateButton>
+                        </control:ComboBox>
+                    </control:ListViewer.EnumComboBoxTemplate>
                     <control:ListViewer.UnEditableTextTemplate>
                         <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
                     </control:ListViewer.UnEditableTextTemplate>
@@ -149,7 +157,7 @@
                 <TextBox x:Name="CurrentLoopIndex" KeyDown="CurrentLoopIndex_KeyDown" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
             </Grid>
         </Grid>
-        <Grid Name="TipPanel" Grid.Row="1">
+        <Grid Name="TipPanel" Visibility="Hidden" Grid.Row="1">
             <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="新建或打开序列" Foreground="White" FontSize="25"/>
         </Grid>
     </Grid>

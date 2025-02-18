@@ -143,10 +143,21 @@ namespace ODMR_Lab.设备部分.光子探测器
 
         private void StartAPDSample(object sender, RoutedEventArgs e)
         {
+            if (APDDevice.SelectedItem == null) return;
+            CurrentAPD = APDDevice.SelectedItem.Tag as APDInfo;
+            try
+            {
+                CurrentAPD.BeginUse();
+            }
+            catch (Exception)
+            {
+                MessageWindow.ShowTipWindow("设备正在使用,无法开始计数", Window.GetWindow(this));
+                return;
+            }
+
             SetStartState();
             try
             {
-                CurrentAPD = APDDevice.SelectedItem.Tag as APDInfo;
                 CurrentAPD.Device.BeginContinusSample(ConfigParam.SampleFreq.Value);
             }
             catch (Exception ex)
@@ -154,6 +165,8 @@ namespace ODMR_Lab.设备部分.光子探测器
                 SetStopState();
                 return;
             }
+            IsSampleEnd = false;
+
             SampleThread = new Thread(() =>
             {
                 while (!IsSampleEnd)
@@ -171,7 +184,11 @@ namespace ODMR_Lab.设备部分.光子探测器
             {
                 while (!IsSampleEnd)
                 {
-                    var buffer = APDSampleData.ToArray().ToList();
+                    List<double> buffer = new List<double>();
+                    lock (APDSampleData)
+                    {
+                        buffer = APDSampleData.ToArray().ToList();
+                    }
                     int count = buffer.Count;
                     int displaycount = ConfigParam.MaxDisplayPoint.Value;
                     if (displaycount > count) displaycount = count;
@@ -180,6 +197,10 @@ namespace ODMR_Lab.设备部分.光子探测器
                     Dispatcher.Invoke(() =>
                     {
                         Chart.RefreshPlotWithAutoScale();
+                        if (buffer.Count == 0)
+                            CountRate.Text = "0";
+                        else
+                            CountRate.Text = buffer.Last().ToString();
                     });
                     Thread.Sleep(20);
                 }
@@ -217,6 +238,7 @@ namespace ODMR_Lab.设备部分.光子探测器
             }
             CurrentAPD.Device.EndContinusSample();
             SetStopState();
+            CurrentAPD.EndUse();
         }
 
         private void UpdateDeviceList(object sender, RoutedEventArgs e)

@@ -141,10 +141,10 @@ namespace ODMR_Lab.设备部分.板卡
         {
             try
             {
-                if (PBChannels.GetSelectedTag() == null) return;
-                var pb = PBChannels.GetSelectedTag() as PulseBlasterInfo;
+                if (PBList.GetSelectedTag() == null) return;
+                var pb = PBList.GetSelectedTag() as PulseBlasterInfo;
                 //检查
-                var inds = Enumerable.Range(0, PBChannels.GetRowCount()).Select(x => (int)PBChannels.GetCellValue(x, 0));
+                var inds = Enumerable.Range(0, PBChannels.GetRowCount()).Select(x => int.Parse(PBChannels.GetCellValue(x, 0) as string));
                 var names = Enumerable.Range(0, PBChannels.GetRowCount()).Select(x => PBChannels.GetCellValue(x, 1) as string);
                 HashSet<string> set = new HashSet<string>(names);
                 if (set.Count != names.Count()) { throw new Exception("通道名不能重复"); }
@@ -158,6 +158,7 @@ namespace ODMR_Lab.设备部分.板卡
                         pb.ChannelDescriptions[ind] = new KeyValuePair<string, int>(names.ElementAt(i), inds.ElementAt(i));
                     }
                 }
+                MessageWindow.ShowTipWindow("设置成功", Window.GetWindow(this));
             }
             catch (Exception ex)
             {
