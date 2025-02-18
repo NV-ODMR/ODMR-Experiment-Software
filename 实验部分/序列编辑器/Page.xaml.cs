@@ -223,6 +223,8 @@ namespace ODMR_Lab.序列编辑器
         {
             Sequence = new SequenceDataAssemble() { Name = "Newseq" };
             UpdateSequenceData();
+            SequencePanel.Visibility = Visibility.Visible;
+            TipPanel.Visibility = Visibility.Hidden;
         }
 
         private void SaveSequence(object sender, RoutedEventArgs e)
@@ -258,6 +260,9 @@ namespace ODMR_Lab.序列编辑器
                     a.Channels.Add(item);
                 }
                 a.WriteToFile();
+
+                TipPanel.Visibility = Visibility.Visible;
+                SequencePanel.Visibility = Visibility.Hidden;
 
                 TimeWindow win = new TimeWindow();
                 win.Owner = Window.GetWindow(this);
@@ -299,7 +304,8 @@ namespace ODMR_Lab.序列编辑器
                 SequenceFileName.Content = Sequence.Name;
             }
             catch (Exception) { }
-
+            TipPanel.Visibility = Visibility.Collapsed;
+            SequencePanel.Visibility = Visibility.Visible;
         }
 
         private void WaveFormValueChanged(int arg1, int arg2, object arg3)

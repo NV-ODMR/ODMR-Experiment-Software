@@ -10,12 +10,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.ColumnSpan="4">
             <Grid.ColumnDefinitions>
@@ -32,115 +29,128 @@
             <Label Grid.Column="4" Content="序列名称:" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
             <Label Name="SequenceFileName" Grid.Column="5" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
         </Grid>
-        <Grid Grid.Row="1" Grid.ColumnSpan="3">
+        <Grid Name="SequencePanel" Visibility="Collapsed" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <charts:ChartControl Name="chart" AllowAutoClip="False" Grid.RowSpan="2" Grid.ColumnSpan="1" Title="波形预览" SnapsToDevicePixels="True" XAxisName="时间(ns)" YAxisName="电平值" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="16" YAxisForeground="Transparent" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" Zoom="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
-            <control:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="0" Grid.Column="1" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
-            <control:DecoratedButton Margin="7" Click="Snap" Grid.Row="1" Grid.Column="1" TextAreaRatio="0" IconMargin="4" ToolTip="复制截图到剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
-
+            <Grid Grid.Row="0" Grid.ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <charts:ChartControl Name="chart" AllowAutoClip="False" Grid.RowSpan="2" Grid.ColumnSpan="1" Title="波形预览" SnapsToDevicePixels="True" XAxisName="时间(ns)" YAxisName="电平值" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisFontsize="16" YAxisForeground="Transparent" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" Zoom="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
+                <control:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="0" Grid.Column="1" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
+                <control:DecoratedButton Margin="7" Click="Snap" Grid.Row="1" Grid.Column="1" TextAreaRatio="0" IconMargin="4" ToolTip="复制截图到剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <control:ListViewer Grid.Row="0" Grid.Column="0" Margin="5" Name="ChannelPanel" ItemContextMenuSelected="ChannelPanel_ItemContextMenuSelected" HeaderHeight="30" ItemHeight="30" MinItemWidth="150"  ItemSelected="ChannelPanel_ItemSelected" ItemValueChanged="ChannelPanel_ItemValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
+                    <control:ListViewer.DataTemplate>
+                        <control:ViewerTemplate Descriptions="通道名" DataType="String" Editable="True" DataDisplayWidth="*" />
+                        <control:ViewerTemplate Descriptions="显示" DataType="Bool" Editable="True" DataDisplayWidth="40" />
+                    </control:ListViewer.DataTemplate>
+                    <control:ListViewer.ItemContextMenu>
+                        <control:ContextMenu>
+                            <control:ContextMenu.Items>
+                                <control:DecoratedButton Text="删除波形" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                            </control:ContextMenu.Items>
+                        </control:ContextMenu>
+                    </control:ListViewer.ItemContextMenu>
+                    <control:ListViewer.HeaderLabelTemplate>
+                        <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                    </control:ListViewer.HeaderLabelTemplate>
+                    <control:ListViewer.UnEditableTextTemplate>
+                        <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
+                    </control:ListViewer.UnEditableTextTemplate>
+                    <control:ListViewer.EditableBooleanTemplate>
+                        <control:Chooser Width="30" Height="15"/>
+                    </control:ListViewer.EditableBooleanTemplate>
+                    <control:ListViewer.EditableBoxTemplate>
+                        <TextBox BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" CaretBrush="White" Foreground="White"/>
+                    </control:ListViewer.EditableBoxTemplate>
+                </control:ListViewer>
+                <control:DecoratedButton Margin="7" Click="NewChannel" Grid.Row="1" Text="新建通道" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <control:ListViewer Grid.Row="0" Grid.Column="1" Margin="5" ItemContextMenuSelected="SignalPanel_ItemContextMenuSelected" Name="SignalPanel" HeaderHeight="30" ItemHeight="30" MinItemWidth="150" ItemValueChanged="WaveFormValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
+                    <control:ListViewer.DataTemplate>
+                        <control:ViewerTemplate Descriptions="脉冲名称" DataType="String" Editable="True" DataDisplayWidth="2*" />
+                        <control:ViewerTemplate Descriptions="波形类型" DataType="Enum" Editable="True" DataDisplayWidth="*" />
+                        <control:ViewerTemplate Descriptions="起始宽度(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />
+                        <control:ViewerTemplate Descriptions="步进(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />
+                    </control:ListViewer.DataTemplate>
+                    <control:ListViewer.ItemContextMenu>
+                        <control:ContextMenu>
+                            <control:ContextMenu.Items>
+                                <control:DecoratedButton Text="删除波形" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                                <control:DecoratedButton Text="在上方插入" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                                <control:DecoratedButton Text="在下方插入" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                            </control:ContextMenu.Items>
+                        </control:ContextMenu>
+                    </control:ListViewer.ItemContextMenu>
+                    <control:ListViewer.HeaderLabelTemplate>
+                        <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                    </control:ListViewer.HeaderLabelTemplate>
+                    <control:ListViewer.UnEditableTextTemplate>
+                        <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
+                    </control:ListViewer.UnEditableTextTemplate>
+                    <control:ListViewer.EditableBooleanTemplate>
+                        <control:Chooser Width="30" Height="15"/>
+                    </control:ListViewer.EditableBooleanTemplate>
+                    <control:ListViewer.EditableBoxTemplate>
+                        <TextBox BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" CaretBrush="White" Foreground="White"/>
+                    </control:ListViewer.EditableBoxTemplate>
+                    <control:ListViewer.EnumComboBoxTemplate>
+                        <control:ComboBox FontSize="10" Grid.Column="0" TextAreaRatio="1" Margin="4" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White">
+                            <control:ComboBox.TemplateButton>
+                                <control:DecoratedButton FontSize="10" Grid.Column="0" TextAreaRatio="1" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF359BFF" PressedColor="#FF0076D0" MoveInForeground="White" PressedForeground="White"/>
+                            </control:ComboBox.TemplateButton>
+                        </control:ComboBox>
+                    </control:ListViewer.EnumComboBoxTemplate>
+                </control:ListViewer>
+                <control:DecoratedButton Margin="7" Click="NewPeak" Grid.Row="1" Text="新建波形" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Foreground="White" Grid.Row="0" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="序列名称"/>
+                <TextBox x:Name="SequenceName" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="seq"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+                <Label Foreground="White" Grid.Row="4" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="总循环次数"/>
+                <TextBox x:Name="LoopStep"  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="1"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+                <Label Foreground="White" Grid.Row="2" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="当前循环序号"/>
+                <TextBox x:Name="CurrentLoopIndex" KeyDown="CurrentLoopIndex_KeyDown" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+            </Grid>
         </Grid>
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="40"/>
-            </Grid.RowDefinitions>
-            <control:ListViewer Grid.Row="0" Grid.Column="0" Margin="5" Name="ChannelPanel" ItemContextMenuSelected="ChannelPanel_ItemContextMenuSelected" HeaderHeight="30" ItemHeight="30" MinItemWidth="150"  ItemSelected="ChannelPanel_ItemSelected" ItemValueChanged="ChannelPanel_ItemValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
-                <control:ListViewer.DataTemplate>
-                    <control:ViewerTemplate Descriptions="通道名" DataType="String" Editable="True" DataDisplayWidth="*" />
-                    <control:ViewerTemplate Descriptions="显示" DataType="Bool" Editable="True" DataDisplayWidth="40" />
-                </control:ListViewer.DataTemplate>
-                <control:ListViewer.ItemContextMenu>
-                    <control:ContextMenu>
-                        <control:ContextMenu.Items>
-                            <control:DecoratedButton Text="删除波形" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
-                        </control:ContextMenu.Items>
-                    </control:ContextMenu>
-                </control:ListViewer.ItemContextMenu>
-                <control:ListViewer.HeaderLabelTemplate>
-                    <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                </control:ListViewer.HeaderLabelTemplate>
-                <control:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                </control:ListViewer.UnEditableTextTemplate>
-                <control:ListViewer.EditableBooleanTemplate>
-                    <control:Chooser Width="30" Height="15"/>
-                </control:ListViewer.EditableBooleanTemplate>
-                <control:ListViewer.EditableBoxTemplate>
-                    <TextBox BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" CaretBrush="White" Foreground="White"/>
-                </control:ListViewer.EditableBoxTemplate>
-            </control:ListViewer>
-            <control:DecoratedButton Margin="7" Click="NewChannel" Grid.Row="1" Text="新建通道" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-        </Grid>
-        <Grid Grid.Row="2" Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="40"/>
-            </Grid.RowDefinitions>
-            <control:ListViewer Grid.Row="0" Grid.Column="1" Margin="5" ItemContextMenuSelected="SignalPanel_ItemContextMenuSelected" Name="SignalPanel" HeaderHeight="30" ItemHeight="30" MinItemWidth="150" ItemValueChanged="WaveFormValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
-                <control:ListViewer.DataTemplate>
-                    <control:ViewerTemplate Descriptions="脉冲名称" DataType="String" Editable="True" DataDisplayWidth="2*" />
-                    <control:ViewerTemplate Descriptions="波形类型" DataType="Enum" Editable="True" DataDisplayWidth="*" />
-                    <control:ViewerTemplate Descriptions="起始宽度(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />
-                    <control:ViewerTemplate Descriptions="步进(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />
-                </control:ListViewer.DataTemplate>
-                <control:ListViewer.ItemContextMenu>
-                    <control:ContextMenu>
-                        <control:ContextMenu.Items>
-                            <control:DecoratedButton Text="删除波形" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
-                            <control:DecoratedButton Text="在上方插入" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
-                            <control:DecoratedButton Text="在下方插入" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
-                        </control:ContextMenu.Items>
-                    </control:ContextMenu>
-                </control:ListViewer.ItemContextMenu>
-                <control:ListViewer.HeaderLabelTemplate>
-                    <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                </control:ListViewer.HeaderLabelTemplate>
-                <control:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                </control:ListViewer.UnEditableTextTemplate>
-                <control:ListViewer.EditableBooleanTemplate>
-                    <control:Chooser Width="30" Height="15"/>
-                </control:ListViewer.EditableBooleanTemplate>
-                <control:ListViewer.EditableBoxTemplate>
-                    <TextBox BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" CaretBrush="White" Foreground="White"/>
-                </control:ListViewer.EditableBoxTemplate>
-                <control:ListViewer.EnumComboBoxTemplate>
-                    <control:ComboBox FontSize="10" Grid.Column="0" TextAreaRatio="1" Margin="4" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White">
-                        <control:ComboBox.TemplateButton>
-                            <control:DecoratedButton FontSize="10" Grid.Column="0" TextAreaRatio="1" IconMargin="4" Background="#FF383838" Foreground="White" MoveInColor="#FF359BFF" PressedColor="#FF0076D0" MoveInForeground="White" PressedForeground="White"/>
-                        </control:ComboBox.TemplateButton>
-                    </control:ComboBox>
-                </control:ListViewer.EnumComboBoxTemplate>
-            </control:ListViewer>
-            <control:DecoratedButton Margin="7" Click="NewPeak" Grid.Row="1" Text="新建波形" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-        </Grid>
-        <Grid Grid.Row="2" Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Label Foreground="White" Grid.Row="0" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="序列名称"/>
-            <TextBox x:Name="SequenceName" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="seq"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
-            <Label Foreground="White" Grid.Row="4" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="总循环次数"/>
-            <TextBox x:Name="LoopStep"  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="1"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
-            <Label Foreground="White" Grid.Row="2" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="当前循环序号"/>
-            <TextBox x:Name="CurrentLoopIndex" KeyDown="CurrentLoopIndex_KeyDown" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+        <Grid Name="TipPanel" Grid.Row="1">
+            <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="新建或打开序列" Foreground="White" FontSize="25"/>
         </Grid>
     </Grid>
 </odmr_lab:ExpPageBase>
