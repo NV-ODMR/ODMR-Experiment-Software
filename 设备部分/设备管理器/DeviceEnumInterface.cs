@@ -18,6 +18,7 @@ using ODMR_Lab.设备部分.光子探测器;
 using ODMR_Lab.设备部分.相机_翻转镜;
 using ODMR_Lab.设备部分.温控;
 using ODMR_Lab.设备部分.源表;
+using ODMR_Lab.设备部分.板卡;
 
 namespace ODMR_Lab.设备部分
 {
@@ -150,6 +151,12 @@ namespace ODMR_Lab.设备部分
             {
                 SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_APDPage.APDs.AddRange(x.Select(v=>v as APDInfo).ToList())),
                 GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_APDPage.APDs.Select(x=>x as InfoBase).ToList(); })
+            },
+            //板卡
+            new DeviceDispatcherInfo<PulseBlasterInfo>(DeviceTypes.PulseBlaster,MainWindow.Dev_PBPage,MainWindow.Dev_PBPage.PBs)
+            {
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_PBPage.PBs.AddRange(x.Select(v=>v as PulseBlasterInfo).ToList())),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_PBPage.PBs.Select(x=>x as InfoBase).ToList(); })
             },
         };
 

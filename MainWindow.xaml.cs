@@ -37,6 +37,8 @@ namespace ODMR_Lab
         public static 设备部分.射频源_锁相放大器.DevicePage Dev_RFSource_LockInPage = new 设备部分.射频源_锁相放大器.DevicePage();
 
         public static 设备部分.光子探测器.DevicePage Dev_APDPage = new 设备部分.光子探测器.DevicePage();
+
+        public static 设备部分.板卡.DevicePage Dev_PBPage = new 设备部分.板卡.DevicePage();
         #endregion
 
         #region 实验页面
@@ -316,6 +318,11 @@ namespace ODMR_Lab
             {
                 CurrentPage = Dev_APDPage;
                 AddPageToView(Dev_APDPage);
+            }
+            if (btn.Text == "PulseBlaster")
+            {
+                CurrentPage = Dev_PBPage;
+                AddPageToView(Dev_PBPage);
             }
         }
 

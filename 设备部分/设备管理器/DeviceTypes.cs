@@ -42,6 +42,10 @@ namespace ODMR_Lab.设备部分
         /// <summary>
         /// 光子计数器
         /// </summary>
-        光子计数器 = 10
+        光子计数器 = 10,
+        /// <summary>
+        /// PulseBlaster
+        /// </summary>
+        PulseBlaster = 11
     }
 }

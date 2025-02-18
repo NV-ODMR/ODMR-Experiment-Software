@@ -71,12 +71,15 @@ namespace ODMR_Lab.位移台界面
         {
             Listener = new Thread(() =>
             {
-                ProbePanel.UpdateListenerState();
-                SamplePanel.UpdateListenerState();
-                MagnetPanel.UpdateListenerState();
-                MWPanel.UpdateListenerState();
-                LenPanel.UpdateListenerState();
-                Thread.Sleep(50);
+                while (true)
+                {
+                    ProbePanel.UpdateListenerState();
+                    SamplePanel.UpdateListenerState();
+                    MagnetPanel.UpdateListenerState();
+                    MWPanel.UpdateListenerState();
+                    LenPanel.UpdateListenerState();
+                    Thread.Sleep(50);
+                }
             });
             Listener.Start();
         }

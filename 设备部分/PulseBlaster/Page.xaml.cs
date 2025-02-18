@@ -48,14 +48,13 @@ namespace ODMR_Lab.设备部分.板卡
     {
         public override string PageName { get; set; } = "板卡";
 
-        public List<PulseBlasterInfo> APDs { get; set; } = new List<PulseBlasterInfo>();
+        public List<PulseBlasterInfo> PBs { get; set; } = new List<PulseBlasterInfo>();
         public List<FlipMotorInfo> Flips { get; set; } = new List<FlipMotorInfo>();
 
 
         public DevicePage()
         {
             InitializeComponent();
-            Chart.DataList.Add(APDDisplayData);
         }
 
         public override void InnerInit()
@@ -70,7 +69,7 @@ namespace ODMR_Lab.设备部分.板卡
         {
         }
 
-        private void NewPulseBlasterConnect(object sender, RoutedEventArgs e)
+        private void NewPBConnect(object sender, RoutedEventArgs e)
         {
             ConnectWindow window = new ConnectWindow(typeof(PulseBlasterBase));
             bool res = window.ShowDialog(Window.GetWindow(this));
@@ -79,7 +78,7 @@ namespace ODMR_Lab.设备部分.板卡
                 PulseBlasterInfo apd = new PulseBlasterInfo() { Device = window.ConnectedDevice as PulseBlasterBase, ConnectInfo = window.ConnectInfo };
                 apd.CreateDeviceInfoBehaviour();
 
-                APDs.Add(apd);
+                PBs.Add(apd);
                 RefreshPanels();
             }
             else
@@ -90,10 +89,10 @@ namespace ODMR_Lab.设备部分.板卡
 
         public override void RefreshPanels()
         {
-            APDList.ClearItems();
-            foreach (var item in APDs)
+            PBList.ClearItems();
+            foreach (var item in PBs)
             {
-                APDList.AddItem(item, item.Device.ProductName);
+                PBList.AddItem(item, item.Device.ProductName);
             }
         }
 
@@ -113,7 +112,7 @@ namespace ODMR_Lab.设备部分.板卡
                 {
                     inf.CloseDeviceInfoAndSaveParams(out bool result);
                     if (result == false) return;
-                    APDs.Remove(inf);
+                    PBs.Remove(inf);
                     RefreshPanels();
                 }
             }
@@ -128,45 +127,41 @@ namespace ODMR_Lab.设备部分.板卡
             #endregion
         }
 
-        private void Snap(object sender, RoutedEventArgs e)
+        private void ShowChannelInfos(int arg1, object arg2)
         {
-            Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(Chart));
-            TimeWindow window = new TimeWindow();
-            window.Owner = Window.GetWindow(this);
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            window.ShowWindow("截图已复制到剪切板");
+            PBChannels.ClearItems();
+            PulseBlasterInfo pb = arg2 as PulseBlasterInfo;
+            foreach (var item in pb.ChannelDescriptions)
+            {
+                PBChannels.AddItem(item, item.Value, item.Key);
+            }
         }
 
-        private void SaveFile(object sender, RoutedEventArgs e)
+        private void ApplyChannels(object sender, RoutedEventArgs e)
         {
-            string save = "时间(s)\t" + "计数(cps)\n";
-            List<double> res = APDSampleData.ToArray().ToList();
-            double freq = ConfigParam.SampleFreq.Value;
-            for (int i = 0; i < res.Count; i++)
+            try
             {
-                save += (i / freq).ToString() + "\t" + res[i].ToString() + "\n";
-            }
-
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "文本文件 (*.txt)|*.txt";
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                try
+                if (PBChannels.GetSelectedTag() == null) return;
+                var pb = PBChannels.GetSelectedTag() as PulseBlasterInfo;
+                //检查
+                var inds = Enumerable.Range(0, PBChannels.GetRowCount()).Select(x => (int)PBChannels.GetCellValue(x, 0));
+                var names = Enumerable.Range(0, PBChannels.GetRowCount()).Select(x => PBChannels.GetCellValue(x, 1) as string);
+                HashSet<string> set = new HashSet<string>(names);
+                if (set.Count != names.Count()) { throw new Exception("通道名不能重复"); }
+                pb.ChannelDescriptions.Clear();
+                pb.ChannelDescriptions = pb.Device.ChannelInds.Select(x => new KeyValuePair<string, int>(x.ToString(), x)).ToList();
+                for (int i = 0; i < inds.Count(); i++)
                 {
-                    using (StreamWriter wr = new StreamWriter(new FileStream(dlg.FileName, FileMode.Create)))
+                    int ind = pb.ChannelDescriptions.FindIndex(x => x.Value == inds.ElementAt(i));
+                    if (ind != -1)
                     {
-                        wr.Write(save);
+                        pb.ChannelDescriptions[ind] = new KeyValuePair<string, int>(names.ElementAt(i), inds.ElementAt(i));
                     }
-                    TimeWindow win = new TimeWindow();
-                    win.Owner = Window.GetWindow(this);
-                    win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    win.ShowWindow("文件已保存");
                 }
-                catch (Exception ex)
-                {
-                    MessageWindow.ShowTipWindow("文件未成功保存，原因：" + ex.Message, Window.GetWindow(this));
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageWindow.ShowTipWindow("设置未完成," + ex.Message, Window.GetWindow(this));
             }
         }
     }
