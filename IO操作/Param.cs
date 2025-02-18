@@ -48,6 +48,23 @@ namespace ODMR_Lab.IO操作
             return null;
         }
 
+        public static string GetUnknownParamValueToString(ParamB obj)
+        {
+            if (obj.RawValue is double || obj.RawValue is float || obj.RawValue is string || obj.RawValue is int || obj.RawValue is bool)
+            {
+                return obj.RawValue.ToString();
+            }
+            if (obj.RawValue is Enum)
+            {
+                return Enum.GetName(obj.ValueType, obj.RawValue);
+            }
+            if (obj.RawValue is DateTime)
+            {
+                return ((DateTime)obj.RawValue).ToLongTimeString();
+            }
+            return "";
+        }
+
         public static void SetUnknownParamValue(ParamB obj, object value)
         {
             if (obj.RawValue is double)
@@ -138,13 +155,6 @@ namespace ODMR_Lab.IO操作
         /// 属性名
         /// </summary>
         public string PropertyName { get; protected set; } = "";
-
-        public int RowIndex { get; set; } = 0;
-
-        /// <summary>
-        /// 显示宽度
-        /// </summary>
-        public GridLength RowLength { get; set; } = new GridLength(1, GridUnitType.Star);
 
         #region 从页面中读取和写入页面
         /// <summary>
@@ -319,15 +329,12 @@ namespace ODMR_Lab.IO操作
             }
         }
 
-        public string GroupName { get; private set; }
-
-        public Param(string description, T value, string propertyName, string groupname = "")
+        public Param(string description, T value, string propertyName)
         {
             Description = description;
             Value = value;
             ValueType = typeof(T);
             PropertyName = propertyName;
-            GroupName = groupname;
         }
 
         public new T ReadFromPage(FrameworkElement[] eles, bool ThrowException)

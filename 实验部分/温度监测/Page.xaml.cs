@@ -304,8 +304,8 @@ namespace ODMR_Lab.温度监测部分
             }
             if (TemperatureExpObj.Param.DeviceName.Value != "") TemperatureExpObj.Param.DeviceName.Value = TemperatureExpObj.Param.DeviceName.Value.Remove(TemperatureExpObj.Param.DeviceName.Value.Length - 1, 1);
 
-            TemperatureExpObj.Param.SetStartTime(DateTime.FromOADate(mintime));
-            TemperatureExpObj.Param.SetEndTime(DateTime.FromOADate(maxtime));
+            TemperatureExpObj.SetStartTime(DateTime.FromOADate(mintime));
+            TemperatureExpObj.SetEndTime(DateTime.FromOADate(maxtime));
             #endregion
 
             foreach (var item in Chart.DataSource)

@@ -74,28 +74,6 @@ namespace ODMR_Lab.IO操作
             WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
             #endregion
 
-            #region 自定义实验
-            MemberInfo[] info = typeof(MainWindow).GetMembers();
-            foreach (var item in info)
-            {
-                ODMR_Lab.自定义实验.DisplayPage page = null;
-                if (item.ReflectedType.Name == typeof(ODMR_Lab.自定义实验.DisplayPage).Name)
-                {
-                    if (item.MemberType == MemberTypes.Field)
-                    {
-                        page = (ODMR_Lab.自定义实验.DisplayPage)((FieldInfo)item).GetValue(MainWindow.Handle);
-                    }
-                    if (item.MemberType == MemberTypes.Property)
-                    {
-                        page = (ODMR_Lab.自定义实验.DisplayPage)((PropertyInfo)item).GetValue(MainWindow.Handle);
-                    }
-                    自定义实验.CustomConfigParams p = (自定义实验.CustomConfigParams)page.ExpObject.Config.Copy();
-                    p.ReadFromPage(new FrameworkElement[] { page }, false);
-                    WriteParamToFile(p, fobj);
-                }
-            }
-            #endregion
-
             if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "UIParam")))
             {
                 Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "UIParam"));
@@ -157,25 +135,6 @@ namespace ODMR_Lab.IO操作
             #endregion
 
             #region 自定义实验
-            MemberInfo[] info = typeof(MainWindow).GetMembers();
-            foreach (var item in info)
-            {
-                ODMR_Lab.自定义实验.DisplayPage page = null;
-                if (item.ReflectedType.Name == typeof(ODMR_Lab.自定义实验.DisplayPage).Name)
-                {
-                    if (item.MemberType == MemberTypes.Field)
-                    {
-                        page = (ODMR_Lab.自定义实验.DisplayPage)((FieldInfo)item).GetValue(MainWindow.Handle);
-                    }
-                    if (item.MemberType == MemberTypes.Property)
-                    {
-                        page = (ODMR_Lab.自定义实验.DisplayPage)((PropertyInfo)item).GetValue(MainWindow.Handle);
-                    }
-                    自定义实验.CustomConfigParams p = (自定义实验.CustomConfigParams)page.ExpObject.Config.Copy();
-                    ReadFromFile(p, fobj);
-                    p.LoadToPage(new FrameworkElement[] { page }, false);
-                }
-            }
             #endregion
         }
 

@@ -69,11 +69,13 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             }
         }
 
-        protected override FileObject InnerWrite()
+        protected override void InnerWrite(FileObject obj)
         {
-            FileObject obj = new FileObject();
-            obj.Descriptions = Param.GenerateDescription();
-
+            var res = Param.GenerateDescription();
+            foreach (var item in res)
+            {
+                obj.Descriptions.Add(item.Key, item.Value);
+            }
             //添加扫描路径点
             string points = "";
             foreach (var item in Config.ScanPoints)
@@ -88,14 +90,10 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             obj.WriteDoubleData("V_Measure", IVVData);
             obj.WriteDoubleData("V_Target", IVTatgetData);
             obj.WriteDateData("Times", IVTimes);
-
-            return obj;
         }
 
-        public override DataVisualSource ToDataVisualSource()
+        protected override void InnerToDataVisualSource(DataVisualSource source)
         {
-            DataVisualSource source = new DataVisualSource();
-
             source.Params.Add("实验类型", Enum.GetName(ExpType.GetType(), ExpType));
             Dictionary<string, string> temp = Param.GetPureDescription();
             foreach (var item in temp)
@@ -120,7 +118,6 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             source.ChartDataSource1D.Add(new NumricChartData1D("电流测量值(A)", "IV测量数据") { Data = IVIData });
             source.ChartDataSource1D.Add(new NumricChartData1D("电压测量值(V)", "IV测量数据") { Data = IVVData });
             source.ChartDataSource1D.Add(new NumricChartData1D("电压设定值(V)", "IV测量数据") { Data = IVTatgetData });
-            return source;
         }
         #endregion
 
@@ -147,10 +144,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             {
                 Thread.Sleep(10);
             }
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                ExpPage.IVMeasureProgress.Value = 0;
-            });
+            SetProgress(0);
 
 
             double begin = 0;
@@ -191,10 +185,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
                     IVVData.Add(g.Voltage);
                     temp += Config.IVScanStep.Value * sgn;
                     //设置进度条
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        ExpPage.IVMeasureProgress.Value = ind * 90.0 / count;
-                    });
+                    SetProgress(ind * 90.0 / count);
                     //更新结果
                     ExpPage.UpdateResult();
                     ind += 1;
@@ -210,11 +201,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
 
             //测量完成后返回0V
             Dev.Device.TargetVoltage = 0;
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                ExpPage.IVMeasureProgress.Value = 100;
-            });
-
+            SetProgress(100);
         }
 
         public override IVMeasureConfigParams ReadConfig()

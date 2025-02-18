@@ -210,15 +210,13 @@ namespace ODMR_Lab.磁场调节
 
         private void InitExperimentConfigs()
         {
-            FileObj.ControlStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InitParamPanel, RunningBehaviours.DisableWhenRunning));
-            FileObj.ControlStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ParamPage, RunningBehaviours.DisableWhenRunning));
-            FileObj.ControlStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(PredictPanel, RunningBehaviours.DisableWhenRunning));
+            List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
+            ControlStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InitParamPanel, RunningBehaviours.DisableWhenRunning));
+            ControlStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ParamPage, RunningBehaviours.DisableWhenRunning));
+            ControlStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(PredictPanel, RunningBehaviours.DisableWhenRunning));
+
+            FileObj.ConnectOuterControl(StartBtn, ResumeBtn, StopBtn, StartTime, EndTime, null, null, ControlStates);
             FileObj.ExpPage = this;
-            FileObj.StartButton = StartBtn;
-            FileObj.ExpStartTimeLabel = StartTime;
-            FileObj.ExpEndTimeLabel = EndTime;
-            FileObj.ResumeButton = ResumeBtn;
-            FileObj.StopButton = StopBtn;
 
             FileObj.InitEvent += InitWindows;
             FileObj.ErrorStateEvent += InitWindows;

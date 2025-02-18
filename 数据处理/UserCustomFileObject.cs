@@ -25,9 +25,8 @@ namespace ODMR_Lab.数据处理
 
         public DataVisualSource DataSource { get; set; } = new DataVisualSource();
 
-        public override DataVisualSource ToDataVisualSource()
+        protected override void InnerToDataVisualSource(DataVisualSource s)
         {
-            return DataSource;
         }
 
         protected override void InnerRead(FileObject fobj)
@@ -66,16 +65,12 @@ namespace ODMR_Lab.数据处理
             }
         }
 
-        protected override FileObject InnerWrite()
+        protected override void InnerWrite(FileObject obj)
         {
-            FileObject obj = new FileObject();
-            if (!DataSource.Params.Values.Contains("自定义数据") && DataSource.Params.Keys.Contains("实验类型"))
-            {
-                obj.Descriptions.Add("实验类型", "自定义数据");
-            }
+            obj.Descriptions["实验类型"] = "自定义";
             foreach (var item in DataSource.Params)
             {
-                if (item.Key == "实验类型" && item.Value != "自定义数据")
+                if (item.Key == "实验类型" && item.Value != "自定义")
                 {
                     obj.Descriptions.Add("原实验类型", item.Value);
                 }
@@ -96,7 +91,6 @@ namespace ODMR_Lab.数据处理
                     obj.WriteDateData(name, (item as TimeChartData1D).Data);
                 }
             }
-            return obj;
         }
         #endregion
 

@@ -130,6 +130,24 @@ namespace ODMR_Lab.设备部分
             }
             return new List<InfoBase>();
         }
+
+        /// <summary>
+        /// 获取设备，找不到则返回null
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="devicedescription"></param>
+        /// <returns></returns>
+        public static InfoBase GetDevice(DeviceTypes type, string devicedescription)
+        {
+            List<InfoBase> infos = new List<InfoBase>();
+            foreach (var item in DevInfos)
+            {
+                if (item.deviceType == type) infos = item.GetDevEvent();
+            }
+            var info = infos.Where(x => x.GetDeviceDescription() == devicedescription);
+            if (infos.Where(x => x.GetDeviceDescription() == devicedescription).Count() == 0) return null;
+            return info.ElementAt(0);
+        }
         #endregion
     }
 }

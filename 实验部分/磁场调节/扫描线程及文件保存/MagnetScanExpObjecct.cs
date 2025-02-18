@@ -178,10 +178,8 @@ namespace ODMR_Lab.实验部分.磁场调节
             #endregion
         }
 
-        protected override FileObject InnerWrite()
+        protected override void InnerWrite(FileObject obj)
         {
-            FileObject obj = new FileObject();
-
             #region X方向结果
             List<double> xpos = new List<double>();
             List<double> xcw1s = new List<double>();
@@ -346,8 +344,6 @@ namespace ODMR_Lab.实验部分.磁场调节
                 obj.WriteDoubleData("CContract2_" + i.ToString(), ccontracts2[i]);
             }
             #endregion
-
-            return obj;
         }
 
         public void LoadToWindow(DisplayPage page)
@@ -389,10 +385,8 @@ namespace ODMR_Lab.实验部分.磁场调节
             }
         }
 
-        public override DataVisualSource ToDataVisualSource()
+        protected override void InnerToDataVisualSource(DataVisualSource page)
         {
-            DataVisualSource page = new DataVisualSource();
-            page.Params.Add("实验类型", Enum.GetName(ExpType.GetType(), ExpType));
             Dictionary<string, string> configs = Config.GetPureDescription();
             foreach (var item in configs)
             {
@@ -419,8 +413,6 @@ namespace ODMR_Lab.实验部分.磁场调节
             AddCWData(page, "角度CW谱扫描信息", AnglePoints);
             AddCWData(page, "角度校验CW谱扫描信息", CheckPoints);
             #endregion
-
-            return page;
         }
 
         private void AddTotalData(DataVisualSource page, string groupname, List<CWPointObject> Points)

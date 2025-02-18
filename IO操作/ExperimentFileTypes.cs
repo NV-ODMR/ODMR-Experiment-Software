@@ -20,5 +20,7 @@ namespace ODMR_Lab
         自定义数据 = 2,
 
         温度监测数据 = 3,
+
+        ODMR实验 = 4,
     }
 }

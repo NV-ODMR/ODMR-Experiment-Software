@@ -25,7 +25,7 @@ namespace ODMR_Lab.实验部分.磁场调节
     /// <summary>
     /// 温度监控的文件类
     /// </summary>
-    public class TemperatureExpObject : ExperimentObject<CustomExpParams, TemperatureConfigParams>
+    public class TemperatureExpObject : ExperimentObject<TemperatureExpParams, TemperatureConfigParams>
     {
         #region 实验数据及IO部分
         /// <summary>
@@ -36,7 +36,7 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// <summary>
         /// 参数列表
         /// </summary>
-        public override CustomExpParams Param { get; set; } = new CustomExpParams();
+        public override TemperatureExpParams Param { get; set; } = new TemperatureExpParams();
 
         /// <summary>
         /// 参数列表
@@ -66,10 +66,8 @@ namespace ODMR_Lab.实验部分.磁场调节
             }
         }
 
-        protected override FileObject InnerWrite()
+        protected override void InnerWrite(FileObject obj)
         {
-            FileObject obj = new FileObject();
-
             foreach (var item in SelectedChannelsData)
             {
                 if (item is TimeChartData1D)
@@ -81,21 +79,16 @@ namespace ODMR_Lab.实验部分.磁场调节
                     obj.WriteDoubleData(item.Name, (item as NumricChartData1D).Data);
                 }
             }
-
-            return obj;
         }
 
-        public override DataVisualSource ToDataVisualSource()
+        protected override void InnerToDataVisualSource(DataVisualSource source)
         {
-            DataVisualSource source = new DataVisualSource();
             source.ChartDataSource1D = SelectedChannelsData;
-            source.Params.Add("实验类型", Enum.GetName(ExpType.GetType(), ExpType));
             Dictionary<string, string> temp = Param.GetPureDescription();
             foreach (var item in temp)
             {
                 source.Params.Add(item.Key, item.Value);
             }
-            return source;
         }
         #endregion
 

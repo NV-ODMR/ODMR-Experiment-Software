@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using static System.Windows.Forms.AxHost;
 using Label = System.Windows.Controls.Label;
 
 namespace ODMR_Lab
@@ -41,6 +42,26 @@ namespace ODMR_Lab
         public abstract ExperimentFileTypes ExpType { get; protected set; }
 
         /// <summary>
+        /// 实验开始时间
+        /// </summary>
+        public string ExpStartTime { get; set; } = "";
+
+        /// <summary>
+        /// 实验结束时间
+        /// </summary>
+        public string ExpEndTime { get; set; } = "";
+
+        public void SetStartTime(DateTime time)
+        {
+            ExpStartTime = time.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        public void SetEndTime(DateTime time)
+        {
+            ExpEndTime = time.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        /// <summary>
         /// 实验参数
         /// </summary>
         public abstract ParamType Param { get; set; }
@@ -60,6 +81,8 @@ namespace ODMR_Lab
 
             if (ExpType == (ExperimentFileTypes)Enum.Parse(typeof(ExperimentFileTypes), obj.Descriptions["实验类型"]))
             {
+                ExpStartTime = obj.Descriptions["开始时间"];
+                ExpEndTime = obj.Descriptions["结束时间"];
                 InnerRead(obj);
 
                 if (Param != null)
@@ -87,6 +110,9 @@ namespace ODMR_Lab
 
             if (ExpType == (ExperimentFileTypes)Enum.Parse(typeof(ExperimentFileTypes), obj.Descriptions["实验类型"]))
             {
+                ExpStartTime = obj.Descriptions["开始时间"];
+                ExpEndTime = obj.Descriptions["结束时间"];
+
                 InnerRead(obj);
 
                 if (Param != null)
@@ -110,7 +136,23 @@ namespace ODMR_Lab
             {
                 Directory.CreateDirectory(filefolder);
             }
-            FileObject obj = InnerWrite();
+
+            FileObject obj = new FileObject();
+
+            if (!obj.Descriptions.Keys.Contains("实验类型"))
+            {
+                obj.Descriptions.Add("实验类型", Enum.GetName(typeof(ExperimentFileTypes), ExpType));
+            }
+            if (!obj.Descriptions.Keys.Contains("开始时间"))
+            {
+                obj.Descriptions.Add("开始时间", ExpStartTime);
+            }
+            if (!obj.Descriptions.Keys.Contains("结束时间"))
+            {
+                obj.Descriptions.Add("结束时间", ExpEndTime);
+            }
+
+            InnerWrite(obj);
 
             if (Param != null)
             {
@@ -135,11 +177,6 @@ namespace ODMR_Lab
                         obj.Descriptions.Add(item.Key, item.Value);
                     }
                 }
-            }
-
-            if (!obj.Descriptions.Keys.Contains("实验类型"))
-            {
-                obj.Descriptions.Add("实验类型", Enum.GetName(typeof(ExperimentFileTypes), ExpType));
             }
 
             obj.SaveToFile(Path.Combine(filefolder, filename));
@@ -147,7 +184,22 @@ namespace ODMR_Lab
 
         public bool WriteFromExplorer(string defaultName = "")
         {
-            FileObject obj = InnerWrite();
+            FileObject obj = new FileObject();
+
+            if (!obj.Descriptions.Keys.Contains("实验类型"))
+            {
+                obj.Descriptions.Add("实验类型", Enum.GetName(typeof(ExperimentFileTypes), ExpType));
+            }
+            if (!obj.Descriptions.Keys.Contains("开始时间"))
+            {
+                obj.Descriptions.Add("开始时间", ExpStartTime);
+            }
+            if (!obj.Descriptions.Keys.Contains("结束时间"))
+            {
+                obj.Descriptions.Add("结束时间", ExpEndTime);
+            }
+
+            InnerWrite(obj);
 
             if (Param != null)
             {
@@ -173,11 +225,6 @@ namespace ODMR_Lab
                 }
             }
 
-
-            if (!obj.Descriptions.Keys.Contains("实验类型"))
-            {
-                obj.Descriptions.Add("实验类型", Enum.GetName(typeof(ExperimentFileTypes), ExpType));
-            }
             return obj.SaveFileFromExplorer(defaultname: defaultName);
         }
 
@@ -213,13 +260,24 @@ namespace ODMR_Lab
         /// 内部写操作，将ExperimentFileObject中的信息转化成FileObject
         /// </summary>
         /// <returns></returns>
-        protected abstract FileObject InnerWrite();
+        protected abstract void InnerWrite(FileObject obj);
 
+        public DataVisualSource ToDataVisualSource()
+        {
+            DataVisualSource s = new DataVisualSource();
+
+            s.Params.Add("实验类型", Enum.GetName(ExpType.GetType(), ExpType));
+            s.Params.Add("开始时间", ExpStartTime);
+            s.Params.Add("结束时间", ExpEndTime);
+
+            InnerToDataVisualSource(s);
+            return s;
+        }
         /// <summary>
         /// 转换成数据可视化对象
         /// </summary>
         /// <returns></returns>
-        public abstract DataVisualSource ToDataVisualSource();
+        protected abstract void InnerToDataVisualSource(DataVisualSource source);
 
         #region 实验线程部分
         Thread ExpThread { get; set; } = null;
@@ -227,47 +285,151 @@ namespace ODMR_Lab
         /// <summary>
         /// 线程运行时的相关控件显示状态
         /// </summary>
-        public List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
+        private List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
 
-        #region 线程判断按钮
+        #region 实验通信控件
+
         DecoratedButton startButton = null;
-        public DecoratedButton StartButton
-        {
-            get { return startButton; }
-            set
-            {
-                startButton = value;
-                startButton.Click -= StartEvent;
-                startButton.Click += StartEvent;
-            }
-        }
 
         DecoratedButton resumeButton = null;
-        public DecoratedButton ResumeButton
-        {
-            get { return resumeButton; }
-            set
-            {
-                resumeButton = value;
-                resumeButton.Click -= ResumeEvent;
-                resumeButton.Click += ResumeEvent;
-            }
-        }
 
         DecoratedButton stopButton = null;
-        public DecoratedButton StopButton
+
+
+        string CurrentexpState = "";
+        /// <summary>
+        /// 实验进度标签
+        /// </summary>
+        private TextBlock CurrentexpStateTextBlock = null;
+
+        double CurrentProgress = 0;
+
+        ProgressBar CurrentProgressBar = null;
+
+        private Label ExpStartTimeLabel { get; set; } = null;
+        private Label ExpEndTimeLabel { get; set; } = null;
+
+        public void ConnectOuterControl(DecoratedButton StartBtn, DecoratedButton StopBtn, DecoratedButton ResumeBtn, Label StartTimeLabel, Label EndTimeLabel, TextBlock ThreadState, ProgressBar ThreadProgress, List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlPanels)
         {
-            get { return stopButton; }
-            set
+            Dispatcher.CurrentDispatcher.Invoke(() =>
             {
-                stopButton = value;
-                stopButton.Click -= StopEvent;
-                stopButton.Click += StopEvent;
-            }
+                if (StartBtn != null)
+                {
+                    startButton = StartBtn;
+                    startButton.Click -= StartEvent;
+                    startButton.Click += StartEvent;
+                }
+                if (StopBtn != null)
+                {
+                    stopButton = StopBtn;
+                    stopButton.Click -= StopEvent;
+                    stopButton.Click += StopEvent;
+                }
+                if (ResumeBtn != null)
+                {
+                    resumeButton = ResumeBtn;
+                    resumeButton.Click -= ResumeEvent;
+                    resumeButton.Click += ResumeEvent;
+                }
+
+                ExpStartTimeLabel = StartTimeLabel;
+                if (ExpStartTimeLabel != null)
+                {
+                    ExpStartTimeLabel.Content = ExpStartTime;
+                }
+                ExpEndTimeLabel = EndTimeLabel;
+                if (ExpEndTimeLabel != null)
+                {
+                    ExpEndTimeLabel.Content = ExpEndTime;
+                }
+
+                CurrentexpStateTextBlock = ThreadState;
+                if (CurrentexpStateTextBlock != null)
+                {
+                    CurrentexpStateTextBlock.Text = CurrentexpState;
+                }
+
+                CurrentProgressBar = ThreadProgress;
+                if (CurrentProgressBar != null)
+                {
+                    CurrentProgressBar.Value = CurrentProgress;
+                }
+
+                ControlStates = ControlPanels;
+                //根据此实验刷新面板状态
+                if (IsExpEnd)
+                {
+                    SetPanelStopState();
+                    return;
+                }
+                if (IsExpResume)
+                {
+                    SetPanelResumeState();
+                    return;
+                }
+                SetPanelStartState();
+            });
         }
 
-        public Label ExpStartTimeLabel { get; set; } = null;
-        public Label ExpEndTimeLabel { get; set; } = null;
+        public void DisConnectOuterControl()
+        {
+            if (startButton != null)
+            {
+                startButton.Click -= StartEvent;
+                startButton = null;
+            }
+            if (resumeButton != null)
+            {
+                resumeButton.Click -= ResumeEvent;
+                resumeButton = null;
+            }
+            if (stopButton != null)
+            {
+                stopButton.Click -= StopEvent;
+                stopButton = null;
+            }
+            if (ExpStartTimeLabel != null)
+                ExpStartTimeLabel = null;
+            if (ExpEndTimeLabel != null)
+                ExpEndTimeLabel = null;
+            if (CurrentexpStateTextBlock != null)
+                CurrentexpStateTextBlock = null;
+            if (CurrentProgressBar != null)
+                CurrentProgressBar = null;
+            ControlStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
+        }
+
+        /// <summary>
+        /// 设置当前线程状态
+        /// </summary>
+        /// <param name="state"></param>
+        public void SetExpState(string state)
+        {
+            CurrentexpState = state;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (CurrentexpStateTextBlock != null)
+                {
+                    CurrentexpStateTextBlock.Text = state;
+                }
+            });
+        }
+
+        /// <summary>
+        /// 设置进度(0-100)
+        /// </summary>
+        public void SetProgress(double value)
+        {
+            CurrentProgress = value;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (CurrentProgressBar != null)
+                {
+                    CurrentProgressBar.Value = value;
+                }
+            });
+        }
+        #endregion
 
         /// <summary>
         /// 初始化事件，在读取参数和获取设备后触发
@@ -280,11 +442,16 @@ namespace ODMR_Lab
 
         private void SetStartState()
         {
+            SetPanelStartState();
+        }
+
+        public void SetPanelStartState()
+        {
             App.Current.Dispatcher.Invoke(() =>
             {
-                TrySetState(StartButton, false);
-                TrySetState(StopButton, true);
-                TrySetState(ResumeButton, true);
+                TrySetState(startButton, false);
+                TrySetState(stopButton, true);
+                TrySetState(resumeButton, true);
                 foreach (var item in ControlStates)
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
@@ -293,15 +460,28 @@ namespace ODMR_Lab
                         item.Key.IsHitTestVisible = false;
                 }
             });
+            IsExpEnd = false;
+            IsExpResume = false;
         }
 
         private void SetResumeState()
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                TrySetState(StartButton, true);
-                TrySetState(StopButton, true);
-                TrySetState(ResumeButton, false);
+                SetPanelResumeState();
+                ResumeStateEvent?.Invoke();
+            });
+            IsExpResume = true;
+            IsExpEnd = false;
+        }
+
+        public void SetPanelResumeState()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                TrySetState(startButton, true);
+                TrySetState(stopButton, true);
+                TrySetState(resumeButton, false);
                 foreach (var item in ControlStates)
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
@@ -309,7 +489,6 @@ namespace ODMR_Lab
                     if (item.Value == RunningBehaviours.DisableWhenRunning)
                         item.Key.IsHitTestVisible = false;
                 }
-                ResumeStateEvent?.Invoke();
             });
         }
 
@@ -317,9 +496,20 @@ namespace ODMR_Lab
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                TrySetState(StartButton, true);
-                TrySetState(StopButton, false);
-                TrySetState(ResumeButton, false);
+                SetPanelStopState();
+                EndStateEvent?.Invoke();
+            });
+            IsExpEnd = true;
+            IsExpResume = false;
+        }
+
+        public void SetPanelStopState()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                TrySetState(startButton, true);
+                TrySetState(stopButton, false);
+                TrySetState(resumeButton, false);
                 foreach (var item in ControlStates)
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
@@ -327,7 +517,6 @@ namespace ODMR_Lab
                     if (item.Value == RunningBehaviours.DisableWhenRunning)
                         item.Key.IsHitTestVisible = true;
                 }
-                EndStateEvent?.Invoke();
             });
         }
 
@@ -340,11 +529,14 @@ namespace ODMR_Lab
             }
         }
 
+        public bool IsExpEnd { get; set; } = true;
+        public bool IsExpResume { get; set; } = false;
+
         private void StartEvent(object sender, RoutedEventArgs e)
         {
-            if (IsThreadResume == true && IsThreadEnd == false)
+            if (ThreadResumeFlag == true && ThreadEndFlag == false)
             {
-                IsThreadResume = false;
+                ThreadResumeFlag = false;
                 SetStartState();
                 return;
             }
@@ -355,6 +547,10 @@ namespace ODMR_Lab
                 SetStopState();
                 return;
             }
+            ThreadEndFlag = false;
+            ThreadResumeFlag = false;
+            IsExpEnd = false;
+            IsExpResume = false;
             ExpThread = new Thread(() =>
             {
                 try
@@ -397,18 +593,18 @@ namespace ODMR_Lab
                     //设置实验时间
                     App.Current.Dispatcher.Invoke(() =>
                     {
-                        Param.SetStartTime(DateTime.Now);
+                        SetStartTime(DateTime.Now);
                         if (ExpStartTimeLabel != null)
                         {
-                            ExpStartTimeLabel.Content = Param.ExpStartTime.Value;
+                            ExpStartTimeLabel.Content = ExpStartTime;
                         }
                         if (ExpEndTimeLabel != null)
                         {
                             ExpEndTimeLabel.Content = "";
                         }
                     });
-                    IsThreadEnd = false;
-                    IsThreadResume = false;
+                    ThreadEndFlag = false;
+                    ThreadResumeFlag = false;
                     Config = tempConfig;
                     //进行试验
                     ExperimentEvent();
@@ -418,10 +614,10 @@ namespace ODMR_Lab
                     DeviceDispatcher.EndUseDevices(Devices);
                     App.Current.Dispatcher.Invoke(() =>
                     {
-                        Param.SetEndTime(DateTime.Now);
+                        SetEndTime(DateTime.Now);
                         if (ExpEndTimeLabel != null)
                         {
-                            ExpEndTimeLabel.Content = Param.ExpEndTime.Value;
+                            ExpEndTimeLabel.Content = ExpEndTime;
                         }
                     });
                 }
@@ -433,10 +629,10 @@ namespace ODMR_Lab
                     ErrorStateEvent?.Invoke();
                     App.Current.Dispatcher.Invoke(() =>
                     {
-                        Param.SetEndTime(DateTime.Now);
+                        SetEndTime(DateTime.Now);
                         if (ExpEndTimeLabel != null)
                         {
-                            ExpEndTimeLabel.Content = Param.ExpEndTime.Value;
+                            ExpEndTimeLabel.Content = ExpEndTime;
                         }
                     });
                 }
@@ -445,38 +641,38 @@ namespace ODMR_Lab
         }
         private void ResumeEvent(object sender, RoutedEventArgs e)
         {
-            IsThreadResume = true;
+            ThreadResumeFlag = true;
         }
         private void StopEvent(object sender, RoutedEventArgs e)
         {
-            IsThreadEnd = true;
+            ThreadEndFlag = true;
         }
         #endregion
 
         /// <summary>
         /// 线程终止标签
         /// </summary>
-        public bool IsThreadEnd { get; private set; }
+        private bool ThreadEndFlag { get; set; } = true;
         /// <summary>
         /// 线程暂停标签
         /// </summary>
-        public bool IsThreadResume { get; private set; }
+        private bool ThreadResumeFlag { get; set; } = false;
         /// <summary>
         /// 如果状态为等待则挂起，如果状态为结束则抛出异常
         /// </summary>
         /// <exception cref="Exception"></exception>
         public void JudgeThreadEndOrResume()
         {
-            if (IsThreadEnd)
+            if (ThreadEndFlag)
             {
                 throw new Exception("定位进程已被终止");
             }
-            if (IsThreadResume)
+            if (ThreadResumeFlag)
             {
                 SetResumeState();
-                while (IsThreadResume)
+                while (ThreadResumeFlag)
                 {
-                    if (IsThreadEnd)
+                    if (ThreadEndFlag)
                     {
                         throw new Exception("定位进程已被终止");
                     }
@@ -516,7 +712,6 @@ namespace ODMR_Lab
         /// 提供实验需要的设备,返回的对象必须是DeviceInfoBase类
         /// </summary>
         public abstract List<InfoBase> GetDevices();
-        #endregion
 
     }
 }

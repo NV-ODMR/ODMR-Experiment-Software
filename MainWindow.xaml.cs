@@ -68,11 +68,13 @@ namespace ODMR_Lab
         /// <summary>
         /// 位移台控制
         /// </summary>
-        public static 序列编辑器.DisplayPage Exp_SequencePage = new 序列编辑器.DisplayPage();
+        public static 序列编辑器.DisplayPage Exp_SequenceEditPage = new 序列编辑器.DisplayPage();
 
-        #endregion
+        /// <summary>
+        /// 序列实验
+        /// </summary>
+        public static 序列实验.DisplayPage Exp_SequencePage = new 序列实验.DisplayPage();
 
-        #region 自定义实验页面
         #endregion
 
         #region 扩展页面
@@ -103,11 +105,6 @@ namespace ODMR_Lab
             {
                 (item.GetValue(this) as PageBase)?.Init();
             }
-            #endregion
-
-            #region 自定义实验
-            //获取所有的自定义实验
-
             #endregion
 
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
@@ -339,6 +336,11 @@ namespace ODMR_Lab
                 AddPageToView(Exp_TemPeraPage);
             }
             if (btn.Text == "序列编辑器")
+            {
+                CurrentPage = Exp_SequenceEditPage;
+                AddPageToView(Exp_SequenceEditPage);
+            }
+            if (btn.Text == "序列实验")
             {
                 CurrentPage = Exp_SequencePage;
                 AddPageToView(Exp_SequencePage);

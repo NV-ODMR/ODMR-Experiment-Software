@@ -360,6 +360,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                     Int32Rect cutrect = new Int32Rect(x1, y1, x2 - x1, y2 - y1);
                     CroppedBitmap cb = new CroppedBitmap(origin, cutrect);
                     res = cb;
+                    return;
                 }
                 res = origin;
             });
