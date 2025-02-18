@@ -123,6 +123,10 @@ namespace ODMR_Lab.设备部分
                     obj.Descriptions.Add("TCPIPAddress", (ConnectInfo as TCPIPDeviceInfo).IPAddress);
                     obj.Descriptions.Add("TCPIPPort", (ConnectInfo as TCPIPDeviceInfo).Port.ToString());
                 }
+                if (ConnectInfo is CustomDeviceInfo)
+                {
+                    obj.WriteStringData("CustomParams", (ConnectInfo as CustomDeviceInfo).Params);
+                }
                 if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "DevParamDir")))
                 {
                     Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "DevParamDir"));
@@ -198,6 +202,11 @@ namespace ODMR_Lab.设备部分
                                         connectinfo = new TCPIPDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["TCPIPAddress"], int.Parse(obj.Descriptions["TCPIPPort"]));
                                         connectresult = (deviceinstance as TCPIPOuterInterface).ConnectTCPIP(connectinfo as TCPIPDeviceInfo, out Exception exc);
                                     }
+                                    if (port == PortType.CUSTOM)
+                                    {
+                                        connectinfo = new CustomDeviceInfo(obj.Descriptions["DevName"], obj.ExtractString("CustomParams"));
+                                        connectresult = (deviceinstance as CustomOuterInterface).ConnectCustom(connectinfo as CustomDeviceInfo, out Exception exc);
+                                    }
 
                                     if (connectresult == false)
                                     {
@@ -206,20 +215,27 @@ namespace ODMR_Lab.设备部分
                                     }
                                     else
                                     {
-                                        connectedDeviceinfo.Add(new KeyValuePair<Type, DeviceInfoBase>(device.Value, connectinfo));
-                                    }
-
-                                    Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);
-                                    DeviceInfoBase<T> dev = Activator.CreateInstance(infoType) as DeviceInfoBase<T>;
-                                    dev.SourceDevice = deviceinstance as PortObject;
-                                    dev.ConnectInfo = connectinfo;
-                                    dev.CreateDeviceInfoBehaviour();
-                                    dev.AutoConnectedAction(obj);
-
-                                    ConnectDevices.Add(dev);
-                                    if (obj.DataCount() != 0)
-                                    {
-                                        dev.Device.LoadParams(obj);
+                                        try
+                                        {
+                                            Type infoType = Type.GetType(obj.Descriptions["DeviceInfoType"]);
+                                            DeviceInfoBase<T> dev = Activator.CreateInstance(infoType) as DeviceInfoBase<T>;
+                                            dev.SourceDevice = deviceinstance as PortObject;
+                                            dev.ConnectInfo = connectinfo;
+                                            dev.CreateDeviceInfoBehaviour();
+                                            dev.AutoConnectedAction(obj);
+                                            ConnectDevices.Add(dev);
+                                            if (obj.DataCount() != 0)
+                                            {
+                                                dev.Device.LoadParams(obj);
+                                            }
+                                            connectedDeviceinfo.Add(new KeyValuePair<Type, DeviceInfoBase>(device.Value, connectinfo));
+                                        }
+                                        catch (Exception)
+                                        {
+                                            (deviceinstance as PortObject)?.Dispose();
+                                            unconnectedDeviceinfo.Add(new KeyValuePair<Type, DeviceInfoBase>(device.Value, connectinfo));
+                                            continue;
+                                        }
                                     }
                                 }
                             }
@@ -261,6 +277,11 @@ namespace ODMR_Lab.设备部分
             {
                 connectinfo = new TCPIPDeviceInfo(obj.Descriptions["DevName"], obj.Descriptions["TCPIPAddress"], int.Parse(obj.Descriptions["TCPIPPort"]));
                 connectresult = (deviceinstance as TCPIPOuterInterface).ConnectTCPIP(connectinfo as TCPIPDeviceInfo, out Exception exc);
+            }
+            if (port == PortType.CUSTOM)
+            {
+                connectinfo = new CustomDeviceInfo(obj.Descriptions["DevName"], obj.ExtractString("CustomParams"));
+                connectresult = (deviceinstance as CustomOuterInterface).ConnectCustom(connectinfo as CustomDeviceInfo, out Exception exc);
             }
 
             if (connectresult == false)

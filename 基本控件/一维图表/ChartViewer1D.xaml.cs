@@ -625,7 +625,6 @@ namespace ODMR_Lab.基本控件
                     MessageWindow.ShowTipWindow("文件未成功保存，原因：" + ex.Message, Window.GetWindow(this));
                 }
             }
-
         }
         #endregion
 

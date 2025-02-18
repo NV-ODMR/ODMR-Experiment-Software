@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.35130.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODMR Lab", "ODMR Lab.csproj", "{6FE79D8A-CA23-4DD5-89EA-142513D90519}"
 EndProject
@@ -10,17 +10,27 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Debug|x64.ActiveCfg = Debug|x64
+		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Debug|x64.Build.0 = Debug|x64
 		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Release|x64.ActiveCfg = Release|x64
+		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Release|x64.Build.0 = Release|x64
 		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|Any CPU.ActiveCfg = Debug
 		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|Any CPU.Build.0 = Debug
+		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|x64.ActiveCfg = Debug
+		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|x64.Build.0 = Debug
 		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|Any CPU.ActiveCfg = Release
 		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|Any CPU.Build.0 = Release
+		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|x64.ActiveCfg = Release
+		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|x64.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

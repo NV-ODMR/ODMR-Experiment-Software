@@ -6,6 +6,7 @@ using HardWares.APD;
 using HardWares.APD.Exclitas_SPCM_AQRH;
 using HardWares.Windows;
 using HardWares.仪器列表.电动翻转座;
+using HardWares.板卡;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
@@ -38,16 +39,16 @@ using System.Windows.Shapes;
 using Clipboard = System.Windows.Clipboard;
 using ContextMenu = Controls.ContextMenu;
 
-namespace ODMR_Lab.设备部分.光子探测器
+namespace ODMR_Lab.设备部分.板卡
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑
     /// </summary>
     public partial class DevicePage : DevicePageBase
     {
-        public override string PageName { get; set; } = "光子计数器";
+        public override string PageName { get; set; } = "板卡";
 
-        public List<APDInfo> APDs { get; set; } = new List<APDInfo>();
+        public List<PulseBlasterInfo> APDs { get; set; } = new List<PulseBlasterInfo>();
         public List<FlipMotorInfo> Flips { get; set; } = new List<FlipMotorInfo>();
 
 
@@ -67,17 +68,15 @@ namespace ODMR_Lab.设备部分.光子探测器
 
         public override void UpdateParam()
         {
-            ConfigParam = new APDDevConfigParams();
-            ConfigParam.ReadFromPage(new FrameworkElement[] { this }, false);
         }
 
-        private void NewAPDConnect(object sender, RoutedEventArgs e)
+        private void NewPulseBlasterConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(APDBase));
+            ConnectWindow window = new ConnectWindow(typeof(PulseBlasterBase));
             bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                APDInfo apd = new APDInfo() { Device = window.ConnectedDevice as APDBase, ConnectInfo = window.ConnectInfo };
+                PulseBlasterInfo apd = new PulseBlasterInfo() { Device = window.ConnectedDevice as PulseBlasterBase, ConnectInfo = window.ConnectInfo };
                 apd.CreateDeviceInfoBehaviour();
 
                 APDs.Add(apd);
@@ -106,7 +105,7 @@ namespace ODMR_Lab.设备部分.光子探测器
         /// <param name="arg3"></param>
         private void ContextMenuEvent(int arg1, int arg2, object arg3)
         {
-            APDInfo inf = arg3 as APDInfo;
+            PulseBlasterInfo inf = arg3 as PulseBlasterInfo;
             #region 关闭设备
             if (arg1 == 0)
             {
@@ -128,128 +127,6 @@ namespace ODMR_Lab.设备部分.光子探测器
             }
             #endregion
         }
-
-        #region 采样部分
-
-        Thread SampleThread = null;
-        Thread PlotThread = null;
-        bool IsSampleEnd = false;
-        APDInfo CurrentAPD = null;
-
-        APDDevConfigParams ConfigParam = null;
-
-        public Queue<double> APDSampleData = new Queue<double>();
-        public NumricDataSeries APDDisplayData { get; set; } = new NumricDataSeries("光子计数率", new List<double>(), new List<double>()) { LineColor = Colors.LightGreen, MarkerSize = 4, LineThickness = 1 };
-
-        private void StartAPDSample(object sender, RoutedEventArgs e)
-        {
-            SetStartState();
-            try
-            {
-                CurrentAPD = APDDevice.SelectedItem.Tag as APDInfo;
-                CurrentAPD.Device.BeginContinusSample(ConfigParam.SampleFreq.Value);
-            }
-            catch (Exception ex)
-            {
-                SetStopState();
-                return;
-            }
-            SampleThread = new Thread(() =>
-            {
-                while (!IsSampleEnd)
-                {
-                    double value = CurrentAPD.Device.GetContinusCountRatio();
-                    APDSampleData.Enqueue(value);
-                    while (APDSampleData.Count > ConfigParam.MaxSavePoint.Value)
-                    {
-                        APDSampleData.Dequeue();
-                    }
-                }
-            });
-            SampleThread.Start();
-            PlotThread = new Thread(() =>
-            {
-                while (!IsSampleEnd)
-                {
-                    var buffer = APDSampleData.ToArray().ToList();
-                    int count = buffer.Count;
-                    int displaycount = ConfigParam.MaxDisplayPoint.Value;
-                    if (displaycount > count) displaycount = count;
-                    APDDisplayData.X = Enumerable.Range(count - displaycount, count).Select(x => (double)x).ToList();
-                    APDDisplayData.Y = buffer.GetRange(count - displaycount, displaycount);
-                    Dispatcher.Invoke(() =>
-                    {
-                        Chart.RefreshPlotWithAutoScale();
-                    });
-                    Thread.Sleep(20);
-                }
-            });
-            PlotThread.Start();
-        }
-
-        private void SetStartState()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                APDDevice.IsEnabled = false;
-                BeginBtn.IsEnabled = false;
-                EndBtn.IsEnabled = true;
-            });
-        }
-
-        private void SetStopState()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                APDDevice.IsEnabled = true;
-                BeginBtn.IsEnabled = true;
-                EndBtn.IsEnabled = false;
-            });
-        }
-
-        private void EndAPDSample(object sender, RoutedEventArgs e)
-        {
-            IsSampleEnd = true;
-            APDDevice.IsEnabled = false;
-            while (SampleThread.ThreadState != ThreadState.Stopped && PlotThread.ThreadState != ThreadState.Stopped)
-            {
-                Thread.Sleep(30);
-            }
-            CurrentAPD.Device.EndContinusSample();
-            SetStopState();
-        }
-
-        private void UpdateDeviceList(object sender, RoutedEventArgs e)
-        {
-            APDDevice.Items.Clear();
-            APDDevice.TemplateButton = APDDevice;
-            foreach (var item in APDs)
-            {
-                APDDevice.Items.Add(new DecoratedButton() { Text = item.Device.ProductName, Tag = item });
-            }
-        }
-
-        /// <summary>
-        /// 应用数据
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Apply(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ConfigParam.ReadFromPage(new FrameworkElement[] { this }, true);
-                if (ConfigParam.MaxDisplayPoint.Value > ConfigParam.MaxSavePoint.Value)
-                {
-                    ConfigParam.MaxDisplayPoint.Value = ConfigParam.MaxSavePoint.Value;
-                }
-            }
-            catch (Exception)
-            {
-                MessageWindow.ShowTipWindow("参数格式错误", Window.GetWindow(this));
-            }
-        }
-        #endregion
 
         private void Snap(object sender, RoutedEventArgs e)
         {

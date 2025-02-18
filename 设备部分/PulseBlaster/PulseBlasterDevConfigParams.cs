@@ -7,7 +7,7 @@ using ODMR_Lab.IO操作;
 
 namespace ODMR_Lab.设备部分.光子探测器
 {
-    public class APDDevConfigParams : ConfigBase
+    public class PulseBlasterDevConfigParams : ConfigBase
     {
         /// <summary>
         /// 采样频率
