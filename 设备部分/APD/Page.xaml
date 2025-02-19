@@ -31,7 +31,7 @@
                 </control:ContextMenu>
             </control:ListViewer.ItemContextMenu>
             <control:ListViewer.DataTemplate>
-                <control:ViewerTemplate Descriptions="APD列表" DataDisplayWidth="*" DataType="String" Editable="False"/>
+                <control:ViewerTemplate Descriptions="名称" DataDisplayWidth="*" DataType="String" Editable="False"/>
             </control:ListViewer.DataTemplate>
             <control:ListViewer.HeaderLabelTemplate>
                 <Label Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF1A1A1A"/>
@@ -44,7 +44,7 @@
             </control:ListViewer.EditableBooleanTemplate>
         </control:ListViewer>
         <control:DecoratedButton Grid.Row="1" Grid.Column="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="NewAPDConnect" Text="新建连接" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
-        <TextBlock FontWeight="Bold" Name="CountRate" Text="12304567" FontSize="35" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="LightGreen"/>
+        <TextBlock FontWeight="Bold" Name="CountRate" Text="0" FontSize="35" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="LightGreen"/>
     </Grid>
     <Grid Grid.Column="1" Grid.RowSpan="2">
         <Grid.RowDefinitions>

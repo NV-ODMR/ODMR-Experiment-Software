@@ -134,7 +134,8 @@ namespace ODMR_Lab.设备部分
 
                 string rBuilder = Path.Combine(dev.ProductIdentifier + "_" + dev.ProductName);
                 foreach (char rinvalidChar in Path.GetInvalidFileNameChars())
-                    rBuilder.Replace(rinvalidChar.ToString(), "");
+                    rBuilder = rBuilder.Replace(rinvalidChar.ToString(), "");
+                rBuilder = rBuilder.Replace("/", "");
 
                 string path = Path.Combine(Path.Combine(Environment.CurrentDirectory, "DevParamDir", rBuilder.ToString().Trim()));
                 obj.SaveToFile(path);

@@ -158,7 +158,7 @@ namespace ODMR_Lab.设备部分.光子探测器
             SetStartState();
             try
             {
-                CurrentAPD.Device.BeginContinusSample(ConfigParam.SampleFreq.Value);
+                CurrentAPD.StartContinusSample(ConfigParam.SampleFreq.Value);
             }
             catch (Exception ex)
             {
@@ -171,7 +171,7 @@ namespace ODMR_Lab.设备部分.光子探测器
             {
                 while (!IsSampleEnd)
                 {
-                    double value = CurrentAPD.Device.GetContinusCountRatio();
+                    double value = CurrentAPD.GetContinusSampleRatio();
                     APDSampleData.Enqueue(value);
                     while (APDSampleData.Count > ConfigParam.MaxSavePoint.Value)
                     {
@@ -202,7 +202,7 @@ namespace ODMR_Lab.设备部分.光子探测器
                         else
                             CountRate.Text = buffer.Last().ToString();
                     });
-                    Thread.Sleep(20);
+                    Thread.Sleep(50);
                 }
             });
             PlotThread.Start();
@@ -236,7 +236,7 @@ namespace ODMR_Lab.设备部分.光子探测器
             {
                 Thread.Sleep(30);
             }
-            CurrentAPD.Device.EndContinusSample();
+            CurrentAPD.EndContinusSample();
             SetStopState();
             CurrentAPD.EndUse();
         }

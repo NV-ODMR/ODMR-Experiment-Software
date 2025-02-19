@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace ODMR_Lab.序列实验
+namespace ODMR_Lab.ODMR实验
 {
     /// <summary>
     /// 自定义实验类型

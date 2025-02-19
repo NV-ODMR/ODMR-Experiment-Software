@@ -12,27 +12,27 @@ using ODMR_Lab.设备部分.位移台部分;
 
 namespace ODMR_Lab.实验部分.扫描基方法
 {
-    internal class Scan1DSession : ScanHelper
+    internal class Scan1DSession<T> : ScanHelper
     {
         /// <summary>
         /// 目标位移台
         /// </summary>
-        public NanoStageInfo ScanMover { get; set; } = null;
+        public T ScanSource { get; set; }
 
         /// <summary>
         /// 进度条设置操作
         /// </summary>
-        public Action<NanoStageInfo, double> ProgressBarMethod = null;
+        public Action<T, double> ProgressBarMethod = null;
 
         /// <summary>
-        /// 扫描第一个点时进行的操作
+        /// 扫描第一个点时进行的操作(源设备,值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public ScanHelper.ScanOperation FirstScanEvent = null;
+        public Func<T, double, List<object>, List<object>> FirstScanEvent = null;
 
         /// <summary>
         /// 扫描其他点时进行的操作
         /// </summary>
-        public ScanHelper.ScanOperation ScanEvent = null;
+        public Func<T, double, List<object>, List<object>> ScanEvent = null;
 
         /// <summary>
         /// 状态判断事件,此事件用来决定是否退出扫描步骤
@@ -48,12 +48,11 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// <param name="Hi"></param>
         /// <param name="D"></param>
         /// <returns></returns>
-        public List<object> BeginScan(double Lo, double Hi, double RestrictLo, double RestrictHi, int pointscount, double moveMaxStep = 0.1, double progressLo = 0, double progressHi = 100, params object[] ps)
+        public List<object> BeginScan(ScanRange range, double progressLo = 0, double progressHi = 100, params object[] ps)
         {
             SetProgress(progressLo);
 
-            double step = (Hi - Lo) / (pointscount - 1);
-            if (double.IsNaN(step)) step = Hi - Lo;
+            var scanlist = range.GenerateScanList();
 
             bool IsFirstScan = true;
 
@@ -61,24 +60,21 @@ namespace ODMR_Lab.实验部分.扫描基方法
 
             try
             {
-                for (int i = 0; i < pointscount; i++)
+                foreach (var value in scanlist)
                 {
-                    //移动位移台
-                    Move(ScanMover, StateJudgeEvent, RestrictLo, RestrictHi, Lo + step * i, 10000, moveMaxStep);
                     //进行操作
                     if (IsFirstScan == true)
                     {
-                        result = FirstScanEvent?.Invoke(ScanMover, Lo + step * i, ps.ToList());
+                        result = FirstScanEvent?.Invoke(ScanSource, value, ps.ToList());
                         StateJudgeEvent?.Invoke();
                         IsFirstScan = false;
                         continue;
                     }
-                    result = ScanEvent?.Invoke(ScanMover, Lo + step * i, result);
+                    result = ScanEvent?.Invoke(ScanSource, value, result);
                     StateJudgeEvent?.Invoke();
-                    SetProgress(progressLo + (i + 1) * (progressHi - progressLo) / pointscount);
+                    SetProgress(progressLo);
                     Thread.Sleep(500);
                 }
-                ScanMover?.EndUse();
                 return result;
             }
             catch (Exception ex)
@@ -86,7 +82,6 @@ namespace ODMR_Lab.实验部分.扫描基方法
                 throw ex;
             }
         }
-
 
         private void SetProgress(double v)
         {

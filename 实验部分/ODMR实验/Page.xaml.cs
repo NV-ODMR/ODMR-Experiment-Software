@@ -11,7 +11,7 @@ using ODMR_Lab.设备部分;
 using ODMR_Lab.实验类;
 using System.Windows.Forms;
 
-namespace ODMR_Lab.序列实验
+namespace ODMR_Lab.ODMR实验
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑

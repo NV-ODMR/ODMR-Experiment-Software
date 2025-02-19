@@ -62,15 +62,15 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+      <HintPath>..\C#Codes\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -184,10 +184,13 @@
     <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\ExpPageBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Ramsey.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Scan2DExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\T1.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\单点\Ramsey.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\单点\Scan0DExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\单点\T1.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\线扫描\Ramsey.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\线扫描\Scan1DExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\线扫描\T1.cs" />
     <Compile Include="实验部分\位移台界面\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -220,6 +223,7 @@
     <Compile Include="实验部分\序列编辑器\SequenceFileWindow.xaml.cs">
       <DependentUpon>SequenceFileWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\扫描基方法\Range.cs" />
     <Compile Include="实验部分\扫描基方法\Scan1DBase.cs" />
     <Compile Include="实验部分\扫描基方法\Scan2DBase.cs" />
     <Compile Include="实验部分\扫描基方法\ScanHelper.cs" />
@@ -609,9 +613,7 @@
   <ItemGroup>
     <Resource Include="图片资源\refresh.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="实验部分\二维扫描实验\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Python\LabviewHandler\AutoTraceVI.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

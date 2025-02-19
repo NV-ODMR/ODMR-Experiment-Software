@@ -127,7 +127,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
                             HighChannelIndexes.Add((int)ch.ChannelInd);
                         }
                     }
-                    CommandLine singlecommand = new CommandLine(HighChannelIndexes, sortedTimes[j + 1] - sortedTimes[j]) { CommandTpye = CommandTypes.Continue };
+                    CommandLine singlecommand = new CommandLine(HighChannelIndexes, sortedTimes[j + 1] - sortedTimes[j]);
                     //打印指令结果
                     ComandInformation += "Channels:";
                     foreach (var item in HighChannelIndexes)
