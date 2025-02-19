@@ -36,18 +36,18 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         public List<ParamB> Devices { get; set; } = new List<ParamB>();
 
-        public List<SequenceExpObject> ExpObjects { get; set; } = new List<SequenceExpObject>();
+        public List<ODMRExpObject> ExpObjects { get; set; } = new List<ODMRExpObject>();
 
-        SequenceExpObject CurrentExpObject = null;
+        ODMRExpObject CurrentExpObject = null;
 
         public DisplayPage()
         {
             InitializeComponent();
             //查找所有序列实验
-            var SequenceTypes = CodeHelper.ClassHelper.GetSubClassTypes(typeof(SequenceExpObject));
+            var SequenceTypes = CodeHelper.ClassHelper.GetSubClassTypes(typeof(ODMRExpObject));
             foreach (var item in SequenceTypes)
             {
-                var exp = Activator.CreateInstance(item) as SequenceExpObject;
+                var exp = Activator.CreateInstance(item) as ODMRExpObject;
                 exp.ParentPage = this;
                 ExpObjects.Add(exp);
             }
@@ -55,51 +55,6 @@ namespace ODMR_Lab.ODMR实验
             foreach (var item in ExpObjects)
             {
                 ExpType.Items.Add(new DecoratedButton() { Text = item.ODMRExperimentName, Tag = item });
-            }
-        }
-
-        protected void UpdateInputPanel()
-        {
-            foreach (var item in InputPanel.Children)
-            {
-                UnregisterName((item as FrameworkElement).Name);
-            }
-            if (CurrentExpObject == null) return;
-            //设备列表
-            foreach (var item in CurrentExpObject.InputParams)
-            {
-                Grid g = GenerateControlBar(item, true);
-                DevicePanel.Children.Add(g);
-            }
-        }
-
-        protected void UpdateOutputPanel()
-        {
-            foreach (var item in OutputPanel.Children)
-            {
-                UnregisterName((item as FrameworkElement).Name);
-            }
-            if (CurrentExpObject == null) return;
-            //设备列表
-            foreach (var item in CurrentExpObject.OutputParams)
-            {
-                Grid g = GenerateControlBar(item, false);
-                DevicePanel.Children.Add(g);
-            }
-        }
-
-        protected void UpdateDevicePanel()
-        {
-            foreach (var item in DevicePanel.Children)
-            {
-                UnregisterName((item as FrameworkElement).Name);
-            }
-            if (CurrentExpObject == null) return;
-            //设备列表
-            foreach (var item in CurrentExpObject.DeviceList)
-            {
-                Grid g = GenerateDeviceBar(item.Key, item.Value);
-                DevicePanel.Children.Add(g);
             }
         }
 
@@ -117,15 +72,30 @@ namespace ODMR_Lab.ODMR实验
                 {
                     foreach (var item in CurrentExpObject.InputParams)
                     {
-                        item.ReadFromPage(new FrameworkElement[] { InputPanel }, false);
+                        try
+                        {
+                            item.ReadFromPage(new FrameworkElement[] { this }, false);
+                            InputPanel.UnregisterName(item.PropertyName);
+                        }
+                        catch (Exception ex) { }
                     }
                     foreach (var item in CurrentExpObject.OutputParams)
                     {
-                        item.ReadFromPage(new FrameworkElement[] { OutputPanel }, false);
+                        try
+                        {
+                            item.ReadFromPage(new FrameworkElement[] { this }, false);
+                            OutputPanel.UnregisterName(item.PropertyName);
+                        }
+                        catch (Exception) { }
                     }
                     foreach (var item in CurrentExpObject.DeviceList)
                     {
-                        item.Value.ReadFromPage(new FrameworkElement[] { DevicePanel }, false);
+                        try
+                        {
+                            item.Value.ReadFromPage(new FrameworkElement[] { this }, false);
+                            DevicePanel.UnregisterName(item.Value.PropertyName);
+                        }
+                        catch (Exception ex) { }
                     }
                 }
 
@@ -140,22 +110,28 @@ namespace ODMR_Lab.ODMR实验
 
                 CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlsStates);
 
-
                 //加载这个实验的参数
-                UpdateDevicePanel();
-                UpdateOutputPanel();
-                UpdateInputPanel();
+                InputPanel.Children.Clear();
+                OutputPanel.Children.Clear();
+                DevicePanel.Children.Clear();
+
                 foreach (var item in CurrentExpObject.InputParams)
                 {
-                    item.LoadToPage(new FrameworkElement[] { InputPanel }, false);
+                    Grid g = GenerateControlBar(item, true);
+                    InputPanel.Children.Add(g);
+                    item.LoadToPage(new FrameworkElement[] { this }, false);
                 }
                 foreach (var item in CurrentExpObject.OutputParams)
                 {
-                    item.LoadToPage(new FrameworkElement[] { OutputPanel }, false);
+                    Grid g = GenerateControlBar(item, false);
+                    OutputPanel.Children.Add(g);
+                    item.LoadToPage(new FrameworkElement[] { this }, false);
                 }
                 foreach (var item in CurrentExpObject.DeviceList)
                 {
-                    item.Value.LoadToPage(new FrameworkElement[] { DevicePanel }, false);
+                    Grid g = GenerateDeviceBar(item.Key, item.Value);
+                    DevicePanel.Children.Add(g);
+                    item.Value.LoadToPage(new FrameworkElement[] { this }, false);
                 }
                 return;
             }
@@ -168,9 +144,12 @@ namespace ODMR_Lab.ODMR实验
         private Grid GenerateControlBar(ParamB param, bool IsInput)
         {
             Grid g = new Grid();
+            g.Margin = new Thickness(5);
 
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Pixel) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Pixel) });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+
+            g.Height = 35;
 
             TextBlock tb = new TextBlock() { Text = param.Description, ToolTip = param.Description };
             tb.Margin = new Thickness(5);
@@ -183,7 +162,10 @@ namespace ODMR_Lab.ODMR实验
             if (param.ValueType.Name == typeof(bool).Name)
             {
                 ui = new Chooser();
-                ui.Margin = new Thickness(10);
+                ui.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+                ui.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+                ui.Height = 15;
+                ui.Width = 30;
                 if (!IsInput)
                     ui.IsEnabled = false;
             }
@@ -201,6 +183,11 @@ namespace ODMR_Lab.ODMR实验
                 ComboBox c = new ComboBox() { DefaultSelectIndex = 0 };
                 c.TemplateButton = ComboBoxTemplate;
                 ComboBoxTemplate.CloneStyleTo(c);
+                c.TextAreaRatio = ComboBoxTemplate.TextAreaRatio;
+                c.IconSource = ComboBoxTemplate.IconSource;
+                c.IconStretch = ComboBoxTemplate.IconStretch;
+                c.ImagePlace = ComboBoxTemplate.ImagePlace;
+
                 c.Margin = new Thickness(5);
                 foreach (var item in Enum.GetNames(param.ValueType))
                 {
@@ -215,7 +202,10 @@ namespace ODMR_Lab.ODMR实验
             {
                 g.Children.Add(ui);
                 Grid.SetColumn(ui, 1);
-                RegisterName(param.PropertyName, ui);
+                if (IsInput)
+                    InputPanel.RegisterName(param.PropertyName, ui);
+                else
+                    OutputPanel.RegisterName(param.PropertyName, ui);
             }
             return g;
         }
@@ -223,9 +213,12 @@ namespace ODMR_Lab.ODMR实验
         private Grid GenerateDeviceBar(DeviceTypes type, Param<string> param)
         {
             Grid g = new Grid();
+            g.Margin = new Thickness(5);
 
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Pixel) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Pixel) });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+
+            g.Height = 35;
 
             TextBlock tb = new TextBlock() { Text = param.Description, ToolTip = param.Description };
             tb.Margin = new Thickness(5);
@@ -236,17 +229,30 @@ namespace ODMR_Lab.ODMR实验
             ComboBox box = new ComboBox() { DefaultSelectIndex = 0 };
             box.TemplateButton = ComboBoxTemplate;
             ComboBoxTemplate.CloneStyleTo(box);
+            box.TextAreaRatio = ComboBoxTemplate.TextAreaRatio;
+            box.IconSource = ComboBoxTemplate.IconSource;
+            box.IconStretch = ComboBoxTemplate.IconStretch;
+            box.ImagePlace = ComboBoxTemplate.ImagePlace;
+
+            box.Items.Clear();
+            var devs = DeviceDispatcher.GetDevice(type);
+            foreach (var item in devs)
+            {
+                DecoratedButton btn = new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item };
+                box.Items.Add(btn);
+            }
+
             box.Click += ((sender, e) =>
             {
                 box.Items.Clear();
-                var devs = DeviceDispatcher.GetDevice(type);
+                devs = DeviceDispatcher.GetDevice(type);
                 foreach (var item in devs)
                 {
                     DecoratedButton btn = new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item };
                     box.Items.Add(btn);
                 }
             });
-            RegisterName(param.PropertyName, box);
+            DevicePanel.RegisterName(param.PropertyName, box);
             g.Children.Add(box);
             Grid.SetColumn(box, 1);
             return g;
@@ -295,7 +301,7 @@ namespace ODMR_Lab.ODMR实验
         /// <param name="e"></param>
         private void ChangeExp(object sender, RoutedEventArgs e)
         {
-            SelectExp(ExpObjects.IndexOf(ExpType.SelectedItem.Tag as SequenceExpObject));
+            SelectExp(ExpObjects.IndexOf(ExpType.SelectedItem.Tag as ODMRExpObject));
         }
     }
 }

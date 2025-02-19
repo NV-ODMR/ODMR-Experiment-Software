@@ -62,15 +62,15 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -223,9 +223,9 @@
     <Compile Include="实验部分\序列编辑器\SequenceFileWindow.xaml.cs">
       <DependentUpon>SequenceFileWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\扫描基方法\Range.cs" />
-    <Compile Include="实验部分\扫描基方法\Scan1DBase.cs" />
-    <Compile Include="实验部分\扫描基方法\Scan2DBase.cs" />
+    <Compile Include="实验部分\扫描基方法\ScanRange.cs" />
+    <Compile Include="实验部分\扫描基方法\Scan1DSession.cs" />
+    <Compile Include="实验部分\扫描基方法\Scan2DSession.cs" />
     <Compile Include="实验部分\扫描基方法\ScanHelper.cs" />
     <Compile Include="实验部分\样品定位\CorrelatePoint.cs" />
     <Compile Include="实验部分\样品定位\Page.xaml.cs">

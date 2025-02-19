@@ -73,7 +73,7 @@ namespace ODMR_Lab
         /// <summary>
         /// 序列实验
         /// </summary>
-        public static 序列实验.DisplayPage Exp_SequencePage = new 序列实验.DisplayPage();
+        public static ODMR实验.DisplayPage Exp_SequencePage = new ODMR实验.DisplayPage();
 
         #endregion
 
@@ -340,7 +340,7 @@ namespace ODMR_Lab
                 CurrentPage = Exp_SequenceEditPage;
                 AddPageToView(Exp_SequenceEditPage);
             }
-            if (btn.Text == "序列实验")
+            if (btn.Text == "ODMR实验")
             {
                 CurrentPage = Exp_SequencePage;
                 AddPageToView(Exp_SequencePage);

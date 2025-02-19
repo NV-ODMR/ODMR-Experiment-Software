@@ -32,6 +32,25 @@ namespace ODMR_Lab.实验部分.磁场调节
 
         private List<object> Experiment(NanoStageInfo stage, double loc, double scanWidth, List<object> originOutput)
         {
+            //移动位移台
+            if (stage == XStage)
+            {
+                ScanHelper.Move(stage, JudgeThreadEndOrResume, Config.XRangeLo.Value, Config.XRangeHi.Value, loc, 5000);
+            }
+            if (stage == YStage)
+            {
+                ScanHelper.Move(stage, JudgeThreadEndOrResume, Config.YRangeLo.Value, Config.YRangeHi.Value, loc, 5000);
+            }
+            if (stage == ZStage)
+            {
+                ScanHelper.Move(stage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, loc, 5000);
+            }
+
+            if (stage == AStage)
+            {
+                ScanHelper.Move(stage, JudgeThreadEndOrResume, -150, 150, loc, 5000);
+            }
+
             List<double> freqs1 = new List<double>();
             List<double> contracts1 = new List<double>();
             List<double> freqs2 = new List<double>();

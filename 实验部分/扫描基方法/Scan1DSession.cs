@@ -53,6 +53,8 @@ namespace ODMR_Lab.实验部分.扫描基方法
             SetProgress(progressLo);
 
             var scanlist = range.GenerateScanList();
+            var progress = new ScanRange(progressLo, progressHi, range.Count).GenerateScanList();
+
 
             bool IsFirstScan = true;
 
@@ -60,19 +62,19 @@ namespace ODMR_Lab.实验部分.扫描基方法
 
             try
             {
-                foreach (var value in scanlist)
+                for (int i = 0; i < scanlist.Count; i++)
                 {
                     //进行操作
                     if (IsFirstScan == true)
                     {
-                        result = FirstScanEvent?.Invoke(ScanSource, value, ps.ToList());
+                        result = FirstScanEvent?.Invoke(ScanSource, scanlist[i], ps.ToList());
                         StateJudgeEvent?.Invoke();
                         IsFirstScan = false;
                         continue;
                     }
-                    result = ScanEvent?.Invoke(ScanSource, value, result);
+                    result = ScanEvent?.Invoke(ScanSource, scanlist[i], result);
                     StateJudgeEvent?.Invoke();
-                    SetProgress(progressLo);
+                    SetProgress(progress[i]);
                     Thread.Sleep(500);
                 }
                 return result;
@@ -85,7 +87,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
 
         private void SetProgress(double v)
         {
-            ProgressBarMethod?.Invoke(ScanMover, v);
+            ProgressBarMethod?.Invoke(ScanSource, v);
         }
     }
 }

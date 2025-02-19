@@ -1,5 +1,6 @@
 ﻿using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.磁场调节;
+using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,22 +20,19 @@ namespace ODMR_Lab.实验部分.磁场调节
         {
             //扫第一个点
             ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleX, 60000, 360);
-            Scan1DSession session = new Scan1DSession();
+            Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
             session.ProgressBarMethod = SetProgressFromSession;
             session.FirstScanEvent = ScanEvent;
             session.ScanEvent = ScanEvent;
             session.StateJudgeEvent = JudgeThreadEndOrResume;
-            session.ScanMover = ZStage;
-
-            double reslo = Config.ZRangeLo.Value;
-            double reshi = Config.ZRangeHi.Value;
+            session.ScanSource = ZStage;
 
             //扫第一个点
             double height = Config.ZPlane.Value;
-            session.BeginScan(height, height, reslo, reshi, 1, 0.1, 0, 25, this, 0.0, 0.0);
+            session.BeginScan(new ScanRange(height, height, 1), 0, 25, this, 0.0, 0.0);
             //扫第二个点
             height = Config.ZPlane.Value + GetReverseNum(Config.ReverseZ.Value);
-            session.BeginScan(height, height, reslo, reshi, 1, 0.1, 25, 50, this, 0.0, 0.0);
+            session.BeginScan(new ScanRange(height, height, 1), 25, 50, this, 0.0, 0.0);
 
             CWPointObject cp1 = ZPoints[0];
             CWPointObject cp2 = ZPoints[1];
@@ -50,10 +48,10 @@ namespace ODMR_Lab.实验部分.磁场调节
 
                     //扫第一个点
                     height = Config.ZPlane.Value;
-                    session.BeginScan(height, height, reslo, reshi, 1, 0.1, 50, 75, this, 0.0, 0.0);
+                    session.BeginScan(new ScanRange(height, height, 1), 50, 75, this, 0.0, 0.0);
                     //扫第二个点
                     height = Config.ZPlane.Value + GetReverseNum(Config.ReverseZ.Value);
-                    session.BeginScan(height, height, reslo, reshi, 1, 0.1, 75, 100, this, 0.0, 0.0);
+                    session.BeginScan(new ScanRange(height, height, 1), 1, 0.1, 75, 100, this, 0.0, 0.0);
 
                     cp1 = ZPoints[0];
                     cp2 = ZPoints[1];

@@ -2,6 +2,7 @@
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.磁场调节;
+using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +19,14 @@ namespace ODMR_Lab.实验部分.磁场调节
         /// </summary>
         private void ScanAngle()
         {
-            Scan1DSession session = new Scan1DSession();
+            Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
             session.ProgressBarMethod = SetProgressFromSession;
             session.FirstScanEvent = ScanAngleEvent;
             session.ScanEvent = ScanAngleEvent;
             session.StateJudgeEvent = JudgeThreadEndOrResume;
-            session.ScanMover = AStage;
+            session.ScanSource = AStage;
 
-            session.BeginScan(-140, 140, -150, 150, 15, 0.1, 0, 100, this, 0.0, 0.0);
+            session.BeginScan(new ScanRange(-140, 140, 14), 0, 100, this, 0.0, 0.0, 15, 0.1);
 
             #region 进行拟合得到方位角
             List<double> locs = AnglePoints.Select((x) => x.MoverLoc).ToList();

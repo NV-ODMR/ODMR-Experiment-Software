@@ -1,5 +1,6 @@
 ﻿using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.磁场调节;
+using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,10 +47,10 @@ namespace ODMR_Lab.实验部分.磁场调节
             }
 
             int ind = 0;
-            Scan1DSession session = new Scan1DSession();
+            Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
             session.FirstScanEvent = ScanEvent;
             session.ScanEvent = ScanEvent;
-            session.ProgressBarMethod =SetProgressFromSession;
+            session.ProgressBarMethod = SetProgressFromSession;
             session.StateJudgeEvent = JudgeThreadEndOrResume;
 
             double restrictlo = 0;
@@ -57,13 +58,13 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             if (ScanDir == "X")
             {
-                session.ScanMover = XStage;
+                session.ScanSource = XStage;
                 restrictlo = Config.XScanLo.Value;
                 restricthi = Config.XScanHi.Value;
             }
             if (ScanDir == "Y")
             {
-                session.ScanMover = YStage;
+                session.ScanSource = YStage;
                 restrictlo = Config.YScanLo.Value;
                 restricthi = Config.YScanHi.Value;
             }
@@ -77,7 +78,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             step = (scanrange) / (scancount - 1);
             while (step >= 0.1)
             {
-                session.BeginScan(scanmin, scanmax, restrictlo, restricthi, 6, 0.1, ind * 100.0 / countApprox, (ind + 5) * 100.0 / countApprox, this, cw1, cw2);
+                session.BeginScan(new ScanRange(scanmin, scanmax, 6), ind * 100.0 / countApprox, (ind + 5) * 100.0 / countApprox, this, cw1, cw2);
                 ind += 6;
 
                 #region 根据二次函数计算当前峰值

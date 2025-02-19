@@ -10,14 +10,13 @@ using System.Threading;
 using System.Windows;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分;
 using ODMR_Lab.ODMR实验;
 using HardWares.端口基类;
 using ODMR_Lab.实验部分.扫描基方法;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
 {
-    internal abstract class Scan1DExpBase : SequenceExpObject
+    internal abstract class Scan1DExpBase : ODMRExpObject
     {
         /// <summary>
         /// 一维扫描设备
@@ -38,17 +37,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
 
         public override void ExperimentEvent()
         {
-            Scan1DSession ScanSe = new Scan1DSession();
-            ScanSe.ProgressBarMethod = new Action<NanoStageInfo, double>(() =>
-              {
-
-              });
-            ScanSe.BeginScan();
-        }
-
-        private void SetProgress(double v)
-        {
-            ProgressBarMethod?.Invoke(ScanMover, v);
         }
     }
 }

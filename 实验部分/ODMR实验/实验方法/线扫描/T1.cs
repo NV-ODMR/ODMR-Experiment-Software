@@ -1,6 +1,6 @@
 ﻿using CodeHelper;
 using ODMR_Lab.IO操作;
-using ODMR_Lab.序列实验;
+using ODMR_Lab.ODMR实验;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
 {
-    public class T1 : SequenceExpObject
+    public class T1 : ODMRExpObject
     {
         #region 实验部分
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>();

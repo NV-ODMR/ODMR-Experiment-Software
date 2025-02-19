@@ -60,6 +60,8 @@ namespace ODMR_Lab
             target.TextAlignment = source.TextAlignment;
             target.HorizontalAlignment = source.HorizontalAlignment;
             target.VerticalAlignment = source.VerticalAlignment;
+            target.Foreground = source.Foreground;
+            target.TextWrapping = source.TextWrapping;
         }
 
         public static void CloneStyle(TextBox source, TextBox target)
@@ -75,7 +77,7 @@ namespace ODMR_Lab
             target.BorderBrush = source.BorderBrush;
             target.Background = source.Background;
             target.CaretBrush = source.CaretBrush;
-            target.Foreground=source.Foreground;
+            target.Foreground = source.Foreground;
             target.SelectionBrush = source.SelectionBrush;
         }
 

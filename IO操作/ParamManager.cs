@@ -74,6 +74,21 @@ namespace ODMR_Lab.IO操作
             WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
             #endregion
 
+            #region ODMR实验
+            FileObject ODMRSaveFile = new FileObject();
+            foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
+            {
+                item.ReadFromPageAndWriteConfigToFile(ODMRSaveFile);
+            }
+            if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat")))
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData"));
+                var str = File.Create(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
+                str.Close();
+            }
+            ODMRSaveFile.SaveToFile(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
+            #endregion
+
             if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "UIParam")))
             {
                 Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "UIParam"));
@@ -134,7 +149,15 @@ namespace ODMR_Lab.IO操作
             SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
             #endregion
 
-            #region 自定义实验
+            #region ODMR实验
+            if (File.Exists(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat")))
+            {
+                FileObject ODMRSaveFile = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
+                foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
+                {
+                    item.ReadFromFileAndLoadToPage(ODMRSaveFile);
+                }
+            }
             #endregion
         }
 
