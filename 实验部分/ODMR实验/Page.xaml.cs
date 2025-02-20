@@ -110,6 +110,9 @@ namespace ODMR_Lab.ODMR实验
 
                 CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlsStates);
 
+                //刷新图表
+                CurrentExpObject.UpdatePlotChart();
+
                 //加载这个实验的参数
                 InputPanel.Children.Clear();
                 OutputPanel.Children.Clear();

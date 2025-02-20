@@ -51,6 +51,23 @@ namespace ODMR_Lab.设备部分.光子探测器
         }
 
         /// <summary>
+        /// 获取脉冲采样源,找不到则报错
+        /// </summary>
+        /// <returns></returns>
+        private PulseBlasterInfo GetPulseSourceInfo()
+        {
+            var result = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster).Select(x => x as PulseBlasterInfo);
+            foreach (var item in result)
+            {
+                if (!(item.Device is HardWares.板卡.DAQmxChannel.PulseBlaster))
+                {
+                    return item;
+                }
+            }
+            throw new Exception("未找到连续测量的信号源");
+        }
+
+        /// <summary>
         /// 开始连续取样,否则报错
         /// </summary>
         public void StartContinusSample(double frequency)
@@ -84,6 +101,37 @@ namespace ODMR_Lab.设备部分.光子探测器
         {
             var res = GetContinusSampleSourceInfo();
             res.Device.End();
+            Device.EndSample();
+        }
+
+        /// <summary>
+        /// 开始触发取样,否则报错
+        /// </summary>
+        public void StartTriggerSample(int samplecount)
+        {
+            var res = GetPulseSourceInfo();
+            Device.BeginSample(APDTriggerChannels.Channel2, samplecount);
+        }
+
+        /// <summary>
+        /// 获取连续取样读数
+        /// </summary>
+        /// <returns></returns>
+        public List<int> GetTriggerSamples()
+        {
+            try
+            {
+                var cs = Device.GetCounts();
+                return cs;
+            }
+            catch (Exception) { return new List<int>(); }
+        }
+
+        /// <summary>
+        /// 结束连续取样
+        /// </summary>
+        public void EndTriggerSample()
+        {
             Device.EndSample();
         }
     }

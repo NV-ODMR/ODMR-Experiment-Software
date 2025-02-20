@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using ODMR_Lab.IO操作;
+using ODMR_Lab.基本控件;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace ODMR_Lab.ODMR实验
 {
@@ -44,6 +46,10 @@ namespace ODMR_Lab.ODMR实验
         /// 实验设备
         /// </summary>
         public List<KeyValuePair<string, InfoBase>> ExperimentDevices = new List<KeyValuePair<string, InfoBase>>();
+
+        public override ConfigBase Config { get; set; } = null;
+
+        public override ExpParamBase Param { get; set; } = null;
 
         public override ConfigBase ReadConfig()
         {
@@ -222,6 +228,71 @@ namespace ODMR_Lab.ODMR实验
                 item.Value.LoadToPage(new FrameworkElement[] { ParentPage }, false);
             }
         }
+
+        /// <summary>
+        /// 一维图表数据
+        /// </summary>
+        protected abstract List<ChartData1D> D1ChartDatas { get; set; }
+        /// <summary>
+        /// 二维图表数据
+        /// </summary>
+        protected abstract List<ChartData2D> D2ChartDatas { get; set; }
+
+        /// <summary>
+        /// 获取一维数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="groupname"></param>
+        /// <returns></returns>
+        public ChartData1D Get1DChartData(string name, string groupname)
+        {
+            var data = D1ChartDatas.Where(x => x.GroupName == groupname && x.Name == name);
+            if (data.Count() != 0) return data.ElementAt(0);
+            return null;
+        }
+
+        /// <summary>
+        /// 获取一维数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="groupname"></param>
+        /// <returns></returns>
+        public ChartData2D Get2DChartData(string zname, string groupname)
+        {
+            var data = D2ChartDatas.Where(x => x.GroupName == groupname && x.Data.ZName == zname);
+            if (data.Count() != 0) return data.ElementAt(0);
+            return null;
+        }
+
+
+        /// <summary>
+        /// 刷新绘图
+        /// </summary>
+        public void UpdatePlotChartFlow(bool isAutoScale)
+        {
+            Dispatcher.CurrentDispatcher.Invoke(() =>
+            {
+                ParentPage.Chart1D.UpdateChartAndDataFlow(isAutoScale);
+                ParentPage.Chart2D.UpdateChartAndDataFlow();
+            });
+        }
+
+
+        /// <summary>
+        /// 刷新绘图
+        /// </summary>
+        public void UpdatePlotChart()
+        {
+            Dispatcher.CurrentDispatcher.Invoke(() =>
+            {
+                ParentPage.Chart1D.DataSource.Clear(false);
+                ParentPage.Chart2D.DataSource.Clear(false);
+                ParentPage.Chart1D.DataSource.AddRange(D1ChartDatas);
+                ParentPage.Chart2D.DataSource.AddRange(D2ChartDatas);
+            });
+        }
+
+
 
     }
 }

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ODMR_Lab.实验部分.序列编辑器
 {
@@ -88,14 +89,31 @@ namespace ODMR_Lab.实验部分.序列编辑器
             obj.SaveToFile(Path.Combine(info.FullName, Name.ToString()));
         }
 
+
+        /// <summary>
+        /// 从文件中读取序列，读不到则报错
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static SequenceDataAssemble ReadFromSequenceName(string name)
+        {
+            if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "Sequences", name.Replace(".userdat", "") + ".userdat")))
+            {
+                throw new Exception("找不到序列文件:" + name);
+            }
+            var obj = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "Sequences", name.Replace(".userdat", "") + ".userdat"));
+            return ReadFromFile(obj);
+        }
+
         /// <summary>
         /// 转换成PB指令
         /// </summary>
         /// <returns></returns>
-        public List<CommandLine> ConvertToCommandLine(out string ComandInformation)
+        public List<CommandBase> ConvertToCommandLine(out string ComandInformation)
         {
             ComandInformation = "";
-            List<CommandLine> line = new List<CommandLine>();
+            List<CommandBase> line = new List<CommandBase>();
             for (int i = 0; i < LoopCount; i++)
             {
                 //找1脉冲的时间点
@@ -140,6 +158,40 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 }
             }
             return line;
+        }
+
+        /// <summary>
+        /// 改变特殊序列名的脉冲长度
+        /// </summary>
+        public void ChangeWaveSegSpan(string name, int spanvalue)
+        {
+            foreach (var ch in Channels)
+            {
+                foreach (var wave in ch.Peaks)
+                {
+                    if (wave.PeakName == name)
+                    {
+                        wave.PeakSpan = spanvalue;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 改变特殊序列名的脉冲步进长度
+        /// </summary>
+        public void ChangeWaveSegStep(string name, int stepvalue)
+        {
+            foreach (var ch in Channels)
+            {
+                foreach (var wave in ch.Peaks)
+                {
+                    if (wave.PeakName == name)
+                    {
+                        wave.Step = stepvalue;
+                    }
+                }
+            }
         }
     }
 }

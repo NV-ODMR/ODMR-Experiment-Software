@@ -6,6 +6,7 @@ using HardWares.端口基类部分.设备信息;
 using HardWares.纳米位移台;
 using ODMR_Lab.温度监测部分;
 using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -127,6 +128,26 @@ namespace ODMR_Lab.设备部分
             foreach (var item in DevInfos)
             {
                 if (item.deviceType == type) return item.GetDevEvent();
+                PartTypes part = PartTypes.None;
+                if (type == DeviceTypes.微波位移台)
+                    part = PartTypes.Microwave;
+                if (type == DeviceTypes.探针位移台)
+                    part = PartTypes.Probe;
+                if (type == DeviceTypes.样品位移台)
+                    part = PartTypes.Sample;
+                if (type == DeviceTypes.磁铁位移台)
+                    part = PartTypes.Magnnet;
+                if (type == DeviceTypes.镜头位移台)
+                    part = PartTypes.Len;
+                if (part != PartTypes.None)
+                {
+                    List<InfoBase> stageinfos = new List<InfoBase>();
+                    foreach (var stage in infos)
+                    {
+                        stageinfos.AddRange((stage as NanoMoverInfo).Stages.Where(x => x.PartType == part));
+                    }
+                    infos = stageinfos;
+                }
             }
             return new List<InfoBase>();
         }
@@ -143,6 +164,26 @@ namespace ODMR_Lab.设备部分
             foreach (var item in DevInfos)
             {
                 if (item.deviceType == type) infos = item.GetDevEvent();
+                PartTypes part = PartTypes.None;
+                if (type == DeviceTypes.微波位移台)
+                    part = PartTypes.Microwave;
+                if (type == DeviceTypes.探针位移台)
+                    part = PartTypes.Probe;
+                if (type == DeviceTypes.样品位移台)
+                    part = PartTypes.Sample;
+                if (type == DeviceTypes.磁铁位移台)
+                    part = PartTypes.Magnnet;
+                if (type == DeviceTypes.镜头位移台)
+                    part = PartTypes.Len;
+                if (part != PartTypes.None)
+                {
+                    List<InfoBase> stageinfos = new List<InfoBase>();
+                    foreach (var stage in infos)
+                    {
+                        stageinfos.AddRange((stage as NanoMoverInfo).Stages.Where(x => x.PartType == part));
+                    }
+                    infos = stageinfos;
+                }
             }
             var info = infos.Where(x => x.GetDeviceDescription() == devicedescription);
             if (infos.Where(x => x.GetDeviceDescription() == devicedescription).Count() == 0) return null;

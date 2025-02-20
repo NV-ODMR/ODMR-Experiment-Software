@@ -29,10 +29,10 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             //扫第一个点
             double height = Config.ZPlane.Value;
-            session.BeginScan(new ScanRange(height, height, 1), 0, 25, this, 0.0, 0.0);
+            session.BeginScan(new ScanRange(height, height, 1), 0, 25, false, this, 0.0, 0.0);
             //扫第二个点
             height = Config.ZPlane.Value + GetReverseNum(Config.ReverseZ.Value);
-            session.BeginScan(new ScanRange(height, height, 1), 25, 50, this, 0.0, 0.0);
+            session.BeginScan(new ScanRange(height, height, 1), 25, 50, false, this, 0.0, 0.0);
 
             CWPointObject cp1 = ZPoints[0];
             CWPointObject cp2 = ZPoints[1];
@@ -48,10 +48,10 @@ namespace ODMR_Lab.实验部分.磁场调节
 
                     //扫第一个点
                     height = Config.ZPlane.Value;
-                    session.BeginScan(new ScanRange(height, height, 1), 50, 75, this, 0.0, 0.0);
+                    session.BeginScan(new ScanRange(height, height, 1), 50, 75, false, this, 0.0, 0.0);
                     //扫第二个点
                     height = Config.ZPlane.Value + GetReverseNum(Config.ReverseZ.Value);
-                    session.BeginScan(new ScanRange(height, height, 1), 1, 0.1, 75, 100, this, 0.0, 0.0);
+                    session.BeginScan(new ScanRange(height, height, 1), 75, 100, false, this, 0.0, 0.0);
 
                     cp1 = ZPoints[0];
                     cp2 = ZPoints[1];

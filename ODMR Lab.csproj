@@ -183,15 +183,13 @@
     <Compile Include="实验类\ExperimentObject.cs" />
     <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\ExpPageBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Ramsey.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\ScanCoreBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\T1.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Scan2DExpBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\T1.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\单点\Ramsey.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\单点\Scan0DExpBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\单点\T1.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\线扫描\Ramsey.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\线扫描\Scan1DExpBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\线扫描\T1.cs" />
     <Compile Include="实验部分\位移台界面\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>

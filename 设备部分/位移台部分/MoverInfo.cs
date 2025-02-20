@@ -83,7 +83,7 @@ namespace ODMR_Lab.设备部分.位移台部分
 
         public override string GetDeviceDescription()
         {
-            return Enum.GetName(PartType.GetType(), PartType) + ":" + Enum.GetName(MoverType.GetType(), MoverType) + ":" + Parent.Device.ProductName;
+            return Enum.GetName(PartType.GetType(), PartType) + ":" + Enum.GetName(MoverType.GetType(), MoverType);
         }
     }
 

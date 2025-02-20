@@ -26,7 +26,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             session.StateJudgeEvent = JudgeThreadEndOrResume;
             session.ScanSource = AStage;
 
-            session.BeginScan(new ScanRange(-140, 140, 14), 0, 100, this, 0.0, 0.0, 15, 0.1);
+            session.BeginScan(new ScanRange(-140, 140, 14), 0, 100, false, this, 0.0, 0.0, 15, 0.1);
 
             #region 进行拟合得到方位角
             List<double> locs = AnglePoints.Select((x) => x.MoverLoc).ToList();

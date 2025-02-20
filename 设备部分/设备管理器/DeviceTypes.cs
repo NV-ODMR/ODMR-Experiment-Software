@@ -28,24 +28,44 @@ namespace ODMR_Lab.设备部分
         /// </summary>
         位移台 = 3,
         /// <summary>
+        /// 位移台
+        /// </summary>
+        探针位移台 = 4,
+        /// <summary>
+        /// 位移台
+        /// </summary>
+        样品位移台 = 5,
+        /// <summary>
+        /// 位移台
+        /// </summary>
+        微波位移台 = 6,
+        /// <summary>
+        /// 位移台
+        /// </summary>
+        镜头位移台 = 7,
+        /// <summary>
+        /// 位移台
+        /// </summary>
+        磁铁位移台 = 8,
+        /// <summary>
         /// 温控
         /// </summary>
-        温控 = 7,
+        温控 = 9,
         /// <summary>
         /// 射频源
         /// </summary>
-        射频源 = 8,
+        射频源 = 10,
         /// <summary>
         /// 锁相放大器
         /// </summary>
-        锁相放大器 = 9,
+        锁相放大器 = 11,
         /// <summary>
         /// 光子计数器
         /// </summary>
-        光子计数器 = 10,
+        光子计数器 = 12,
         /// <summary>
         /// PulseBlaster
         /// </summary>
-        PulseBlaster = 11
+        PulseBlaster = 13
     }
 }
