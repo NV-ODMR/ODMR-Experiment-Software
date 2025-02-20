@@ -195,28 +195,28 @@ namespace ODMR_Lab.设备部分.位移台部分
             }
             #endregion
             #region 设置为磁铁位移台
-            if (arg1 == 2)
+            if (arg1 == 3)
             {
                 (arg3 as NanoStageInfo).PartType = PartTypes.Magnnet;
                 RefreshPanels();
             }
             #endregion
             #region 设置为样品位移台
-            if (arg1 == 3)
+            if (arg1 == 4)
             {
                 (arg3 as NanoStageInfo).PartType = PartTypes.Sample;
                 RefreshPanels();
             }
             #endregion
             #region 设置为微波位移台
-            if (arg1 == 4)
+            if (arg1 == 5)
             {
                 (arg3 as NanoStageInfo).PartType = PartTypes.Microwave;
                 RefreshPanels();
             }
             #endregion
-            #region 设置为微波位移台
-            if (arg1 == 5)
+            #region 设置为镜头位移台
+            if (arg1 == 6)
             {
                 (arg3 as NanoStageInfo).PartType = PartTypes.Len;
                 RefreshPanels();

@@ -60,17 +60,14 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+    <Reference Include="CodeHelper">
+      <HintPath>..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+    <Reference Include="Controls">
+      <HintPath>..\C#Codes\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
-    <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+    <Reference Include="HardWares">
+      <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

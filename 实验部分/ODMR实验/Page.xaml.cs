@@ -47,7 +47,15 @@ namespace ODMR_Lab.ODMR实验
             var SequenceTypes = CodeHelper.ClassHelper.GetSubClassTypes(typeof(ODMRExpObject));
             foreach (var item in SequenceTypes)
             {
-                var exp = Activator.CreateInstance(item) as ODMRExpObject;
+                ODMRExpObject exp = null;
+                if (item.GenericTypeArguments.Length != 0)
+                {
+                    exp = Activator.CreateInstance(item.MakeGenericType(item.GenericTypeArguments)) as ODMRExpObject;
+                }
+                else
+                {
+                    exp = Activator.CreateInstance(item) as ODMRExpObject;
+                }
                 exp.ParentPage = this;
                 ExpObjects.Add(exp);
             }
