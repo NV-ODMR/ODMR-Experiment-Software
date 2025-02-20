@@ -171,11 +171,18 @@ namespace ODMR_Lab.设备部分.光子探测器
             {
                 while (!IsSampleEnd)
                 {
-                    double value = CurrentAPD.GetContinusSampleRatio();
-                    APDSampleData.Enqueue(value);
-                    while (APDSampleData.Count > ConfigParam.MaxSavePoint.Value)
+                    try
                     {
-                        APDSampleData.Dequeue();
+                        double value = CurrentAPD.GetContinusSampleRatio();
+                        APDSampleData.Enqueue(value);
+                        while (APDSampleData.Count > ConfigParam.MaxSavePoint.Value)
+                        {
+                            APDSampleData.Dequeue();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Thread.Sleep(30);
                     }
                 }
             });
@@ -202,7 +209,7 @@ namespace ODMR_Lab.设备部分.光子探测器
                         else
                             CountRate.Text = buffer.Last().ToString();
                     });
-                    Thread.Sleep(50);
+                    Thread.Sleep(30);
                 }
             });
             PlotThread.Start();

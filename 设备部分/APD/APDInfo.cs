@@ -86,12 +86,15 @@ namespace ODMR_Lab.设备部分.光子探测器
         {
             var res = GetContinusSampleSourceInfo();
             double freq = (res.Device as PulseBlaster).PulseFrequency;
-            var cs = Device.GetCounts();
+            var cs = Device.GetCounts(1000);
             try
             {
-                return (cs[1] - cs[0]) * freq;
+                return (cs[cs.Count - 1] - cs[cs.Count - 2]) * freq;
             }
-            catch (Exception) { return 0; }
+            catch (Exception ex)
+            {
+                return 0;
+            }
         }
 
         /// <summary>
@@ -121,7 +124,7 @@ namespace ODMR_Lab.设备部分.光子探测器
         {
             try
             {
-                var cs = Device.GetCounts();
+                var cs = Device.GetCounts(1000);
                 return cs;
             }
             catch (Exception) { return new List<int>(); }

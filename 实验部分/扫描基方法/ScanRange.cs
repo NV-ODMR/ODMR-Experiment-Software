@@ -32,5 +32,11 @@ namespace ODMR_Lab.实验部分.扫描基方法
         {
             return Enumerable.Range(0, Count).Select(x => Hi - Math.Abs(Hi - Lo) * x / (Count - 1)).ToList();
         }
+
+        public int GetNearestIndex(double value)
+        {
+            var l = GenerateScanList().Select(x => Math.Abs(x - value)).ToList();
+            return l.IndexOf(l.Min());
+        }
     }
 }

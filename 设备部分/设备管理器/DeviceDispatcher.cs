@@ -125,31 +125,37 @@ namespace ODMR_Lab.设备部分
         public static List<InfoBase> GetDevice(DeviceTypes type)
         {
             List<InfoBase> infos = new List<InfoBase>();
+            DeviceTypes origitype = type;
             foreach (var item in DevInfos)
             {
-                if (item.deviceType == type) return item.GetDevEvent();
-                PartTypes part = PartTypes.None;
-                if (type == DeviceTypes.微波位移台)
-                    part = PartTypes.Microwave;
-                if (type == DeviceTypes.探针位移台)
-                    part = PartTypes.Probe;
-                if (type == DeviceTypes.样品位移台)
-                    part = PartTypes.Sample;
-                if (type == DeviceTypes.磁铁位移台)
-                    part = PartTypes.Magnnet;
-                if (type == DeviceTypes.镜头位移台)
-                    part = PartTypes.Len;
-                if (part != PartTypes.None)
+                if (type == DeviceTypes.微波位移台 || type == DeviceTypes.探针位移台 || type == DeviceTypes.样品位移台 || type == DeviceTypes.磁铁位移台 || type == DeviceTypes.镜头位移台)
+                    type = DeviceTypes.位移台;
+                if (item.deviceType == type)
                 {
-                    List<InfoBase> stageinfos = new List<InfoBase>();
-                    foreach (var stage in infos)
+                    infos = item.GetDevEvent();
+                    PartTypes part = PartTypes.None;
+                    if (origitype == DeviceTypes.微波位移台)
+                        part = PartTypes.Microwave;
+                    if (origitype == DeviceTypes.探针位移台)
+                        part = PartTypes.Probe;
+                    if (origitype == DeviceTypes.样品位移台)
+                        part = PartTypes.Sample;
+                    if (origitype == DeviceTypes.磁铁位移台)
+                        part = PartTypes.Magnnet;
+                    if (origitype == DeviceTypes.镜头位移台)
+                        part = PartTypes.Len;
+                    if (part != PartTypes.None)
                     {
-                        stageinfos.AddRange((stage as NanoMoverInfo).Stages.Where(x => x.PartType == part));
+                        List<InfoBase> stageinfos = new List<InfoBase>();
+                        foreach (var stage in infos)
+                        {
+                            stageinfos.AddRange((stage as NanoMoverInfo).Stages.Where(x => x.PartType == part));
+                        }
+                        infos = stageinfos;
                     }
-                    infos = stageinfos;
                 }
             }
-            return new List<InfoBase>();
+            return infos;
         }
 
         /// <summary>
@@ -160,31 +166,7 @@ namespace ODMR_Lab.设备部分
         /// <returns></returns>
         public static InfoBase GetDevice(DeviceTypes type, string devicedescription)
         {
-            List<InfoBase> infos = new List<InfoBase>();
-            foreach (var item in DevInfos)
-            {
-                if (item.deviceType == type) infos = item.GetDevEvent();
-                PartTypes part = PartTypes.None;
-                if (type == DeviceTypes.微波位移台)
-                    part = PartTypes.Microwave;
-                if (type == DeviceTypes.探针位移台)
-                    part = PartTypes.Probe;
-                if (type == DeviceTypes.样品位移台)
-                    part = PartTypes.Sample;
-                if (type == DeviceTypes.磁铁位移台)
-                    part = PartTypes.Magnnet;
-                if (type == DeviceTypes.镜头位移台)
-                    part = PartTypes.Len;
-                if (part != PartTypes.None)
-                {
-                    List<InfoBase> stageinfos = new List<InfoBase>();
-                    foreach (var stage in infos)
-                    {
-                        stageinfos.AddRange((stage as NanoMoverInfo).Stages.Where(x => x.PartType == part));
-                    }
-                    infos = stageinfos;
-                }
-            }
+            List<InfoBase> infos = GetDevice(type);
             var info = infos.Where(x => x.GetDeviceDescription() == devicedescription);
             if (infos.Where(x => x.GetDeviceDescription() == devicedescription).Count() == 0) return null;
             return info.ElementAt(0);

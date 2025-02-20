@@ -1,5 +1,7 @@
 ﻿using CodeHelper;
 using HardWares.板卡;
+using ODMR_Lab.实验部分.序列编辑器;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -57,6 +59,21 @@ namespace ODMR_Lab.设备部分.板卡
             var res = ChannelDescriptions.Where(x => x.Key == descript);
             if (res.Count() == 0) return -1;
             return res.First().Value;
+        }
+
+        /// <summary>
+        /// 寻找指定描述对应的通道号，找不到报错
+        /// </summary>
+        /// <param name="descript"></param>
+        /// <returns></returns>
+        public SequenceChannel FindChannelEnumOfDescription(string descript)
+        {
+            var res = ChannelDescriptions.Where(x => x.Key == descript);
+            if (res.Count() == 0)
+            {
+                throw new Exception("未找到板卡的对应通道,通道名:" + descript);
+            }
+            return (SequenceChannel)res.First().Value;
         }
 
         /// <summary>

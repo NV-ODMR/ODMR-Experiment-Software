@@ -32,7 +32,21 @@ namespace ODMR_Lab.实验部分.扫描基方法
                 SetExpState(CreateThreadState(devi1, devi2, val1, val2));
             });
             D2Session.StateJudgeEvent = JudgeThreadEndOrResume;
-            D2Session.BeginScan(range1.Key, range2.Key, 0, 100);
+            try
+            {
+                PreScanEvent();
+                D2Session.BeginScan(range1.Key, range2.Key, 0, 100);
+                AfterScanEvent();
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    AfterScanEvent();
+                }
+                catch (Exception) { }
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -66,13 +80,23 @@ namespace ODMR_Lab.实验部分.扫描基方法
         public abstract string CreateThreadState(T1 dev1, T2 dev2, double currentvalue1, double currentvalue2);
 
         /// <summary>
+        /// 扫描前操作
+        /// </summary>
+        public abstract void PreScanEvent();
+
+        /// <summary>
+        /// 扫描后操作
+        /// </summary>
+        public abstract void AfterScanEvent();
+
+        /// <summary>
         /// 扫描操作，inputParams为空
         /// </summary>
         /// <param name="device"></param>
         /// <param name="locvalue"></param>
         /// <param name="inputParams"></param>
         /// <returns></returns>
-        public abstract List<object> ScanEvent(T1 device1, T2 device2, double loc1value, double loc2value, List<object> inputParams);
+        public abstract List<object> ScanEvent(T1 device1, T2 device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams);
 
         /// <summary>
         /// 第一次扫描操作，inputParams为空
@@ -81,6 +105,6 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// <param name="locvalue"></param>
         /// <param name="inputParams"></param>
         /// <returns></returns>
-        public abstract List<object> FirstScanEvent(T1 device1, T2 device2, double loc1value, double loc2value, List<object> inputParams);
+        public abstract List<object> FirstScanEvent(T1 device1, T2 device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams);
     }
 }

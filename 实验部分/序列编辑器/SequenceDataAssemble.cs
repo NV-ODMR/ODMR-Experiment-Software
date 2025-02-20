@@ -129,7 +129,10 @@ namespace ODMR_Lab.实验部分.序列编辑器
                             time += peak.PeakSpan + peak.Step * i;
                             OneTimes.Add(time);
                         }
-                        time += peak.PeakSpan + peak.Step * i;
+                        else
+                        {
+                            time += peak.PeakSpan + peak.Step * i;
+                        }
                     }
                 }
                 //时间从低到高排序

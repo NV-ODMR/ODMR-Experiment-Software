@@ -18,7 +18,7 @@
             <ColumnDefinition Width="40"/>
             <ColumnDefinition MinWidth="100" Width="1*"/>
         </Grid.ColumnDefinitions>
-        <control:ChartControl2DHeatMap Name="ChartObject" TitleSize="40" CrossHairLineThickness="1.5" SnapsToDevicePixels="True" AxisForeground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="1" AxisFontsize="16" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" CrossHairColor="Gainsboro"/>
+        <control:ChartControl2DHeatMap Name="ChartObject" TitleSize="20" CrossHairLineThickness="1.5" SnapsToDevicePixels="True" AxisForeground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="1" AxisFontsize="16" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" CrossHairColor="Gainsboro"/>
         <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>

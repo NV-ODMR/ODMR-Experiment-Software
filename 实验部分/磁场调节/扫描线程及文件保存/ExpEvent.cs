@@ -14,12 +14,12 @@ namespace ODMR_Lab.实验部分.磁场调节
     public partial class MagnetScanExpObject : ExperimentObject<MagnetScanExpParams, MagnetScanConfigParams>
     {
         #region 扫描实验步骤(扫谱后保存数据点)
-        private List<object> ScanEvent(NanoStageInfo stage, double loc, List<object> originOutput)
+        private List<object> ScanEvent(NanoStageInfo stage, ScanRange r, double loc, List<object> originOutput)
         {
             return Experiment(stage, loc, 10, originOutput);
         }
 
-        private List<object> ScanAngleEvent(NanoStageInfo stage, double loc, List<object> originOutput)
+        private List<object> ScanAngleEvent(NanoStageInfo stage, ScanRange r, double loc, List<object> originOutput)
         {
             // 获取偏心修正后的x,y位置
             List<double> xy = GetRealXYLoc(loc, Param.XLoc.Value, Param.YLoc.Value);

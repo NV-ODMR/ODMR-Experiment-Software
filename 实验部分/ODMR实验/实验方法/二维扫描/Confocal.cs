@@ -9,6 +9,8 @@ using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
+using ODMR_Lab.设备部分.光子探测器;
+using ODMR_Lab.设备部分.板卡;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +34,8 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             new Param<int>("Y扫描点数",0,"YCount"),
             new Param<bool>("X扫描反向",false,"XReverse"),
             new Param<bool>("Y扫描反向",false,"YReverse"),
-            new Param<int>("采样率(Hz)",60,"SampleRate")
+            new Param<int>("采样率(Hz)",60,"SampleRate"),
+            new Param<int>("位移台等待时间(ms)",0,"MoverWaitingTime")
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -43,7 +46,8 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
         {
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头X","","LenX")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Y","","LenY")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD"))
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
         };
         protected override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         protected override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
@@ -53,7 +57,7 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             return "共聚焦扫描 X: " + Math.Round(currentvalue1, 5).ToString() + " Y: " + Math.Round(currentvalue2, 5).ToString();
         }
 
-        public override List<object> FirstScanEvent(NanoStageInfo device1, NanoStageInfo device2, double loc1value, double loc2value, List<object> inputParams)
+        public override List<object> FirstScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
         {
             var r1 = GetScanRange1();
             var r2 = GetScanRange2();
@@ -61,14 +65,10 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             D2ChartDatas = new List<ChartData2D>()
             {
                 new ChartData2D(new FormattedDataSeries2D(r1.Key.Count,r1.Key.Lo,r1.Key.Hi,r2.Key.Count,r2.Key.Lo,r2.Key.Hi){
-                    XName="X轴位置(μm)",YName="Y轴位置(μm)",ZName="计数率(cps)"})
+                    XName="X轴位置(μm)",YName="Y轴位置(μm)",ZName="计数率(cps)"}){ GroupName="共聚焦扫描结果"}
             };
-            device1.Device.MoveToAndWait(loc1value, 1000, false);
-            device2.Device.MoveToAndWait(loc2value, 1000, false);
-            ConfocalAPDSample a = new ConfocalAPDSample();
-            var res = a.CoreMethod(new List<object>());
-            int count = (int)res[0];
-            return new List<object>();
+            UpdatePlotChart();
+            return ScanEvent(device1, device2, range1, range2, loc1value, loc2value, inputParams);
         }
 
         public override bool PreConfirmProcedure()
@@ -80,13 +80,17 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             return false;
         }
 
-        public override List<object> ScanEvent(NanoStageInfo device1, NanoStageInfo device2, double loc1value, double loc2value, List<object> inputParams)
+        public override List<object> ScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
         {
-            device1.Device.MoveToAndWait(loc1value, 1000, false);
-            device2.Device.MoveToAndWait(loc2value, 1000, false);
+            int waittime = GetInputParamValueByName("MoverWaitingTime");
+            device1.Device.MoveToAndWait(loc1value, waittime, false);
+            device2.Device.MoveToAndWait(loc2value, waittime, false);
             ConfocalAPDSample a = new ConfocalAPDSample();
-            var res = a.CoreMethod(new List<object>());
-            int count = (int)res[0];
+            var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByDescription("APD"));
+            int count = (int)(double)res[0];
+            var chartdata = Get2DChartData("计数率(cps)", "共聚焦扫描结果");
+            chartdata.Data.SetValue(range1.GetNearestIndex(loc1value), range2.GetNearestIndex(loc2value), count);
+            UpdatePlotChartFlow(true);
             return new List<object>();
         }
 
@@ -97,19 +101,19 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
 
         public override KeyValuePair<ScanRange, bool> GetScanRange1()
         {
-            double xlo = (GetInputParamByName("XRangeLo") as Param<double>).Value;
-            double xhi = (GetInputParamByName("XRangeHi") as Param<double>).Value;
-            int count = (GetInputParamByName("XCount") as Param<int>).Value;
-            bool rev = (GetInputParamByName("XReverse") as Param<bool>).Value;
+            double xlo = GetInputParamValueByName("XRangeLo");
+            double xhi = GetInputParamValueByName("XRangeHi");
+            int count = GetInputParamValueByName("XCount");
+            bool rev = GetInputParamValueByName("XReverse");
             return new KeyValuePair<ScanRange, bool>(new ScanRange(xlo, xhi, count), rev);
         }
 
         public override KeyValuePair<ScanRange, bool> GetScanRange2()
         {
-            double ylo = (GetInputParamByName("YRangeLo") as Param<double>).Value;
-            double yhi = (GetInputParamByName("YRangeHi") as Param<double>).Value;
-            int count = (GetInputParamByName("YCount") as Param<int>).Value;
-            bool rev = (GetInputParamByName("YReverse") as Param<bool>).Value;
+            double ylo = GetInputParamValueByName("YRangeLo");
+            double yhi = GetInputParamValueByName("YRangeHi");
+            int count = GetInputParamValueByName("YCount");
+            bool rev = GetInputParamValueByName("YReverse");
             return new KeyValuePair<ScanRange, bool>(new ScanRange(ylo, yhi, count), rev);
         }
 
@@ -129,6 +133,30 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
 
         protected override void InnerWrite(FileObject obj)
         {
+        }
+
+        public override void PreScanEvent()
+        {
+            //打开激光
+            LaserOn lon = new LaserOn();
+            PulseBlasterInfo pb = GetDeviceByDescription("板卡") as PulseBlasterInfo;
+            var chind = pb.FindChannelEnumOfDescription("激光触发源");
+            lon.CoreMethod(new List<object>() { 1.0, chind }, pb);
+            //打开APD
+            APDInfo apd = GetDeviceByDescription("APD") as APDInfo;
+            apd.StartContinusSample(100);
+        }
+
+        public override void AfterScanEvent()
+        {
+            //关闭激光
+            LaserOff loff = new LaserOff();
+            PulseBlasterInfo pb = GetDeviceByDescription("板卡") as PulseBlasterInfo;
+            var chind = pb.FindChannelEnumOfDescription("激光触发源");
+            loff.CoreMethod(new List<object>() { 1, chind }, pb);
+            //关闭APD
+            APDInfo apd = GetDeviceByDescription("APD") as APDInfo;
+            apd.EndContinusSample();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
         public override void ExperimentEvent()
         {
             T dev = GetScanSource();
-            ScanRange range = SetScanRange();
+            var range = GetScanRange();
             D1Session.FirstScanEvent = FirstScanEvent;
             D1Session.ScanEvent = ScanEvent;
             D1Session.ScanSource = dev;
@@ -37,14 +37,32 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
                 SetExpState(CreateThreadState(devi, val1));
             });
             D1Session.StateJudgeEvent = JudgeThreadEndOrResume;
-            D1Session.BeginScan(range, 0, 100);
+            try
+            {
+                PreScanEvent();
+                D1Session.BeginScan(range.Key, 0, 100, range.Value);
+                AfterScanEvent();
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    AfterScanEvent();
+                }
+                catch (Exception) { }
+                throw ex;
+            }
         }
+
+        public abstract void PreScanEvent();
+
+        public abstract void AfterScanEvent();
 
         /// <summary>
         /// 设置扫描范围
         /// </summary>
         /// <returns></returns>
-        public abstract ScanRange SetScanRange();
+        public abstract KeyValuePair<ScanRange, bool> GetScanRange();
 
         /// <summary>
         /// 设置扫描源
@@ -65,7 +83,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
         /// <param name="locvalue"></param>
         /// <param name="inputParams"></param>
         /// <returns></returns>
-        public abstract List<object> ScanEvent(T device, double locvalue, List<object> inputParams);
+        public abstract List<object> ScanEvent(T device, ScanRange range, double locvalue, List<object> inputParams);
 
         /// <summary>
         /// 第一次扫描操作，inputParams为空
@@ -74,6 +92,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
         /// <param name="locvalue"></param>
         /// <param name="inputParams"></param>
         /// <returns></returns>
-        public abstract List<object> FirstScanEvent(T device, double locvalue, List<object> inputParams);
+        public abstract List<object> FirstScanEvent(T device, ScanRange range, double locvalue, List<object> inputParams);
     }
 }

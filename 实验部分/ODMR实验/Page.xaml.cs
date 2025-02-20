@@ -38,7 +38,7 @@ namespace ODMR_Lab.ODMR实验
 
         public List<ODMRExpObject> ExpObjects { get; set; } = new List<ODMRExpObject>();
 
-        ODMRExpObject CurrentExpObject = null;
+        public ODMRExpObject CurrentExpObject = null;
 
         public DisplayPage()
         {
@@ -252,6 +252,7 @@ namespace ODMR_Lab.ODMR实验
                 DecoratedButton btn = new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item };
                 box.Items.Add(btn);
             }
+            box.Select(param.Value);
 
             box.Click += ((sender, e) =>
             {
@@ -262,6 +263,7 @@ namespace ODMR_Lab.ODMR实验
                     DecoratedButton btn = new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item };
                     box.Items.Add(btn);
                 }
+                box.Select(param.Value);
             });
             DevicePanel.RegisterName(param.PropertyName, box);
             g.Children.Add(box);
@@ -313,6 +315,14 @@ namespace ODMR_Lab.ODMR实验
         private void ChangeExp(object sender, RoutedEventArgs e)
         {
             SelectExp(ExpObjects.IndexOf(ExpType.SelectedItem.Tag as ODMRExpObject));
+        }
+
+        private void ProgressContent_Loaded(object sender, RoutedEventArgs e)
+        {
+            ExpType.SelectionChanged -= ChangeExp;
+            ExpType.SelectionChanged += ChangeExp;
+            if (CurrentExpObject == null)
+                ExpType.Select(0);
         }
     }
 }

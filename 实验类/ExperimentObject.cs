@@ -553,6 +553,7 @@ namespace ODMR_Lab
             IsExpResume = false;
             ExpThread = new Thread(() =>
             {
+                List<InfoBase> Devices = new List<InfoBase>();
                 try
                 {
                     try
@@ -571,7 +572,6 @@ namespace ODMR_Lab
                         return;
                     }
 
-                    List<InfoBase> Devices = new List<InfoBase>();
                     try
                     {
                         App.Current.Dispatcher.Invoke(() =>
@@ -626,6 +626,7 @@ namespace ODMR_Lab
                     MessageWindow.ShowTipWindow("定位过程发生异常,已结束定位过程：\n" + ex.Message, MainWindow.Handle);
                     //设值结束状态
                     SetStopState();
+                    DeviceDispatcher.EndUseDevices(Devices);
                     ErrorStateEvent?.Invoke();
                     App.Current.Dispatcher.Invoke(() =>
                     {

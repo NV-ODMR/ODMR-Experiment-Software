@@ -120,11 +120,11 @@ namespace ODMR_Lab
         {
             if (MessageWindow.ShowMessageBox("提示", "确定要关闭吗?", MessageBoxButton.YesNo, owner: this) == MessageBoxResult.Yes)
             {
+                //保存界面参数
+                ParamManager.SaveParams();
                 bool canclose = DeviceDispatcher.CloseDevicesAndSave();
                 if (!canclose) return;
                 Hide();
-                //保存界面参数
-                ParamManager.SaveParams();
                 #region 调用页面的中止方法
                 var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
                 foreach (var item in pages)
@@ -141,6 +141,8 @@ namespace ODMR_Lab
         {
             MessageWindow.ShowTipWindow("程序运行出现异常,即将退出,异常原因：\n" + ((Exception)e.ExceptionObject).Message, this);
             PrintStacktrace((Exception)e.ExceptionObject);
+            //保存界面参数
+            ParamManager.SaveParams();
             DeviceDispatcher.CloseDevicesAndSave();
             #region 调用页面的中止方法
             var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
@@ -149,8 +151,6 @@ namespace ODMR_Lab
                 (item.GetValue(this) as PageBase).CloseBehaviour();
             }
             #endregion
-            //保存界面参数
-            ParamManager.SaveParams();
         }
 
         private void PrintStacktrace(Exception e)
@@ -196,9 +196,6 @@ namespace ODMR_Lab
 
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            #region 加载参数
-            ParamManager.ReadAndLoadParams();
-            #endregion
             #region 调用页面的参数同步方法
             var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
             foreach (var item in pages)
@@ -237,6 +234,9 @@ namespace ODMR_Lab
                 }
             });
             t.Start();
+            #endregion
+            #region 加载参数
+            ParamManager.ReadAndLoadParams();
             #endregion
         }
 

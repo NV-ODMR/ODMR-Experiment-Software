@@ -181,6 +181,9 @@
     <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\ExpPageBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\CW.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOff.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOn.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\ScanCoreBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\T1.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Scan2DExpBase.cs" />

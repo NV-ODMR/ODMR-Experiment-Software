@@ -86,6 +86,7 @@ namespace ODMR_Lab.ODMR实验
 
         public override List<InfoBase> GetDevices()
         {
+            ExperimentDevices.Clear();
             List<InfoBase> infos = new List<InfoBase>();
             foreach (var item in DeviceList)
             {
@@ -93,6 +94,7 @@ namespace ODMR_Lab.ODMR实验
                 var res = DeviceDispatcher.GetDevice(item.Key, item.Value.Value);
                 if (res == null) throw new Exception("设备未找到:" + item.Value.Description);
                 infos.Add(res);
+                ExperimentDevices.Add(new KeyValuePair<string, InfoBase>(item.Value.Description, res));
             }
             return infos;
         }
@@ -119,13 +121,13 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         /// <param name="description"></param>
         /// <returns></returns>
-        public ParamB GetInputParamByDescription(string description)
+        public ParamB GetInputParamValueByDescription(string description)
         {
             foreach (var item in InputParams)
             {
                 if (item.Description == description)
                 {
-                    return item;
+                    return ParamB.GetUnknownParamValue(item);
                 }
             }
             return null;
@@ -136,13 +138,13 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         /// <param name="description"></param>
         /// <returns></returns>
-        public ParamB GetInputParamByName(string name)
+        public dynamic GetInputParamValueByName(string name)
         {
             foreach (var item in InputParams)
             {
                 if (item.PropertyName == name)
                 {
-                    return item;
+                    return ParamB.GetUnknownParamValue(item);
                 }
             }
             return null;
@@ -153,13 +155,13 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         /// <param name="description"></param>
         /// <returns></returns>
-        public ParamB GetOutputParamByDescription(string description)
+        public ParamB SetOutputParamByDescription(string description, object value)
         {
             foreach (var item in OutputParams)
             {
                 if (item.Description == description)
                 {
-                    return item;
+                    ParamB.SetUnknownParamValue(item, value);
                 }
             }
             return null;
@@ -170,13 +172,13 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         /// <param name="description"></param>
         /// <returns></returns>
-        public ParamB GetOutputParamByName(string name)
+        public ParamB SetOutputParamByName(string name, object value)
         {
             foreach (var item in OutputParams)
             {
                 if (item.PropertyName == name)
                 {
-                    return item;
+                    ParamB.SetUnknownParamValue(item, value);
                 }
             }
             return null;
@@ -220,7 +222,7 @@ namespace ODMR_Lab.ODMR实验
                 var res = filted.Where(x =>
                 {
                     string[] ss = x.Key.Split('→');
-                    if (ss[0] == "Input" && ss[1] == item.Value.Description && ss[2] == item.Value.PropertyName) return true;
+                    if (ss[0] == "Dev" && ss[1] == item.Value.Description && ss[2] == item.Value.PropertyName) return true;
                     return false;
                 });
                 if (res.Count() == 0) continue;
@@ -270,7 +272,7 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         public void UpdatePlotChartFlow(bool isAutoScale)
         {
-            Dispatcher.CurrentDispatcher.Invoke(() =>
+            App.Current.Dispatcher.Invoke(() =>
             {
                 ParentPage.Chart1D.UpdateChartAndDataFlow(isAutoScale);
                 ParentPage.Chart2D.UpdateChartAndDataFlow();
@@ -283,7 +285,7 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         public void UpdatePlotChart()
         {
-            Dispatcher.CurrentDispatcher.Invoke(() =>
+            App.Current.Dispatcher.Invoke(() =>
             {
                 ParentPage.Chart1D.DataSource.Clear(false);
                 ParentPage.Chart2D.DataSource.Clear(false);

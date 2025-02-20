@@ -83,6 +83,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             SampleMoverList.ClearItems();
             MWMoverList.ClearItems();
             MagnetMoverList.ClearItems();
+            LenMoverList.ClearItems();
             DeviceList.ClearItems();
 
             foreach (var item in MoverList)

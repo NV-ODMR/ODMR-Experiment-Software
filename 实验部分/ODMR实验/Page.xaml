@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
       mc:Ignorable="d" 
       xmlns:image="clr-namespace:ODMR_Lab.基本控件"
-      d:DesignHeight="600" d:DesignWidth="800"
+      d:DesignHeight="600" d:DesignWidth="800" Loaded="ProgressContent_Loaded"
       >
     <control:AutoScrollViewer Name="sc">
         <control:AutoScrollViewer.Content>
@@ -33,7 +33,7 @@
                 <TextBox Name="TextBoxTemplate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF4D4D4D" Visibility="Visible" Foreground="White" BorderThickness="0" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="{x:Null}" CaretBrush="White"/>
                 <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" FontSize="15" Foreground="White" Content="实验类型"/>
                 <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="2" FontSize="15" Foreground="White" Content="输入参数"/>
-                <control:ComboBox Grid.Row="1" SelectionChanged="ChangeExp" Name="ExpType" DefaultSelectIndex="0" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                <control:ComboBox Grid.Row="1"  Name="ExpType" DefaultSelectIndex="0" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                 <Label HorizontalContentAlignment="Center" Grid.Row="4" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="输出参数"/>
                 <Label HorizontalContentAlignment="Center" Grid.Row="6" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="实验设备"/>
                 <control:AutoScrollViewer Margin="5" Name="InputScroll" Grid.RowSpan="1" Grid.Row="3" Background="#FF2E2E2E">

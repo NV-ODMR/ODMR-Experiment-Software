@@ -30,14 +30,14 @@ namespace ODMR_Lab.实验部分.扫描基方法
         public Action<T1, T2, double, double> SetStateMethod = null;
 
         /// <summary>
-        /// 扫描第一个点时进行的操作(源设备,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
+        /// 扫描第一个点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public Func<T1, T2, double, double, List<object>, List<object>> FirstScanEvent = null;
+        public Func<T1, T2, ScanRange, ScanRange, double, double, List<object>, List<object>> FirstScanEvent = null;
 
         /// <summary>
-        /// 扫描其他点时进行的操作(源设备,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
+        /// 扫描其他点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public Func<T1, T2, double, double, List<object>, List<object>> ScanEvent = null;
+        public Func<T1, T2, ScanRange, ScanRange, double, double, List<object>, List<object>> ScanEvent = null;
 
         /// <summary>
         /// 状态判断事件,此事件用来决定是否退出扫描步骤
@@ -81,20 +81,20 @@ namespace ODMR_Lab.实验部分.扫描基方法
                 bool IsReverse = false;
                 for (int i = 0; i < scan1list.Count; i++)
                 {
-                    if (IsReverse)
+                    if (!IsReverse)
                     {
                         for (int j = 0; j < scan2list.Count; j++)
                         {
                             //进行操作
                             if (IsFirstScan == true)
                             {
-                                result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2list[j], ps.ToList());
+                                result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], ps.ToList());
                                 StateJudgeEvent?.Invoke();
                                 IsFirstScan = false;
                                 ++ind;
                                 continue;
                             }
-                            result = ScanEvent?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2list[j], result);
+                            result = ScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], result);
                             StateJudgeEvent?.Invoke();
                             SetProgress(progress[ind]);
                             ++ind;
@@ -107,18 +107,19 @@ namespace ODMR_Lab.实验部分.扫描基方法
                             //进行操作
                             if (IsFirstScan == true)
                             {
-                                result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2revlist[j], ps.ToList());
+                                result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2revlist[j], ps.ToList());
                                 StateJudgeEvent?.Invoke();
                                 IsFirstScan = false;
                                 ++ind;
                                 continue;
                             }
-                            result = ScanEvent?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2revlist[j], result);
+                            result = ScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2revlist[j], result);
                             StateJudgeEvent?.Invoke();
                             SetProgress(progress[ind]);
                             ++ind;
                         }
                     }
+                    IsReverse = !IsReverse;
                 }
                 return result;
             }
