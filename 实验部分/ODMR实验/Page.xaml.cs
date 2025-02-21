@@ -10,6 +10,7 @@ using ComboBox = Controls.ComboBox;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.实验类;
 using System.Windows.Forms;
+using ODMR_Lab.实验部分.ODMR实验.参数;
 
 namespace ODMR_Lab.ODMR实验
 {
@@ -48,6 +49,7 @@ namespace ODMR_Lab.ODMR实验
             foreach (var item in SequenceTypes)
             {
                 ODMRExpObject exp = null;
+                if (item.FullName == typeof(SequenceFileExpObject).FullName) continue;
                 if (item.GenericTypeArguments.Length != 0)
                 {
                     exp = Activator.CreateInstance(item.MakeGenericType(item.GenericTypeArguments)) as ODMRExpObject;

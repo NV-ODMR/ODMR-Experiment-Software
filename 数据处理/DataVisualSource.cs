@@ -1,5 +1,6 @@
 ﻿using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.场效应器件测量;
 using ODMR_Lab.实验部分.磁场调节;
 using System;
@@ -28,7 +29,7 @@ namespace ODMR_Lab.数据处理
         /// <summary>
         /// 一维图表数据
         /// </summary>
-        public List<ChartData1D> ChartDataSource2D { get; set; } = new List<ChartData1D>();
+        public List<ChartData2D> ChartDataSource2D { get; set; } = new List<ChartData2D>();
 
         /// <summary>
         /// 从文件加载
@@ -59,6 +60,12 @@ namespace ODMR_Lab.数据处理
             if (type == ExperimentFileTypes.温度监测数据)
             {
                 TemperatureExpObject obj = new TemperatureExpObject();
+                obj.ReadFromFile(path);
+                return obj.ToDataVisualSource();
+            }
+            if (type == ExperimentFileTypes.ODMR实验)
+            {
+                SequenceFileExpObject obj = new SequenceFileExpObject();
                 obj.ReadFromFile(path);
                 return obj.ToDataVisualSource();
             }

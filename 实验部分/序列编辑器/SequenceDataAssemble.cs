@@ -110,57 +110,60 @@ namespace ODMR_Lab.实验部分.序列编辑器
         /// 转换成PB指令
         /// </summary>
         /// <returns></returns>
-        public List<CommandBase> ConvertToCommandLine(out string ComandInformation)
+        public List<CommandBase> AddToCommandLine(List<CommandBase> InputCommand, out string ComandInformation)
         {
             ComandInformation = "";
-            List<CommandBase> line = new List<CommandBase>();
-            for (int i = 0; i < LoopCount; i++)
+
+            InputCommand.Add(new LoopStartCommandLine(LoopCount));
+            int loopstartind = InputCommand.Count - 1;
+
+            //找1脉冲的时间点
+            HashSet<int> OneTimes = new HashSet<int>();
+            foreach (var wave in Channels)
             {
-                //找1脉冲的时间点
-                HashSet<int> OneTimes = new HashSet<int>();
-                foreach (var wave in Channels)
+                int time = 0;
+                foreach (var peak in wave.Peaks)
                 {
-                    int time = 0;
-                    foreach (var peak in wave.Peaks)
+                    if (peak.WaveValue == WaveValues.One)
                     {
-                        if (peak.WaveValue == WaveValues.One)
-                        {
-                            OneTimes.Add(time);
-                            time += peak.PeakSpan + peak.Step * i;
-                            OneTimes.Add(time);
-                        }
-                        else
-                        {
-                            time += peak.PeakSpan + peak.Step * i;
-                        }
+                        OneTimes.Add(time);
+                        time += peak.PeakSpan;
+                        OneTimes.Add(time);
                     }
-                }
-                //时间从低到高排序
-                var sortedTimes = OneTimes.ToList();
-                sortedTimes.Sort();
-                for (int j = 0; j < sortedTimes.Count - 1; j++)
-                {
-                    List<int> HighChannelIndexes = new List<int>();
-                    foreach (var ch in Channels)
+                    else
                     {
-                        if (ch.IsWaveOne(sortedTimes[j], sortedTimes[j + 1], i))
-                        {
-                            HighChannelIndexes.Add((int)ch.ChannelInd);
-                        }
+                        time += peak.PeakSpan;
                     }
-                    CommandLine singlecommand = new CommandLine(HighChannelIndexes, sortedTimes[j + 1] - sortedTimes[j]);
-                    //打印指令结果
-                    ComandInformation += "Channels:";
-                    foreach (var item in HighChannelIndexes)
-                    {
-                        ComandInformation += item.ToString() + "\t";
-                    }
-                    ComandInformation += "\t";
-                    ComandInformation += "TimeSpan:" + (sortedTimes[j + 1] - sortedTimes[j]).ToString() + "\n";
-                    line.Add(singlecommand);
                 }
             }
-            return line;
+            //时间从低到高排序
+            var sortedTimes = OneTimes.ToList();
+            sortedTimes.Sort();
+            for (int j = 0; j < sortedTimes.Count - 1; j++)
+            {
+                List<int> HighChannelIndexes = new List<int>();
+                foreach (var ch in Channels)
+                {
+                    if (ch.IsWaveOne(sortedTimes[j], sortedTimes[j + 1]))
+                    {
+                        HighChannelIndexes.Add((int)ch.ChannelInd);
+                    }
+                }
+                CommandLine singlecommand = new CommandLine(HighChannelIndexes, sortedTimes[j + 1] - sortedTimes[j]);
+                //打印指令结果
+                ComandInformation += "Channels:";
+                foreach (var item in HighChannelIndexes)
+                {
+                    ComandInformation += item.ToString() + "\t";
+                }
+                ComandInformation += "\t";
+                ComandInformation += "TimeSpan:" + (sortedTimes[j + 1] - sortedTimes[j]).ToString() + "\n";
+                InputCommand.Add(singlecommand);
+            }
+
+            InputCommand.Add(new LoopEndCommandLine(loopstartind));
+
+            return InputCommand;
         }
 
         /// <summary>

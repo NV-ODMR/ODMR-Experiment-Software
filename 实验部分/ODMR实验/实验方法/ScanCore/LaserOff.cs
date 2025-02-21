@@ -27,20 +27,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             List<CommandBase> cmds = new List<CommandBase>();
             if (duty == 1)
             {
-                cmds.Add(new BranchCommandLine(new List<int>() { (int)ch }, totaltime, 0));
+                cmds.Add(new CommandLine(new List<int>() { (int)ch }, totaltime));
+                cmds.Add(new BranchCommandLine(0));
                 pb.Device.SetCommands(cmds);
                 pb.Device.Start();
                 return new List<object>();
             }
             if (duty == 0)
             {
-                cmds.Add(new BranchCommandLine(new List<int>() { }, totaltime, 0));
+                cmds.Add(new CommandLine(new List<int>() { }, totaltime));
+                cmds.Add(new BranchCommandLine(0));
                 pb.Device.SetCommands(cmds);
                 pb.Device.Start();
                 return new List<object>();
             }
             cmds.Add(new CommandLine(new List<int>() { (int)ch }, totaltime));
-            cmds.Add(new BranchCommandLine(new List<int>() { }, totaltime, 0));
+            cmds.Add(new BranchCommandLine(0));
             pb.Device.SetCommands(cmds);
             pb.Device.Start();
             return new List<object>();

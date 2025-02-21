@@ -16,7 +16,7 @@ using ODMR_Lab.实验部分.扫描基方法;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
 {
-    internal abstract class Scan1DExpBase<T> : ODMRExpObject
+    public abstract class Scan1DExpBase<T> : ODMRExpObject
     {
 
         Scan1DSession<T> D1Session = new Scan1DSession<T>();

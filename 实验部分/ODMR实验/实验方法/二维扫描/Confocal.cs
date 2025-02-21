@@ -86,7 +86,7 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             device1.Device.MoveToAndWait(loc1value, waittime, false);
             device2.Device.MoveToAndWait(loc2value, waittime, false);
             ConfocalAPDSample a = new ConfocalAPDSample();
-            var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByDescription("APD"));
+            var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByName("APD"));
             int count = (int)(double)res[0];
             var chartdata = Get2DChartData("计数率(cps)", "共聚焦扫描结果");
             chartdata.Data.SetValue(range1.GetNearestIndex(loc1value), range2.GetNearestIndex(loc2value), count);
@@ -119,31 +119,23 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
 
         public override NanoStageInfo GetScanSource1()
         {
-            return GetDeviceByDescription("镜头X") as NanoStageInfo;
+            return GetDeviceByName("LenX") as NanoStageInfo;
         }
 
         public override NanoStageInfo GetScanSource2()
         {
-            return GetDeviceByDescription("镜头Y") as NanoStageInfo;
-        }
-
-        protected override void InnerRead(FileObject fobj)
-        {
-        }
-
-        protected override void InnerWrite(FileObject obj)
-        {
+            return GetDeviceByName("LenY") as NanoStageInfo;
         }
 
         public override void PreScanEvent()
         {
             //打开激光
             LaserOn lon = new LaserOn();
-            PulseBlasterInfo pb = GetDeviceByDescription("板卡") as PulseBlasterInfo;
+            PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             var chind = pb.FindChannelEnumOfDescription("激光触发源");
             lon.CoreMethod(new List<object>() { 1.0, chind }, pb);
             //打开APD
-            APDInfo apd = GetDeviceByDescription("APD") as APDInfo;
+            APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.StartContinusSample(100);
         }
 
@@ -151,11 +143,11 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
         {
             //关闭激光
             LaserOff loff = new LaserOff();
-            PulseBlasterInfo pb = GetDeviceByDescription("板卡") as PulseBlasterInfo;
+            PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             var chind = pb.FindChannelEnumOfDescription("激光触发源");
             loff.CoreMethod(new List<object>() { 1, chind }, pb);
             //关闭APD
-            APDInfo apd = GetDeviceByDescription("APD") as APDInfo;
+            APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.EndContinusSample();
         }
     }

@@ -17,8 +17,6 @@ namespace ODMR_Lab.基本控件
             Data = data;
         }
 
-        public string Name { get; set; } = "";
-
         public FormattedDataSeries2D Data { get; set; } = null;
 
         public string GroupName { get; set; } = "";

@@ -37,18 +37,18 @@ namespace ODMR_Lab.实验部分.序列编辑器
         /// <param name="timeend"></param>
         /// <param name="loopcount"></param>
         /// <returns></returns>
-        public bool IsWaveOne(int timestart, int timeend, int loopcount)
+        public bool IsWaveOne(int timestart, int timeend)
         {
             int time = 0;
             foreach (var item in Peaks)
             {
                 int segstart = time;
-                int segend = time + item.PeakSpan + item.Step * loopcount;
+                int segend = time + item.PeakSpan;
                 if (timestart >= segstart && timeend <= segend && item.WaveValue == WaveValues.One)
                 {
                     return true;
                 }
-                time += item.PeakSpan + item.Step * loopcount;
+                time += item.PeakSpan;
             }
 
             return false;

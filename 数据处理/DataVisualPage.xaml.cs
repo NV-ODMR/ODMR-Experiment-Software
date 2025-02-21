@@ -388,6 +388,9 @@ namespace ODMR_Lab.数据处理
             Plot1D.DataSource.Clear(false);
             Plot1D.DataSource.AddRange(source.ChartDataSource1D);
             Plot1D.UpdateChartAndDataFlow(true);
+            Plot2D.DataSource.Clear(false);
+            Plot2D.DataSource.AddRange(source.ChartDataSource2D);
+            Plot2D.UpdateChartAndDataFlow();
             if (source.ChartDataSource1D.Count != 0)
             {
                 Plot1D.SelectGroup(source.ChartDataSource1D[0].GroupName);

@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.端口基类;
@@ -276,8 +277,6 @@ namespace ODMR_Lab.序列编辑器
                 win.Owner = Window.GetWindow(this);
                 win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 win.ShowWindow("序列已保存");
-                a.ConvertToCommandLine(out string commandinform);
-
             }
             catch (Exception ex)
             {

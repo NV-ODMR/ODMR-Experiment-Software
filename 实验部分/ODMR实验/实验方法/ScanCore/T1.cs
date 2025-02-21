@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using HardWares.APD;
+using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using HardWares.板卡;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
@@ -25,6 +26,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         /// <summary>
         /// T1单点扫描方法：输入参数：Pi脉冲长度(整数),T1间隔长度(整数),采样循环次数(整数)
         /// 设备:板卡，光子计数器
+        /// 返回:信号计数,参考信号计数
         /// </summary>
         /// <param name="InputParams"></param>
         /// <param name="devices"></param>
@@ -38,7 +40,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             PulseBlasterInfo pb = devices[0] as PulseBlasterInfo;
             APDInfo apd = devices[1] as APDInfo;
             //设置板卡指令
-            pb.Device.SetCommands(sequence.ConvertToCommandLine(out string str));
+            List<CommandBase> Lines = new List<CommandBase>();
+            pb.Device.SetCommands(sequence.AddToCommandLine(Lines,out string str));
             apd.StartTriggerSample(2);
 
             return new List<object>();

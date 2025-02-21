@@ -120,11 +120,11 @@ namespace ODMR_Lab.设备部分.光子探测器
         /// 获取连续取样读数
         /// </summary>
         /// <returns></returns>
-        public List<int> GetTriggerSamples()
+        public List<int> GetTriggerSamples(int timeout)
         {
             try
             {
-                var cs = Device.GetCounts(1000);
+                var cs = Device.GetCounts(timeout);
                 return cs;
             }
             catch (Exception) { return new List<int>(); }

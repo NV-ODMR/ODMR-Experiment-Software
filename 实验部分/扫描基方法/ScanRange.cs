@@ -24,6 +24,13 @@ namespace ODMR_Lab.实验部分.扫描基方法
             Count = count;
         }
 
+        public ScanRange(double lo, double hi, double step)
+        {
+            Lo = Math.Min(lo, hi);
+            Hi = Math.Max(lo, hi);
+            Count = (int)((Hi - Lo) / step) + 1;
+        }
+
         public List<double> GenerateScanList()
         {
             return Enumerable.Range(0, Count).Select(x => Lo + Math.Abs(Hi - Lo) * x / (Count - 1)).ToList();
