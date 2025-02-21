@@ -197,6 +197,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\单点\Scan0DExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\线扫描\CWScan.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\线扫描\Scan1DExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\线扫描\T1.cs" />
     <Compile Include="实验部分\位移台界面\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>

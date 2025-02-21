@@ -62,7 +62,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             //关闭板卡输出
             pb.Device.End();
             //处理数据
-            var countwithMW = countresult.Where((v, ind) => ind % 2 == 0);
+            var countwithMW = countresult.Where((v, ind) => ind % 2 == 0);      //偶数项
             var countafterwithMW = countwithMW.Where((v, ind) => ind % 2 == 1);
             var countbeforewithMW = countwithMW.Where((v, ind) => ind % 2 == 0);
             var countwithoutMW = countresult.Where((v, ind) => ind % 2 == 1);
