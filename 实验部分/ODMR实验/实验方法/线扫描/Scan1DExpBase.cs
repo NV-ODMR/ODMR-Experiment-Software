@@ -21,7 +21,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
 
         Scan1DSession<T> D1Session = new Scan1DSession<T>();
 
-        public override void ExperimentEvent()
+        public override void ODMRExperiment()
         {
             T dev = GetScanSource();
             var range = GetScanRange();

@@ -80,18 +80,30 @@
                     <Label Name="EndTime" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Foreground="White"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1"/>
                     <Label Name="ProgressContent" Grid.Row="3" Margin="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Foreground="White"/>
                 </Grid>
-                <TextBlock Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Name="ProgressTitle"/>
-                <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="10" Margin="10">
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
+                    <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="实验自动存储根目录" Margin="20,0,0,0"/>
+                    <Label Foreground="White" Name="SavePath" Width="200" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
+                    <control:DecoratedButton Click="SelectFolder" TextAreaRatio="0" Margin="5" Width="70" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/directory.png"/>
+                </StackPanel>
+                <TextBlock Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1" Name="ProgressTitle"/>
+                <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="10" Margin="10">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Name="AutoSavePanel" Orientation="Horizontal" Grid.Row="0">
+                        <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="实验文件名" Margin="20,0,0,0"/>
+                        <Label Foreground="White" x:Name="SavedFileName" Width="200" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
+                        <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="自动保存" Margin="20,0,0,0"/>
+                        <control:Chooser Name="IsAutoSave" Height="15" Width="30"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
                         <control:DecoratedButton Name="D1Btn" Click="ChangePannel" KeepPressed="True" Width="100" TextAreaRatio="1" Text="一维图" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                         <control:DecoratedButton Name="D2Btn" Click="ChangePannel" Width="100" TextAreaRatio="1" Text="二维图" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                     </StackPanel>
-                    <image:ChartViewer1D x:Name="Chart1D" Grid.Row="1"/>
-                    <image:ChartViewer2D x:Name="Chart2D" Grid.Row="1" Visibility="Hidden"/>
+                    <image:ChartViewer1D x:Name="Chart1D" Grid.Row="2"/>
+                    <image:ChartViewer2D x:Name="Chart2D" Grid.Row="2" Visibility="Hidden"/>
                 </Grid>
             </Grid>
         </control:AutoScrollViewer.Content>

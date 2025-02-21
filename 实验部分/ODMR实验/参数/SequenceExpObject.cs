@@ -26,6 +26,8 @@ namespace ODMR_Lab.ODMR实验
 
         public DisplayPage ParentPage = null;
 
+        public bool IsAutoSave { get; set; } = false;
+
         /// <summary>
         /// 实验设备
         /// </summary>
@@ -44,6 +46,34 @@ namespace ODMR_Lab.ODMR实验
             return null;
         }
 
+        public override void ExperimentEvent()
+        {
+            ODMRExperiment();
+            if (IsAutoSave)
+            {
+                if (ParentPage.SavePath.Content.ToString() == "") return;
+                string root = Path.Combine(ParentPage.SavePath.Content.ToString(), ODMRExperimentName);
+                if (!Directory.Exists(root))
+                {
+                    Directory.CreateDirectory(root);
+                }
+                //获取当前时间
+                DateTime dateTime = DateTime.Now;
+                string date = dateTime.ToString("yyyy_MM_dd_HH_mm_ss");
+                SequenceFileExpObject fob = new SequenceFileExpObject();
+                fob.InputParams = InputParams;
+                fob.OutputParams = OutputParams;
+                fob.DeviceList = DeviceList;
+                fob.D1ChartDatas = D1ChartDatas;
+                fob.D2ChartDatas = D2ChartDatas;
+                fob.WriteToFile(root, ODMRExperimentName + date + ".userdat");
+            }
+        }
+
+        /// <summary>
+        /// 实验内容
+        /// </summary>
+        public abstract void ODMRExperiment();
 
         public override List<InfoBase> GetDevices()
         {
@@ -157,6 +187,7 @@ namespace ODMR_Lab.ODMR实验
                 item.Value.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
                 obj.Descriptions.Add("Dev" + "→" + item.Value.Description + "→" + item.Value.PropertyName + "→" + GetType().FullName, ParamB.GetUnknownParamValueToString(item.Value));
             }
+            obj.Descriptions.Add("IsAutoSave" + "→" + GetType().FullName, IsAutoSave.ToString());
         }
 
         public void ReadFromFileAndLoadToPage(FileObject obj)
@@ -190,6 +221,18 @@ namespace ODMR_Lab.ODMR实验
                 ParamB.SetUnknownParamValue(item.Value, res.ElementAt(0).Value);
                 item.Value.LoadToPage(new FrameworkElement[] { ParentPage }, false);
             }
+            var autosave = filted.Where(x =>
+            {
+                string[] ss = x.Key.Split('→');
+                if (ss[0] == "IsAutoSave") return true;
+                return false;
+            });
+            if (autosave.Count() != 0) IsAutoSave = bool.Parse(autosave.ElementAt(0).Value);
+        }
+
+        protected override void InnerToDataVisualSource(DataVisualSource source)
+        {
+            return;
         }
 
         /// <summary>

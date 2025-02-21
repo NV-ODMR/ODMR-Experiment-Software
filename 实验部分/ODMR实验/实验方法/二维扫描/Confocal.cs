@@ -49,8 +49,8 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
         };
-        protected override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
-        protected override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
+        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
 
         public override string CreateThreadState(NanoStageInfo dev1, NanoStageInfo dev2, double currentvalue1, double currentvalue2)
         {
@@ -92,11 +92,6 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             chartdata.Data.SetValue(range1.GetNearestIndex(loc1value), range2.GetNearestIndex(loc2value), count);
             UpdatePlotChartFlow(true);
             return new List<object>();
-        }
-
-        public override void SetDataToDataVisualSource(DataVisualSource source)
-        {
-            return;
         }
 
         public override KeyValuePair<ScanRange, bool> GetScanRange1()

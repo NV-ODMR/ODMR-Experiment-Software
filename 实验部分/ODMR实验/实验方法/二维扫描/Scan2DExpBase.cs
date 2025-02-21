@@ -11,7 +11,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
     {
         Scan2DSession<T1, T2> D2Session = new Scan2DSession<T1, T2>();
 
-        public override void ExperimentEvent()
+        public override void ODMRExperiment()
         {
             T1 dev1 = GetScanSource1();
             T2 dev2 = GetScanSource2();

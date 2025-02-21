@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CodeHelper;
+using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.位移台界面.参数;
 using ODMR_Lab.实验部分.场效应器件测量;
 using ODMR_Lab.实验部分.温度监测;
@@ -72,6 +73,12 @@ namespace ODMR_Lab.IO操作
             SCP = new StageControlConfigParams();
             SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
             WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
+            #endregion
+
+            #region ODMR全局参数
+            ODMRConfigParams ODMRC = new ODMRConfigParams();
+            ODMRC.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_SequencePage }, false);
+            WriteParamToFile(ODMRC, fobj);
             #endregion
 
             #region ODMR实验
@@ -147,6 +154,12 @@ namespace ODMR_Lab.IO操作
             SCP = new StageControlConfigParams();
             ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
             SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
+            #endregion
+
+            #region ODMR实验
+            ODMRConfigParams ODMRP = new ODMRConfigParams();
+            ReadFromFile(ODMRP, fobj);
+            ODMRP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SequencePage });
             #endregion
 
             #region ODMR实验

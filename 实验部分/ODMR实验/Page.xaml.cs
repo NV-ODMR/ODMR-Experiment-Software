@@ -107,6 +107,7 @@ namespace ODMR_Lab.ODMR实验
                         }
                         catch (Exception ex) { }
                     }
+                    CurrentExpObject.IsAutoSave = IsAutoSave.IsSelected;
                 }
 
                 CurrentExpObject?.DisConnectOuterControl();
@@ -117,6 +118,7 @@ namespace ODMR_Lab.ODMR实验
                 ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InputPanel, RunningBehaviours.DisableWhenRunning));
                 ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(DevicePanel, RunningBehaviours.DisableWhenRunning));
                 ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
+                ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunning));
 
                 CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlsStates);
 
@@ -146,6 +148,7 @@ namespace ODMR_Lab.ODMR实验
                     DevicePanel.Children.Add(g);
                     item.Value.LoadToPage(new FrameworkElement[] { this }, false);
                 }
+                IsAutoSave.IsSelected = CurrentExpObject.IsAutoSave;
                 return;
             }
             catch (Exception)
@@ -325,6 +328,22 @@ namespace ODMR_Lab.ODMR实验
             ExpType.SelectionChanged += ChangeExp;
             if (CurrentExpObject == null)
                 ExpType.Select(0);
+            SavePath.ToolTip = SavePath.Content.ToString();
+        }
+
+        /// <summary>
+        /// 选择文件夹
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectFolder(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            if (dialog.ShowDialog() == DialogResult.Yes)
+            {
+                SavePath.Content = dialog.SelectedPath;
+                SavePath.ToolTip = dialog.SelectedPath;
+            }
         }
     }
 }

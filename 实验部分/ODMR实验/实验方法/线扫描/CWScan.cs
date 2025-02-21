@@ -45,8 +45,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
         };
-        protected override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
-        protected override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
+        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
 
         public override string CreateThreadState(RFSourceInfo dev, double currentvalue)
         {
@@ -95,11 +95,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
             (Get1DChartData("参考信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(refcount);
             UpdatePlotChartFlow(true);
             return new List<object>();
-        }
-
-        public override void SetDataToDataVisualSource(DataVisualSource source)
-        {
-            return;
         }
 
         public override KeyValuePair<ScanRange, bool> GetScanRange()
