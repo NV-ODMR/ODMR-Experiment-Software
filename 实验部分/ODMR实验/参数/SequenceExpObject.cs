@@ -28,6 +28,8 @@ namespace ODMR_Lab.ODMR实验
 
         public bool IsAutoSave { get; set; } = false;
 
+        public string HistoryFileName { get; set; } = "";
+
         /// <summary>
         /// 实验设备
         /// </summary>
@@ -48,25 +50,42 @@ namespace ODMR_Lab.ODMR实验
 
         public override void ExperimentEvent()
         {
+            EndStateEvent += SaveFile;
+            EndStateEvent += SaveFile;
             ODMRExperiment();
+        }
+
+        public void SaveFile()
+        {
             if (IsAutoSave)
             {
-                if (ParentPage.SavePath.Content.ToString() == "") return;
-                string root = Path.Combine(ParentPage.SavePath.Content.ToString(), ODMRExperimentName);
-                if (!Directory.Exists(root))
+                try
                 {
-                    Directory.CreateDirectory(root);
+                    if (ParentPage.SavePath.Content.ToString() == "") return;
+                    string root = Path.Combine(ParentPage.SavePath.Content.ToString(), ODMRExperimentName);
+                    if (!Directory.Exists(root))
+                    {
+                        Directory.CreateDirectory(root);
+                    }
+                    //获取当前时间
+                    DateTime dateTime = DateTime.Now;
+                    string date = dateTime.ToString("yyyy_MM_dd_HH_mm_ss");
+                    SequenceFileExpObject fob = new SequenceFileExpObject();
+                    fob.InputParams = InputParams;
+                    fob.OutputParams = OutputParams;
+                    fob.DeviceList = DeviceList;
+                    fob.D1ChartDatas = D1ChartDatas;
+                    fob.D2ChartDatas = D2ChartDatas;
+                    fob.WriteToFile(root, ODMRExperimentName + date + ".userdat");
+                    SetExpState("实验已完成,已保存文件路径:" + Path.Combine(root, ODMRExperimentName + date + ".userdat"));
                 }
-                //获取当前时间
-                DateTime dateTime = DateTime.Now;
-                string date = dateTime.ToString("yyyy_MM_dd_HH_mm_ss");
-                SequenceFileExpObject fob = new SequenceFileExpObject();
-                fob.InputParams = InputParams;
-                fob.OutputParams = OutputParams;
-                fob.DeviceList = DeviceList;
-                fob.D1ChartDatas = D1ChartDatas;
-                fob.D2ChartDatas = D2ChartDatas;
-                fob.WriteToFile(root, ODMRExperimentName + date + ".userdat");
+                catch (Exception)
+                {
+                }
+            }
+            else
+            {
+                SetExpState("实验已完成,文件未保存");
             }
         }
 

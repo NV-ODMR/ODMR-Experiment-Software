@@ -85,6 +85,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
                     result = ScanEvent?.Invoke(ScanSource, range, scanlist[i], result);
                     StateJudgeEvent?.Invoke();
                     SetProgress(progress[ind]);
+                    SetStateMethod?.Invoke(ScanSource, scanlist[i]);
                     ++ind;
                 }
                 return result;

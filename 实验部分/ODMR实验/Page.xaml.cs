@@ -339,7 +339,7 @@ namespace ODMR_Lab.ODMR实验
         private void SelectFolder(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.Yes)
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
                 SavePath.Content = dialog.SelectedPath;
                 SavePath.ToolTip = dialog.SelectedPath;

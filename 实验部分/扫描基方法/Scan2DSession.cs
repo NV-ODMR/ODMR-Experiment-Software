@@ -25,7 +25,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
         public Action<T1, T2, double> ProgressBarMethod = null;
 
         /// <summary>
-        /// 设置状态操作（设备,轴1位置,轴2位置）
+        /// 设置状态操作（设备1,设备2,轴1位置,轴2位置）
         /// </summary>
         public Action<T1, T2, double, double> SetStateMethod = null;
 
@@ -97,6 +97,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
                             result = ScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], result);
                             StateJudgeEvent?.Invoke();
                             SetProgress(progress[ind]);
+                            SetStateMethod?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2list[j]);
                             ++ind;
                         }
                     }
@@ -116,6 +117,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
                             result = ScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2revlist[j], result);
                             StateJudgeEvent?.Invoke();
                             SetProgress(progress[ind]);
+                            SetStateMethod?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2revlist[j]);
                             ++ind;
                         }
                     }

@@ -23,6 +23,14 @@ using Label = System.Windows.Controls.Label;
 namespace ODMR_Lab
 {
     /// <summary>
+    /// 实验停止异常
+    /// </summary>
+    public class ExpStopException : Exception
+    {
+
+    }
+
+    /// <summary>
     /// 实验基类型
     /// </summary>
     /// <typeparam name="ParamType"></typeparam>
@@ -411,6 +419,7 @@ namespace ODMR_Lab
                 if (CurrentexpStateTextBlock != null)
                 {
                     CurrentexpStateTextBlock.Text = state;
+                    CurrentexpStateTextBlock.ToolTip = state;
                 }
             });
         }
@@ -623,11 +632,18 @@ namespace ODMR_Lab
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("定位过程发生异常,已结束定位过程：\n" + ex.Message, MainWindow.Handle);
-                    //设值结束状态
+                    if (ex is ExpStopException)
+                    {
+                        MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
+                    }
+                    else
+                    {
+                        MessageWindow.ShowTipWindow("实验发生异常,已结束：\n" + ex.Message, MainWindow.Handle);
+                        ErrorStateEvent?.Invoke();
+                    }
+                    //设置结束状态
                     SetStopState();
                     DeviceDispatcher.EndUseDevices(Devices);
-                    ErrorStateEvent?.Invoke();
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         SetEndTime(DateTime.Now);
@@ -666,7 +682,7 @@ namespace ODMR_Lab
         {
             if (ThreadEndFlag)
             {
-                throw new Exception("定位进程已被终止");
+                throw new ExpStopException();
             }
             if (ThreadResumeFlag)
             {
@@ -675,7 +691,7 @@ namespace ODMR_Lab
                 {
                     if (ThreadEndFlag)
                     {
-                        throw new Exception("定位进程已被终止");
+                        throw new ExpStopException();
                     }
                     Thread.Sleep(50);
                 }

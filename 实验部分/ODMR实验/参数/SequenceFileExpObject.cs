@@ -132,35 +132,32 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
             }
             #endregion
             #region 导入图表数据
-            foreach (var v in fobj.Descriptions)
+            var names = fobj.GetDataNames();
+            foreach (var item in names)
             {
-                var names = fobj.GetDataNames();
-                foreach (var item in names)
+                if (item.Contains("C1DData" + "→"))
                 {
-                    if (item.Contains("C1DData" + "→"))
+                    string[] ss = item.Split('→');
+                    NumricChartData1D data = new NumricChartData1D(ss[1], ss[2], (ChartDataType)Enum.Parse(typeof(ChartDataType), ss[3]));
+                    data.Data = fobj.ExtractDouble(item);
+                    D1ChartDatas.Add(data);
+                }
+                if (item.Contains("C2DData" + "→"))
+                {
+                    string[] ss = item.Split('→');
+                    ChartData2D data = new ChartData2D(new FormattedDataSeries2D(int.Parse(ss[7]), double.Parse(ss[5]), double.Parse(ss[6]), int.Parse(ss[10]), double.Parse(ss[8]), double.Parse(ss[9])));
+                    var res = fobj.ExtractPoint(item);
+                    List<List<double>> d = new List<List<double>>();
+                    foreach (var p in res)
                     {
-                        string[] ss = item.Split('→');
-                        NumricChartData1D data = new NumricChartData1D(ss[1], ss[2], (ChartDataType)Enum.Parse(typeof(ChartDataType), ss[3]));
-                        data.Data = fobj.ExtractDouble(item);
-                        D1ChartDatas.Add(data);
+                        d.Add(p.Data);
                     }
-                    if (item.Contains("C2DData" + "→"))
-                    {
-                        string[] ss = item.Split('→');
-                        ChartData2D data = new ChartData2D(new FormattedDataSeries2D(int.Parse(ss[7]), double.Parse(ss[5]), double.Parse(ss[6]), int.Parse(ss[10]), double.Parse(ss[8]), double.Parse(ss[9])));
-                        var res = fobj.ExtractPoint(item);
-                        List<List<double>> d = new List<List<double>>();
-                        foreach (var p in res)
-                        {
-                            d.Add(p.Data);
-                        }
-                        data.Data.SetZValues(d);
-                        data.Data.XName = ss[2];
-                        data.Data.YName = ss[3];
-                        data.Data.ZName = ss[4];
-                        data.GroupName = ss[1];
-                        D2ChartDatas.Add(data);
-                    }
+                    data.Data.SetZValues(d);
+                    data.Data.XName = ss[2];
+                    data.Data.YName = ss[3];
+                    data.Data.ZName = ss[4];
+                    data.GroupName = ss[1];
+                    D2ChartDatas.Add(data);
                 }
             }
             #endregion
