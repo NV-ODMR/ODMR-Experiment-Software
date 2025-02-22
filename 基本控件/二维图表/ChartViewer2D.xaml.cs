@@ -213,8 +213,6 @@ namespace ODMR_Lab.基本控件
 
                 ChartObject.IsAutoScale = para.AutoScale.Value;
 
-                ChartObject.HasCrosshair = para.Cursor.Value;
-
                 ChartObject.RefreshPlot();
             });
         }
@@ -304,6 +302,19 @@ namespace ODMR_Lab.基本控件
                 }
             }
 
+        }
+        #endregion
+
+        #region 光标
+        private void AddCursor(object sender, RoutedEventArgs e)
+        {
+            ChartObject.AddCursorCenter();
+            CursorCount.Content = ChartObject.GetCursorCount();
+        }
+
+        private void BringCursorToCenter(object sender, RoutedEventArgs e)
+        {
+            ChartObject.BringAllCursorToCenter();
         }
         #endregion
     }

@@ -725,5 +725,19 @@ namespace ODMR_Lab.基本控件
             }
             #endregion
         }
+
+        #region 光标
+        private void AddCursor(object sender, RoutedEventArgs e)
+        {
+            chart.AddCursorCenter();
+            CursorCount.Content = chart.GetCursorCount();
+        }
+
+        private void BringCursorToCenter(object sender, RoutedEventArgs e)
+        {
+            chart.BringAllCursorToCenter();
+            CursorCount.Content = chart.GetCursorCount();
+        }
+        #endregion
     }
 }

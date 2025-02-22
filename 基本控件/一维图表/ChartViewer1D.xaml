@@ -150,6 +150,10 @@
                     <scroll:Chooser Name="IsSmooth" Width="30" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="15" Margin="10"/>
                     <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="点尺寸:"/>
                     <TextBox x:Name="PointSize" Text="1" KeyDown="ApplyLineStyleKey" LostFocus="ApplyLineStyle" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="60"/>
+                    <Label  Content="当前光标数:" FontSize="12" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5"/>
+                    <Label  Name="CursorCount" FontSize="12" Foreground="White" Width="30" Content="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5"/>
+                    <scroll:DecoratedButton Margin="7" Width="60" Click="AddCursor" Grid.Row="2" Grid.Column="0" TextAreaRatio="1" ToolTip="新建光标" Text="新建光标" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+                    <scroll:DecoratedButton Margin="7" Width="80" Click="BringCursorToCenter" Grid.Row="2" Grid.Column="0" TextAreaRatio="1" ToolTip="设置光标到中心位置" Text="设置光标到中心位置" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
                 </WrapPanel>
             </scroll:AutoScrollViewer.Content>
         </scroll:AutoScrollViewer>

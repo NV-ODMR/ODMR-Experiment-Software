@@ -18,7 +18,7 @@
             <ColumnDefinition Width="40"/>
             <ColumnDefinition MinWidth="100" Width="1*"/>
         </Grid.ColumnDefinitions>
-        <control:ChartControl2DHeatMap Name="ChartObject" TitleSize="20" CrossHairLineThickness="1.5" SnapsToDevicePixels="True" AxisForeground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="1" AxisFontsize="16" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" CrossHairColor="Gainsboro"/>
+        <control:ChartControl2DHeatMap Name="ChartObject" TitleSize="20" CrossHairLineThickness="2" SnapsToDevicePixels="True" AxisForeground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="1" AxisFontsize="16" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" CrossHairLabelBackground="#FF2E2E2E" CrossHairLineColor="White"/>
         <Grid Grid.Row="0" Grid.Column="3" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
@@ -68,8 +68,10 @@
                     <TextBox x:Name="ValueLo" Text="0" KeyDown="ApplyLineStyleKey" LostFocus="ApplyLineStyle" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="60"/>
                     <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="平滑"/>
                     <scroll:Chooser Name="Smooth" Width="30" IsSelected="False" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="15" Margin="10"/>
-                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="显示光标"/>
-                    <scroll:Chooser Name="Cursor" Width="30" IsSelected="False" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="15" Margin="10"/>
+                    <Label  Content="当前光标数:" FontSize="12" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5"/>
+                    <Label  Name="CursorCount" FontSize="12" Foreground="White" Width="30" Content="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5"/>
+                    <scroll:DecoratedButton Margin="7" Width="60" Click="AddCursor" Grid.Row="2" Grid.Column="0" TextAreaRatio="1" ToolTip="新建光标" Text="新建光标" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+                    <scroll:DecoratedButton Margin="7" Width="80" Click="BringCursorToCenter" Grid.Row="2" Grid.Column="0" TextAreaRatio="1" ToolTip="设置光标到中心位置" Text="设置光标到中心位置" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
                 </WrapPanel>
             </scroll:AutoScrollViewer.Content>
         </scroll:AutoScrollViewer>
