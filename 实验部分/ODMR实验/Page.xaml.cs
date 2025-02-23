@@ -61,11 +61,6 @@ namespace ODMR_Lab.ODMR实验
                 exp.ParentPage = this;
                 ExpObjects.Add(exp);
             }
-            ExpType.TemplateButton = ExpType;
-            foreach (var item in ExpObjects)
-            {
-                ExpType.Items.Add(new DecoratedButton() { Text = item.ODMRExperimentName, Tag = item });
-            }
         }
 
         /// <summary>
@@ -114,6 +109,9 @@ namespace ODMR_Lab.ODMR实验
 
 
                 CurrentExpObject = ExpObjects[index];
+
+                //更新文件名
+                CurrentExpObject.SavedFileName = CurrentExpObject.SavedFileName;
 
                 Chart1D.DataSelectionChanged = CurrentExpObject.SetCurrentData1DInfo;
                 Chart2D.DataSelected = CurrentExpObject.SetCurrentData2DInfo;
@@ -333,27 +331,6 @@ namespace ODMR_Lab.ODMR实验
         }
 
         /// <summary>
-        /// 改变实验
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ChangeExp(object sender, RoutedEventArgs e)
-        {
-            SelectExp(ExpObjects.IndexOf(ExpType.SelectedItem.Tag as ODMRExpObject));
-        }
-
-        private void ProgressContent_Loaded(object sender, RoutedEventArgs e)
-        {
-            ExpType.SelectionChanged -= ChangeExp;
-            ExpType.SelectionChanged += ChangeExp;
-            if (CurrentExpObject == null)
-                ExpType.Select(0);
-            if (CurrentExpObject == null)
-                ExpType.Select(ExpObjects.IndexOf(CurrentExpObject));
-            SavePath.ToolTip = SavePath.Content.ToString();
-        }
-
-        /// <summary>
         /// 选择文件夹
         /// </summary>
         /// <param name="sender"></param>
@@ -372,6 +349,21 @@ namespace ODMR_Lab.ODMR实验
         {
             if (CurrentExpObject != null)
                 CurrentExpObject.IsAutoSave = IsAutoSave.IsSelected;
+        }
+
+        /// <summary>
+        /// 选择实验
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectExp(object sender, RoutedEventArgs e)
+        {
+            ExpSelectWindow win = new ExpSelectWindow(this);
+            win.Owner = Window.GetWindow(this);
+            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            var expobj = win.ShowDialog();
+            if (expobj != null)
+                SelectExp(ExpObjects.IndexOf(expobj));
         }
     }
 }

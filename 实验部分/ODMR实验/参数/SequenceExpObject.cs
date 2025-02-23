@@ -33,6 +33,24 @@ namespace ODMR_Lab.ODMR实验
 
         public bool IsAutoSave { get; set; } = false;
 
+        private string savedFileName = null;
+        public string SavedFileName
+        {
+            get { return savedFileName; }
+            set
+            {
+                savedFileName = value;
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    if (ParentPage.CurrentExpObject == this)
+                    {
+                        ParentPage.SavedFileName.Content = value;
+                        ParentPage.SavedFileName.ToolTip = value;
+                    }
+                });
+            }
+        }
+
         #region 当前选中的图表数据信息
         private bool IsPlot1D { get; set; } = false;
 
@@ -116,6 +134,8 @@ namespace ODMR_Lab.ODMR实验
             EndStateEvent -= SaveFile;
             EndStateEvent += SaveFile;
 
+            //清除文件名
+            savedFileName = "";
             try
             {
                 PreExpEvent();
@@ -151,7 +171,7 @@ namespace ODMR_Lab.ODMR实验
                 try
                 {
                     if (ParentPage.SavePath.Content.ToString() == "") return;
-                    string root = Path.Combine(ParentPage.SavePath.Content.ToString(), ODMRExperimentName);
+                    string root = Path.Combine(ParentPage.SavePath.Content.ToString(), ODMRExperimentGroupName, ODMRExperimentName);
                     if (!Directory.Exists(root))
                     {
                         Directory.CreateDirectory(root);
@@ -168,7 +188,8 @@ namespace ODMR_Lab.ODMR实验
                     fob.D1ChartDatas = D1ChartDatas;
                     fob.D2ChartDatas = D2ChartDatas;
                     fob.WriteToFile(root, ODMRExperimentName + date + ".userdat");
-                    SetExpState("实验已完成,已保存文件路径:" + Path.Combine(root, ODMRExperimentName + date + ".userdat"));
+                    SetExpState("实验完成,文件已保存:");
+                    savedFileName = Path.Combine(root, ODMRExperimentName + date);
                 }
                 catch (Exception)
                 {
@@ -176,7 +197,7 @@ namespace ODMR_Lab.ODMR实验
             }
             else
             {
-                SetExpState("实验已完成,文件未保存");
+                SetExpState("实验完成,文件未保存");
             }
         }
 

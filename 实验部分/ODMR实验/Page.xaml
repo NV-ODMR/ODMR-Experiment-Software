@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
       mc:Ignorable="d" 
       xmlns:image="clr-namespace:ODMR_Lab.基本控件"
-      d:DesignHeight="600" d:DesignWidth="800" Loaded="ProgressContent_Loaded"
+      d:DesignHeight="600" d:DesignWidth="800"
       >
     <control:AutoScrollViewer Name="sc">
         <control:AutoScrollViewer.Content>
@@ -30,10 +30,18 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Name="TextBlockTemplate" Visibility="Hidden" Foreground="White" Text="1111" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="12"/>
                 <control:ComboBox Name="ComboBoxTemplate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Hidden" Background="#FF4D4D4D" FontSize="12" TextAreaRatio="0.9" ImagePlace="Right" IconMargin="3" Foreground="White" PressedForeground="White" MoveInForeground="White" MoveInColor="Gray" PressedColor="#FF1B6BDD" IconSource="/图片资源/downArrow.png"/>
-                <TextBox Name="TextBoxTemplate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF4D4D4D" Visibility="Visible" Foreground="White" BorderThickness="0" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="{x:Null}" CaretBrush="White"/>
-                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" FontSize="15" Foreground="White" Content="实验类型"/>
+                <TextBox Name="TextBoxTemplate" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF4D4D4D" Foreground="White" BorderThickness="0" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="{x:Null}" CaretBrush="White"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" FontSize="11" Foreground="White" Content="实验类型" Margin="20,0,0,0" Background="{x:Null}"/>
+                    <TextBlock Name="ExpGroupName" Margin="20,0,0,0"  Foreground="White" VerticalAlignment="Center"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" FontSize="11" Foreground="White" Content="实验名" Margin="20,0,0,0" Background="{x:Null}"/>
+                    <TextBlock Name="ExpName" Margin="20,0,0,0"  Foreground="White" VerticalAlignment="Center"/>
+                    <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="实验自动存储根目录" Margin="20,0,0,0"/>
+                    <Label Foreground="White" Name="SavePath" Width="200" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
+                    <control:DecoratedButton Click="SelectFolder" TextAreaRatio="0" Margin="5" Width="70" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/directory.png"/>
+                </StackPanel>
+                <control:DecoratedButton Click="SelectExp" Grid.Row="1" TextAreaRatio="1" Text="选择实验" FontSize="12" Margin="6" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                 <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="2" FontSize="15" Foreground="White" Content="输入参数"/>
-                <control:ComboBox Grid.Row="1" Name="ExpType" DefaultSelectIndex="0" Margin="5" Background="#FF686868" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF008BFF" PressedColor="#FF0072D1" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White" MaxPanelHeight="700" PanelWidth="400"/>
                 <Label HorizontalContentAlignment="Center" Grid.Row="4" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="输出参数"/>
                 <Label HorizontalContentAlignment="Center" Grid.Row="6" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="实验设备"/>
                 <control:AutoScrollViewer Margin="5" Name="InputScroll" Grid.RowSpan="1" Grid.Row="3" Background="#FF2E2E2E">
@@ -80,11 +88,6 @@
                     <Label Name="EndTime" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Foreground="White"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1"/>
                     <Label Name="ProgressContent" Grid.Row="3" Margin="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Foreground="White"/>
                 </Grid>
-                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
-                    <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="实验自动存储根目录" Margin="20,0,0,0"/>
-                    <Label Foreground="White" Name="SavePath" Width="200" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
-                    <control:DecoratedButton Click="SelectFolder" TextAreaRatio="0" Margin="5" Width="70" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/directory.png"/>
-                </StackPanel>
                 <TextBlock Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1" Name="ProgressTitle"/>
                 <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="10" Margin="10">
                     <Grid.RowDefinitions>
