@@ -220,7 +220,7 @@ namespace ODMR_Lab.设备部分.位移台部分
                 MoveThread = new Thread(() =>
                 {
                     IsMoveStopped = false;
-                    stage.MoveStepAndWait(-step, 5000, false);
+                    stage.MoveStepAndWait(-step, 5000);
                     IsMoveStopped = true;
                 });
                 MoveThread.Start();
@@ -233,7 +233,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             MoveThread = new Thread(() =>
             {
                 IsMoveStopped = false;
-                stage.MoveStepAndWait(-step, 5000, false);
+                stage.MoveStepAndWait(-step, 5000);
                 IsMoveStopped = true;
             });
             MoveThread.Start();
@@ -251,7 +251,7 @@ namespace ODMR_Lab.设备部分.位移台部分
                 MoveThread = new Thread(() =>
                 {
                     IsMoveStopped = false;
-                    stage.MoveStepAndWait(step, 5000, false);
+                    stage.MoveStepAndWait(step, 5000);
                     IsMoveStopped = true;
                 });
                 MoveThread.Start();
@@ -264,7 +264,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             MoveThread = new Thread(() =>
             {
                 IsMoveStopped = false;
-                stage.MoveStepAndWait(step, 5000, false);
+                stage.MoveStepAndWait(step, 5000);
                 IsMoveStopped = true;
             });
             MoveThread.Start();

@@ -14,14 +14,14 @@ using ODMR_Lab.ODMR实验;
 using HardWares.端口基类;
 using ODMR_Lab.实验部分.扫描基方法;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描
 {
-    public abstract class Scan1DExpBase<T> : ODMRExpObject
+    public abstract class Scan1DExpBase<T> : ODMRExperimentWithAFM
     {
 
         Scan1DSession<T> D1Session = new Scan1DSession<T>();
 
-        public override void ODMRExperiment()
+        public override void ODMRExpWithAFM()
         {
             T dev = GetScanSource();
             var range = GetScanRange();
@@ -37,32 +37,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
                 SetExpState(CreateThreadState(devi, val1));
             });
             D1Session.StateJudgeEvent = JudgeThreadEndOrResume;
-            try
-            {
-                PreScanEvent();
-                D1Session.BeginScan(range.Key, 0, 100, range.Value);
-                AfterScanEvent();
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    AfterScanEvent();
-                }
-                catch (Exception) { }
-                throw ex;
-            }
+            D1Session.BeginScan(range, 0, 100);
         }
-
-        public abstract void PreScanEvent();
-
-        public abstract void AfterScanEvent();
 
         /// <summary>
         /// 设置扫描范围
         /// </summary>
         /// <returns></returns>
-        public abstract KeyValuePair<ScanRange, bool> GetScanRange();
+        public abstract ScanRange GetScanRange();
 
         /// <summary>
         /// 设置扫描源

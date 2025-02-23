@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
@@ -42,6 +43,10 @@ namespace ODMR_Lab.ODMR实验
         /// 一维图表数据
         /// </summary>
         public abstract List<ChartData1D> D1ChartDatas { get; set; }
+        /// <summary>
+        /// 一维图表拟合
+        /// </summary>
+        public abstract List<FittedData1D> D1FitDatas { get; set; }
         /// <summary>
         /// 二维图表数据
         /// </summary>

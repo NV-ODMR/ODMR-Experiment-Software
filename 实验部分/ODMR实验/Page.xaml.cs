@@ -112,7 +112,12 @@ namespace ODMR_Lab.ODMR实验
 
                 CurrentExpObject?.DisConnectOuterControl();
 
+
                 CurrentExpObject = ExpObjects[index];
+
+                Chart1D.DataSelectionChanged = CurrentExpObject.SetCurrentData1DInfo;
+                Chart2D.DataSelected = CurrentExpObject.SetCurrentData2DInfo;
+                CurrentExpObject.SelectDataDisplay();
 
                 List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlsStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
                 ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InputPanel, RunningBehaviours.DisableWhenRunning));
@@ -123,6 +128,7 @@ namespace ODMR_Lab.ODMR实验
                 CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlsStates);
 
                 //刷新图表
+
                 CurrentExpObject.UpdatePlotChart();
 
                 //加载这个实验的参数
@@ -304,11 +310,25 @@ namespace ODMR_Lab.ODMR实验
             {
                 Chart1D.Visibility = Visibility.Visible;
                 D1Btn.KeepPressed = true;
+                CurrentExpObject?.SetPlotType(true);
             }
             if (sender == D2Btn)
             {
                 Chart2D.Visibility = Visibility.Visible;
                 D2Btn.KeepPressed = true;
+                CurrentExpObject?.SetPlotType(false);
+            }
+        }
+
+        public void ChangeVisiblePanel(bool isD1)
+        {
+            if (isD1)
+            {
+                ChangePannel(D1Btn, new RoutedEventArgs());
+            }
+            else
+            {
+                ChangePannel(D2Btn, new RoutedEventArgs());
             }
         }
 
@@ -328,6 +348,8 @@ namespace ODMR_Lab.ODMR实验
             ExpType.SelectionChanged += ChangeExp;
             if (CurrentExpObject == null)
                 ExpType.Select(0);
+            if (CurrentExpObject == null)
+                ExpType.Select(ExpObjects.IndexOf(CurrentExpObject));
             SavePath.ToolTip = SavePath.Content.ToString();
         }
 
@@ -344,6 +366,12 @@ namespace ODMR_Lab.ODMR实验
                 SavePath.Content = dialog.SelectedPath;
                 SavePath.ToolTip = dialog.SelectedPath;
             }
+        }
+
+        private void ChangeAutoSave(object sender, RoutedEventArgs e)
+        {
+            if (CurrentExpObject != null)
+                CurrentExpObject.IsAutoSave = IsAutoSave.IsSelected;
         }
     }
 }

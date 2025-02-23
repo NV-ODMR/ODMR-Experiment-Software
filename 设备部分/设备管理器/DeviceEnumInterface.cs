@@ -96,9 +96,15 @@ namespace ODMR_Lab.设备部分
             List<InfoBase> infos = info.GetDevEvent();
             foreach (var item in infos)
             {
-                MethodInfo inf = item.GetType().GetMethod("CloseDeviceInfoAndSaveParams");
-                string path = inf.Invoke(item, new object[] { null }) as string;
-                if (path == "") return false;
+                try
+                {
+                    MethodInfo inf = item.GetType().GetMethod("CloseDeviceInfoAndSaveParams");
+                    string path = inf.Invoke(item, new object[] { null }) as string;
+                    if (path == "") return false;
+                }
+                catch (Exception)
+                {
+                }
             }
             return true;
         }

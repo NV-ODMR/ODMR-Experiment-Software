@@ -48,10 +48,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             APDInfo apd = devices[1] as APDInfo;
             //设置板卡指令
             List<CommandBase> Lines = new List<CommandBase>();
-            pb.Device.SetCommands(sequence.AddToCommandLine(Lines,out string str));//读脉冲,序列写进板卡
+            pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
             apd.StartTriggerSample(sequence.LoopCount * 8); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
+            Thread.Sleep(100);
             pb.Device.Start();//板卡开始输出
-            List<int> ApdResult=apd.GetTriggerSamples((int)InputParams[3]);//apd读取，判断时间
+            List<int> ApdResult = apd.GetTriggerSamples((int)InputParams[3]);//apd读取，判断时间
             apd.EndTriggerSample();//停止计数
             pb.Device.End();//关板卡
             //处理数据
@@ -68,9 +69,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 {
                     ApdCount.Add(ApdAfter.ElementAt(i) - ApdBefore.ElementAt(i));
                 }
-                for (int i = 0; i < ApdCount.Count()/4; i++)
+                for (int i = 0; i < ApdCount.Count() / 4; i++)
                 {
-                    Sum0 += ApdCount.ElementAt(4*i);
+                    Sum0 += ApdCount.ElementAt(4 * i);
                     Sum1 += ApdCount.ElementAt(4 * i + 1);
                     Sum2 += ApdCount.ElementAt(4 * i + 2);
                     Sum3 += ApdCount.ElementAt(4 * i + 3);
@@ -79,9 +80,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 double ContrastSig = (Sum2 - Sum3) / Sum3;
                 return new List<object>() { ContrastSig, ContrastRef };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new List<object>() {0,0 };
+                return new List<object>() { 0.0, 0.0 };
             }
         }
     }

@@ -4,6 +4,7 @@ using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
@@ -19,11 +20,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
 {
     public class Confocal : Scan2DExpBase<NanoStageInfo, NanoStageInfo>
     {
         public override string ODMRExperimentName { get; set; } = "共聚焦扫描";
+        public override string ODMRExperimentGroupName { get; set; } = "实空间面实验(无AFM)";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("X扫描下限(μm)",0,"XRangeLo"),
@@ -51,6 +54,7 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
+        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
 
         public override string CreateThreadState(NanoStageInfo dev1, NanoStageInfo dev2, double currentvalue1, double currentvalue2)
         {
@@ -59,15 +63,6 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
 
         public override List<object> FirstScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
         {
-            var r1 = GetScanRange1();
-            var r2 = GetScanRange2();
-            //新建数据集
-            D2ChartDatas = new List<ChartData2D>()
-            {
-                new ChartData2D(new FormattedDataSeries2D(r1.Key.Count,r1.Key.Lo,r1.Key.Hi,r2.Key.Count,r2.Key.Lo,r2.Key.Hi){
-                    XName="X轴位置(μm)",YName="Y轴位置(μm)",ZName="计数率(cps)"}){ GroupName="共聚焦扫描结果"}
-            };
-            UpdatePlotChart();
             return ScanEvent(device1, device2, range1, range2, loc1value, loc2value, inputParams);
         }
 
@@ -83,8 +78,8 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
         public override List<object> ScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
         {
             int waittime = GetInputParamValueByName("MoverWaitingTime");
-            device1.Device.MoveToAndWait(loc1value, waittime, false);
-            device2.Device.MoveToAndWait(loc2value, waittime, false);
+            device1.Device.MoveToAndWait(loc1value, waittime);
+            device2.Device.MoveToAndWait(loc2value, waittime);
             ConfocalAPDSample a = new ConfocalAPDSample();
             var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByName("APD"));
             int count = (int)(double)res[0];
@@ -94,22 +89,22 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             return new List<object>();
         }
 
-        public override KeyValuePair<ScanRange, bool> GetScanRange1()
+        public override ScanRange GetScanRange1()
         {
             double xlo = GetInputParamValueByName("XRangeLo");
             double xhi = GetInputParamValueByName("XRangeHi");
             int count = GetInputParamValueByName("XCount");
             bool rev = GetInputParamValueByName("XReverse");
-            return new KeyValuePair<ScanRange, bool>(new ScanRange(xlo, xhi, count), rev);
+            return new ScanRange(xlo, xhi, count, rev);
         }
 
-        public override KeyValuePair<ScanRange, bool> GetScanRange2()
+        public override ScanRange GetScanRange2()
         {
             double ylo = GetInputParamValueByName("YRangeLo");
             double yhi = GetInputParamValueByName("YRangeHi");
             int count = GetInputParamValueByName("YCount");
             bool rev = GetInputParamValueByName("YReverse");
-            return new KeyValuePair<ScanRange, bool>(new ScanRange(ylo, yhi, count), rev);
+            return new ScanRange(ylo, yhi, count, rev);
         }
 
         public override NanoStageInfo GetScanSource1()
@@ -122,7 +117,7 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             return GetDeviceByName("LenY") as NanoStageInfo;
         }
 
-        public override void PreScanEvent()
+        public override void PreExpEventWithoutAFM()
         {
             //打开激光
             LaserOn lon = new LaserOn();
@@ -132,9 +127,21 @@ namespace ODMR_Lab.实验部分.序列实验.实验方法.二维扫描
             //打开APD
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.StartContinusSample(100);
+            //创建数据集
+            var r1 = GetScanRange1();
+            var r2 = GetScanRange2();
+            //新建数据集
+            D2ChartDatas = new List<ChartData2D>()
+            {
+                new ChartData2D(new FormattedDataSeries2D(r1.Count,r1.Lo,r1.Hi,r2.Count,r2.Lo,r2.Hi){
+                    XName="X轴位置(μm)",YName="Y轴位置(μm)",ZName="计数率(cps)"}){ GroupName="共聚焦扫描结果"}
+            };
+            UpdatePlotChart();
+            //选中数据集
+            Show2DChartData("共聚焦扫描结果", "X轴位置(μm)", "Y轴位置(μm)", "计数率(cps)");
         }
 
-        public override void AfterScanEvent()
+        public override void AfterExpEventWithoutAFM()
         {
             //关闭激光
             LaserOff loff = new LaserOff();

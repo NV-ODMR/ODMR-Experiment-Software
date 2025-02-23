@@ -4,6 +4,7 @@ using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
@@ -20,12 +21,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描
 {
     public class CW : Scan1DExpBase<RFSourceInfo>
     {
         public override string ODMRExperimentName { get; set; } = "连续波谱(CW)";
-        public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
+
+        public override string ODMRExperimentGroupName { get; set; } = "实空间线实验(无AFM)";
+
+        public override List<ParamB> InputParams
+        { get; set; } = new List<ParamB>()
         {
             new Param<double>("频率起始点(MHz)",2830,"RFFreqLo"),
             new Param<double>("频率中止点(MHz)",2890,"RFFreqHi"),
@@ -47,6 +52,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
+        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
 
         public override string CreateThreadState(RFSourceInfo dev, double currentvalue)
         {
@@ -97,13 +103,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
             return new List<object>();
         }
 
-        public override KeyValuePair<ScanRange, bool> GetScanRange()
+        public override ScanRange GetScanRange()
         {
             double xlo = GetInputParamValueByName("RFFreqLo");
             double xhi = GetInputParamValueByName("RFFreqHi");
             double step = GetInputParamValueByName("RFStep");
             bool rev = GetInputParamValueByName("Reverse");
-            return new KeyValuePair<ScanRange, bool>(new ScanRange(xlo, xhi, step), rev);
+            return new ScanRange(xlo, xhi, step, rev);
         }
 
         public override RFSourceInfo GetScanSource()
@@ -119,11 +125,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.线扫描
         {
         }
 
-        public override void PreScanEvent()
+        public override void PreExpEventWithoutAFM()
         {
         }
 
-        public override void AfterScanEvent()
+        public override void AfterExpEventWithoutAFM()
         {
         }
     }

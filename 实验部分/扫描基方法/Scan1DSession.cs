@@ -53,13 +53,11 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// <param name="Hi"></param>
         /// <param name="D"></param>
         /// <returns></returns>
-        public List<object> BeginScan(ScanRange range, double progressLo = 0, double progressHi = 100, bool isreverse = false, params object[] ps)
+        public List<object> BeginScan(ScanRange range, double progressLo = 0, double progressHi = 100, params object[] ps)
         {
             SetProgress(progressLo);
 
             var scanlist = range.GenerateScanList();
-            if (isreverse)
-                scanlist = range.GenerateReversedScanList();
 
             var progress = new ScanRange(progressLo, progressHi, range.Count).GenerateScanList();
 

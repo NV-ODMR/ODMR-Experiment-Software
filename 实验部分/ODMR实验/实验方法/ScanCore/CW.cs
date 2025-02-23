@@ -52,8 +52,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             Lines = sequence.AddToCommandLine(Lines, out string commandinform);
             pb.Device.SetCommands(Lines);
             //打开APD
-            apd.StartTriggerSample(loopcount * 4);
-            Thread.Sleep(10);
+            apd.StartTriggerSample(loopcount * 4 );
             //打开板卡输出
             pb.Device.Start();
             var countresult = apd.GetTriggerSamples(timeout);

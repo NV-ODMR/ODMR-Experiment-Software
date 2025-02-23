@@ -32,11 +32,17 @@ namespace ODMR_Lab.基本控件
 
         public Window ParentWindow { get; set; } = null;
 
+        /// <summary>
+        /// 图表刷新事件,参数(修改后的数据名X,修改后的数据名Y,修改后的数据名Z,分组名)
+        /// </summary>
+        public Action<string, string, string, string> DataSelected = null;
+
         public ChartViewer2D()
         {
             InitializeComponent();
             DataSource.ItemChanged += UpdateDataPanel;
             MapColorStyle.TemplateButton = MapColorStyle;
+            ChartObject.CursorMenuTemplate = ChartGroups;
             foreach (var item in Enum.GetNames(typeof(ColorMaps)))
             {
                 MapColorStyle.Items.Add(new DecoratedButton() { Text = item });
@@ -65,14 +71,7 @@ namespace ODMR_Lab.基本控件
         private void UpdateDataPanel(object sender, RoutedEventArgs e)
         {
             UpdateGroups();
-            UpdateDataPanel();
-        }
-
-        /// <summary>
-        /// 刷新图表数据显示
-        /// </summary>
-        public void UpdateDataPanel()
-        {
+            DataSet.ClearItems();
             if (ChartGroups.SelectedItem == null && ChartGroups.Items.Count != 0)
             {
                 ChartGroups.Select(0);
@@ -81,18 +80,27 @@ namespace ODMR_Lab.基本控件
             if (ChartGroups.SelectedItem != null)
             {
                 string GroupName = ChartGroups.SelectedItem.Tag as string;
+                UpdateDataPanel(GroupName);
+            }
+        }
 
-                DataSet.ClearItems();
+        /// <summary>
+        /// 刷新图表数据显示(如果不存在groupName则不做任何操作)
+        /// </summary>
+        public void UpdateDataPanel(string groupname)
+        {
+            if (DataSource.Where(x => x.GroupName == groupname).Count() == 0) return;
 
-                foreach (var item in DataSource)
+            DataSet.ClearItems();
+
+            foreach (var item in DataSource)
+            {
+                if (item.GroupName != groupname)
                 {
-                    if (item.GroupName != GroupName)
-                    {
-                        item.IsSelected = false;
-                        continue;
-                    }
-                    DataSet.AddItem(item, item.GetDescription(), item.GetXCount().ToString(), item.GetYCount().ToString());
+                    item.IsSelected = false;
+                    continue;
                 }
+                DataSet.AddItem(item, item.GetDescription(), item.GetXCount().ToString(), item.GetYCount().ToString());
             }
         }
 
@@ -125,8 +133,34 @@ namespace ODMR_Lab.基本控件
             {
                 item.IsSelected = false;
             }
-           (arg2 as ChartData2D).IsSelected = true;
+            var data = arg2 as ChartData2D;
+            data.IsSelected = true;
+            DataSelected?.Invoke(data.Data.XName, data.Data.YName, data.Data.ZName, data.GroupName);
             UpdateChartAndDataFlow();
+        }
+
+        /// <summary>
+        /// 选中面板中的数据
+        /// </summary>
+        /// <param name="groupname"></param>
+        /// <param name="xname"></param>
+        /// <param name="yname"></param>
+        /// <param name="zname"></param>
+        public void SelectData(string groupname, string xname, string yname, string zname)
+        {
+            var data = DataSource.Where(x => x.GroupName == groupname && x.Data.XName == xname && x.Data.YName == yname && x.Data.ZName == zname);
+            if (data.Count() != 0)
+            {
+                UpdateDataPanel(groupname);
+                for (int i = 0; i < DataSet.GetRowCount(); i++)
+                {
+                    ChartData2D d2 = DataSet.GetTag(i) as ChartData2D;
+                    if (d2.Data.XName == xname && d2.Data.YName == yname && d2.Data.ZName == zname)
+                    {
+                        DataSet.Select(i);
+                    }
+                }
+            }
         }
 
 
@@ -174,7 +208,8 @@ namespace ODMR_Lab.基本控件
 
         private void ChangeGroup(object sender, RoutedEventArgs e)
         {
-            UpdateDataPanel();
+            string s = ChartGroups.SelectedItem.Text;
+            UpdateDataPanel(s);
             UpdateChartAndDataFlow();
         }
 

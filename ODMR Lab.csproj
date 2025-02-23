@@ -62,19 +62,19 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\C#Codes\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+      <HintPath>..\C#Codes\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\C#Codes\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -87,7 +87,7 @@
     </Reference>
     <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+      <HintPath>..\C#Codes\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -186,18 +186,27 @@
     <Compile Include="实验部分\ODMR实验\参数\ODMRConfigParams.cs" />
     <Compile Include="实验部分\ODMR实验\参数\SequenceExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\参数\SequenceFileExpObject.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\ODMRExperimentWithAFM.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\单点\T1.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMStopDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\CW.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOff.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOn.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\ScanCoreBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\T1.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Scan2DExpBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\二维扫描\Confocal.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\单点\Scan0DExpBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\线扫描\CWScan.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\线扫描\Scan1DExpBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\线扫描\T1.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ODMRExperimentWithoutAFM.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Scan2DExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Confocal.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\Scan2DExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\Confocal.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\线扫描\CWScan.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\线扫描\Scan1DExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\AutoTrace.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\CWScan.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\Scan1DExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\T1.cs" />
     <Compile Include="实验部分\位移台界面\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>

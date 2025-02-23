@@ -313,7 +313,6 @@ namespace ODMR_Lab.基本控件
                 //刷新拟合线
                 foreach (var item in FitData)
                 {
-                    item.FittedData.Name = item.FitName;
                     PlotData.Add(new TimeDataSeries("", item.FittedData.X.Select(x => DateTime.FromOADate(x)).ToList(), item.FittedData.Y));
                 }
                 chart.DataList = PlotData.Select(x => x as DataSeries).ToList();

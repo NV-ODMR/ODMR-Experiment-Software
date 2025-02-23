@@ -46,6 +46,10 @@ namespace ODMR_Lab.基本控件
         public static readonly DependencyProperty IsOnlyTimeProperty =
             DependencyProperty.Register("IsOnlyTime", typeof(bool), typeof(ChartViewer1D), new PropertyMetadata(false));
 
+        /// <summary>
+        /// 图表刷新事件,参数(当前选中的X数据名,当前选中的Y数据名,分组名)
+        /// </summary>
+        public Action<string, List<string>, string> DataSelectionChanged = null;
 
 
         public ChartViewer1D()
@@ -57,6 +61,7 @@ namespace ODMR_Lab.基本控件
             DataSource.ItemChanged += UpdateDataPanel;
             FitData.ItemChanged += UpdateDataPanel;
             OnlyTimeDataSource.ItemChanged += UpdateDataPanel;
+            chart.CursorMenuTemplate = ChartGroups;
         }
 
         /// <summary>
@@ -304,7 +309,7 @@ namespace ODMR_Lab.基本控件
             //刷新数据显示
             UpdateDataDisplay();
 
-            while (UpdateThread != null && UpdateThread.ThreadState == ThreadState.Running)
+            while (UpdateThread != null && (UpdateThread.ThreadState == ThreadState.Running || UpdateThread.ThreadState == ThreadState.Suspended))
             {
                 Thread.Sleep(50);
             }
@@ -328,7 +333,7 @@ namespace ODMR_Lab.基本控件
                 bool HasName = false;
                 Dispatcher.Invoke(() =>
                 {
-                    HasName = (chart.XAxisName == SelectedXdata.Name);
+                    HasName = chart.XAxisName == SelectedXdata.Name;
                 });
 
                 ///刷新要添加的线
@@ -338,16 +343,18 @@ namespace ODMR_Lab.基本控件
                 foreach (var item in DataToAdd)
                 {
                     DataSeries data = null;
-                    if (SelectedXdata is TimeChartData1D) data = new TimeDataSeries(item.Name)
-                    {
-                        X = (SelectedXdata as TimeChartData1D).Data,
-                        Y = item.GetDataCopyAsDouble().ToList()
-                    };
-                    if (SelectedXdata is NumricChartData1D) data = new NumricDataSeries(item.Name)
-                    {
-                        X = (SelectedXdata as NumricChartData1D).Data,
-                        Y = item.GetDataCopyAsDouble().ToList()
-                    };
+                    if (SelectedXdata is TimeChartData1D)
+                        data = new TimeDataSeries(item.Name)
+                        {
+                            X = (SelectedXdata as TimeChartData1D).Data,
+                            Y = item.GetDataCopyAsDouble().ToList()
+                        };
+                    if (SelectedXdata is NumricChartData1D)
+                        data = new NumricDataSeries(item.Name)
+                        {
+                            X = (SelectedXdata as NumricChartData1D).Data,
+                            Y = item.GetDataCopyAsDouble().ToList()
+                        };
                     data.LineColor = item.DisplayColor;
                     //检查是否在原来的线中
                     int ind = chart.DataList.FindIndex(x => item.Name == x.Name);
@@ -371,9 +378,8 @@ namespace ODMR_Lab.基本控件
                 //刷新拟合线
                 foreach (var item in FitData)
                 {
-                    if (item.IsDisplay && item.XData == SelectedXdata)
+                    if (item.IsDisplay && item.XAxisName == SelectedXdata.Name && item.GroupName == SelectedXdata.GroupName)
                     {
-                        item.FittedData.Name = item.FitName;
                         PlotData.Add(item.FittedData);
                     }
                 }
@@ -425,6 +431,18 @@ namespace ODMR_Lab.基本控件
             ChartData1D data = XDataSet.GetTag(arg1) as ChartData1D;
             data.IsSelectedAsX = (bool)arg3;
 
+            List<string> strs = new List<string>();
+            string s = "";
+            string fgroupname = data.GroupName;
+            foreach (var item in DataSource)
+            {
+                if (item.IsSelectedAsX)
+                    s = item.Name;
+                if (item.IsSelectedAsY)
+                    strs.Add(item.Name);
+            }
+            DataSelectionChanged?.Invoke(s, strs, fgroupname);
+
             UpdateDataPanel();
             UpdateChartAndDataFlow(true);
         }
@@ -433,9 +451,63 @@ namespace ODMR_Lab.基本控件
         {
             ChartData1D data = YDataSet.GetTag(arg1) as ChartData1D;
             data.IsSelectedAsY = (bool)arg3;
+
+            List<string> strs = new List<string>();
+            string s = "";
+            string fgroupname = data.GroupName;
+            foreach (var item in DataSource)
+            {
+                if (item.IsSelectedAsX)
+                    s = item.Name;
+                if (item.IsSelectedAsY)
+                    strs.Add(item.Name);
+            }
+            DataSelectionChanged?.Invoke(s, strs, fgroupname);
+
             UpdateChartAndDataFlow(true);
         }
         #endregion
+
+        public void SelectData(string groupName, string xname, List<string> dataYNames)
+        {
+            var data = DataSource.Where(x => x.GroupName == groupName);
+            var toshow = data.Where(x => dataYNames.Contains(x.Name)).ToList();
+            SelectGroup(groupName);
+            for (int i = 0; i < XDataSet.GetRowCount(); i++)
+            {
+                if ((XDataSet.GetTag(i) as ChartData1D).Name == xname)
+                {
+                    //选中X轴
+                    XDataSelectionChanged(i, 2, true);
+                    break;
+                }
+            }
+            for (int i = 0; i < YDataSet.GetRowCount(); i++)
+            {
+                if (toshow.Contains(YDataSet.GetTag(i)))
+                {
+                    //选中Y轴
+                    YDataSelectionChanged(i, 2, true);
+                    break;
+                }
+            }
+            UpdateChartAndDataFlow(true);
+        }
+
+        public void SelectFitData(List<string> FitDataNames)
+        {
+            for (int i = 0; i < FitDataSet.GetRowCount(); i++)
+            {
+                if (FitDataNames.Contains((FitDataSet.GetTag(i) as FittedData1D).FittedData.Name))
+                {
+                    FitDataSet.MultiSelect(i);
+                }
+                else
+                {
+                    FitDataSet.MultiUnSelect(i);
+                }
+            }
+        }
 
         #region 图表操作
         private void ResizePlot(object sender, RoutedEventArgs e)

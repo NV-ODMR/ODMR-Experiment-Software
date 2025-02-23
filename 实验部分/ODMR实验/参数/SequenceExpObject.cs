@@ -7,6 +7,7 @@ using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -20,15 +21,77 @@ namespace ODMR_Lab.ODMR实验
     public abstract class ODMRExpObject : ODMRExpObjectBase
     {
         /// <summary>
-        /// 序列实验名称
+        /// 实验名称
         /// </summary>
         public abstract string ODMRExperimentName { get; set; }
+        /// <summary>
+        /// 实验分类名
+        /// </summary>
+        public abstract string ODMRExperimentGroupName { get; set; }
 
         public DisplayPage ParentPage = null;
 
         public bool IsAutoSave { get; set; } = false;
 
-        public string HistoryFileName { get; set; } = "";
+        #region 当前选中的图表数据信息
+        private bool IsPlot1D { get; set; } = false;
+
+        private string D1GroupName { get; set; } = "";
+        private string D2GroupName { get; set; } = "";
+
+        private List<string> D1SelectedYName { get; set; } = new List<string>();
+
+        private string D1SelectedXName { get; set; } = "";
+
+        private string D2DataXName { get; set; } = "";
+        private string D2DataYName { get; set; } = "";
+        private string D2DataZName { get; set; } = "";
+
+        /// <summary>
+        /// 设置当前选中数据(实验方法中禁用)
+        /// </summary>
+        [Obsolete]
+        public void SetCurrentData1DInfo(string xname, List<string> ynames, string groupname)
+        {
+            D1SelectedXName = xname;
+            D1SelectedYName = ynames;
+            D1GroupName = groupname;
+        }
+
+        /// <summary>
+        /// 设置当前选中数据(实验方法中禁用)
+        /// </summary>
+        [Obsolete]
+        public void SetCurrentData2DInfo(string xname, string yname, string zname, string groupname)
+        {
+            D2DataXName = xname;
+            D2DataYName = yname;
+            D2DataZName = zname;
+            D2GroupName = groupname;
+        }
+
+        //设置图表显示(实验方法中禁用)
+        [Obsolete]
+        public void SelectDataDisplay()
+        {
+            if (IsPlot1D)
+            {
+                ParentPage.ChangeVisiblePanel(true);
+                ParentPage.Chart1D.SelectData(D1GroupName, D1SelectedXName, D1SelectedYName);
+            }
+            else
+            {
+                ParentPage.ChangeVisiblePanel(false);
+                ParentPage.Chart2D.SelectData(D2GroupName, D2DataXName, D2DataYName, D2DataZName);
+            }
+        }
+
+        [Obsolete]
+        public void SetPlotType(bool isPlot1D)
+        {
+            IsPlot1D = isPlot1D;
+        }
+        #endregion
 
         /// <summary>
         /// 实验设备
@@ -50,10 +113,36 @@ namespace ODMR_Lab.ODMR实验
 
         public override void ExperimentEvent()
         {
+            EndStateEvent -= SaveFile;
             EndStateEvent += SaveFile;
-            EndStateEvent += SaveFile;
-            ODMRExperiment();
+
+            try
+            {
+                PreExpEvent();
+                ODMRExperiment();
+                AfterExpEvent();
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    AfterExpEvent();
+                }
+                catch (Exception e) { }
+                throw ex;
+            }
         }
+
+        /// <summary>
+        /// 实验前操作
+        /// </summary>
+        public abstract void PreExpEvent();
+
+        /// <summary>
+        /// 实验后操作
+        /// </summary>
+        public abstract void AfterExpEvent();
+
 
         public void SaveFile()
         {
@@ -71,6 +160,8 @@ namespace ODMR_Lab.ODMR实验
                     DateTime dateTime = DateTime.Now;
                     string date = dateTime.ToString("yyyy_MM_dd_HH_mm_ss");
                     SequenceFileExpObject fob = new SequenceFileExpObject();
+                    fob.ExpStartTime = ExpStartTime;
+                    fob.ExpEndTime = ExpEndTime;
                     fob.InputParams = InputParams;
                     fob.OutputParams = OutputParams;
                     fob.DeviceList = DeviceList;
@@ -178,6 +269,45 @@ namespace ODMR_Lab.ODMR实验
         }
 
         /// <summary>
+        /// 显示一维图表数据
+        /// </summary>
+        /// <param name="Datas"></param>
+        public void Show1DChartData(string groupname, string xname, params string[] ynames)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ParentPage.ChangeVisiblePanel(true);
+                ParentPage.Chart1D.SelectData(groupname, xname, ynames.ToList());
+            });
+        }
+
+        /// <summary>
+        /// 显示一维图表数据
+        /// </summary>
+        /// <param name="Datas"></param>
+        public void Show1DFittedData(params string[] FitDataName)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ParentPage.ChangeVisiblePanel(true);
+                ParentPage.Chart1D.SelectFitData(FitDataName.ToList());
+            });
+        }
+
+        /// <summary>
+        /// 显示二维图表数据
+        /// </summary>
+        /// <param name="Datas"></param>
+        public void Show2DChartData(string groupname, string xname, string yname, string zname)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ParentPage.ChangeVisiblePanel(false);
+                ParentPage.Chart2D.SelectData(groupname, xname, yname, zname);
+            });
+        }
+
+        /// <summary>
         /// 根据参数名获取输出参数
         /// </summary>
         /// <param name="description"></param>
@@ -189,6 +319,7 @@ namespace ODMR_Lab.ODMR实验
                 if (item.PropertyName == name)
                 {
                     ParamB.SetUnknownParamValue(item, value);
+                    item.LoadToPage(new FrameworkElement[] { ParentPage }, false);
                 }
             }
             return null;
@@ -301,10 +432,14 @@ namespace ODMR_Lab.ODMR实验
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                ParentPage.Chart1D.DataSource.Clear(true);
-                ParentPage.Chart2D.DataSource.Clear(true);
+                ParentPage.Chart1D.DataSource.Clear(false);
+                ParentPage.Chart1D.FitData.Clear(false);
+                ParentPage.Chart2D.DataSource.Clear(false);
                 ParentPage.Chart1D.DataSource.AddRange(D1ChartDatas);
+                ParentPage.Chart1D.FitData.AddRange(D1FitDatas);
                 ParentPage.Chart2D.DataSource.AddRange(D2ChartDatas);
+                ParentPage.Chart1D.UpdateChartAndDataFlow(true);
+                ParentPage.Chart2D.UpdateChartAndDataFlow();
             });
         }
     }

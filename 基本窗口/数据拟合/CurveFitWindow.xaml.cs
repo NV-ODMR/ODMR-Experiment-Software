@@ -302,8 +302,8 @@ namespace ODMR_Lab.基本窗口.数据拟合
                 }
                 realfunc.AddVariable("x", new RealDomain(xs.Min(), xs.Max(), 200));
                 realfunc.Process();
-
-                Func = new FittedData1D(realfunc.Expression, XDataSourceBox.SelectedItem.Tag as ChartData1D, YDataSourceBox.SelectedItem.Tag as ChartData1D, realfunc, func.Name);
+                var xsource = XDataSourceBox.SelectedItem.Tag as ChartData1D;
+                Func = new FittedData1D(xsource.Name, xsource.GroupName, realfunc);
                 Func.UpdatePoint(xs.Min(), xs.Max(), 200);
 
                 Close();

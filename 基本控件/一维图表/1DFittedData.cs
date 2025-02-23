@@ -12,23 +12,38 @@ namespace ODMR_Lab.基本控件.一维图表
 {
     public class FittedData1D
     {
-        public ChartData1D XData { get; set; } = null;
+        public string XAxisName { get; set; } = "";
 
-        public ChartData1D YData { get; set; } = null;
+        public string GroupName { get; set; } = "";
 
         public NumricDataSeries FittedData { get; set; } = new NumricDataSeries("", new List<double>(), new List<double>()) { LineColor = ColorHelper.GenerateHighContrastColor((Color)ColorConverter.ConvertFromString("#FF1F1F1F")) };
 
         public NormalRealFunction FitFunction { get; set; } = null;
 
-        public string FitName { get; set; } = "";
-
-        public FittedData1D(string expression, ChartData1D xData, ChartData1D yData, NormalRealFunction fitFunction, string fitName)
+        public FittedData1D(string xName, string groupName, NormalRealFunction fitFunction, NumricDataSeries fittedData = null)
         {
-            Expression = expression;
-            XData = xData;
-            YData = yData;
+            XAxisName = xName;
+            GroupName = groupName;
+            Expression = FitFunction.Expression;
             FitFunction = fitFunction;
-            FitName = fitName;
+            if (fittedData != null)
+                FittedData = fittedData;
+        }
+
+        public FittedData1D(string expression, string var, List<string> Params, List<double> ParamValues, string xName, string groupName, NumricDataSeries fittedData = null)
+        {
+            XAxisName = xName;
+            GroupName = groupName;
+            Expression = expression;
+            FitFunction = new NormalRealFunction(expression);
+            FitFunction.AddVariable(var, new RealDomain(0, 1, 1));
+            for (int i = 0; i < Params.Count; i++)
+            {
+                FitFunction.AddParam(new KeyValuePair<string, double>(Params[i], ParamValues[i]));
+            }
+            FitFunction.Process();
+            if (fittedData != null)
+                FittedData = fittedData;
         }
 
         public string Expression { get; set; } = "";
@@ -43,13 +58,7 @@ namespace ODMR_Lab.基本控件.一维图表
 
         public override string ToString()
         {
-            string xname = "";
-            if (XData != null) xname = XData.Name;
-            string yname = "";
-            if (YData != null) yname = YData.Name;
-            string fit = "";
-            if (FitFunction != null) fit = FitFunction.Expression;
-            return "X:" + xname + "Y:" + yname + "Fit:" + fit;
+            return FittedData.Name + "表达式:" + FitFunction.Expression;
         }
 
         public void UpdatePoint(double lo, double hi, int count)

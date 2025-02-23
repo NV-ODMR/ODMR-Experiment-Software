@@ -114,7 +114,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
         {
             ComandInformation = "";
 
-            InputCommand.Add(new LoopStartCommandLine(LoopCount));
+            InputCommand.Add(new LoopStartCommandLine(LoopCount - 1));
             int loopstartind = InputCommand.Count - 1;
 
             //找1脉冲的时间点

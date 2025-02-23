@@ -1,23 +1,24 @@
 ﻿using ODMR_Lab.ODMR实验;
+using ODMR_Lab.实验部分.扫描基方法;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ODMR_Lab.实验部分.扫描基方法
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
 {
-    public abstract class Scan2DExpBase<T1, T2> : ODMRExpObject
+    public abstract class Scan2DExpBase<T1, T2> : ODMRExperimentWithoutAFM
     {
         Scan2DSession<T1, T2> D2Session = new Scan2DSession<T1, T2>();
 
-        public override void ODMRExperiment()
+        public override void ODMRExpWithoutAFM()
         {
             T1 dev1 = GetScanSource1();
             T2 dev2 = GetScanSource2();
 
-            KeyValuePair<ScanRange, bool> range1 = GetScanRange1();
-            KeyValuePair<ScanRange, bool> range2 = GetScanRange2();
+            ScanRange range1 = GetScanRange1();
+            ScanRange range2 = GetScanRange2();
 
             D2Session.FirstScanEvent = FirstScanEvent;
             D2Session.ScanEvent = ScanEvent;
@@ -32,34 +33,20 @@ namespace ODMR_Lab.实验部分.扫描基方法
                 SetExpState(CreateThreadState(devi1, devi2, val1, val2));
             });
             D2Session.StateJudgeEvent = JudgeThreadEndOrResume;
-            try
-            {
-                PreScanEvent();
-                D2Session.BeginScan(range1.Key, range2.Key, 0, 100);
-                AfterScanEvent();
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    AfterScanEvent();
-                }
-                catch (Exception) { }
-                throw ex;
-            }
+            D2Session.BeginScan(range1, range2, 0, 100);
         }
 
         /// <summary>
         /// 设置轴1扫描范围（扫描范围，是否反向）
         /// </summary>
         /// <returns></returns>
-        public abstract KeyValuePair<ScanRange, bool> GetScanRange1();
+        public abstract ScanRange GetScanRange1();
 
         /// <summary>
         /// 设置轴2扫描范围（扫描范围，是否反向）
         /// </summary>
         /// <returns></returns>
-        public abstract KeyValuePair<ScanRange, bool> GetScanRange2();
+        public abstract ScanRange GetScanRange2();
 
         /// <summary>
         /// 设置扫描源1
@@ -78,16 +65,6 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// </summary>
         /// <returns></returns>
         public abstract string CreateThreadState(T1 dev1, T2 dev2, double currentvalue1, double currentvalue2);
-
-        /// <summary>
-        /// 扫描前操作
-        /// </summary>
-        public abstract void PreScanEvent();
-
-        /// <summary>
-        /// 扫描后操作
-        /// </summary>
-        public abstract void AfterScanEvent();
 
         /// <summary>
         /// 扫描操作，inputParams为空
