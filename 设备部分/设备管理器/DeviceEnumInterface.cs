@@ -109,6 +109,7 @@ namespace ODMR_Lab.设备部分
             return true;
         }
 
+        //设备列表,板卡必须放最后一个
         private static List<DeviceDispatcherInfoBase> DevInfos { get; set; } = new List<DeviceDispatcherInfoBase>()
         {
             //温控
@@ -157,6 +158,12 @@ namespace ODMR_Lab.设备部分
             {
                 SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_APDPage.APDs.AddRange(x.Select(v=>v as APDInfo).ToList())),
                 GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_APDPage.APDs.Select(x=>x as InfoBase).ToList(); })
+            },
+            //锁相放大器
+            new DeviceDispatcherInfo<LockinInfo>(DeviceTypes.锁相放大器,MainWindow.Dev_RFSource_LockInPage,MainWindow.Dev_RFSource_LockInPage.LockIns)
+            {
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.LockIns.AddRange(x.Select(v=>v as LockinInfo).ToList())),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_RFSource_LockInPage.LockIns.Select(x=>x as InfoBase).ToList(); })
             },
             //板卡
             new DeviceDispatcherInfo<PulseBlasterInfo>(DeviceTypes.PulseBlaster,MainWindow.Dev_PBPage,MainWindow.Dev_PBPage.PBs)

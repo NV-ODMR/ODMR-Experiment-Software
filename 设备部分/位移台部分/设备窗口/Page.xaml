@@ -13,6 +13,7 @@
         <RowDefinition Height="*"/>
         <RowDefinition Height="*"/>
         <RowDefinition Height="*"/>
+        <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
@@ -25,7 +26,8 @@
     <Label Content="样品位移台" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     <Label Content="微波丝位移台" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     <Label Content="镜头位移台" Grid.Row="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-    <Grid Grid.RowSpan="5">
+    <Label Content="AFM扫描台" Grid.Row="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+    <Grid Grid.RowSpan="6">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="40"/>
@@ -41,6 +43,7 @@
                         <control:DecoratedButton Text="设置为磁铁位移台" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                         <control:DecoratedButton Text="设置为微波器件位移台" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                         <control:DecoratedButton Text="设置为镜头位移台" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                        <control:DecoratedButton Text="设置为扫描台" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                     </control:ContextMenu.Items>
                 </control:ContextMenu>
             </control:ListViewer.ItemContextMenu>
@@ -180,6 +183,30 @@
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
     </control:ListViewer>
+    <control:ListViewer Name="ScannerMoverList" HeaderHeight="30" ItemHeight="30" Grid.Column="2" Grid.RowSpan="1" Grid.Row="5" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+        <control:ListViewer.ItemContextMenu>
+            <control:ContextMenu>
+                <control:ContextMenu.Items>
+                    <control:DecoratedButton Text="关闭设备" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                    <control:DecoratedButton Text="参数设置" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                    <control:DecoratedButton Text="设置为空位移台" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                </control:ContextMenu.Items>
+            </control:ContextMenu>
+        </control:ListViewer.ItemContextMenu>
+        <control:ListViewer.DataTemplate>
+            <control:ViewerTemplate Descriptions="控制器名称" DataDisplayWidth="2*" DataType="String" Editable="False"/>
+            <control:ViewerTemplate Descriptions="轴名称" DataDisplayWidth="*" DataType="String" Editable="False"/>
+        </control:ListViewer.DataTemplate>
+        <control:ListViewer.HeaderLabelTemplate>
+            <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
+        </control:ListViewer.HeaderLabelTemplate>
+        <control:ListViewer.UnEditableTextTemplate>
+            <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
+        </control:ListViewer.UnEditableTextTemplate>
+        <control:ListViewer.EditableBooleanTemplate>
+            <control:Chooser Width="40" Height="20"/>
+        </control:ListViewer.EditableBooleanTemplate>
+    </control:ListViewer>
     <Grid Grid.Row="0" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -209,6 +236,12 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <control:DecoratedButton Name="LenLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+    </Grid>
+    <Grid Grid.Row="5" Grid.Column="3">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <control:DecoratedButton Name="ScannerLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <control:FontChangeText Name="TextTemplate" Width="100" Height="40" Visibility="Collapsed" BorderThickness="0">
         <control:FontChangeText.InnerTextBox>

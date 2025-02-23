@@ -21,9 +21,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         public override void AfterExpEvent()
         {
             AfterExpEventWithAFM();
+            SetExpState("正在撤针...");
             //撤针
             AFMStopDrop drop = new AFMStopDrop();
             drop.CoreMethod(new List<object>(), GetLockIn());
+            SetExpState("");
         }
 
         /// <summary>
@@ -33,6 +35,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEvent()
         {
+            SetExpState("正在下针...");
             //下针
             AFMDrop drop = new AFMDrop();
             var result = drop.CoreMethod(new List<object>(), GetLockIn());

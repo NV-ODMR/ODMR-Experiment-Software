@@ -102,7 +102,6 @@ namespace ODMR_Lab.设备部分
                 CloseDeviceEvent?.Invoke();
                 FileObject obj = new FileObject();
                 obj = dev.GenerateParamsFile();
-                dev.Dispose();
                 CloseFileAction(obj);
                 obj.Descriptions.Add("FileType", "DeviceParamsFile");
                 obj.Descriptions.Add("PortType", Enum.GetName(dev.PortType.GetType(), dev.PortType));
@@ -139,6 +138,7 @@ namespace ODMR_Lab.设备部分
 
                 string path = Path.Combine(Path.Combine(Environment.CurrentDirectory, "DevParamDir", rBuilder.ToString().Trim()));
                 obj.SaveToFile(path);
+                dev.Dispose();
                 IsSucceedClosed = true;
                 return path + ".userdat";
             }

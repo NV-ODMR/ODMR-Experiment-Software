@@ -85,6 +85,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             MagnetMoverList.ClearItems();
             LenMoverList.ClearItems();
             DeviceList.ClearItems();
+            ScannerMoverList.ClearItems();
 
             foreach (var item in MoverList)
             {
@@ -109,6 +110,10 @@ namespace ODMR_Lab.设备部分.位移台部分
                     if (stage.PartType == PartTypes.Len)
                     {
                         LenMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                    }
+                    if (stage.PartType == PartTypes.Scanner)
+                    {
+                        ScannerMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
                     }
                     if (stage.PartType == PartTypes.None)
                     {
@@ -144,6 +149,10 @@ namespace ODMR_Lab.设备部分.位移台部分
                 if (btn.Name == "LenLabelBtn")
                 {
                     window = new MoverTestWindow(PartTypes.Len, "镜头位移台设置窗口");
+                }
+                if (btn.Name == "ScannerLabelBtn")
+                {
+                    window = new MoverTestWindow(PartTypes.Scanner, "扫描台设置窗口");
                 }
                 window?.ShowDialog();
             }
@@ -220,6 +229,13 @@ namespace ODMR_Lab.设备部分.位移台部分
             if (arg1 == 6)
             {
                 (arg3 as NanoStageInfo).PartType = PartTypes.Len;
+                RefreshPanels();
+            }
+            #endregion
+            #region 设置为扫描台
+            if (arg1 == 7)
+            {
+                (arg3 as NanoStageInfo).PartType = PartTypes.Scanner;
                 RefreshPanels();
             }
             #endregion

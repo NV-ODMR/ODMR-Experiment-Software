@@ -48,24 +48,28 @@ namespace ODMR_Lab.设备部分
         /// </summary>
         磁铁位移台 = 8,
         /// <summary>
+        /// 位移台
+        /// </summary>
+        AFM扫描台 = 9,
+        /// <summary>
         /// 温控
         /// </summary>
-        温控 = 9,
+        温控 = 10,
         /// <summary>
         /// 射频源
         /// </summary>
-        射频源 = 10,
+        射频源 = 11,
         /// <summary>
         /// 锁相放大器
         /// </summary>
-        锁相放大器 = 11,
+        锁相放大器 = 12,
         /// <summary>
         /// 光子计数器
         /// </summary>
-        光子计数器 = 12,
+        光子计数器 = 13,
         /// <summary>
         /// PulseBlaster
         /// </summary>
-        PulseBlaster = 13
+        PulseBlaster = 14
     }
 }

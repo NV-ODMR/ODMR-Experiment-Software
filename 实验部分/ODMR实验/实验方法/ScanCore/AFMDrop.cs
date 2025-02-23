@@ -46,24 +46,21 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             //开始下针
             lockin.Device.PIDOutput = true;
             double pidout1 = lockin.Device.PIDValue;
-            Thread.Sleep(20);
+            Thread.Sleep(500);
             double pidout2 = lockin.Device.PIDValue;
             //如果达到上限或者PID输出出现下降(下到针)则结束下针
             while (pidout2 < lockin.Device.PIDOutputUpperLimit && pidout2 > pidout1)
             {
                 pidout1 = lockin.Device.PIDValue;
-                Thread.Sleep(20);
+                Thread.Sleep(500);
                 pidout2 = lockin.Device.PIDValue;
                 Thread.Sleep(50);
             }
-            //没有下到则先撤针
-            if (pidout2 == lockin.Device.PIDOutputUpperLimit)
+            Thread.Sleep(500);
+            pidout2 = lockin.Device.PIDValue;
+            //没有下到返回False
+            if (Math.Abs(pidout2 - lockin.Device.PIDOutputUpperLimit) < 0.005)
             {
-                lockin.Device.SetPoint += 0.1;
-                while (Math.Abs(lockin.Device.PIDValue) > 1e-9)
-                {
-                    Thread.Sleep(50);
-                }
                 return new List<object>() { false };
             }
             return new List<object>() { true };

@@ -188,8 +188,8 @@ namespace ODMR_Lab.ODMR实验
                     fob.D1ChartDatas = D1ChartDatas;
                     fob.D2ChartDatas = D2ChartDatas;
                     fob.WriteToFile(root, ODMRExperimentName + date + ".userdat");
-                    SetExpState("实验完成,文件已保存:");
-                    savedFileName = Path.Combine(root, ODMRExperimentName + date);
+                    SetExpState("实验完成,文件已保存.  " + GetExpState());
+                    SavedFileName = Path.Combine(ODMRExperimentGroupName, ODMRExperimentName + date);
                 }
                 catch (Exception)
                 {
@@ -197,7 +197,7 @@ namespace ODMR_Lab.ODMR实验
             }
             else
             {
-                SetExpState("实验完成,文件未保存");
+                SetExpState("实验完成,文件未保存.  " + GetExpState());
             }
         }
 

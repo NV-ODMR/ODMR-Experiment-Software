@@ -3,7 +3,7 @@ using HardWares;
 using HardWares.APD;
 using HardWares.APD.Exclitas_SPCM_AQRH;
 using HardWares.板卡;
-using HardWares.板卡.DAQmxChannel;
+using HardWares.板卡.DAQmxCounterSignalChannel;
 using HardWares.相机_CCD_;
 using ODMR_Lab.设备部分.板卡;
 using System;
@@ -42,7 +42,7 @@ namespace ODMR_Lab.设备部分.光子探测器
             var result = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster).Select(x => x as PulseBlasterInfo);
             foreach (var item in result)
             {
-                if (item.Device is HardWares.板卡.DAQmxChannel.PulseBlaster)
+                if (item.Device is HardWares.板卡.DAQmxCounterSignalChannel.PulseBlaster)
                 {
                     return item;
                 }
@@ -59,7 +59,7 @@ namespace ODMR_Lab.设备部分.光子探测器
             var result = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster).Select(x => x as PulseBlasterInfo);
             foreach (var item in result)
             {
-                if (!(item.Device is HardWares.板卡.DAQmxChannel.PulseBlaster))
+                if (!(item.Device is HardWares.板卡.DAQmxCounterSignalChannel.PulseBlaster))
                 {
                     return item;
                 }

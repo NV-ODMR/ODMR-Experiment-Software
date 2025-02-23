@@ -128,7 +128,7 @@ namespace ODMR_Lab.设备部分
             DeviceTypes origitype = type;
             foreach (var item in DevInfos)
             {
-                if (type == DeviceTypes.微波位移台 || type == DeviceTypes.探针位移台 || type == DeviceTypes.样品位移台 || type == DeviceTypes.磁铁位移台 || type == DeviceTypes.镜头位移台)
+                if (type == DeviceTypes.微波位移台 || type == DeviceTypes.探针位移台 || type == DeviceTypes.样品位移台 || type == DeviceTypes.磁铁位移台 || type == DeviceTypes.镜头位移台 || type == DeviceTypes.AFM扫描台)
                     type = DeviceTypes.位移台;
                 if (item.deviceType == type)
                 {
@@ -144,6 +144,8 @@ namespace ODMR_Lab.设备部分
                         part = PartTypes.Magnnet;
                     if (origitype == DeviceTypes.镜头位移台)
                         part = PartTypes.Len;
+                    if (origitype == DeviceTypes.AFM扫描台)
+                        part = PartTypes.Scanner;
                     if (part != PartTypes.None)
                     {
                         List<InfoBase> stageinfos = new List<InfoBase>();

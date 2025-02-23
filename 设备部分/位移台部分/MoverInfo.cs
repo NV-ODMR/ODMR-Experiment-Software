@@ -152,5 +152,9 @@ namespace ODMR_Lab.设备部分.位移台部分
         /// 镜头部分
         /// </summary>
         Len = 4,
+        /// <summary>
+        /// AFM扫描台
+        /// </summary>
+        Scanner = 5,
     }
 }

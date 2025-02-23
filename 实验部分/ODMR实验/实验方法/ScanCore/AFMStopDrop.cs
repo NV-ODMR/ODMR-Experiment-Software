@@ -37,7 +37,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             lockin.Device.SetPoint += 0.1;
             while (Math.Abs(lockin.Device.PIDValue) > 1e-9)
             {
-                Thread.Sleep(50);
+                Thread.Sleep(500);
             }
             //关闭PID输出
             lockin.Device.PIDOutput = false;

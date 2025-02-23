@@ -425,6 +425,15 @@ namespace ODMR_Lab
         }
 
         /// <summary>
+        /// 设置当前线程状态
+        /// </summary>
+        /// <param name="state"></param>
+        public string GetExpState()
+        {
+            return CurrentexpState;
+        }
+
+        /// <summary>
         /// 设置进度(0-100)
         /// </summary>
         public void SetProgress(double value)
@@ -534,6 +543,14 @@ namespace ODMR_Lab
             if (ele == null) return;
             else
             {
+                if (ele is DecoratedButton)
+                {
+                    if (state) (ele as DecoratedButton).KeepPressed = false;
+                    else
+                    {
+                        (ele as DecoratedButton).KeepPressed = true;
+                    }
+                }
                 ele.IsEnabled = state;
             }
         }

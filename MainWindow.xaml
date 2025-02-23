@@ -66,6 +66,6 @@
         <Grid Name="PageContent" Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="4">
         </Grid>
         <control:DecoratedButton Grid.Column="3" IconMargin="7" Width="80" Margin="5" Text="自动连接" HorizontalAlignment="Right" TextAreaRatio="1" Grid.Row="1" Grid.ColumnSpan="3" Click="AutoConnect" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
-        <control:DecoratedButton Name="DisplayInWindowBtn" Visibility="Hidden" Grid.Column="2" Grid.ColumnSpan="2" IconMargin="7" Margin="5" Text="在独立窗口中显示" HorizontalAlignment="Stretch" TextAreaRatio="1" Grid.Row="1" Click="ShowInWindow" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
+        <control:DecoratedButton Name="DisplayInWindowBtn" Visibility="Visible" Grid.Column="2" Grid.ColumnSpan="2" IconMargin="7" Margin="5" Text="在独立窗口中显示" HorizontalAlignment="Stretch" TextAreaRatio="1" Grid.Row="1" Click="ShowInWindow" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>
