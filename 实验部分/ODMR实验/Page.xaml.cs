@@ -11,6 +11,11 @@ using ODMR_Lab.设备部分;
 using ODMR_Lab.实验类;
 using System.Windows.Forms;
 using ODMR_Lab.实验部分.ODMR实验.参数;
+using ODMR_Lab.实验部分.ODMR实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描;
 
 namespace ODMR_Lab.ODMR实验
 {
@@ -44,23 +49,44 @@ namespace ODMR_Lab.ODMR实验
         public DisplayPage()
         {
             InitializeComponent();
-            //查找所有序列实验
+            //查找所有实验
             var SequenceTypes = CodeHelper.ClassHelper.GetSubClassTypes(typeof(ODMRExpObject));
+            List<ODMRExpObject> noafms = new List<ODMRExpObject>();
+            //查找无AFM实验类型
             foreach (var item in SequenceTypes)
             {
-                ODMRExpObject exp = null;
-                if (item.FullName == typeof(SequenceFileExpObject).FullName) continue;
-                if (item.GenericTypeArguments.Length != 0)
+                if (item.BaseType.FullName == typeof(ODMRExperimentWithoutAFM).FullName ||
+                    item.BaseType.BaseType.FullName == typeof(ODMRExperimentWithoutAFM).FullName)
                 {
-                    exp = Activator.CreateInstance(item.MakeGenericType(item.GenericTypeArguments)) as ODMRExpObject;
+                    ODMRExpObject exp = Activator.CreateInstance(item) as ODMRExpObject;
+                    exp.ParentPage = this;
+                    noafms.Add(exp);
                 }
-                else
-                {
-                    exp = Activator.CreateInstance(item) as ODMRExpObject;
-                }
-                exp.ParentPage = this;
-                ExpObjects.Add(exp);
             }
+            ExpObjects.AddRange(noafms);
+            //设置所有AFM点实验类型
+            foreach (var item in noafms)
+            {
+                AFMScan2DExp afm2d = new AFMScan2DExp() { ODMRExperimentName = item.ODMRExperimentName };
+                afm2d.SubExperiments.Add(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                ExpObjects.Add(afm2d);
+                AFMScan0DExp afm0d = new AFMScan0DExp() { ODMRExperimentName = item.ODMRExperimentName };
+                afm0d.SubExperiments.Add(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                ExpObjects.Add(afm0d);
+                AFMScan1DExp afm1d = new AFMScan1DExp() { ODMRExperimentName = item.ODMRExperimentName };
+                afm1d.SubExperiments.Add(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                ExpObjects.Add(afm1d);
+            }
+        }
+
+        public List<KeyValuePair<FrameworkElement, RunningBehaviours>> GetControlsStates()
+        {
+            List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlsStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InputPanel, RunningBehaviours.DisableWhenRunning));
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(DevicePanel, RunningBehaviours.DisableWhenRunning));
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunning));
+            return ControlsStates;
         }
 
         /// <summary>
@@ -117,13 +143,9 @@ namespace ODMR_Lab.ODMR实验
                 Chart2D.DataSelected = CurrentExpObject.SetCurrentData2DInfo;
                 CurrentExpObject.SelectDataDisplay();
 
-                List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlsStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
-                ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InputPanel, RunningBehaviours.DisableWhenRunning));
-                ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(DevicePanel, RunningBehaviours.DisableWhenRunning));
-                ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
-                ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunning));
+                var ControlStates = GetControlsStates();
 
-                CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlsStates);
+                CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlStates);
 
                 //刷新图表
 
@@ -134,21 +156,22 @@ namespace ODMR_Lab.ODMR实验
                 OutputPanel.Children.Clear();
                 DevicePanel.Children.Clear();
 
+                ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, false, false, false);
                 foreach (var item in CurrentExpObject.InputParams)
                 {
-                    Grid g = GenerateControlBar(item, true);
+                    Grid g = win.GenerateControlBar(item, this, true);
                     InputPanel.Children.Add(g);
                     item.LoadToPage(new FrameworkElement[] { this }, false);
                 }
                 foreach (var item in CurrentExpObject.OutputParams)
                 {
-                    Grid g = GenerateControlBar(item, false);
+                    Grid g = win.GenerateControlBar(item, this, false);
                     OutputPanel.Children.Add(g);
                     item.LoadToPage(new FrameworkElement[] { this }, false);
                 }
                 foreach (var item in CurrentExpObject.DeviceList)
                 {
-                    Grid g = GenerateDeviceBar(item.Key, item.Value);
+                    Grid g = win.GenerateDeviceBar(item.Key, item.Value, this);
                     DevicePanel.Children.Add(g);
                     item.Value.LoadToPage(new FrameworkElement[] { this }, false);
                 }
@@ -159,125 +182,6 @@ namespace ODMR_Lab.ODMR实验
             {
                 return;
             }
-        }
-
-        private Grid GenerateControlBar(ParamB param, bool IsInput)
-        {
-            Grid g = new Grid();
-            g.Margin = new Thickness(5);
-
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-
-            g.Height = 35;
-
-            TextBlock tb = new TextBlock() { Text = param.Description, ToolTip = param.Description };
-            tb.Margin = new Thickness(5);
-            UIUpdater.CloneStyle(TextBlockTemplate, tb);
-            g.Children.Add(tb);
-            Grid.SetColumn(tb, 0);
-
-            FrameworkElement ui = null;
-
-            if (param.ValueType.Name == typeof(bool).Name)
-            {
-                ui = new Chooser();
-                ui.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-                ui.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-                ui.Height = 15;
-                ui.Width = 30;
-                if (!IsInput)
-                    ui.IsEnabled = false;
-            }
-            if (param.ValueType.Name == typeof(int).Name || param.ValueType.Name == typeof(double).Name
-                || param.ValueType.Name == typeof(float).Name || param.ValueType.Name == typeof(string).Name)
-            {
-                TextBox t = new TextBox();
-                UIUpdater.CloneStyle(TextBoxTemplate, t);
-                ui = t;
-                if (!IsInput)
-                    t.IsReadOnly = true;
-            }
-            if (typeof(Enum).IsAssignableFrom(param.ValueType))
-            {
-                ComboBox c = new ComboBox() { DefaultSelectIndex = 0 };
-                c.TemplateButton = ComboBoxTemplate;
-                ComboBoxTemplate.CloneStyleTo(c);
-                c.TextAreaRatio = ComboBoxTemplate.TextAreaRatio;
-                c.IconSource = ComboBoxTemplate.IconSource;
-                c.IconStretch = ComboBoxTemplate.IconStretch;
-                c.ImagePlace = ComboBoxTemplate.ImagePlace;
-
-                c.Margin = new Thickness(5);
-                foreach (var item in Enum.GetNames(param.ValueType))
-                {
-                    DecoratedButton b = new DecoratedButton() { Text = item };
-                    c.Items.Add(b);
-                }
-                if (!IsInput)
-                    c.IsEnabled = false;
-                ui = c;
-            }
-            if (ui != null)
-            {
-                g.Children.Add(ui);
-                Grid.SetColumn(ui, 1);
-                if (IsInput)
-                    InputPanel.RegisterName(param.PropertyName, ui);
-                else
-                    OutputPanel.RegisterName(param.PropertyName, ui);
-            }
-            return g;
-        }
-
-        private Grid GenerateDeviceBar(DeviceTypes type, Param<string> param)
-        {
-            Grid g = new Grid();
-            g.Margin = new Thickness(5);
-
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-
-            g.Height = 35;
-
-            TextBlock tb = new TextBlock() { Text = param.Description, ToolTip = param.Description };
-            tb.Margin = new Thickness(5);
-            UIUpdater.CloneStyle(TextBlockTemplate, tb);
-            g.Children.Add(tb);
-            Grid.SetColumn(tb, 0);
-
-            ComboBox box = new ComboBox() { DefaultSelectIndex = 0 };
-            box.TemplateButton = ComboBoxTemplate;
-            ComboBoxTemplate.CloneStyleTo(box);
-            box.TextAreaRatio = ComboBoxTemplate.TextAreaRatio;
-            box.IconSource = ComboBoxTemplate.IconSource;
-            box.IconStretch = ComboBoxTemplate.IconStretch;
-            box.ImagePlace = ComboBoxTemplate.ImagePlace;
-
-            box.Items.Clear();
-            var devs = DeviceDispatcher.GetDevice(type);
-            foreach (var item in devs)
-            {
-                DecoratedButton btn = new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item };
-                box.Items.Add(btn);
-            }
-            box.Select(param.Value);
-
-            box.Click += ((sender, e) =>
-            {
-                box.Items.Clear();
-                devs = DeviceDispatcher.GetDevice(type);
-                foreach (var item in devs)
-                {
-                    DecoratedButton btn = new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item };
-                    box.Items.Add(btn);
-                }
-                box.Select(param.Value);
-            });
-            DevicePanel.RegisterName(param.PropertyName, box);
-            g.Children.Add(box);
-            Grid.SetColumn(box, 1);
-            return g;
         }
 
         public override void InnerInit()
@@ -364,6 +268,36 @@ namespace ODMR_Lab.ODMR实验
             var expobj = win.ShowDialog();
             if (expobj != null)
                 SelectExp(ExpObjects.IndexOf(expobj));
+        }
+
+        /// <summary>
+        /// 输入
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowOutput(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 设备
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowDevice(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 输出
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowInput(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

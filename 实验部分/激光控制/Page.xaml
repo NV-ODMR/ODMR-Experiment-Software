@@ -7,86 +7,49 @@
                        mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.ColumnSpan="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <control:DecoratedButton Margin="3" Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="1" Click="OpenSequence" Text="打开已有序列" FontSize="10" TextAreaRatio="1" IconMargin="4" ToolTip="打开已有序列" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-            <control:DecoratedButton Margin="3" Grid.Column="1" Click="NewSequence" Grid.Row="5" Grid.ColumnSpan="1" Text="新建序列" FontSize="10"  TextAreaRatio="1" IconMargin="4" ToolTip="新建序列" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-            <control:DecoratedButton Margin="3" Grid.Column="3"  Click="SaveSequence" Grid.Row="6" Grid.ColumnSpan="1" Text="保存序列" FontSize="10"  TextAreaRatio="1" IconMargin="4" ToolTip="保存序列" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-            <Label Grid.Column="4" Content="序列名称:" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
-            <Label Name="SequenceFileName" Grid.Column="5" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
-        </Grid>
-        <Grid Name="SequencePanel" Visibility="Visible" Grid.Row="1">
+        <Grid Grid.Column="1" Grid.RowSpan="2">
             <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Row="0" Grid.ColumnSpan="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="40"/>
-                </Grid.ColumnDefinitions>
-            </Grid>
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="40"/>
-                </Grid.RowDefinitions>
-                <control:DecoratedButton Margin="7" Click="NewChannel" Grid.Row="1" Text="新建通道" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-            </Grid>
-            <Grid Grid.Row="2" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="40"/>
-                </Grid.RowDefinitions>
-                <control:DecoratedButton Margin="7" Click="NewPeak" Grid.Row="1" Text="新建波形" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-            </Grid>
-            <Grid Grid.Row="2" Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Label Foreground="White" Grid.Row="0" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="序列名称"/>
-                <TextBox x:Name="SequenceName" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="seq"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
-                <Label Foreground="White" Grid.Row="4" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="总循环次数"/>
-                <TextBox x:Name="LoopStep"  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="1"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
-                <Label Foreground="White" Grid.Row="2" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="当前循环序号"/>
-                <TextBox x:Name="CurrentLoopIndex" KeyDown="CurrentLoopIndex_KeyDown" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
-            </Grid>
+            <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Grid.Column="0" Content="测量源"/>
+            <control:ComboBox Name="APDDevice" FontSize="11" Height="30" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" Background="#FF2E2E2E" Margin="5" ImagePlace="Right" Click="UpdateDeviceList" IconMargin="7" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="#FF4D4D4D" PressedForeground="White" PressedColor="#FF2E2E2E"/>
+            <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Grid.Column="0" Grid.Row="1" Content="最大储存点数"/>
+            <TextBox x:Name="MaxSavePoint" Grid.Column="1" FontSize="12" Grid.Row="1" Margin="5" Text="100000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+            <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Grid.Column="2" Grid.Row="1" Content="最大显示点数"/>
+            <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Grid.Row="1" Grid.Column="4" Content="采样频率(Hz):"/>
+            <TextBox x:Name="MaxDisplayPoint" Grid.Column="3" FontSize="12" Grid.Row="1" Margin="5" Text="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+            <TextBox x:Name="SampleFreq" Grid.Column="5" Grid.Row="1" Margin="5" Text="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+            <charts:ChartControl Name="Chart" Grid.Row="2" Grid.ColumnSpan="7" Grid.Column="0" SnapsToDevicePixels="True" HorizontalAlignment="Stretch" Title="计数曲线" XAxisName="序号" TitleFontsize="20" AxisFontsize="13" YAxisName="计数率(cps)" VerticalAlignment="Stretch" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" Zoom="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
+            <control:DecoratedButton Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" ToolTip="复制图片到剪切板" IconMargin="7" Margin="8" TextAreaRatio="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Snap" Text="开始测量" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/snap.png"/>
+            <control:DecoratedButton Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="3" ToolTip="保存数据" IconMargin="7" Margin="8" TextAreaRatio="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="SaveFile" Text="停止测量" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
+            <control:DecoratedButton Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="1" Margin="5,5,5,5" Click="Apply" Text="应用" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+            <control:DecoratedButton Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2" Margin="5,5,5,5" Click="ClearData" Text="清除数据" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
         </Grid>
-        <Grid Name="TipPanel" Visibility="Hidden" Grid.Row="1">
-            <Label HorizontalAlignment="Center" VerticalAlignment="Center" Content="新建或打开序列" Foreground="White" FontSize="25"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <control:DecoratedButton Name="BeginTraceBtn" CornerRadius="10" TextAreaRatio="0.7" Grid.Row="0" Height="50" Grid.Column="5" Grid.ColumnSpan="1" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="StartAPDSample" Text="Trace" FontWeight="Bold" FontSize="18" IconMargin="8" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
+            <control:DecoratedButton Name="EndTraceBtn" CornerRadius="10" TextAreaRatio="0.7" IsEnabled="False" Height="50" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="1" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="EndAPDSample" Text="停止Trace" FontWeight="Bold" FontSize="18" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png"/>
+            <TextBlock FontWeight="Bold" Name="CountRate" Text="0" FontSize="35" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="LightGreen"/>
         </Grid>
     </Grid>
 </odmr_lab:ExpPageBase>

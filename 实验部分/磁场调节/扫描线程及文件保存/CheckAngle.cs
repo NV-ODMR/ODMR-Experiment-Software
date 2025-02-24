@@ -45,10 +45,10 @@ namespace ODMR_Lab.实验部分.磁场调节
             #endregion
 
             #region 移动并测量第二个点
-            ScanHelper.Move(XStage, JudgeThreadEndOrResume, Config.XRangeLo.Value, Config.XRangeHi.Value, x2, 10000);
-            ScanHelper.Move(YStage, JudgeThreadEndOrResume, Config.YRangeLo.Value, Config.YRangeHi.Value, y2, 10000);
-            ScanHelper.Move(ZStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, z2, 10000);
-            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, a2, 10000);
+            ScanHelper.Move(XStage, JudgeThreadEndOrResumeAction, Config.XRangeLo.Value, Config.XRangeHi.Value, x2, 10000);
+            ScanHelper.Move(YStage, JudgeThreadEndOrResumeAction, Config.YRangeLo.Value, Config.YRangeHi.Value, y2, 10000);
+            ScanHelper.Move(ZStage, JudgeThreadEndOrResumeAction, Config.ZRangeLo.Value, Config.ZRangeHi.Value, z2, 10000);
+            ScanHelper.Move(AStage, JudgeThreadEndOrResumeAction, -150, 150, a2, 10000);
             //测量
             LabviewConverter.AutoTrace(out e);
             MagnetAutoScanHelper.TotalCWPeaks2OrException(out peaks, out freqs1, out contracts1, out freqs2, out contracts2);

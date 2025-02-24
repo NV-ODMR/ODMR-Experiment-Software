@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
+using ODMR_Lab.实验类;
 using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -10,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -120,6 +122,45 @@ namespace ODMR_Lab.ODMR实验
 
         public override ExpParamBase Param { get; set; } = null;
 
+        /// <summary>
+        /// 初始化并且刷新参数
+        /// </summary>
+        public ODMRExpObject()
+        {
+            foreach (var item in InputParams)
+            {
+                item.PropertyName = "Input_" + item.PropertyName;
+            }
+            foreach (var item in OutputParams)
+            {
+                item.PropertyName = "Output_" + item.PropertyName;
+            }
+            foreach (var item in DeviceList)
+            {
+                item.Value.PropertyName = "Device_" + item.Value.PropertyName;
+            }
+
+            //添加子实验参数
+            foreach (var item in SubExperiments)
+            {
+                foreach (var p in item.InputParams)
+                {
+                    p.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.PropertyName;
+                }
+                foreach (var p in item.OutputParams)
+                {
+                    p.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.PropertyName;
+                }
+                foreach (var p in item.DeviceList)
+                {
+                    p.Value.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.Value.PropertyName;
+                }
+                InputParams.AddRange(item.InputParams);
+                OutputParams.AddRange(item.OutputParams);
+                DeviceList.AddRange(item.DeviceList);
+            }
+        }
+
         public override ConfigBase ReadConfig()
         {
             foreach (var item in InputParams)
@@ -163,6 +204,8 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         public abstract void AfterExpEvent();
 
+        private Exception expRunningException = null;
+        public Exception ExpRunningException { get { return expRunningException; } }
 
         public void SaveFile()
         {
@@ -294,6 +337,15 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         /// <param name="Datas"></param>
         public void Show1DChartData(string groupname, string xname, params string[] ynames)
+        {
+            Show1DChartData(groupname, xname, ynames.ToList());
+        }
+
+        /// <summary>
+        /// 显示一维图表数据
+        /// </summary>
+        /// <param name="Datas"></param>
+        public void Show1DChartData(string groupname, string xname, List<string> ynames)
         {
             App.Current.Dispatcher.Invoke(() =>
             {
@@ -462,6 +514,65 @@ namespace ODMR_Lab.ODMR实验
                 ParentPage.Chart1D.UpdateChartAndDataFlow(true);
                 ParentPage.Chart2D.UpdateChartAndDataFlow();
             });
+        }
+
+        /// <summary>
+        /// 运行子实验（阻塞）,子实验运行失败则报错,返回执行的子实验
+        /// </summary>
+        public ODMRExpObject RunSubExperimentBlock(int index, bool ShowWindow = false)
+        {
+            if (index < 0 || index > SubExperiments.Count - 1) throw new Exception("没有找到子实验");
+            ODMRExpObject subExp = SubExperiments[index];
+
+            //设置子实验参数值
+            var inputs = InputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            foreach (var item in inputs)
+            {
+                var par = subExp.InputParams.Where(x => x.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
+                if (par.Count() != 0)
+                {
+                    ParamB.SetUnknownParamValue(par.ElementAt(0), item.RawValue);
+                }
+            }
+
+            //设置子实验设备
+            var devs = DeviceList.Where((x) => x.Value.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            foreach (var item in inputs)
+            {
+                var par = subExp.DeviceList.Where(x => x.Value.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
+                if (par.Count() != 0)
+                {
+                    ParamB.SetUnknownParamValue(par.ElementAt(0).Value, item.RawValue);
+                }
+            }
+
+            DisConnectOuterControl();
+
+            subExp.JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
+            subExp.IsSubExperiment = true;
+            subExp.Start();
+            //设置状态
+            subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, null, null, new List<KeyValuePair<FrameworkElement, RunningBehaviours>>());
+
+            while (!subExp.IsExpEnd) { Thread.Sleep(50); }
+
+            //设置输出参数
+            var outputs = OutputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            foreach (var item in outputs)
+            {
+                var par = subExp.OutputParams.Where(x => x.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
+                if (par.Count() != 0)
+                {
+                    SetOutputParamByName(item.PropertyName, par.ElementAt(0).RawValue);
+                }
+            }
+
+            var controlsStates = SubExperiments[index].ParentPage.GetControlsStates();
+            ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, ParentPage.StartTime, ParentPage.EndTime, ParentPage.ProgressTitle, ParentPage.Progress, controlsStates);
+
+            if (subExp.ExpFailedException != null) throw subExp.ExpFailedException;
+
+            return subExp;
         }
     }
 }

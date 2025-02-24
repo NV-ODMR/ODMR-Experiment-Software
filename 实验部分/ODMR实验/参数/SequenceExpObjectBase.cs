@@ -2,6 +2,7 @@
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
@@ -35,6 +36,16 @@ namespace ODMR_Lab.ODMR实验
         /// 设备列表(设备类型，界面参数)
         /// </summary>
         public abstract List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; }
+
+        /// <summary>
+        /// 子实验列表
+        /// </summary>
+        public abstract List<ODMRExpObject> SubExperiments { get; set; }
+
+        /// <summary>
+        /// 交互按钮列表
+        /// </summary>
+        public abstract List<KeyValuePair<string, Action>> InterativeButtons { get; set; }
 
         public override ConfigBase Config { get; set; } = null;
 

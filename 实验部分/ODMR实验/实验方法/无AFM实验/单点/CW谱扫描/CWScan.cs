@@ -6,6 +6,7 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -21,13 +22,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 {
     public class CW : Scan1DExpBase<RFSourceInfo>
     {
-        public override string ODMRExperimentName { get; set; } = "连续波谱(CW)";
+        public override string ODMRExperimentName { get; set; } = "连续波全谱(CW)";
 
-        public override string ODMRExperimentGroupName { get; set; } = "实空间线实验(无AFM)";
+        public override string ODMRExperimentGroupName { get; set; } = "实空间点实验(无AFM)";
 
         public override List<ParamB> InputParams
         { get; set; } = new List<ParamB>()
@@ -53,6 +54,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
+        public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>();
 
         public override string CreateThreadState(RFSourceInfo dev, double currentvalue)
         {

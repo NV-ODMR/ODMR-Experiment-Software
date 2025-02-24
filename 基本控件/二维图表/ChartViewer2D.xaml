@@ -25,7 +25,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <scroll:ComboBox Name="ChartGroups" DefaultSelectIndex="0" SelectionChanged="ChangeGroup" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
+            <scroll:ComboBox Name="ChartGroups" DefaultSelectIndex="0" MaxPanelHeight="700" FontSize="11" SelectionChanged="ChangeGroup" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
             </scroll:ComboBox>
             <scroll:ListViewer Grid.Row="1" Name="DataSet" Grid.RowSpan="2" MinItemWidth="150" ItemSelected="DataSet_ItemSelected" ItemBarSelectedColor="#FF0087E2" ItemBarBackground="#FF1A1A1A">
                 <scroll:ListViewer.DataTemplate>

@@ -147,6 +147,11 @@ namespace ODMR_Lab.IO操作
         public string Description { get; protected set; } = "";
 
         /// <summary>
+        /// 分组名
+        /// </summary>
+        public string GroupName { get; set; } = "";
+
+        /// <summary>
         /// 参数值
         /// </summary>
         public object RawValue { get; set; }
@@ -154,7 +159,7 @@ namespace ODMR_Lab.IO操作
         /// <summary>
         /// 属性名
         /// </summary>
-        public string PropertyName { get; protected set; } = "";
+        public string PropertyName { get; set; } = "";
 
         #region 从页面中读取和写入页面
         /// <summary>

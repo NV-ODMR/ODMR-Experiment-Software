@@ -50,11 +50,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头X","","LenX")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Y","","LenY")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("激光触发源","","PB")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("APD Trace 触发源","","TraceSource")),
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
+        public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>();
 
         public override string CreateThreadState(NanoStageInfo dev1, NanoStageInfo dev2, double currentvalue1, double currentvalue2)
         {
@@ -121,12 +124,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
         {
             //打开激光
             LaserOn lon = new LaserOn();
-            PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
+            PulseBlasterInfo pb = GetDeviceByName("TraceSource") as PulseBlasterInfo;
             var chind = pb.FindChannelEnumOfDescription("激光触发源");
             lon.CoreMethod(new List<object>() { 1.0, chind }, pb);
             //打开APD
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
-            apd.StartContinusSample(100);
+            apd.StartContinusSample();
             //创建数据集
             var r1 = GetScanRange1();
             var r2 = GetScanRange2();
@@ -151,6 +154,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             //关闭APD
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.EndContinusSample();
+            //关闭APD触发源
+            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
         }
     }
 }

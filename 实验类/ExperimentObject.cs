@@ -39,6 +39,12 @@ namespace ODMR_Lab
         where ParamType : ExpParamBase
         where ConfigType : ConfigBase
     {
+
+        public ExperimentObject()
+        {
+            JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
+        }
+
         /// <summary>
         /// 非法字符
         /// </summary>
@@ -558,8 +564,19 @@ namespace ODMR_Lab
         public bool IsExpEnd { get; set; } = true;
         public bool IsExpResume { get; set; } = false;
 
+        #region 子实验参数
+        /// <summary>
+        /// 是否是子实验
+        /// </summary>
+        public bool IsSubExperiment { get; set; } = false;
+
+        private Exception expFailedException = null;
+        public Exception ExpFailedException { get { return expFailedException; } }
+        #endregion
+
         private void StartEvent(object sender, RoutedEventArgs e)
         {
+            expFailedException = null;
             if (ThreadResumeFlag == true && ThreadEndFlag == false)
             {
                 ThreadResumeFlag = false;
@@ -600,11 +617,15 @@ namespace ODMR_Lab
 
                     try
                     {
-                        App.Current.Dispatcher.Invoke(() =>
+                        //如果是子实验则不占用设备
+                        if (!IsSubExperiment)
                         {
-                            Devices = GetDevices();
-                            DeviceDispatcher.UseDevices(Devices);
-                        });
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                Devices = GetDevices();
+                                DeviceDispatcher.UseDevices(Devices);
+                            });
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -637,7 +658,8 @@ namespace ODMR_Lab
                     //设值结束状态
                     SetStopState();
                     //结束占用设备
-                    DeviceDispatcher.EndUseDevices(Devices);
+                    if (!IsSubExperiment)
+                        DeviceDispatcher.EndUseDevices(Devices);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         SetEndTime(DateTime.Now);
@@ -649,17 +671,6 @@ namespace ODMR_Lab
                 }
                 catch (Exception ex)
                 {
-                    if (ex is ExpStopException)
-                    {
-                        MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
-                    }
-                    else
-                    {
-                        MessageWindow.ShowTipWindow("实验发生异常,已结束：\n" + ex.Message, MainWindow.Handle);
-                        ErrorStateEvent?.Invoke();
-                    }
-                    //设置结束状态
-                    SetStopState();
                     DeviceDispatcher.EndUseDevices(Devices);
                     App.Current.Dispatcher.Invoke(() =>
                     {
@@ -669,6 +680,23 @@ namespace ODMR_Lab
                             ExpEndTimeLabel.Content = ExpEndTime;
                         }
                     });
+                    if (ex is ExpStopException)
+                    {
+                        MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
+                    }
+                    else
+                    {
+                        ErrorStateEvent?.Invoke();
+                        //如果是子实验
+                        if (IsSubExperiment)
+                        {
+                            expFailedException = ex;
+                        }
+                        else
+                            MessageWindow.ShowTipWindow("实验发生异常,已结束：\n" + ex.Message, MainWindow.Handle);
+                    }
+                    //设置结束状态
+                    SetStopState();
                 }
             });
             ExpThread.Start();
@@ -681,6 +709,31 @@ namespace ODMR_Lab
         {
             ThreadEndFlag = true;
         }
+
+        #region 外部控制
+        /// <summary>
+        /// 开始实验
+        /// </summary>
+        public void Start()
+        {
+            StartEvent(null, new RoutedEventArgs());
+        }
+        /// <summary>
+        /// 暂停实验
+        /// </summary>
+        public void Resume()
+        {
+            ResumeEvent(null, new RoutedEventArgs());
+        }
+        /// <summary>
+        /// 停止实验
+        /// </summary>
+        public void Stop()
+        {
+            StopEvent(null, new RoutedEventArgs());
+        }
+
+        #endregion
         #endregion
 
         /// <summary>
@@ -691,11 +744,16 @@ namespace ODMR_Lab
         /// 线程暂停标签
         /// </summary>
         private bool ThreadResumeFlag { get; set; } = false;
+
+        /// <summary>
+        /// 线程状态判断函数
+        /// </summary>
+        public Action JudgeThreadEndOrResumeAction { get; set; } = null;
         /// <summary>
         /// 如果状态为等待则挂起，如果状态为结束则抛出异常
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public void JudgeThreadEndOrResume()
+        protected void JudgeThreadEndOrResume()
         {
             if (ThreadEndFlag)
             {

@@ -53,7 +53,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("APD Trace源","","TraceSource")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头X","","LenX")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Y","","LenY")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Z","","LenZ")),
@@ -63,6 +63,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>()
             ;
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        public override List<ODMRExpObject> SubExperiments { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override List<KeyValuePair<string, Action>> InterativeButtons { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         /// <summary>
         /// 是否等待拟合曲线显示
@@ -94,7 +96,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             device.Device.MoveToAndWait(locvalue, 500);
             //打开APD
             APDInfo info = GetDeviceByName("APD") as APDInfo;
-            info.StartContinusSample(10);
+            info.StartContinusSample();
             //光子采样
             double rat = (GetDeviceByName("APD") as APDInfo).GetContinusSampleRatio();
             info.EndContinusSample();
@@ -322,6 +324,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             LaserOn lon = new LaserOn();
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             lon.CoreMethod(new List<object>() { 1.0, pb.FindChannelEnumOfDescription("激光触发源") }, pb);
+            //打开APD Trace触发源
+            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.PulseFrequency = 10;
+            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.Start();
         }
 
         public override void AfterExpEvent()
@@ -330,6 +335,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             //关闭激光
             LaserOff loff = new LaserOff();
             loff.CoreMethod(new List<object>() { pb.FindChannelEnumOfDescription("激光触发源") }, pb);
+            //关闭APD Trace触发源
+            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
         }
     }
 }

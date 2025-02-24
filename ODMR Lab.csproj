@@ -70,7 +70,7 @@
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -183,6 +183,9 @@
     <Compile Include="实验类\ExperimentObject.cs" />
     <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\ExpPageBase.cs" />
+    <Compile Include="实验部分\ODMR实验\ExpParamWindow.xaml.cs">
+      <DependentUpon>ExpParamWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="实验部分\ODMR实验\ExpSelectWindow.xaml.cs">
       <DependentUpon>ExpSelectWindow.xaml</DependentUpon>
     </Compile>
@@ -190,7 +193,7 @@
     <Compile Include="实验部分\ODMR实验\参数\SequenceExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\参数\SequenceFileExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\ODMRExperimentWithAFM.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\单点\T1.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\单点\AFMScan0DExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMStopDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMDrop.cs" />
@@ -202,12 +205,10 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ODMRExperimentWithoutAFM.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Scan2DExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Confocal.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\Scan2DExpBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\Confocal.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\线扫描\CWScan.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\线扫描\Scan1DExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\AFMScan2DExp.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\线扫描\AFMScan1DExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\AutoTrace.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\CWScan.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\CW谱扫描\CWScan.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\Scan1DExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\T1.cs" />
     <Compile Include="实验部分\位移台界面\Page.xaml.cs">
@@ -259,6 +260,7 @@
     <Compile Include="实验部分\温度监测\子窗口\SaveWindow.xaml.cs">
       <DependentUpon>SaveWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\激光控制\TraceConfigParams.cs" />
     <Compile Include="实验部分\激光控制\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -309,7 +311,6 @@
     <Compile Include="设备部分\APD\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\APD\APDDevConfigParams.cs" />
     <Compile Include="设备部分\DevicePage.cs" />
     <Compile Include="设备部分\位移台部分\MoverInfo.cs" />
     <Compile Include="设备部分\位移台部分\测试窗口\MoverTestWindow.xaml.cs">
@@ -401,6 +402,10 @@
     <Page Include="基本窗口\数据拟合\CurveFitWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\ODMR实验\ExpParamWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\ODMR实验\ExpSelectWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -671,6 +676,7 @@
     <Resource Include="图片资源\sequence.png" />
     <Resource Include="图片资源\sequenceedit.png" />
     <Resource Include="图片资源\magnet.png" />
+    <Resource Include="图片资源\laser.png" />
     <Content Include="图片资源\Setup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

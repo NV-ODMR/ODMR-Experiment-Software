@@ -75,6 +75,11 @@ namespace ODMR_Lab
         /// </summary>
         public static ODMR实验.DisplayPage Exp_SequencePage = new ODMR实验.DisplayPage();
 
+        /// <summary>
+        /// Trace实验
+        /// </summary>
+        public static 激光控制.DisplayPage Exp_TracePage = new 激光控制.DisplayPage();
+
         #endregion
 
         #region 扩展页面
@@ -334,6 +339,11 @@ namespace ODMR_Lab
             {
                 CurrentPage = Exp_TemPeraPage;
                 AddPageToView(Exp_TemPeraPage);
+            }
+            if (btn.Text == "Trace")
+            {
+                CurrentPage = Exp_TracePage;
+                AddPageToView(Exp_TracePage);
             }
             if (btn.Text == "序列编辑器")
             {

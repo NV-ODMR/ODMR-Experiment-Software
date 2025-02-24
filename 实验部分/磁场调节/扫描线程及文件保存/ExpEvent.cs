@@ -24,8 +24,8 @@ namespace ODMR_Lab.实验部分.磁场调节
             // 获取偏心修正后的x,y位置
             List<double> xy = GetRealXYLoc(loc, Param.XLoc.Value, Param.YLoc.Value);
             // 设置XY
-            ScanHelper.Move(XStage, JudgeThreadEndOrResume, Config.XRangeLo.Value, Config.XRangeHi.Value, xy[0], 10000);
-            ScanHelper.Move(YStage, JudgeThreadEndOrResume, Config.YRangeLo.Value, Config.YRangeHi.Value, xy[0], 10000);
+            ScanHelper.Move(XStage, JudgeThreadEndOrResumeAction, Config.XRangeLo.Value, Config.XRangeHi.Value, xy[0], 10000);
+            ScanHelper.Move(YStage, JudgeThreadEndOrResumeAction, Config.YRangeLo.Value, Config.YRangeHi.Value, xy[0], 10000);
 
             return Experiment(stage, loc, 30, originOutput);
         }
@@ -35,15 +35,15 @@ namespace ODMR_Lab.实验部分.磁场调节
             //移动位移台
             if (stage == XStage)
             {
-                ScanHelper.Move(stage, JudgeThreadEndOrResume, Config.XRangeLo.Value, Config.XRangeHi.Value, loc, 5000);
+                ScanHelper.Move(stage, JudgeThreadEndOrResumeAction, Config.XRangeLo.Value, Config.XRangeHi.Value, loc, 5000);
             }
             if (stage == YStage)
             {
-                ScanHelper.Move(stage, JudgeThreadEndOrResume, Config.YRangeLo.Value, Config.YRangeHi.Value, loc, 5000);
+                ScanHelper.Move(stage, JudgeThreadEndOrResumeAction, Config.YRangeLo.Value, Config.YRangeHi.Value, loc, 5000);
             }
             if (stage == ZStage)
             {
-                ScanHelper.Move(stage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, loc, 5000);
+                ScanHelper.Move(stage, JudgeThreadEndOrResumeAction, Config.ZRangeLo.Value, Config.ZRangeHi.Value, loc, 5000);
             }
 
             if (stage == AStage)
@@ -59,9 +59,9 @@ namespace ODMR_Lab.实验部分.磁场调节
             if ((double)originOutput[1] == 0 && (double)originOutput[2] == 0)
             {
                 LabviewConverter.AutoTrace(out Exception e);
-                JudgeThreadEndOrResume();
+                JudgeThreadEndOrResumeAction();
                 MagnetAutoScanHelper.TotalCWPeaks2OrException(out List<double> peaks, out freqs1, out contracts1, out freqs2, out contracts2);
-                JudgeThreadEndOrResume();
+                JudgeThreadEndOrResumeAction();
 
                 originOutput[1] = Math.Min(peaks[0], peaks[1]);
                 originOutput[2] = Math.Max(peaks[0], peaks[1]);
@@ -69,9 +69,9 @@ namespace ODMR_Lab.实验部分.磁场调节
             else
             {
                 LabviewConverter.AutoTrace(out Exception exc);
-                JudgeThreadEndOrResume();
+                JudgeThreadEndOrResumeAction();
                 MagnetAutoScanHelper.ScanCW2(out double cw1, out double cw2, out freqs1, out contracts1, out freqs2, out contracts2, (double)originOutput[1], (double)originOutput[2], scanWidth);
-                JudgeThreadEndOrResume();
+                JudgeThreadEndOrResumeAction();
                 if (cw1 == 0 || cw2 == 0)
                 {
                     //未扫描到谱峰，添加提示信息

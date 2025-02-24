@@ -11,7 +11,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
     public class ConfocalAPDSample : ScanCoreBase
     {
         /// <summary>
-        /// 共聚焦单点光子采样方法：输入参数：计数采样率(整数)
+        /// 共聚焦单点光子采样方法：输入参数：无
         /// 设备:光子计数器
         /// 返回参数:光子计数率(整数)
         /// </summary>
