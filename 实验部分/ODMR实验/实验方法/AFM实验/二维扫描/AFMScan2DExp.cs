@@ -26,7 +26,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
         Scan2DSession<NanoStageInfo, NanoStageInfo> D2Session = new Scan2DSession<NanoStageInfo, NanoStageInfo>();
 
         public override string ODMRExperimentName { get; set; } = "";
-        public override string ODMRExperimentGroupName { get; set; } = "实空间面扫描（AFM）";
+        public override string ODMRExperimentGroupName { get; set; } = "AFM面扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("X扫描下限(μm)",0,"XRangeLo"),
@@ -53,9 +53,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
         };
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
         public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; }
-        public override List<ChartData1D> D1ChartDatas { get; set; }
-        public override List<FittedData1D> D1FitDatas { get; set; }
-        public override List<ChartData2D> D2ChartDatas { get; set; }
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
+        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
 
         public override void ODMRExpWithAFM()
         {

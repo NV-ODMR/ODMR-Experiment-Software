@@ -46,8 +46,8 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Label FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Content="APD Trace源" Grid.Row="0"/>
-        <control:ComboBox Name="TraceSource" Grid.Row="1" Margin="5" TextAreaRatio="0.9" IconMargin="10" IconSource="/图片资源/downArrow.png" ImagePlace="Right" Background="#FF2E2E2E"/>
+        <control:ComboBox Name="TraceSource" IsEnabled="False" Click="TraceSource_Click" Foreground="White" SelectionChanged="TraceSource_SelectionChanged" Grid.Row="1" Margin="5" TextAreaRatio="0.9" IconMargin="10" IconSource="/图片资源/downArrow.png" ImagePlace="Right" Background="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" MoveInColor="#FF686868" PressedColor="#FF3E3E42"/>
         <Label FontSize="14" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Content="APD Pulse源" Grid.Row="2"/>
-        <control:ComboBox Name="PulseSource" Grid.Row="4" Margin="5" TextAreaRatio="0.9" IconMargin="10" IconSource="/图片资源/downArrow.png" ImagePlace="Right" Background="#FF2E2E2E"/>
+        <control:ComboBox Name="PulseSource" IsEnabled="False" Click="PulseSource_Click" Foreground="White" SelectionChanged="PulseSource_SelectionChanged" Grid.Row="4" Margin="5" TextAreaRatio="0.9" IconMargin="10" IconSource="/图片资源/downArrow.png" ImagePlace="Right" Background="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" PressedColor="#FF3E3E42" MoveInColor="#FF686868"/>
     </Grid>
 </odmr_lab:DevicePageBase>

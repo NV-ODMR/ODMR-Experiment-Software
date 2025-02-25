@@ -55,6 +55,8 @@ namespace ODMR_Lab.设备部分.光子探测器
         public DevicePage()
         {
             InitializeComponent();
+            TraceSource.TemplateButton = TraceSource;
+            PulseSource.TemplateButton = PulseSource;
         }
 
         public override void InnerInit()
@@ -129,21 +131,79 @@ namespace ODMR_Lab.设备部分.光子探测器
 
         private void APDList_ItemSelected(int arg1, object arg2)
         {
-            UpdateTraceAndPulseList();
-            TraceSource.Select(TraceSource.Items.FindIndex(x => x.Tag == (APDList.GetSelectedTag() as APDInfo).TraceSource));
-            PulseSource.Select(PulseSource.Items.FindIndex(x => x.Tag == (APDList.GetSelectedTag() as APDInfo).PulseSource));
+            UpdateSourceState();
         }
 
-        private void UpdateTraceAndPulseList()
+        public void UpdateSourceState()
+        {
+            if (APDList.GetSelectedTag() == null) return;
+            UpdateTraceList();
+            UpdatePulseList();
+            TraceSource.Select((APDList.GetSelectedTag() as APDInfo).TraceSourceName);
+            PulseSource.Select((APDList.GetSelectedTag() as APDInfo).PulseSourceName);
+            if ((APDList.GetSelectedTag() as APDInfo).IsWriting)
+            {
+                TraceSource.IsEnabled = false;
+                PulseSource.IsEnabled = false;
+            }
+            else
+            {
+                TraceSource.IsEnabled = true;
+                PulseSource.IsEnabled = true;
+            }
+        }
+
+        private void UpdateTraceList()
         {
             TraceSource.Items.Clear();
-            PulseSource.Items.Clear();
             List<InfoBase> pbs = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster);
             foreach (var item in pbs)
             {
                 TraceSource.Items.Add(new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item });
-                PulseSource.Items.Add(new DecoratedButton() { Text = item.GetDeviceDescription(), Tag = item });
             }
+        }
+
+        private void UpdatePulseList()
+        {
+            PulseSource.Items.Clear();
+            List<InfoBase> pbs = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster);
+            foreach (var item in pbs)
+            {
+                PulseSource.Items.Add(new DecoratedButton() { Text = item.GetDeviceDescription() });
+            }
+        }
+
+        private void TraceSource_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateTraceList();
+        }
+
+        private void PulseSource_Click(object sender, RoutedEventArgs e)
+        {
+            UpdatePulseList();
+        }
+
+
+        private void TraceSource_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (APDList.GetSelectedTag() == null) return;
+            if (TraceSource.SelectedItem == null)
+            {
+                (APDList.GetSelectedTag() as APDInfo).TraceSourceName = "";
+                return;
+            }
+            (APDList.GetSelectedTag() as APDInfo).TraceSourceName = TraceSource.SelectedItem.Text;
+        }
+
+        private void PulseSource_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (APDList.GetSelectedTag() == null) return;
+            if (PulseSource.SelectedItem == null)
+            {
+                (APDList.GetSelectedTag() as APDInfo).PulseSourceName = "";
+                return;
+            }
+            (APDList.GetSelectedTag() as APDInfo).PulseSourceName = PulseSource.SelectedItem.Text; ;
         }
     }
 }

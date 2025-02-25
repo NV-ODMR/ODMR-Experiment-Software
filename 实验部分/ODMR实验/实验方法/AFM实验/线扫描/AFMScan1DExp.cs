@@ -28,7 +28,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描
         Scan1DSession<NanoStageInfo> D1Session = new Scan1DSession<NanoStageInfo>();
 
         public override string ODMRExperimentName { get; set; } = "";
-        public override string ODMRExperimentGroupName { get; set; } = "实空间线扫描(AFM)";
+        public override string ODMRExperimentGroupName { get; set; } = "AFM线扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("静止轴位置",0,"StaticAxisLoc"),
@@ -50,9 +50,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描
 
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
         public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; }
-        public override List<ChartData1D> D1ChartDatas { get; set; }
-        public override List<FittedData1D> D1FitDatas { get; set; }
-        public override List<ChartData2D> D2ChartDatas { get; set; }
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
+        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
 
         public override void ODMRExpWithAFM()
         {

@@ -19,7 +19,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
     public class AFMScan0DExp : ODMRExperimentWithAFM
     {
         public override string ODMRExperimentName { get; set; } = "";
-        public override string ODMRExperimentGroupName { get; set; } = "AFM空间点扫描";
+        public override string ODMRExperimentGroupName { get; set; } = "AFM点扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<bool>("显示子实验窗口",true,"ShowSubMenu"),

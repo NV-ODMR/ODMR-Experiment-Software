@@ -15,6 +15,7 @@ using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.光子探测器;
+using ODMR_Lab.设备部分.板卡;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,6 +62,7 @@ namespace ODMR_Lab.激光控制
 
         public override void UpdateParam()
         {
+            ConfigParam.ReadFromPage(new FrameworkElement[] { this }, false);
         }
 
         #region 采样部分
@@ -70,7 +72,7 @@ namespace ODMR_Lab.激光控制
         bool IsSampleEnd = false;
         APDInfo CurrentAPD = null;
 
-        TraceConfigParams ConfigParam = null;
+        TraceConfigParams ConfigParam = new TraceConfigParams();
 
         public Queue<double> APDSampleData = new Queue<double>();
         public NumricDataSeries APDDisplayData { get; set; } = new NumricDataSeries("光子计数率", new List<double>(), new List<double>()) { LineColor = Colors.LightGreen, MarkerSize = 4, LineThickness = 1 };
@@ -82,6 +84,7 @@ namespace ODMR_Lab.激光控制
             try
             {
                 CurrentAPD.BeginUse();
+                MainWindow.Dev_APDPage.UpdateSourceState();
             }
             catch (Exception)
             {
@@ -92,14 +95,23 @@ namespace ODMR_Lab.激光控制
             SetStartState();
             try
             {
-                CurrentAPD.TraceSource.Device?.End();
-                CurrentAPD.TraceSource.Device.PulseFrequency = ConfigParam.SampleFreq.Value;
-                CurrentAPD.TraceSource.Device.Start();
+                var dev = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster, CurrentAPD.TraceSourceName) as PulseBlasterInfo;
+                try
+                {
+                    dev.Device?.End();
+                }
+                catch (Exception)
+                {
+                }
+                dev.Device.PulseFrequency = ConfigParam.SampleFreq.Value;
+                dev.Device.Start();
                 CurrentAPD.StartContinusSample();
             }
             catch (Exception ex)
             {
                 SetStopState();
+                CurrentAPD.EndUse();
+                MainWindow.Dev_APDPage.UpdateSourceState();
                 return;
             }
             IsSampleEnd = false;
@@ -180,10 +192,13 @@ namespace ODMR_Lab.激光控制
             {
                 Thread.Sleep(30);
             }
-            CurrentAPD.TraceSource.Device.End();
+            var dev = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster, CurrentAPD.TraceSourceName);
+            if (dev == null) return;
+            (dev as PulseBlasterInfo).Device?.End();
             CurrentAPD.EndContinusSample();
             SetStopState();
             CurrentAPD.EndUse();
+            MainWindow.Dev_APDPage.UpdateSourceState();
         }
 
         private void UpdateDeviceList(object sender, RoutedEventArgs e)

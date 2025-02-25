@@ -38,7 +38,7 @@ namespace ODMR_Lab.ODMR实验
             ExpGroup.TemplateButton = ExpGroup;
             foreach (var item in gnames)
             {
-                ExpGroup.Items.Add(new DecoratedButton() { Text = item, Height = 80 });
+                ExpGroup.Items.Add(new DecoratedButton() { Text = item, Height = 50 });
             }
             ExpGroup.Select(0);
             base.ShowDialog();

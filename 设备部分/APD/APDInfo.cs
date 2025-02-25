@@ -20,12 +20,12 @@ namespace ODMR_Lab.设备部分.光子探测器
         /// <summary>
         /// Trace输出源
         /// </summary>
-        public PulseBlasterInfo TraceSource { get; set; } = null;
+        public string TraceSourceName { get; set; } = "";
 
         /// <summary>
         /// Pulse输出源
         /// </summary>
-        public PulseBlasterInfo PulseSource { get; set; } = null;
+        public string PulseSourceName { get; set; } = "";
 
 
         public override void CreateDeviceInfoBehaviour()
@@ -39,10 +39,16 @@ namespace ODMR_Lab.设备部分.光子探测器
 
         protected override void AutoConnectedAction(FileObject file)
         {
+            if (file.Descriptions.Keys.Contains("TraceSourceName"))
+                TraceSourceName = file.Descriptions["TraceSourceName"];
+            if (file.Descriptions.Keys.Contains("PulseSourceName"))
+                PulseSourceName = file.Descriptions["PulseSourceName"];
         }
 
         protected override void CloseFileAction(FileObject obj)
         {
+            obj.Descriptions.Add("TraceSourceName", TraceSourceName);
+            obj.Descriptions.Add("PulseSourceName", PulseSourceName);
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace ODMR_Lab.设备部分.光子探测器
         /// <returns></returns>
         public double GetContinusSampleRatio()
         {
-            var dev = TraceSource;
+            var dev = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster, TraceSourceName) as PulseBlasterInfo;
             double freq = (dev.Device as PulseBlaster).PulseFrequency;
             var cs = Device.GetCounts(1000);
             try

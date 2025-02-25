@@ -1,4 +1,6 @@
-﻿using Controls;
+﻿using CodeHelper;
+using Controls;
+using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.设备部分;
@@ -38,6 +40,9 @@ namespace ODMR_Lab.实验部分.ODMR实验
         {
             InitializeComponent();
 
+            WindowResizeHelper helper = new WindowResizeHelper();
+            helper.RegisterWindow(this, 5, 30);
+
             Isinput = input;
             Isoutput = output;
             Isdevice = device;
@@ -58,7 +63,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     UIUpdater.CloneStyle(LabelTemplate, l);
                     ParamPannel.Children.Add(l);
                     Grid.SetRow(l, ParamPannel.RowDefinitions.Count - 1);
-                    Grid.SetRowSpan(l, 2);
+                    Grid.SetColumnSpan(l, 2);
 
                     bool isfirst = true;
                     var plist = exp.InputParams.Where(x => x.GroupName == item);
@@ -68,6 +73,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                             ParamPannel.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
                         Grid g = GenerateControlBar(p, this, true);
                         ParamPannel.Children.Add(g);
+                        p.LoadToPage(new FrameworkElement[] { this }, false);
                         Grid.SetRow(g, ParamPannel.RowDefinitions.Count - 1);
                         Grid.SetColumn(g, isfirst ? 0 : 1);
                         isfirst = !isfirst;
@@ -86,7 +92,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     UIUpdater.CloneStyle(LabelTemplate, l);
                     ParamPannel.Children.Add(l);
                     Grid.SetRow(l, ParamPannel.RowDefinitions.Count - 1);
-                    Grid.SetRowSpan(l, 2);
+                    Grid.SetColumnSpan(l, 2);
 
                     bool isfirst = true;
                     var plist = exp.OutputParams.Where(x => x.GroupName == item);
@@ -96,6 +102,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                             ParamPannel.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
                         Grid g = GenerateControlBar(p, this, false);
                         ParamPannel.Children.Add(g);
+                        p.LoadToPage(new FrameworkElement[] { this }, false);
                         Grid.SetRow(g, ParamPannel.RowDefinitions.Count - 1);
                         Grid.SetColumn(g, isfirst ? 0 : 1);
                         isfirst = !isfirst;
@@ -114,15 +121,18 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     UIUpdater.CloneStyle(LabelTemplate, l);
                     ParamPannel.Children.Add(l);
                     Grid.SetRow(l, ParamPannel.RowDefinitions.Count - 1);
-                    Grid.SetRowSpan(l, 2);
+                    Grid.SetColumnSpan(l, 2);
 
                     var plist = exp.DeviceList.Where(x => x.Value.GroupName == item);
                     foreach (var p in plist)
                     {
+                        ParamPannel.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
                         Grid g = GenerateDeviceBar(p.Key, p.Value, this);
                         ParamPannel.Children.Add(g);
+                        p.Value.LoadToPage(new FrameworkElement[] { this }, false);
                         Grid.SetRow(g, ParamPannel.RowDefinitions.Count - 1);
                         Grid.SetColumn(g, 0);
+                        Grid.SetColumnSpan(g, 2);
                     }
                 }
             }
@@ -130,6 +140,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
         private void Apply(object sender, RoutedEventArgs e)
         {
+            if (!ParentExp.IsExpEnd)
+            {
+                MessageWindow.ShowTipWindow("实验正在进行中,无法设置参数", this);
+                return;
+            }
             //设置参数
             foreach (var item in ParamPannel.Children)
             {
@@ -203,10 +218,10 @@ namespace ODMR_Lab.实验部分.ODMR实验
             if (ui != null)
             {
                 g.Children.Add(ui);
-                ui.Tag = param;
                 Grid.SetColumn(ui, 1);
-                parent.RegisterName(param.PropertyName, ui);
+                parent.RegisterName(GetValidName(param.PropertyName), ui);
             }
+            g.Tag = param;
             return g;
         }
 
@@ -255,11 +270,27 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 }
                 box.Select(param.Value);
             });
-            parent.RegisterName(param.PropertyName, box);
+            parent.RegisterName(GetValidName(param.PropertyName), box);
             g.Children.Add(box);
+            g.Tag = param;
             Grid.SetColumn(box, 1);
             return g;
         }
 
+        public static string GetValidName(string name)
+        {
+            name = name.Replace("(", "");
+            name = name.Replace(")", "");
+            name = name.Replace("[", "");
+            name = name.Replace("]", "");
+            name = name.Replace("{", "");
+            name = name.Replace("}", "");
+            return name;
+        }
+
+        private void Close(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

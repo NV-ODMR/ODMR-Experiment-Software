@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      xmlns:control="clr-namespace:Controls;assembly=Controls"
       mc:Ignorable="d" 
       xmlns:image="clr-namespace:ODMR_Lab.基本控件"
       d:DesignHeight="600" d:DesignWidth="800"
@@ -40,6 +40,7 @@
                     <control:DecoratedButton Click="SelectFolder" TextAreaRatio="0" Margin="5" Width="70" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/directory.png"/>
                 </StackPanel>
                 <control:DecoratedButton Click="SelectExp" Grid.Row="1" TextAreaRatio="1" Text="选择实验" FontSize="12" Margin="2" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <TextBlock Name="TextBlockTemplate" Visibility="Hidden" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" TextAlignment="Center" TextWrapping="Wrap"/>
                 <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="2" FontSize="15" Foreground="White" Content="输入参数"/>
                 <Label HorizontalContentAlignment="Center" Grid.Row="8" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="输出参数"/>
                 <Label HorizontalContentAlignment="Center" Grid.Row="5" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="实验设备"/>

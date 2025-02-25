@@ -204,17 +204,17 @@ namespace ODMR_Lab.设备部分.位移台部分
                 }
             }
             #endregion
-            #region 设置为磁铁位移台
+            #region 设置为样品位移台
             if (arg1 == 3)
             {
-                (arg3 as NanoStageInfo).PartType = PartTypes.Magnnet;
+                (arg3 as NanoStageInfo).PartType = PartTypes.Sample;
                 RefreshPanels();
             }
             #endregion
-            #region 设置为样品位移台
+            #region 设置为磁铁位移台
             if (arg1 == 4)
             {
-                (arg3 as NanoStageInfo).PartType = PartTypes.Sample;
+                (arg3 as NanoStageInfo).PartType = PartTypes.Magnnet;
                 RefreshPanels();
             }
             #endregion

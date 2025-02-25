@@ -26,9 +26,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 {
     public class CW : Scan1DExpBase<RFSourceInfo>
     {
-        public override string ODMRExperimentName { get; set; } = "连续波全谱(CW)";
+        public override string ODMRExperimentName { get; set; } = "连续波全谱CW";
 
-        public override string ODMRExperimentGroupName { get; set; } = "实空间点实验(无AFM)";
+        public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
         public override List<ParamB> InputParams
         { get; set; } = new List<ParamB>()

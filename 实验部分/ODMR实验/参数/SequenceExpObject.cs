@@ -130,14 +130,17 @@ namespace ODMR_Lab.ODMR实验
             foreach (var item in InputParams)
             {
                 item.PropertyName = "Input_" + item.PropertyName;
+                item.GroupName = ODMRExperimentGroupName + ":" + ODMRExperimentName;
             }
             foreach (var item in OutputParams)
             {
                 item.PropertyName = "Output_" + item.PropertyName;
+                item.GroupName = ODMRExperimentGroupName + ":" + ODMRExperimentName;
             }
             foreach (var item in DeviceList)
             {
                 item.Value.PropertyName = "Device_" + item.Value.PropertyName;
+                item.Value.GroupName = ODMRExperimentGroupName;
             }
 
             //添加子实验参数
@@ -146,19 +149,46 @@ namespace ODMR_Lab.ODMR实验
                 foreach (var p in item.InputParams)
                 {
                     p.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.PropertyName;
+                    p.GroupName = item.ODMRExperimentName;
                 }
                 foreach (var p in item.OutputParams)
                 {
                     p.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.PropertyName;
+                    p.GroupName = item.ODMRExperimentName;
                 }
                 foreach (var p in item.DeviceList)
                 {
                     p.Value.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.Value.PropertyName;
+                    p.Value.GroupName = item.ODMRExperimentName;
                 }
                 InputParams.AddRange(item.InputParams);
                 OutputParams.AddRange(item.OutputParams);
                 DeviceList.AddRange(item.DeviceList);
             }
+        }
+
+        [Obsolete]
+        public void AddSubExp(ODMRExpObject exp)
+        {
+            SubExperiments.Add(exp);
+            foreach (var p in exp.InputParams)
+            {
+                p.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + p.PropertyName;
+                p.GroupName = exp.ODMRExperimentName;
+            }
+            foreach (var p in exp.OutputParams)
+            {
+                p.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + p.PropertyName;
+                p.GroupName = exp.ODMRExperimentName;
+            }
+            foreach (var p in exp.DeviceList)
+            {
+                p.Value.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + p.Value.PropertyName;
+                p.Value.GroupName = exp.ODMRExperimentName;
+            }
+            InputParams.AddRange(exp.InputParams);
+            OutputParams.AddRange(exp.OutputParams);
+            DeviceList.AddRange(exp.DeviceList);
         }
 
         public override ConfigBase ReadConfig()
@@ -403,14 +433,14 @@ namespace ODMR_Lab.ODMR实验
             foreach (var item in InputParams)
             {
                 item.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
-                obj.Descriptions.Add("Input" + "→" + item.Description + "→" + item.PropertyName + "→" + GetType().FullName, ParamB.GetUnknownParamValueToString(item));
+                obj.Descriptions.Add("Input" + "→" + item.Description + "→" + item.PropertyName + "→" + ODMRExperimentName + "→" + ODMRExperimentGroupName + "→" + GetType().FullName, ParamB.GetUnknownParamValueToString(item));
             }
             foreach (var item in DeviceList)
             {
                 item.Value.ReadFromPage(new FrameworkElement[] { ParentPage }, false);
-                obj.Descriptions.Add("Dev" + "→" + item.Value.Description + "→" + item.Value.PropertyName + "→" + GetType().FullName, ParamB.GetUnknownParamValueToString(item.Value));
+                obj.Descriptions.Add("Dev" + "→" + item.Value.Description + "→" + item.Value.PropertyName + "→" + ODMRExperimentName + "→" + ODMRExperimentGroupName + "→" + GetType().FullName, ParamB.GetUnknownParamValueToString(item.Value));
             }
-            obj.Descriptions.Add("IsAutoSave" + "→" + GetType().FullName, IsAutoSave.ToString());
+            obj.Descriptions.Add("IsAutoSave" + "→" + ODMRExperimentName + "→" + ODMRExperimentGroupName + "→" + GetType().FullName, IsAutoSave.ToString());
         }
 
         public void ReadFromFileAndLoadToPage(FileObject obj)
@@ -419,7 +449,12 @@ namespace ODMR_Lab.ODMR实验
             {
                 return;
             }
-            var filted = obj.Descriptions.Where(x => x.Key.Split('→').Last() == GetType().FullName);
+            var filted = obj.Descriptions.Where(x =>
+            {
+                var ss = x.Key.Split('→').Reverse();
+                if (ss.ElementAt(0) == GetType().FullName && ss.ElementAt(1) == ODMRExperimentGroupName && ss.ElementAt(2) == ODMRExperimentName) return true;
+                return false;
+            });
             foreach (var item in InputParams)
             {
                 var res = filted.Where(x =>

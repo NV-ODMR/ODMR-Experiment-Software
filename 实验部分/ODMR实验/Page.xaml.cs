@@ -16,6 +16,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描;
+using System.Linq;
 
 namespace ODMR_Lab.ODMR实验
 {
@@ -67,14 +68,14 @@ namespace ODMR_Lab.ODMR实验
             //设置所有AFM点实验类型
             foreach (var item in noafms)
             {
-                AFMScan2DExp afm2d = new AFMScan2DExp() { ODMRExperimentName = item.ODMRExperimentName };
-                afm2d.SubExperiments.Add(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                AFMScan2DExp afm2d = new AFMScan2DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
+                afm2d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm2d);
-                AFMScan0DExp afm0d = new AFMScan0DExp() { ODMRExperimentName = item.ODMRExperimentName };
-                afm0d.SubExperiments.Add(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                AFMScan0DExp afm0d = new AFMScan0DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
+                afm0d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm0d);
-                AFMScan1DExp afm1d = new AFMScan1DExp() { ODMRExperimentName = item.ODMRExperimentName };
-                afm1d.SubExperiments.Add(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                AFMScan1DExp afm1d = new AFMScan1DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
+                afm1d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm1d);
             }
         }
@@ -106,7 +107,7 @@ namespace ODMR_Lab.ODMR实验
                         try
                         {
                             item.ReadFromPage(new FrameworkElement[] { this }, false);
-                            InputPanel.UnregisterName(item.PropertyName);
+                            UnregisterName(ExpParamWindow.GetValidName(item.PropertyName));
                         }
                         catch (Exception ex) { }
                     }
@@ -115,7 +116,7 @@ namespace ODMR_Lab.ODMR实验
                         try
                         {
                             item.ReadFromPage(new FrameworkElement[] { this }, false);
-                            OutputPanel.UnregisterName(item.PropertyName);
+                            UnregisterName(ExpParamWindow.GetValidName(item.PropertyName));
                         }
                         catch (Exception) { }
                     }
@@ -124,7 +125,7 @@ namespace ODMR_Lab.ODMR实验
                         try
                         {
                             item.Value.ReadFromPage(new FrameworkElement[] { this }, false);
-                            DevicePanel.UnregisterName(item.Value.PropertyName);
+                            UnregisterName(ExpParamWindow.GetValidName(item.Value.PropertyName));
                         }
                         catch (Exception ex) { }
                     }
@@ -135,6 +136,8 @@ namespace ODMR_Lab.ODMR实验
 
 
                 CurrentExpObject = ExpObjects[index];
+                ExpName.Text = CurrentExpObject.ODMRExperimentName;
+                ExpGroupName.Text = CurrentExpObject.ODMRExperimentGroupName;
 
                 //更新文件名
                 CurrentExpObject.SavedFileName = CurrentExpObject.SavedFileName;
@@ -157,28 +160,57 @@ namespace ODMR_Lab.ODMR实验
                 DevicePanel.Children.Clear();
 
                 ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, false, false, false);
-                foreach (var item in CurrentExpObject.InputParams)
+
+                HashSet<string> gnames = CurrentExpObject.InputParams.Select(x => x.GroupName).ToHashSet();
+                foreach (var item in gnames)
                 {
-                    Grid g = win.GenerateControlBar(item, this, true);
-                    InputPanel.Children.Add(g);
-                    item.LoadToPage(new FrameworkElement[] { this }, false);
+                    TextBlock l = new TextBlock() { Text = item };
+                    l.Height = 30;
+                    UIUpdater.CloneStyle(TextBlockTemplate, l);
+                    InputPanel.Children.Add(l);
+                    var ps = CurrentExpObject.InputParams.Where(x => x.GroupName == item);
+                    foreach (var p in ps)
+                    {
+                        Grid g = win.GenerateControlBar(p, this, true);
+                        InputPanel.Children.Add(g);
+                        p.LoadToPage(new FrameworkElement[] { this }, false);
+                    }
                 }
-                foreach (var item in CurrentExpObject.OutputParams)
+                gnames = CurrentExpObject.OutputParams.Select(x => x.GroupName).ToHashSet();
+                foreach (var item in gnames)
                 {
-                    Grid g = win.GenerateControlBar(item, this, false);
-                    OutputPanel.Children.Add(g);
-                    item.LoadToPage(new FrameworkElement[] { this }, false);
+                    TextBlock l = new TextBlock() { Text = item };
+                    l.Height = 30;
+                    UIUpdater.CloneStyle(TextBlockTemplate, l);
+                    OutputPanel.Children.Add(l);
+                    var ps = CurrentExpObject.OutputParams.Where(x => x.GroupName == item);
+                    foreach (var p in ps)
+                    {
+                        Grid g = win.GenerateControlBar(p, this, true);
+                        OutputPanel.Children.Add(g);
+                        p.LoadToPage(new FrameworkElement[] { this }, false);
+                    }
                 }
-                foreach (var item in CurrentExpObject.DeviceList)
+
+                gnames = CurrentExpObject.DeviceList.Select(x => x.Value.GroupName).ToHashSet();
+                foreach (var item in gnames)
                 {
-                    Grid g = win.GenerateDeviceBar(item.Key, item.Value, this);
-                    DevicePanel.Children.Add(g);
-                    item.Value.LoadToPage(new FrameworkElement[] { this }, false);
+                    TextBlock l = new TextBlock() { Text = item };
+                    l.Height = 30;
+                    UIUpdater.CloneStyle(TextBlockTemplate, l);
+                    DevicePanel.Children.Add(l);
+                    var ps = CurrentExpObject.DeviceList.Where(x => x.Value.GroupName == item);
+                    foreach (var p in ps)
+                    {
+                        Grid g = win.GenerateDeviceBar(p.Key, p.Value, this);
+                        DevicePanel.Children.Add(g);
+                        p.Value.LoadToPage(new FrameworkElement[] { this }, false);
+                    }
                 }
                 IsAutoSave.IsSelected = CurrentExpObject.IsAutoSave;
                 return;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return;
             }
@@ -269,6 +301,18 @@ namespace ODMR_Lab.ODMR实验
             if (expobj != null)
                 SelectExp(ExpObjects.IndexOf(expobj));
         }
+        /// <summary>
+        /// 输出
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowInput(object sender, RoutedEventArgs e)
+        {
+            ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, true, false, false);
+            win.Owner = Window.GetWindow(this);
+            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            win.ShowDialog();
+        }
 
         /// <summary>
         /// 输入
@@ -277,7 +321,10 @@ namespace ODMR_Lab.ODMR实验
         /// <param name="e"></param>
         private void ShowOutput(object sender, RoutedEventArgs e)
         {
-
+            ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, false, true, false);
+            win.Owner = Window.GetWindow(this);
+            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            win.ShowDialog();
         }
 
         /// <summary>
@@ -287,17 +334,10 @@ namespace ODMR_Lab.ODMR实验
         /// <param name="e"></param>
         private void ShowDevice(object sender, RoutedEventArgs e)
         {
-
-        }
-
-        /// <summary>
-        /// 输出
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowInput(object sender, RoutedEventArgs e)
-        {
-
+            ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, false, false, true);
+            win.Owner = Window.GetWindow(this);
+            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            win.ShowDialog();
         }
     }
 }
