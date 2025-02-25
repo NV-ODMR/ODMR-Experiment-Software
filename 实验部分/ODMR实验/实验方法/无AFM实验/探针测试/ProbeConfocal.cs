@@ -146,9 +146,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             PulseBlasterInfo trace = GetDeviceByName("TraceSource") as PulseBlasterInfo;
             trace.Device.PulseFrequency = GetInputParamValueByName("SampleRate");
             trace.Device.Start();
-            //打开APD
-            APDInfo apd = GetDeviceByName("APD") as APDInfo;
-            apd.StartContinusSample();
             //创建数据集
             var r1 = GetScanRange1();
             var r2 = GetScanRange2();
@@ -169,9 +166,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             LaserOff loff = new LaserOff();
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             loff.CoreMethod(new List<object>() { }, pb);
-            //关闭APD
-            APDInfo apd = GetDeviceByName("APD") as APDInfo;
-            apd.EndContinusSample();
             //关闭APD触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
         }

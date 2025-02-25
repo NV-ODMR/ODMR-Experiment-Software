@@ -253,7 +253,21 @@ namespace ODMR_Lab.ODMR实验
             foreach (var item in InterativeButtons)
             {
                 if ((sender as DecoratedButton).Text == item.Key)
-                    item.Value?.Invoke();
+                {
+                    Thread t = new Thread(() =>
+                    {
+                        App.Current.Dispatcher.Invoke(() =>
+                        {
+                            (sender as DecoratedButton).IsEnabled = false;
+                        });
+                        item.Value?.Invoke();
+                        App.Current.Dispatcher.Invoke(() =>
+                        {
+                            (sender as DecoratedButton).IsEnabled = true;
+                        });
+                    });
+                    t.Start();
+                }
             }
         }
 
@@ -622,15 +636,28 @@ namespace ODMR_Lab.ODMR实验
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     win = new SubExpWindow("子实验: " + subExp.ODMRExperimentGroupName + ":" + subExp.ODMRExperimentName + " , " + "母实验: " + ODMRExperimentGroupName + ":" + ODMRExperimentName);
+                    subExp.ParentPage = win.SubExpContent;
                     win.Show(subExp);
+                    win.SubExpContent.ExpObjects.Add(subExp);
+                    win.SubExpContent.SelectExp(0);
+                    //设置状态
+                    subExp.DisConnectOuterControl();
+                    subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, win.SubExpContent.ProgressTitle, win.SubExpContent.Progress, win.SubExpContent.GetControlsStates());
+                });
+            }
+            else
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    subExp.DisConnectOuterControl();
+                    //设置状态
+                    subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, null, null, new List<KeyValuePair<FrameworkElement, RunningBehaviours>>());
                 });
             }
 
             subExp.JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
             subExp.IsSubExperiment = true;
             subExp.Start();
-            //设置状态
-            subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, null, null, new List<KeyValuePair<FrameworkElement, RunningBehaviours>>());
 
             while (!subExp.IsExpEnd) { Thread.Sleep(50); }
             //关闭子窗口//
@@ -641,6 +668,7 @@ namespace ODMR_Lab.ODMR实验
                     try
                     {
                         win.Close();
+                        win = null;
                     }
                     catch (Exception) { }
                 });
@@ -658,9 +686,10 @@ namespace ODMR_Lab.ODMR实验
             }
 
             var controlsStates = SubExperiments[index].ParentPage.GetControlsStates();
-            ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, ParentPage.StartTime, ParentPage.EndTime, ParentPage.ProgressTitle, ParentPage.Progress, controlsStates);
-
-            if (subExp.ExpFailedException != null) throw subExp.ExpFailedException;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, ParentPage.StartTime, ParentPage.EndTime, ParentPage.ProgressTitle, ParentPage.Progress, controlsStates);
+            });
 
             return subExp;
         }
