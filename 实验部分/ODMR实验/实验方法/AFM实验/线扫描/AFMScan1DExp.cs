@@ -49,7 +49,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描
         };
 
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
-        public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; }
+
+        protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
+        {
+            return new List<KeyValuePair<string, Action>>();
+        }
+
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();

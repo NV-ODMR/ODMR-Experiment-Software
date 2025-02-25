@@ -3,7 +3,9 @@ using Controls;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验类;
+using ODMR_Lab.实验部分.ODMR实验;
 using ODMR_Lab.实验部分.ODMR实验.参数;
+using ODMR_Lab.实验部分.ODMR实验.实验方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
@@ -171,7 +173,15 @@ namespace ODMR_Lab.ODMR实验
                 OutputParams.AddRange(item.OutputParams);
                 DeviceList.AddRange(item.DeviceList);
             }
+
+            InterativeButtons = AddInteractiveButtons();
         }
+
+        /// <summary>
+        /// 添加交互按钮
+        /// </summary>
+        /// <returns></returns>
+        protected abstract List<KeyValuePair<string, Action>> AddInteractiveButtons();
 
         [Obsolete]
         public void AddSubExp(ODMRExpObject exp)
@@ -208,12 +218,6 @@ namespace ODMR_Lab.ODMR实验
 
         public override void ExperimentEvent()
         {
-            //添加按钮点击事件
-            foreach (var item in InterativeButtons)
-            {
-                item.
-            }
-
             EndStateEvent -= SaveFile;
             EndStateEvent += SaveFile;
 
@@ -612,6 +616,16 @@ namespace ODMR_Lab.ODMR实验
 
             DisConnectOuterControl();
 
+            SubExpWindow win = null;
+            if (ShowWindow)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    win = new SubExpWindow("子实验: " + subExp.ODMRExperimentGroupName + ":" + subExp.ODMRExperimentName + " , " + "母实验: " + ODMRExperimentGroupName + ":" + ODMRExperimentName);
+                    win.Show(subExp);
+                });
+            }
+
             subExp.JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
             subExp.IsSubExperiment = true;
             subExp.Start();
@@ -619,6 +633,18 @@ namespace ODMR_Lab.ODMR实验
             subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, null, null, new List<KeyValuePair<FrameworkElement, RunningBehaviours>>());
 
             while (!subExp.IsExpEnd) { Thread.Sleep(50); }
+            //关闭子窗口//
+            if (win != null)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        win.Close();
+                    }
+                    catch (Exception) { }
+                });
+            }
 
             //设置输出参数
             var outputs = OutputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));

@@ -17,8 +17,9 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描;
 using System.Linq;
+using ODMR_Lab.ODMR实验;
 
-namespace ODMR_Lab.ODMR实验
+namespace ODMR_Lab.实验部分.ODMR实验
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑
@@ -141,6 +142,16 @@ namespace ODMR_Lab.ODMR实验
                 ExpGroupName.Text = CurrentExpObject.ODMRExperimentGroupName;
 
                 //刷新交互按钮
+                ButtonsPanel.Children.Clear();
+                foreach (var item in CurrentExpObject.InterativeButtons)
+                {
+                    DecoratedButton btn = new DecoratedButton() { Text = item.Key };
+                    InteractBtnTemplate.CloneStyleTo(btn);
+                    btn.Height = 40;
+                    btn.Margin = new Thickness(5);
+                    btn.Click += CurrentExpObject.ButtonClickEvent;
+                    ButtonsPanel.Children.Add(btn);
+                }
 
                 //更新文件名
                 CurrentExpObject.SavedFileName = CurrentExpObject.SavedFileName;

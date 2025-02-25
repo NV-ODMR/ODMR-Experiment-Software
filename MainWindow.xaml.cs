@@ -73,7 +73,7 @@ namespace ODMR_Lab
         /// <summary>
         /// 序列实验
         /// </summary>
-        public static ODMR实验.DisplayPage Exp_SequencePage = new ODMR实验.DisplayPage();
+        public static 实验部分.ODMR实验.DisplayPage Exp_SequencePage = new 实验部分.ODMR实验.DisplayPage();
 
         /// <summary>
         /// Trace实验

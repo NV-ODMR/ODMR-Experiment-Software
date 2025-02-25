@@ -6,7 +6,9 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -57,10 +59,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
-        public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>()
+        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
         {
+            new AutoTrace(),
+            new CW()
         };
+
+        protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
+        {
+            var btns = new List<KeyValuePair<string, Action>>();
+            btns.Add(new KeyValuePair<string, Action>("AutoTrace", DoAutoTrace));
+            btns.Add(new KeyValuePair<string, Action>("CW", DoCW));
+            return btns;
+        }
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
@@ -164,5 +175,31 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             //关闭APD触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
         }
+
+        #region 按钮操作部分
+        /// <summary>
+        /// AutoTrace
+        /// </summary>
+        private void DoAutoTrace()
+        {
+            var exp = RunSubExperimentBlock(0, true);
+            if (exp.ExpFailedException != null)
+            {
+                MessageWindow.ShowTipWindow("AutoTrace出现问题:" + exp.ExpFailedException.Message, Window.GetWindow(ParentPage));
+            }
+        }
+
+        /// <summary>
+        /// AutoTrace
+        /// </summary>
+        private void DoCW()
+        {
+            var exp = RunSubExperimentBlock(1, true);
+            if (exp.ExpFailedException != null)
+            {
+                MessageWindow.ShowTipWindow("AutoTrace出现问题:" + exp.ExpFailedException.Message, Window.GetWindow(ParentPage));
+            }
+        }
+        #endregion
     }
 }

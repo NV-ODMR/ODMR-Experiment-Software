@@ -1,4 +1,5 @@
 ﻿using Controls;
+using ODMR_Lab.实验部分.ODMR实验;
 using System;
 using System.Collections.Generic;
 using System.Linq;

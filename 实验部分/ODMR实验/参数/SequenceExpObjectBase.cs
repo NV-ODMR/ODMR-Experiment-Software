@@ -45,7 +45,7 @@ namespace ODMR_Lab.ODMR实验
         /// <summary>
         /// 交互按钮列表
         /// </summary>
-        public abstract List<KeyValuePair<string, Action>> InterativeButtons { get; set; }
+        public List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>();
 
         public override ConfigBase Config { get; set; } = null;
 

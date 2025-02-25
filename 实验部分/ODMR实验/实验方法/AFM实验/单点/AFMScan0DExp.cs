@@ -3,6 +3,7 @@ using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
 {
@@ -32,7 +34,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
         };
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
-        public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>();
+
+
+        protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
+        {
+            return new List<KeyValuePair<string, Action>>();
+        }
+
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();

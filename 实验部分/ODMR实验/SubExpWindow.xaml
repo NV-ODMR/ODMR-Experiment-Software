@@ -1,0 +1,19 @@
+﻿<Window x:Class="ODMR_Lab.实验部分.ODMR实验.实验方法.SubExpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ODMR_Lab.实验部分.ODMR实验.实验方法" xmlns:controls="clr-namespace:Controls;assembly=Controls"
+        mc:Ignorable="d"
+        xmlns:display="clr-namespace:ODMR_Lab.实验部分.ODMR实验"
+        Title="SubExpWindow"  Height="600" Width="800" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Background="#FF4D4D4D" Name="TitleWindow"/>
+        <display:DisplayPage Grid.Row="1" x:Name="SubExpContent">
+        </display:DisplayPage>
+    </Grid>
+</Window>
