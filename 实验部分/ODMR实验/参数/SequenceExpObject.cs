@@ -1,4 +1,5 @@
 ﻿using CodeHelper;
+using Controls;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验类;
@@ -34,6 +35,11 @@ namespace ODMR_Lab.ODMR实验
         public DisplayPage ParentPage = null;
 
         public bool IsAutoSave { get; set; } = false;
+
+        /// <summary>
+        /// 是否是AFM子实验
+        /// </summary>
+        public abstract bool IsAFMSubExperiment { get; protected set; }
 
         private string savedFileName = null;
         public string SavedFileName
@@ -202,11 +208,18 @@ namespace ODMR_Lab.ODMR实验
 
         public override void ExperimentEvent()
         {
+            //添加按钮点击事件
+            foreach (var item in InterativeButtons)
+            {
+                item.
+            }
+
             EndStateEvent -= SaveFile;
             EndStateEvent += SaveFile;
 
             //清除文件名
             savedFileName = "";
+            SetExpState("");
             try
             {
                 PreExpEvent();
@@ -221,6 +234,22 @@ namespace ODMR_Lab.ODMR实验
                 }
                 catch (Exception e) { }
                 throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 按钮点击事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        [Obsolete]
+        public void ButtonClickEvent(object sender, RoutedEventArgs e)
+        {
+            //添加按钮点击事件
+            foreach (var item in InterativeButtons)
+            {
+                if ((sender as DecoratedButton).Text == item.Key)
+                    item.Value?.Invoke();
             }
         }
 
@@ -303,7 +332,7 @@ namespace ODMR_Lab.ODMR实验
         {
             foreach (var item in ExperimentDevices)
             {
-                if (item.Key == name)
+                if (item.Key == "Device_" + name)
                 {
                     return item.Value;
                 }
@@ -337,7 +366,7 @@ namespace ODMR_Lab.ODMR实验
         {
             foreach (var item in InputParams)
             {
-                if (item.PropertyName == name)
+                if (item.PropertyName == "Input_" + name)
                 {
                     return ParamB.GetUnknownParamValue(item);
                 }
@@ -419,7 +448,7 @@ namespace ODMR_Lab.ODMR实验
         {
             foreach (var item in OutputParams)
             {
-                if (item.PropertyName == name)
+                if (item.PropertyName == "Output_" + name)
                 {
                     ParamB.SetUnknownParamValue(item, value);
                     item.LoadToPage(new FrameworkElement[] { ParentPage }, false);

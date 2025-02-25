@@ -6,6 +6,7 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -20,12 +21,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
 {
     public class Confocal : Scan2DExpBase<NanoStageInfo, NanoStageInfo>
     {
-        public override string ODMRExperimentName { get; set; } = "共聚焦扫描";
-        public override string ODMRExperimentGroupName { get; set; } = "二维实验";
+        public override string ODMRExperimentName { get; set; } = "阵列探针测试(共聚焦,AutoTrace,CW)";
+        public override string ODMRExperimentGroupName { get; set; } = "探针测试";
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
@@ -57,7 +58,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
-        public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>();
+        public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>()
+        {
+        };
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 

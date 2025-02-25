@@ -51,6 +51,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
         public override List<KeyValuePair<string, Action>> InterativeButtons { get; set; } = new List<KeyValuePair<string, Action>>();
+        public override bool IsAFMSubExperiment { get; protected set; } = true;
 
         public List<object> FirstScanEvent(object device, ScanRange range, double locvalue, List<object> inputParams)
         {

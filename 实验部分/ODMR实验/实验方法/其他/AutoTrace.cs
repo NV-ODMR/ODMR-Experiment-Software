@@ -66,6 +66,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public override List<ODMRExpObject> SubExperiments { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public override List<KeyValuePair<string, Action>> InterativeButtons { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public override bool IsAFMSubExperiment { get; protected set; } = false;
+
         /// <summary>
         /// 是否等待拟合曲线显示
         /// </summary>
@@ -323,7 +325,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             //打开激光
             LaserOn lon = new LaserOn();
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
-            lon.CoreMethod(new List<object>() { 1.0, pb);
+            lon.CoreMethod(new List<object>() { 1.0 }, pb);
             //打开APD Trace触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.PulseFrequency = 10;
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.Start();

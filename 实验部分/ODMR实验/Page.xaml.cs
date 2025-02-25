@@ -68,6 +68,7 @@ namespace ODMR_Lab.ODMR实验
             //设置所有AFM点实验类型
             foreach (var item in noafms)
             {
+                if (item.IsAFMSubExperiment == false) continue;
                 AFMScan2DExp afm2d = new AFMScan2DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
                 afm2d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm2d);
@@ -138,6 +139,8 @@ namespace ODMR_Lab.ODMR实验
                 CurrentExpObject = ExpObjects[index];
                 ExpName.Text = CurrentExpObject.ODMRExperimentName;
                 ExpGroupName.Text = CurrentExpObject.ODMRExperimentGroupName;
+
+                //刷新交互按钮
 
                 //更新文件名
                 CurrentExpObject.SavedFileName = CurrentExpObject.SavedFileName;

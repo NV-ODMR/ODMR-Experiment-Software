@@ -24,6 +24,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="35"/>
                     <RowDefinition Height="35"/>
+                    <RowDefinition Height="35"/>
                     <RowDefinition Height="70"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -75,8 +76,8 @@
                     <control:DecoratedButton Name="StopBtn" TextAreaRatio="0" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF009DF7" PressedColor="#FF0084E0" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png" Grid.Column="2"/>
                     <control:DecoratedButton Name="ResumeBtn" TextAreaRatio="0" Margin="5" IconMargin="0" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF009DF7" PressedColor="#FF0084E0" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
                 </Grid>
-                <ProgressBar Name="Progress" BorderThickness="0" Grid.Row="11" Margin="5" Background="#FF2E2E2E"/>
-                <Grid Grid.Row="12" Grid.Column="0">
+                <ProgressBar Name="Progress" BorderThickness="0" Grid.Row="12" Margin="5" Background="#FF2E2E2E"/>
+                <Grid Grid.Row="13" Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>

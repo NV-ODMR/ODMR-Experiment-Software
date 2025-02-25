@@ -225,11 +225,12 @@ namespace ODMR_Lab.激光控制
             //结束APD计数
             CurrentAPD.EndContinusSample();
             SetStopState();
+            CurrentPB.EndUse();
             CurrentAPD.EndUse();
             MainWindow.Dev_APDPage.UpdateSourceState();
         }
 
-        private void UpdateADPDeviceList(object sender, RoutedEventArgs e)
+        private void UpdateAPDDeviceList(object sender, RoutedEventArgs e)
         {
             APDDevice.Items.Clear();
             APDDevice.TemplateButton = APDDevice;
@@ -323,8 +324,13 @@ namespace ODMR_Lab.激光控制
         /// <param name="e"></param>
         private void ClearData(object sender, RoutedEventArgs e)
         {
-            lock (APDSampleData)
-                APDSampleData.Clear();
+            lock (APDSampleData) lock (APDDisplayData)
+                {
+                    APDSampleData.Clear();
+                    APDDisplayData.X.Clear();
+                    APDDisplayData.Y.Clear();
+                }
+            Chart.RefreshPlotWithAutoScale();
         }
     }
 }
