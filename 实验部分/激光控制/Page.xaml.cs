@@ -12,6 +12,7 @@ using HardWares.纳米位移台;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.光子探测器;
@@ -71,6 +72,7 @@ namespace ODMR_Lab.激光控制
         Thread PlotThread = null;
         bool IsSampleEnd = false;
         APDInfo CurrentAPD = null;
+        PulseBlasterInfo CurrentPB = null;
 
         TraceConfigParams ConfigParam = new TraceConfigParams();
 
@@ -79,11 +81,13 @@ namespace ODMR_Lab.激光控制
 
         private void StartAPDSample(object sender, RoutedEventArgs e)
         {
-            if (APDDevice.SelectedItem == null) return;
+            if (APDDevice.SelectedItem == null || PBDevice.SelectedItem == null) return;
             CurrentAPD = APDDevice.SelectedItem.Tag as APDInfo;
+            CurrentPB = PBDevice.SelectedItem.Tag as PulseBlasterInfo;
             try
             {
                 CurrentAPD.BeginUse();
+                CurrentPB.BeginUse();
                 MainWindow.Dev_APDPage.UpdateSourceState();
             }
             catch (Exception)
@@ -103,14 +107,19 @@ namespace ODMR_Lab.激光控制
                 catch (Exception)
                 {
                 }
+                //打开激光
+                LaserOn lon = new LaserOn();
+                lon.CoreMethod(1,)
+                //打开APDTrace源
                 dev.Device.PulseFrequency = ConfigParam.SampleFreq.Value;
                 dev.Device.Start();
-                CurrentAPD.StartContinusSample();
+                CurrentAPD.StartContinusSample(double.Parse());
             }
             catch (Exception ex)
             {
                 SetStopState();
                 CurrentAPD.EndUse();
+                CurrentPB.EndUse();
                 MainWindow.Dev_APDPage.UpdateSourceState();
                 return;
             }
@@ -201,14 +210,25 @@ namespace ODMR_Lab.激光控制
             MainWindow.Dev_APDPage.UpdateSourceState();
         }
 
-        private void UpdateDeviceList(object sender, RoutedEventArgs e)
+        private void UpdateADPDeviceList(object sender, RoutedEventArgs e)
         {
             APDDevice.Items.Clear();
             APDDevice.TemplateButton = APDDevice;
             var APDs = DeviceDispatcher.GetDevice(DeviceTypes.光子计数器);
             foreach (var item in APDs)
             {
-                APDDevice.Items.Add(new DecoratedButton() { Text = (item as APDInfo).Device.ProductName, Tag = item });
+                APDDevice.Items.Add(new DecoratedButton() { Text = (item as APDInfo).GetDeviceDescription(), Tag = item });
+            }
+        }
+
+        private void UpdatePBDeviceList(object sender, RoutedEventArgs e)
+        {
+            PBDevice.Items.Clear();
+            PBDevice.TemplateButton = PBDevice;
+            var pbs = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster);
+            foreach (var item in pbs)
+            {
+                PBDevice.Items.Add(new DecoratedButton() { Text = (item as PulseBlasterInfo).GetDeviceDescription(), Tag = item });
             }
         }
 
