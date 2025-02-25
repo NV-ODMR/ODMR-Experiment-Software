@@ -125,8 +125,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             //打开激光
             LaserOn lon = new LaserOn();
             PulseBlasterInfo pb = GetDeviceByName("TraceSource") as PulseBlasterInfo;
-            var chind = pb.FindChannelEnumOfDescription("激光触发源");
-            lon.CoreMethod(new List<object>() { 1.0, chind }, pb);
+            lon.CoreMethod(new List<object>() { 1.0 }, pb);
             //打开APD
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.StartContinusSample();

@@ -109,15 +109,24 @@ namespace ODMR_Lab.激光控制
                 }
                 //打开激光
                 LaserOn lon = new LaserOn();
-                lon.CoreMethod(1,)
+                lon.CoreMethod(new List<object>() { LightSlide.Value }, CurrentPB);
                 //打开APDTrace源
                 dev.Device.PulseFrequency = ConfigParam.SampleFreq.Value;
                 dev.Device.Start();
-                CurrentAPD.StartContinusSample(double.Parse());
+                CurrentAPD.StartContinusSample();
             }
             catch (Exception ex)
             {
                 SetStopState();
+                try
+                {
+                    //关闭激光
+                    LaserOff loff = new LaserOff();
+                    loff.CoreMethod(new List<object>(), CurrentPB);
+                }
+                catch (Exception)
+                {
+                }
                 CurrentAPD.EndUse();
                 CurrentPB.EndUse();
                 MainWindow.Dev_APDPage.UpdateSourceState();
@@ -204,6 +213,16 @@ namespace ODMR_Lab.激光控制
             var dev = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster, CurrentAPD.TraceSourceName);
             if (dev == null) return;
             (dev as PulseBlasterInfo).Device?.End();
+            try
+            {
+                //关闭激光
+                LaserOff loff = new LaserOff();
+                loff.CoreMethod(new List<object>(), CurrentPB);
+            }
+            catch (Exception)
+            {
+            }
+            //结束APD计数
             CurrentAPD.EndContinusSample();
             SetStopState();
             CurrentAPD.EndUse();

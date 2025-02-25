@@ -323,7 +323,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             //打开激光
             LaserOn lon = new LaserOn();
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
-            lon.CoreMethod(new List<object>() { 1.0, pb.FindChannelEnumOfDescription("激光触发源") }, pb);
+            lon.CoreMethod(new List<object>() { 1.0, pb);
             //打开APD Trace触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.PulseFrequency = 10;
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.Start();
