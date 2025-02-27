@@ -73,7 +73,7 @@ namespace ODMR_Lab
         /// <summary>
         /// 序列实验
         /// </summary>
-        public static 实验部分.ODMR实验.DisplayPage Exp_SequencePage = new 实验部分.ODMR实验.DisplayPage();
+        public static 实验部分.ODMR实验.DisplayPage Exp_SequencePage = new 实验部分.ODMR实验.DisplayPage(true);
 
         /// <summary>
         /// Trace实验
@@ -96,13 +96,18 @@ namespace ODMR_Lab
 
         public MainWindow()
         {
+            Mutex mm = new Mutex(true, System.Diagnostics.Process.GetCurrentProcess().ProcessName, out bool isrunning);
+            if (!isrunning)
+            {
+                Environment.Exit(0);
+            }
             Handle = this;
             InitializeComponent();
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, 5, 30);
+            hel.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 5, 30);
 
             #region 调用页面的初始化方法
             var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
@@ -125,20 +130,43 @@ namespace ODMR_Lab
         {
             if (MessageWindow.ShowMessageBox("提示", "确定要关闭吗?", MessageBoxButton.YesNo, owner: this) == MessageBoxResult.Yes)
             {
-                //保存界面参数
-                ParamManager.SaveParams();
-                bool canclose = DeviceDispatcher.CloseDevicesAndSave();
-                if (!canclose) return;
-                Hide();
-                #region 调用页面的中止方法
-                var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
-                foreach (var item in pages)
-                {
-                    (item.GetValue(this) as PageBase).CloseBehaviour();
-                }
-                #endregion
-                Close();
-                Environment.Exit(0);
+                bool canclose = true;
+                Thread t = new Thread(() =>
+                  {
+                      MessageWindow win = null;
+                      Dispatcher.Invoke(() =>
+                      {
+                          win = new MessageWindow("提示", "正在关闭设备并保存参数...", MessageBoxButton.OK, false, false);
+                          win.Owner = this;
+                          win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                          IsEnabled = false;
+                          win.Show();
+                          //保存界面参数
+                          ParamManager.SaveParams();
+                      });
+                      canclose = DeviceDispatcher.CloseDevicesAndSave();
+                      Dispatcher.Invoke(() =>
+                      {
+                          win.Close();
+                          if (canclose)
+                          {
+                              #region 调用页面的中止方法
+                              var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
+                              foreach (var item in pages)
+                              {
+                                  (item.GetValue(this) as PageBase).CloseBehaviour();
+                              }
+                              #endregion
+                              Close();
+                              Environment.Exit(0);
+                          }
+                          else
+                          {
+                              IsEnabled = true;
+                          }
+                      });
+                  });
+                t.Start();
             }
         }
 
@@ -165,37 +193,6 @@ namespace ODMR_Lab
                 w.WriteLine(DateTime.Now.ToLongTimeString());
                 w.WriteLine(e.Message);
                 w.WriteLine(e.StackTrace);
-            }
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Maximize(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-                return;
-            }
-            if (WindowState == WindowState.Normal)
-            {
-                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-                MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
-                WindowState = WindowState.Maximized;
-                return;
             }
         }
 

@@ -27,7 +27,7 @@ namespace ODMR_Lab
     /// </summary>
     public class ExpStopException : Exception
     {
-
+        public override string Message { get; } = "实验被中止";
     }
 
     /// <summary>
@@ -584,7 +584,13 @@ namespace ODMR_Lab
                 return;
             }
             SetStartState();
-            if (PreConfirmProcedure() == false)
+            bool IsContinue = true;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (!IsSubExperiment)
+                    IsContinue = PreConfirmProcedure();
+            });
+            if (!IsContinue)
             {
                 //设值结束状态
                 SetStopState();
@@ -618,14 +624,11 @@ namespace ODMR_Lab
                     try
                     {
                         //如果是子实验则不占用设备
-                        if (!IsSubExperiment)
+                        App.Current.Dispatcher.Invoke(() =>
                         {
-                            App.Current.Dispatcher.Invoke(() =>
-                            {
-                                Devices = GetDevices();
-                                DeviceDispatcher.UseDevices(Devices);
-                            });
-                        }
+                            Devices = GetDevices();
+                            DeviceDispatcher.UseDevices(Devices);
+                        });
                     }
                     catch (Exception ex)
                     {
@@ -658,8 +661,7 @@ namespace ODMR_Lab
                     //设值结束状态
                     SetStopState();
                     //结束占用设备
-                    if (!IsSubExperiment)
-                        DeviceDispatcher.EndUseDevices(Devices);
+                    DeviceDispatcher.EndUseDevices(Devices);
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         SetEndTime(DateTime.Now);
@@ -682,7 +684,8 @@ namespace ODMR_Lab
                     });
                     if (ex is ExpStopException)
                     {
-                        MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
+                        if (!IsSubExperiment)
+                            MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
                     }
                     else
                     {
@@ -695,6 +698,7 @@ namespace ODMR_Lab
                         else
                             MessageWindow.ShowTipWindow("实验发生异常,已结束：\n" + ex.Message, MainWindow.Handle);
                     }
+                    expFailedException = ex;
                     //设置结束状态
                     SetStopState();
                 }

@@ -158,24 +158,28 @@ namespace ODMR_Lab.激光控制
             {
                 while (!IsSampleEnd)
                 {
-                    List<double> buffer = new List<double>();
-                    lock (APDSampleData)
+                    try
                     {
-                        buffer = APDSampleData.ToArray().ToList();
+                        List<double> buffer = new List<double>();
+                        lock (APDSampleData)
+                        {
+                            buffer = APDSampleData.ToArray().ToList();
+                        }
+                        int count = buffer.Count;
+                        int displaycount = ConfigParam.MaxDisplayPoint.Value;
+                        if (displaycount > count) displaycount = count;
+                        APDDisplayData.X = Enumerable.Range(count - displaycount, count).Select(x => (double)x).ToList();
+                        APDDisplayData.Y = buffer.GetRange(count - displaycount, displaycount);
+                        Dispatcher.Invoke(() =>
+                        {
+                            Chart.RefreshPlotWithAutoScale();
+                            if (buffer.Count == 0)
+                                CountRate.Text = "0";
+                            else
+                                CountRate.Text = buffer.Last().ToString();
+                        });
                     }
-                    int count = buffer.Count;
-                    int displaycount = ConfigParam.MaxDisplayPoint.Value;
-                    if (displaycount > count) displaycount = count;
-                    APDDisplayData.X = Enumerable.Range(count - displaycount, count).Select(x => (double)x).ToList();
-                    APDDisplayData.Y = buffer.GetRange(count - displaycount, displaycount);
-                    Dispatcher.Invoke(() =>
-                    {
-                        Chart.RefreshPlotWithAutoScale();
-                        if (buffer.Count == 0)
-                            CountRate.Text = "0";
-                        else
-                            CountRate.Text = buffer.Last().ToString();
-                    });
+                    catch (Exception) { }
                     Thread.Sleep(30);
                 }
             });

@@ -315,6 +315,11 @@ namespace ODMR_Lab.IO操作
             }
         }
         #endregion
+
+        public ParamB Clone()
+        {
+            return (ParamB)Activator.CreateInstance(GetType(), Description, RawValue, PropertyName);
+        }
     }
 
     /// <summary>

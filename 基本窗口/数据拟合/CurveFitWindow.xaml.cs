@@ -61,7 +61,7 @@ namespace ODMR_Lab.基本窗口.数据拟合
             UpdateFuncs();
 
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterWindow(this, 0, 30);
+            h.RegisterWindow(this, MinBtn, MaxBtn, CloseBtn, 0, 30);
         }
 
         public void UpdateFuncs()
@@ -79,38 +79,6 @@ namespace ODMR_Lab.基本窗口.数据拟合
                 FitFuncGroupNew.Items.Add(new DecoratedButton() { Text = item });
                 FitFuncGroupEdit.Items.Add(new DecoratedButton() { Text = item });
             }
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void Maximize(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-                return;
-            }
-            if (WindowState == WindowState.Normal)
-            {
-                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-                MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
-                WindowState = WindowState.Maximized;
-                return;
-            }
-        }
-
-        private void Close(object sender, RoutedEventArgs e)
-        {
-            Func = null;
-            Close();
         }
 
         /// <summary>

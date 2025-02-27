@@ -41,7 +41,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             new Param<bool>("X扫描反向",false,"XReverse"),
             new Param<bool>("Y扫描反向",false,"YReverse"),
             new Param<int>("采样率(Hz)",60,"SampleRate"),
-            new Param<int>("位移台等待时间(ms)",0,"MoverWaitingTime")
+            new Param<int>("位移台等待时间(ms)",0,"MoverWaitingTime"),
+            new Param<int>("自动测量Autotrace次数",5,"AutotraceNumber")
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -70,10 +71,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             var btns = new List<KeyValuePair<string, Action>>();
             btns.Add(new KeyValuePair<string, Action>("AutoTrace", DoAutoTrace));
             btns.Add(new KeyValuePair<string, Action>("CW", DoCW));
+            btns.Add(new KeyValuePair<string, Action>("移动到选定位置", MoveToCursor));
+            btns.Add(new KeyValuePair<string, Action>("多点自动测量", DoMultiMeasure));
             return btns;
         }
 
-        public override bool IsAFMSubExperiment { get; protected set; } = true;
+        public override bool IsAFMSubExperiment { get; protected set; } = false;
 
         public override string CreateThreadState(NanoStageInfo dev1, NanoStageInfo dev2, double currentvalue1, double currentvalue2)
         {
@@ -96,15 +99,29 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
 
         public override List<object> ScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
         {
-            int waittime = GetInputParamValueByName("MoverWaitingTime");
-            device1.Device.MoveToAndWait(loc1value, waittime);
-            device2.Device.MoveToAndWait(loc2value, waittime);
+            //如果是第一次移动
+            if (range2.GetCustomIndex(loc2value) == 0 || range2.GetCustomIndex(loc2value) == range2.Count - 1)
+            {
+                device1.Device.MoveToAndWait(loc1value, 3000);
+                device2.Device.MoveToAndWait(loc2value, 3000);
+            }
+            else
+            {
+                int waittime = GetInputParamValueByName("MoverWaitingTime");
+                device1.Device.MoveToAndWait(loc1value, waittime);
+                device2.Device.MoveToAndWait(loc2value, waittime);
+            }
             ConfocalAPDSample a = new ConfocalAPDSample();
             var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByName("APD"));
             int count = (int)(double)res[0];
             var chartdata = Get2DChartData("计数率(cps)", "共聚焦扫描结果");
             chartdata.Data.SetValue(range1.GetNearestIndex(loc1value), range2.GetNearestIndex(loc2value), count);
             UpdatePlotChartFlow(true);
+            return new List<object>();
+        }
+
+        public override List<object> ReverseScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
+        {
             return new List<object>();
         }
 
@@ -146,6 +163,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             PulseBlasterInfo trace = GetDeviceByName("TraceSource") as PulseBlasterInfo;
             trace.Device.PulseFrequency = GetInputParamValueByName("SampleRate");
             trace.Device.Start();
+            //打开APD
+            APDInfo apd = GetDeviceByName("APD") as APDInfo;
+            apd.StartContinusSample();
             //创建数据集
             var r1 = GetScanRange1();
             var r2 = GetScanRange2();
@@ -166,6 +186,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             LaserOff loff = new LaserOff();
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             loff.CoreMethod(new List<object>() { }, pb);
+            //打开APD
+            APDInfo apd = GetDeviceByName("APD") as APDInfo;
+            apd.EndContinusSample();
             //关闭APD触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
         }
@@ -176,10 +199,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
         /// </summary>
         private void DoAutoTrace()
         {
-            var exp = RunSubExperimentBlock(0, true);
-            if (exp.ExpFailedException != null)
+            try
             {
-                MessageWindow.ShowTipWindow("AutoTrace出现问题:" + exp.ExpFailedException.Message, Window.GetWindow(ParentPage));
+                var exp = RunSubExperimentBlock(0, true);
+            }
+            catch (Exception ex)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageWindow.ShowTipWindow("AutoTrace出现问题:" + ex.Message, Window.GetWindow(ParentPage));
+                });
             }
         }
 
@@ -188,10 +217,119 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
         /// </summary>
         private void DoCW()
         {
-            var exp = RunSubExperimentBlock(1, true);
-            if (exp.ExpFailedException != null)
+            try
             {
-                MessageWindow.ShowTipWindow("AutoTrace出现问题:" + exp.ExpFailedException.Message, Window.GetWindow(ParentPage));
+                var exp = RunSubExperimentBlock(1, true);
+            }
+            catch (Exception ex)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageWindow.ShowTipWindow("CW扫描出现问题:" + ex.Message, Window.GetWindow(ParentPage));
+                });
+            }
+        }
+
+        /// <summary>
+        /// 移动到光标位置
+        /// </summary>
+        private void MoveToCursor()
+        {
+            Point p = ParentPage.Chart2D.GetSelectedCursor();
+            MoveToCursor(p);
+        }
+
+        private void MoveToCursor(Point p)
+        {
+            //刷新可用设备
+            GetDevices();
+            var lx = GetDeviceByName("LenX") as NanoStageInfo;
+            var ly = GetDeviceByName("LenY") as NanoStageInfo;
+            try
+            {
+                DeviceDispatcher.UseDevices(lx, ly);
+                if (double.IsNaN(p.X) || double.IsNaN(p.Y)) return;
+                lx.Device.MoveToAndWait(p.X, 3000);
+                ly.Device.MoveToAndWait(p.Y, 3000);
+                DeviceDispatcher.EndUseDevices(lx, ly);
+                SetExpState("移动完成,当前位置: X: " + Math.Round(p.X, 5).ToString() + " Y: " + Math.Round(p.Y, 5).ToString());
+            }
+            catch (Exception ex)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageWindow.ShowTipWindow("设备被占用", Window.GetWindow(ParentPage));
+                });
+            }
+        }
+
+        //多点测量
+        private void DoMultiMeasure()
+        {
+            var cursors = ParentPage.Chart2D.GetCursors();
+            bool isContinue = true;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (MessageBoxResult.Yes != MessageWindow.ShowMessageBox("提示", "选中的测量点数:" + cursors.Count.ToString() + "\n确定要执行扫描吗?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)))
+                {
+                    isContinue = false;
+                }
+            });
+            if (!isContinue) return;
+            var ylocs = cursors.Select(x => x.Y).ToList();
+            ylocs.Sort();
+            List<Point> newps = new List<Point>();
+            foreach (var item in ylocs)
+            {
+                var xlocs = cursors.Where(x => x.Y == item).ToList();
+                xlocs.Sort((v1, v2) => v1.X.CompareTo(v1.Y));
+                newps.AddRange(xlocs);
+            }
+            D1ChartDatas.Clear();
+            UpdatePlotChart();
+            //进行实验
+            ParentPage.Chart2D.LockPlotCursor();
+            foreach (var item in newps)
+            {
+                //移动到目标点
+                MoveToCursor(item);
+                int autotraceCount = GetInputParamValueByName("AutotraceNumber");
+                for (int i = 0; i < autotraceCount; i++)
+                {
+                    var autotraceexp = RunSubExperimentBlock(0, true);
+                    if (i == autotraceCount - 1)
+                    {
+                        //添加数据
+                        var locxs = autotraceexp.Get1DChartData("位置", "AutoTrace X") as NumricChartData1D;
+                        var countxs = autotraceexp.Get1DChartData("计数", "AutoTrace X") as NumricChartData1D;
+                        var locys = autotraceexp.Get1DChartData("位置", "AutoTrace Y") as NumricChartData1D;
+                        var countys = autotraceexp.Get1DChartData("计数", "AutoTrace Y") as NumricChartData1D;
+                        var loczs = autotraceexp.Get1DChartData("位置", "AutoTrace Z") as NumricChartData1D;
+                        var countzs = autotraceexp.Get1DChartData("计数", "AutoTrace Z") as NumricChartData1D;
+                        locxs.Name = " X: " + Math.Round(item.X, 5).ToString() + " Y: " + Math.Round(item.Y, 5).ToString() + locxs.Name;
+                        locys.Name = " X: " + Math.Round(item.X, 5).ToString() + " Y: " + Math.Round(item.Y, 5).ToString() + locys.Name;
+                        loczs.Name = " X: " + Math.Round(item.X, 5).ToString() + " Y: " + Math.Round(item.Y, 5).ToString() + loczs.Name;
+                        countxs.Name = " X: " + Math.Round(item.X, 5).ToString() + " Y: " + Math.Round(item.Y, 5).ToString() + countxs.Name;
+                        countys.Name = " X: " + Math.Round(item.X, 5).ToString() + " Y: " + Math.Round(item.Y, 5).ToString() + countys.Name;
+                        countzs.Name = " X: " + Math.Round(item.X, 5).ToString() + " Y: " + Math.Round(item.Y, 5).ToString() + countzs.Name;
+                        D1ChartDatas.Add(locxs);
+                        D1ChartDatas.Add(locys);
+                        D1ChartDatas.Add(loczs);
+                        D1ChartDatas.Add(countxs);
+                        D1ChartDatas.Add(countys);
+                        D1ChartDatas.Add(countzs);
+                        UpdatePlotChart();
+                    }
+                }
+                //测CW谱
+                var cwexp = RunSubExperimentBlock(1, true);
+                var freqs = cwexp.Get1DChartData("频率", "CW对比度数据") as NumricChartData1D;
+                var contracts = cwexp.Get1DChartData("对比度", "CW对比度数据") as NumricChartData1D;
+                if (Get1DChartData("频率", "CW对比度数据") == null)
+                    D1ChartDatas.Add(freqs);
+                contracts.Name = " X: " + Math.Round(item.X, 5).ToString() + " Y: " + Math.Round(item.Y, 5).ToString() + contracts.Name;
+                D1ChartDatas.Add(contracts);
+                UpdatePlotChart();
             }
         }
         #endregion

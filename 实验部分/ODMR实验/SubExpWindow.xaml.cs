@@ -1,4 +1,5 @@
-﻿using ODMR_Lab.ODMR实验;
+﻿using CodeHelper;
+using ODMR_Lab.ODMR实验;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,23 +21,23 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
     /// </summary>
     public partial class SubExpWindow : Window
     {
-
-        ODMRExpObject SubExp = null;
-
         public SubExpWindow(string title)
         {
             InitializeComponent();
+            WindowResizeHelper h = new WindowResizeHelper();
+            h.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 6, 30);
+
+            SubExpContent.Children.Add(new DisplayPage(false));
             Title = title;
             TitleWindow.Content = title;
         }
 
         public void Show(ODMRExpObject subexp)
         {
-            SubExp = subexp;
-            var page = SubExpContent as DisplayPage;
-            page.ParamsColumn.Width = new GridLength(0);
+            var page = SubExpContent.Children[0] as DisplayPage;
             page.ExpObjects.Add(subexp);
             page.SelectExp(0);
+            subexp.ParentPage = SubExpContent.Children[0] as DisplayPage;
             Show();
         }
     }

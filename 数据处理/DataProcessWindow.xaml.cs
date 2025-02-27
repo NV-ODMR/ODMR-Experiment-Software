@@ -37,7 +37,7 @@ namespace ODMR_Lab.数据处理
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, 5, 40);
+            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 40);
 
             ParentPage = parentPage;
         }
@@ -49,32 +49,6 @@ namespace ODMR_Lab.数据处理
         }
 
         public DataVisualSource ParentDataSource { get; set; } = null;
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void Maximize(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-                return;
-            }
-            if (WindowState == WindowState.Normal)
-            {
-                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-                MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
-                WindowState = WindowState.Maximized;
-                return;
-            }
-        }
 
         private void Close(object sender, RoutedEventArgs e)
         {

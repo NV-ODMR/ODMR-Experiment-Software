@@ -22,12 +22,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         /// <exception cref="NotImplementedException"></exception>
         public override List<object> CoreMethod(List<object> InputParams, params InfoBase[] devices)
         {
-            //打开APD
             APDInfo apd = devices[0] as APDInfo;
-            apd.StartContinusSample();
             double ratio = apd.GetContinusSampleRatio();
-            //关闭APD
-            apd.EndContinusSample();
+            ratio = apd.GetContinusSampleRatio();
             return new List<object>() { ratio };
         }
     }

@@ -56,7 +56,7 @@ namespace ODMR_Lab.磁场调节
             Title = windowtitle;
             WindowTitle.Content = windowtitle;
             CodeHelper.WindowResizeHelper helper = new CodeHelper.WindowResizeHelper();
-            helper.RegisterWindow(this, dragHeight: 30);
+            helper.RegisterWindow(this, MinBtn, null, null, dragHeight: 30);
 
             Chart.DataSource.AddRange(new List<ChartData1D>()
             {
@@ -90,11 +90,6 @@ namespace ODMR_Lab.磁场调节
         private void Close(object sender, RoutedEventArgs e)
         {
             Hide();
-        }
-
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
         }
 
         /// <summary>

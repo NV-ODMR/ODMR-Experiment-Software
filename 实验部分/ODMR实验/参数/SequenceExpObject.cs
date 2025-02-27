@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验类;
@@ -131,6 +132,11 @@ namespace ODMR_Lab.ODMR实验
         public override ExpParamBase Param { get; set; } = null;
 
         /// <summary>
+        /// 所属实验
+        /// </summary>
+        public ODMRExpObject ParentExp = null;
+
+        /// <summary>
         /// 初始化并且刷新参数
         /// </summary>
         public ODMRExpObject()
@@ -151,27 +157,13 @@ namespace ODMR_Lab.ODMR实验
                 item.Value.GroupName = ODMRExperimentGroupName;
             }
 
+            var ll = SubExperiments;
+            SubExperiments = new List<ODMRExpObject>();
+
             //添加子实验参数
-            foreach (var item in SubExperiments)
+            foreach (var item in ll)
             {
-                foreach (var p in item.InputParams)
-                {
-                    p.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.PropertyName;
-                    p.GroupName = item.ODMRExperimentName;
-                }
-                foreach (var p in item.OutputParams)
-                {
-                    p.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.PropertyName;
-                    p.GroupName = item.ODMRExperimentName;
-                }
-                foreach (var p in item.DeviceList)
-                {
-                    p.Value.PropertyName = item.ODMRExperimentGroupName + "_" + item.ODMRExperimentName + "_" + p.Value.PropertyName;
-                    p.Value.GroupName = item.ODMRExperimentName;
-                }
-                InputParams.AddRange(item.InputParams);
-                OutputParams.AddRange(item.OutputParams);
-                DeviceList.AddRange(item.DeviceList);
+                AddSubExp(item);
             }
 
             InterativeButtons = AddInteractiveButtons();
@@ -187,24 +179,33 @@ namespace ODMR_Lab.ODMR实验
         public void AddSubExp(ODMRExpObject exp)
         {
             SubExperiments.Add(exp);
+            List<ParamB> Inparams = new List<ParamB>();
+            List<ParamB> Outparams = new List<ParamB>();
+            List<KeyValuePair<DeviceTypes, Param<string>>> Devices = new List<KeyValuePair<DeviceTypes, Param<string>>>();
             foreach (var p in exp.InputParams)
             {
-                p.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + p.PropertyName;
-                p.GroupName = exp.ODMRExperimentName;
+                var pnew = p.Clone();
+                pnew.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + pnew.PropertyName;
+                pnew.GroupName = exp.ODMRExperimentName;
+                Inparams.Add(pnew);
             }
             foreach (var p in exp.OutputParams)
             {
-                p.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + p.PropertyName;
-                p.GroupName = exp.ODMRExperimentName;
+                var pnew = p.Clone();
+                pnew.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + pnew.PropertyName;
+                pnew.GroupName = exp.ODMRExperimentName;
+                Outparams.Add(pnew);
             }
             foreach (var p in exp.DeviceList)
             {
-                p.Value.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + p.Value.PropertyName;
-                p.Value.GroupName = exp.ODMRExperimentName;
+                var pnew = p.Value.Clone();
+                pnew.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + pnew.PropertyName;
+                pnew.GroupName = exp.ODMRExperimentName;
+                Devices.Add(new KeyValuePair<DeviceTypes, Param<string>>(p.Key, (Param<string>)pnew));
             }
-            InputParams.AddRange(exp.InputParams);
-            OutputParams.AddRange(exp.OutputParams);
-            DeviceList.AddRange(exp.DeviceList);
+            InputParams.AddRange(Inparams);
+            OutputParams.AddRange(Outparams);
+            DeviceList.AddRange(Devices);
         }
 
         public override ConfigBase ReadConfig()
@@ -260,7 +261,17 @@ namespace ODMR_Lab.ODMR实验
                         {
                             (sender as DecoratedButton).IsEnabled = false;
                         });
-                        item.Value?.Invoke();
+                        try
+                        {
+                            item.Value?.Invoke();
+                        }
+                        catch (Exception ex)
+                        {
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                MessageWindow.ShowTipWindow("按钮指令未完成:" + ex.Message, Window.GetWindow(ParentPage));
+                            });
+                        }
                         App.Current.Dispatcher.Invoke(() =>
                         {
                             (sender as DecoratedButton).IsEnabled = true;
@@ -330,13 +341,34 @@ namespace ODMR_Lab.ODMR实验
         {
             ExperimentDevices.Clear();
             List<InfoBase> infos = new List<InfoBase>();
-            foreach (var item in DeviceList)
+            //只找主程序的设备
+            var maindevList = DeviceList.Where(x => x.Value.PropertyName.Split('_')[0] == "Device");
+            foreach (var item in maindevList)
             {
-                item.Value.ReadFromPage(new FrameworkElement[] { ParentPage.DevicePanel }, true);
+                if (!IsSubExperiment)
+                    item.Value.ReadFromPage(new FrameworkElement[] { ParentPage.DevicePanel }, true);
                 var res = DeviceDispatcher.GetDevice(item.Key, item.Value.Value);
                 if (res == null) throw new Exception("设备未找到:" + item.Value.Description);
-                infos.Add(res);
                 ExperimentDevices.Add(new KeyValuePair<string, InfoBase>(item.Value.PropertyName, res));
+                //如果是子程序那么遇到和主程序相同的设备时不用连接 
+                if (ParentExp != null)
+                {
+                    //主程序中不存在此设备 
+                    if (ParentExp.ExperimentDevices.Where(x => x.Value == res).Count() == 0)
+                        infos.Add(res);
+                    else
+                    {
+                        //如果主程序未执行则要重新连接
+                        if (ParentExp.IsExpEnd)
+                        {
+                            infos.Add(res);
+                        }
+                    }
+                }
+                else
+                {
+                    infos.Add(res);
+                }
             }
             return infos;
         }
@@ -593,8 +625,6 @@ namespace ODMR_Lab.ODMR实验
                 ParentPage.Chart1D.DataSource.AddRange(D1ChartDatas);
                 ParentPage.Chart1D.FitData.AddRange(D1FitDatas);
                 ParentPage.Chart2D.DataSource.AddRange(D2ChartDatas);
-                ParentPage.Chart1D.UpdateChartAndDataFlow(true);
-                ParentPage.Chart2D.UpdateChartAndDataFlow();
             });
         }
 
@@ -619,16 +649,18 @@ namespace ODMR_Lab.ODMR实验
 
             //设置子实验设备
             var devs = DeviceList.Where((x) => x.Value.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
-            foreach (var item in inputs)
+            foreach (var item in devs)
             {
-                var par = subExp.DeviceList.Where(x => x.Value.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
+                var par = subExp.DeviceList.Where(x => x.Value.PropertyName == item.Value.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
                 if (par.Count() != 0)
                 {
-                    ParamB.SetUnknownParamValue(par.ElementAt(0).Value, item.RawValue);
+                    ParamB.SetUnknownParamValue(par.ElementAt(0).Value, item.Value.RawValue);
                 }
             }
 
             DisConnectOuterControl();
+
+
 
             SubExpWindow win = null;
             if (ShowWindow)
@@ -636,13 +668,10 @@ namespace ODMR_Lab.ODMR实验
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     win = new SubExpWindow("子实验: " + subExp.ODMRExperimentGroupName + ":" + subExp.ODMRExperimentName + " , " + "母实验: " + ODMRExperimentGroupName + ":" + ODMRExperimentName);
-                    subExp.ParentPage = win.SubExpContent;
                     win.Show(subExp);
-                    win.SubExpContent.ExpObjects.Add(subExp);
-                    win.SubExpContent.SelectExp(0);
                     //设置状态
                     subExp.DisConnectOuterControl();
-                    subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, win.SubExpContent.ProgressTitle, win.SubExpContent.Progress, win.SubExpContent.GetControlsStates());
+                    subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, subExp.ParentPage.ProgressTitle, subExp.ParentPage.Progress, subExp.ParentPage.GetControlsStates());
                 });
             }
             else
@@ -657,9 +686,18 @@ namespace ODMR_Lab.ODMR实验
 
             subExp.JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
             subExp.IsSubExperiment = true;
+            subExp.ParentExp = this;
             subExp.Start();
 
             while (!subExp.IsExpEnd) { Thread.Sleep(50); }
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                subExp.DisConnectOuterControl();
+                //设置状态
+                ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, ParentPage.StartTime, ParentPage.EndTime, ParentPage.ProgressTitle, ParentPage.Progress, ParentPage.GetControlsStates());
+            });
+
             //关闭子窗口//
             if (win != null)
             {
@@ -690,7 +728,7 @@ namespace ODMR_Lab.ODMR实验
             {
                 ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, ParentPage.StartTime, ParentPage.EndTime, ParentPage.ProgressTitle, ParentPage.Progress, controlsStates);
             });
-
+            if (subExp.ExpFailedException != null) throw subExp.ExpFailedException;
             return subExp;
         }
     }

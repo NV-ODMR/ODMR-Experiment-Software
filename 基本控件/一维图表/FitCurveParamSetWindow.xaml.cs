@@ -34,7 +34,7 @@ namespace ODMR_Lab.基本控件.一维图表
             InitializeComponent();
 
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterWindow(this, 0, 40);
+            h.RegisterWindow(this,MinBtn,null,CloseBtn, 0, 40);
         }
 
         public void ShowDialog(double lo, double hi, int count)
@@ -63,16 +63,6 @@ namespace ODMR_Lab.基本控件.一维图表
             {
                 MessageWindow.ShowTipWindow("参数格式错误", this);
             }
-        }
-
-        private void Close(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
         }
     }
 }

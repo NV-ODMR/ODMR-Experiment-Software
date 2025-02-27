@@ -49,6 +49,11 @@ namespace ODMR_Lab.基本控件
             }
         }
 
+        public Point GetSelectedCursor()
+        {
+            return ChartObject.GetSelectedCursorPoint();
+        }
+
         /// <summary>
         /// 数据
         /// </summary>
@@ -70,18 +75,21 @@ namespace ODMR_Lab.基本控件
         /// <param name="e"></param>
         private void UpdateDataPanel(object sender, RoutedEventArgs e)
         {
-            UpdateGroups();
-            DataSet.ClearItems();
-            if (ChartGroups.SelectedItem == null && ChartGroups.Items.Count != 0)
+            App.Current.Dispatcher.Invoke(() =>
             {
-                ChartGroups.Select(0);
-                return;
-            }
-            if (ChartGroups.SelectedItem != null)
-            {
-                string GroupName = ChartGroups.SelectedItem.Tag as string;
-                UpdateDataPanel(GroupName);
-            }
+                UpdateGroups();
+                DataSet.ClearItems();
+                if (ChartGroups.SelectedItem == null && ChartGroups.Items.Count != 0)
+                {
+                    ChartGroups.Select(0);
+                    return;
+                }
+                if (ChartGroups.SelectedItem != null)
+                {
+                    string GroupName = ChartGroups.SelectedItem.Tag as string;
+                    UpdateDataPanel(GroupName);
+                }
+            });
         }
 
         /// <summary>
@@ -248,8 +256,35 @@ namespace ODMR_Lab.基本控件
 
                 ChartObject.IsAutoScale = para.AutoScale.Value;
 
+                if (para.LockCursor.Value)
+                {
+                    ChartObject.LockCursors();
+                }
+                else
+                    ChartObject.UnLockCursors();
+
                 ChartObject.RefreshPlot();
             });
+        }
+
+        public void LockPlotCursor()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                LockCursor.IsSelected = true;
+            });
+        }
+        public void UnLockPlotCursor()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                LockCursor.IsSelected = false;
+            });
+        }
+
+        public List<Point> GetCursors()
+        {
+            return ChartObject.GetCursors();
         }
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using Controls;
+﻿using CodeHelper;
+using Controls;
 using Controls.Windows;
 using HardWares.纳米位移台;
 using ODMR_Lab.Windows;
@@ -39,6 +40,8 @@ namespace ODMR_Lab.设备部分.位移台部分
             {
                 MoverLists.Children.Add(CreateMoverGridBar(item));
             }
+            WindowResizeHelper h = new WindowResizeHelper();
+            h.RegisterWindow(this, null, null, null, 5, 30);
             CreateListenThread();
         }
 
@@ -220,7 +223,7 @@ namespace ODMR_Lab.设备部分.位移台部分
                 MoveThread = new Thread(() =>
                 {
                     IsMoveStopped = false;
-                    stage.MoveStepAndWait(-step, 5000);
+                    stage.MoveStepAndWait(-step, 50);
                     IsMoveStopped = true;
                 });
                 MoveThread.Start();
@@ -233,7 +236,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             MoveThread = new Thread(() =>
             {
                 IsMoveStopped = false;
-                stage.MoveStepAndWait(-step, 5000);
+                stage.MoveStepAndWait(-step, 50);
                 IsMoveStopped = true;
             });
             MoveThread.Start();
@@ -251,7 +254,7 @@ namespace ODMR_Lab.设备部分.位移台部分
                 MoveThread = new Thread(() =>
                 {
                     IsMoveStopped = false;
-                    stage.MoveStepAndWait(step, 5000);
+                    stage.MoveStepAndWait(step, 50);
                     IsMoveStopped = true;
                 });
                 MoveThread.Start();
@@ -264,7 +267,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             MoveThread = new Thread(() =>
             {
                 IsMoveStopped = false;
-                stage.MoveStepAndWait(step, 5000);
+                stage.MoveStepAndWait(step, 50);
                 IsMoveStopped = true;
             });
             MoveThread.Start();

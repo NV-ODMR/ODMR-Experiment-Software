@@ -22,6 +22,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
 
             D2Session.FirstScanEvent = FirstScanEvent;
             D2Session.ScanEvent = ScanEvent;
+            D2Session.ReverseScanEvent = ReverseScanEvent;
             D2Session.ScanSource1 = dev1;
             D2Session.ScanSource2 = dev2;
             D2Session.ProgressBarMethod = new Action<T1, T2, double>((devi1, devi2, val) =>
@@ -74,6 +75,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
         /// <param name="inputParams"></param>
         /// <returns></returns>
         public abstract List<object> ScanEvent(T1 device1, T2 device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams);
+
+
+        /// <summary>
+        /// 反向扫描操作，inputParams为空
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="locvalue"></param>
+        /// <param name="inputParams"></param>
+        /// <returns></returns>
+        public abstract List<object> ReverseScanEvent(T1 device1, T2 device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams);
 
         /// <summary>
         /// 第一次扫描操作，inputParams为空

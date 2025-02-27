@@ -20,7 +20,9 @@ namespace ODMR_Lab.基本控件
 
         public Param<double> ValueLo { get; set; } = new Param<double>("值下限", 1, "ValueLo");
 
-        public Param<bool> Cursor { get; set; } = new Param<bool>("光标", false, "Cursor");
+        public Param<bool> LockCursor { get; set; } = new Param<bool>("光标", false, "LockCursor");
+
+        public Param<bool> CrossThickness { get; set; } = new Param<bool>("光标线宽", false, "CrossThickness");
 
         /// <summary>
         /// 全局图表参数

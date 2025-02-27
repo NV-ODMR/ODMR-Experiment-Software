@@ -6,14 +6,21 @@
         xmlns:local="clr-namespace:ODMR_Lab.实验部分.ODMR实验.实验方法" xmlns:controls="clr-namespace:Controls;assembly=Controls"
         mc:Ignorable="d"
         xmlns:display="clr-namespace:ODMR_Lab.实验部分.ODMR实验"
-        Title="SubExpWindow"  Height="600" Width="800" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+        Title="SubExpWindow"  Height="600" Width="800" WindowChrome.IsHitTestVisibleInChrome="False"  BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Label Background="#FF4D4D4D" Name="TitleWindow"/>
-        <display:DisplayPage Grid.Row="1" x:Name="SubExpContent">
-        </display:DisplayPage>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <controls:DecoratedButton Name="MinimizeBtn" Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
+        <controls:DecoratedButton Name="MaximizeBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
+        <Label Background="#FF4D4D4D" Name="TitleWindow" Foreground="White"/>
+        <Grid Grid.Row="1" Grid.ColumnSpan="3" x:Name="SubExpContent">
+        </Grid>
     </Grid>
 </Window>

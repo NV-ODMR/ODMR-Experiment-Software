@@ -48,7 +48,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
 
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, 5, 30);
+            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 30);
 
             InitCursorSettings();
 
@@ -56,35 +56,6 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
             CameraPixelHeight = info.Device.CameraPixelHeightCount;
             CameraPixelHeight = info.Device.CameraPixelWidthCount;
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Maximize(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-                return;
-            }
-            if (WindowState == WindowState.Normal)
-            {
-                WindowState = WindowState.Maximized;
-                return;
-            }
         }
 
         private void Close(object sender, RoutedEventArgs e)

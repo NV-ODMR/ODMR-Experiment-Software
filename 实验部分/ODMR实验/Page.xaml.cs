@@ -48,9 +48,9 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
         public ODMRExpObject CurrentExpObject = null;
 
-        public DisplayPage()
+
+        private void LoadExps()
         {
-            InitializeComponent();
             //查找所有实验
             var SequenceTypes = CodeHelper.ClassHelper.GetSubClassTypes(typeof(ODMRExpObject));
             List<ODMRExpObject> noafms = new List<ODMRExpObject>();
@@ -82,12 +82,20 @@ namespace ODMR_Lab.实验部分.ODMR实验
             }
         }
 
+        public DisplayPage(bool isLoadExps)
+        {
+            InitializeComponent();
+            if (isLoadExps)
+                LoadExps();
+        }
+
         public List<KeyValuePair<FrameworkElement, RunningBehaviours>> GetControlsStates()
         {
             List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlsStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InputPanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(DevicePanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ButtonsPanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunning));
             return ControlsStates;
         }

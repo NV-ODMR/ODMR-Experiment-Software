@@ -86,9 +86,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
 
         public override List<object> ScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
         {
-            int waittime = GetInputParamValueByName("MoverWaitingTime");
-            device1.Device.MoveToAndWait(loc1value, waittime);
-            device2.Device.MoveToAndWait(loc2value, waittime);
+            //如果是第一次移动
+            if (range2.GetCustomIndex(loc2value) == 0 || range2.GetCustomIndex(loc2value) == range2.Count - 1)
+            {
+                device1.Device.MoveToAndWait(loc1value, 3000);
+                device2.Device.MoveToAndWait(loc2value, 3000);
+            }
+            else
+            {
+                int waittime = GetInputParamValueByName("MoverWaitingTime");
+                device1.Device.MoveToAndWait(loc1value, waittime);
+                device2.Device.MoveToAndWait(loc2value, waittime);
+            }
             ConfocalAPDSample a = new ConfocalAPDSample();
             var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByName("APD"));
             int count = (int)(double)res[0];
@@ -97,6 +106,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             UpdatePlotChartFlow(true);
             return new List<object>();
         }
+
+        public override List<object> ReverseScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
+        {
+            return new List<object>();
+        }
+
 
         public override ScanRange GetScanRange1()
         {
@@ -159,7 +174,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             LaserOff loff = new LaserOff();
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             loff.CoreMethod(new List<object>() { }, pb);
-            //关闭APD
+            //打开APD
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.EndContinusSample();
             //关闭APD触发源

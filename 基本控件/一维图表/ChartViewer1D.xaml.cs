@@ -309,8 +309,14 @@ namespace ODMR_Lab.基本控件
             //刷新数据显示
             UpdateDataDisplay();
 
-            while (UpdateThread != null && (UpdateThread.ThreadState == ThreadState.Running || UpdateThread.ThreadState == ThreadState.Suspended))
+            while (UpdateThread != null && UpdateThread.ThreadState != ThreadState.Stopped)
             {
+                if (UpdateThread.ThreadState == ThreadState.WaitSleepJoin)
+                {
+                    UpdateThread.Abort();
+                    while (UpdateThread.ThreadState != ThreadState.Aborted) Thread.Sleep(20);
+                    break;
+                }
                 Thread.Sleep(50);
             }
             UpdateThread = new Thread(() =>

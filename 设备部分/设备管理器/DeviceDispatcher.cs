@@ -75,7 +75,7 @@ namespace ODMR_Lab.设备部分
         /// 开始使用多个设备，如果其中有一个设备被占用则释放所有其他已被占用的设备，同时报错
         /// </summary>
         public static void UseDevices(params InfoBase[] devs)
-        {
+        { 
             UseDevices(devs.ToList());
         }
 

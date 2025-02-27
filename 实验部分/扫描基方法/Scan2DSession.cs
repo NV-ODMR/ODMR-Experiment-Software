@@ -35,9 +35,13 @@ namespace ODMR_Lab.实验部分.扫描基方法
         public Func<T1, T2, ScanRange, ScanRange, double, double, List<object>, List<object>> FirstScanEvent = null;
 
         /// <summary>
-        /// 扫描其他点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
+        /// 正向扫描其他点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
         /// </summary>
         public Func<T1, T2, ScanRange, ScanRange, double, double, List<object>, List<object>> ScanEvent = null;
+        /// <summary>
+        /// 反向扫描其他点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
+        /// </summary>
+        public Func<T1, T2, ScanRange, ScanRange, double, double, List<object>, List<object>> ReverseScanEvent = null;
 
         /// <summary>
         /// 状态判断事件,此事件用来决定是否退出扫描步骤
@@ -62,7 +66,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
             var scan2revlist = scan2list.ToArray().ToList();
             scan2revlist.Reverse();
 
-            var progress = new ScanRange(progressLo, progressHi, scan1list.Count * scan2list.Count).GenerateScanList();
+            var progress = new ScanRange(progressLo, progressHi, scan1list.Count * scan2list.Count * 2).GenerateScanList();
 
 
             bool IsFirstScan = true;
@@ -75,47 +79,42 @@ namespace ODMR_Lab.实验部分.扫描基方法
                 bool IsReverse = false;
                 for (int i = 0; i < scan1list.Count; i++)
                 {
-                    if (!IsReverse)
+                    //正扫
+                    for (int j = 0; j < scan2list.Count; j++)
                     {
-                        for (int j = 0; j < scan2list.Count; j++)
+                        //进行操作
+                        if (IsFirstScan == true)
                         {
-                            //进行操作
-                            if (IsFirstScan == true)
-                            {
-                                result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], ps.ToList());
-                                StateJudgeEvent?.Invoke();
-                                IsFirstScan = false;
-                                ++ind;
-                                continue;
-                            }
-                            result = ScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], result);
+                            result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], ps.ToList());
                             StateJudgeEvent?.Invoke();
-                            SetProgress(progress[ind]);
-                            SetStateMethod?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2list[j]);
+                            IsFirstScan = false;
                             ++ind;
+                            continue;
                         }
+                        result = ScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], result);
+                        StateJudgeEvent?.Invoke();
+                        SetProgress(progress[ind]);
+                        SetStateMethod?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2list[j]);
+                        ++ind;
                     }
-                    else
+                    //反扫
+                    for (int j = 0; j < scan2revlist.Count; j++)
                     {
-                        for (int j = 0; j < scan2revlist.Count; j++)
+                        //进行操作
+                        if (IsFirstScan == true)
                         {
-                            //进行操作
-                            if (IsFirstScan == true)
-                            {
-                                result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2revlist[j], ps.ToList());
-                                StateJudgeEvent?.Invoke();
-                                IsFirstScan = false;
-                                ++ind;
-                                continue;
-                            }
-                            result = ScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2revlist[j], result);
+                            result = FirstScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], ps.ToList());
                             StateJudgeEvent?.Invoke();
-                            SetProgress(progress[ind]);
-                            SetStateMethod?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2revlist[j]);
+                            IsFirstScan = false;
                             ++ind;
+                            continue;
                         }
+                        result = ReverseScanEvent?.Invoke(ScanSource1, ScanSource2, axis1range, axis2range, scan1list[i], scan2list[j], result);
+                        StateJudgeEvent?.Invoke();
+                        SetProgress(progress[ind]);
+                        SetStateMethod?.Invoke(ScanSource1, ScanSource2, scan1list[i], scan2list[j]);
+                        ++ind;
                     }
-                    IsReverse = !IsReverse;
                 }
                 return result;
             }

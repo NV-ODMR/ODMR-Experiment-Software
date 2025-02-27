@@ -54,6 +54,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         {
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("APD Trace源","","TraceSource")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("激光源(板卡)","","PB")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头X","","LenX")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Y","","LenY")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Z","","LenZ")),
@@ -98,12 +99,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public List<object> ScanEvent(NanoStageInfo device, ScanRange range, double locvalue, List<object> inputParams)
         {
             //移动位移台
-            device.Device.MoveToAndWait(locvalue, 500);
+            device.Device.MoveToAndWait(locvalue, 3000);
             //打开APD
             APDInfo info = GetDeviceByName("APD") as APDInfo;
             info.StartContinusSample();
             //光子采样
             double rat = (GetDeviceByName("APD") as APDInfo).GetContinusSampleRatio();
+            rat = (GetDeviceByName("APD") as APDInfo).GetContinusSampleRatio();
             info.EndContinusSample();
 
             if (device == GetDeviceByName("LenX"))
@@ -172,7 +174,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double c = locs[counts.IndexOf(counts.Max())];
             //偏移量
             double d = counts.Min();
-            var fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt);
+            var fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 2000);
 
             a = fitresult1["a"];
             b = fitresult1["b"];
@@ -199,7 +201,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 newloc = pos - range / 2;
             if (newloc > pos + range / 2)
                 newloc = pos + range / 2;
-            session.ScanSource.Device.MoveToAndWait(newloc, 1000);
+            session.ScanSource.Device.MoveToAndWait(newloc, 3000);
             #endregion
 
             #region 扫Y方向
@@ -224,7 +226,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             c = locs[counts.IndexOf(counts.Max())];
             //偏移量
             d = counts.Min();
-            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt);
+            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 2000);
 
             a = fitresult1["a"];
             b = fitresult1["b"];
@@ -276,7 +278,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             c = locs[counts.IndexOf(counts.Max())];
             //偏移量
             d = counts.Min();
-            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt);
+            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 2000);
 
             a = fitresult1["a"];
             b = fitresult1["b"];
@@ -330,7 +332,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             lon.CoreMethod(new List<object>() { 1.0 }, pb);
             //打开APD Trace触发源
-            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.PulseFrequency = 10;
+            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.PulseFrequency = 20;
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.Start();
         }
 
@@ -339,7 +341,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             //关闭激光
             LaserOff loff = new LaserOff();
-            loff.CoreMethod(new List<object>() { pb.FindChannelEnumOfDescription("激光触发源") }, pb);
+            loff.CoreMethod(new List<object>() { }, pb);
             //关闭APD Trace触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
         }

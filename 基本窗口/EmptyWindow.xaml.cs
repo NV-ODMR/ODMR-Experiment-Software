@@ -26,41 +26,10 @@ namespace ODMR_Lab.基本窗口
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, 5, 40);
+            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 40);
             Title = wintitle;
             title.Content = "     " + wintitle;
             ParentPage = parent;
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Maximize(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized)
-            {
-                WindowState = WindowState.Normal;
-                return;
-            }
-            if (WindowState == WindowState.Normal)
-            {
-                MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-                MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
-                WindowState = WindowState.Maximized;
-                return;
-            }
         }
 
         private void Close(object sender, RoutedEventArgs e)

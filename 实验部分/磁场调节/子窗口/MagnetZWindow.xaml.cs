@@ -67,7 +67,7 @@ namespace ODMR_Lab.磁场调节
             Title = windowtitle;
             WindowTitle.Content = windowtitle;
             CodeHelper.WindowResizeHelper helper = new CodeHelper.WindowResizeHelper();
-            helper.RegisterWindow(this, dragHeight: 30);
+            helper.RegisterWindow(this, MinBtn, null, null, dragHeight: 30);
         }
 
         private void Close(object sender, RoutedEventArgs e)
@@ -75,10 +75,6 @@ namespace ODMR_Lab.磁场调节
             Hide();
         }
 
-        private void Minimize(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
         #region 刷新显示部分
         /// <summary>
         /// 刷新CW点显示

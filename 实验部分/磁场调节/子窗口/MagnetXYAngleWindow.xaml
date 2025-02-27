@@ -17,9 +17,9 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" x:Name="WindowTitle" IsHitTestVisible="False" Grid.ColumnSpan="3" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
+        <Label Grid.Row="0" x:Name="WindowTitle" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
         <Controls:DecoratedButton Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Close" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
-        <Controls:DecoratedButton Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Minimize" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/minimize.png" />
+        <Controls:DecoratedButton Name="MinBtn" Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/minimize.png" />
         <Grid Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>

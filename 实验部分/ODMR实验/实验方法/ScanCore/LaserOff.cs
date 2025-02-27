@@ -41,7 +41,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 pb.Device.Start();
                 return new List<object>();
             }
-            cmds.Add(new CommandLine(new List<int>() { (int)ch }, totaltime));
+            cmds.Add(new CommandLine(new List<int>() { (int)ch }, (int)(totaltime * duty)));
+            cmds.Add(new CommandLine(new List<int>() { }, (int)(totaltime * (1 - duty))));
             cmds.Add(new BranchCommandLine(0));
             pb.Device.SetCommands(cmds);
             pb.Device.Start();
