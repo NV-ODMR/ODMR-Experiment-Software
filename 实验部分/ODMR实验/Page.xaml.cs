@@ -18,6 +18,8 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描;
 using System.Linq;
 using ODMR_Lab.ODMR实验;
+using System.IO;
+using ODMR_Lab.Windows;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -360,6 +362,32 @@ namespace ODMR_Lab.实验部分.ODMR实验
             win.Owner = Window.GetWindow(this);
             win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             win.ShowDialog();
+        }
+
+        /// <summary>
+        /// 自行保存文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CustomSaveFile(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string root = Path.GetDirectoryName(saveFileDialog.FileName);
+                    string filename = Path.GetFileName(saveFileDialog.FileName);
+                    CurrentExpObject.CustomSaveFile(root, filename);
+                    TimeWindow win = new TimeWindow();
+                    win.Owner = Window.GetWindow(this);
+                    win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    win.ShowWindow("文件已保存");
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
     }
 }

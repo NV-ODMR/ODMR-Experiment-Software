@@ -288,6 +288,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             D1ChartDatas.Clear();
             UpdatePlotChart();
             //进行实验
+            SetStartTime(DateTime.Now);
             ParentPage.Chart2D.LockPlotCursor();
             foreach (var item in newps)
             {
@@ -331,6 +332,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
                 D1ChartDatas.Add(contracts);
                 UpdatePlotChart();
             }
+            SetEndTime(DateTime.Now);
         }
         #endregion
     }

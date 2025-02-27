@@ -310,15 +310,8 @@ namespace ODMR_Lab.ODMR实验
                     //获取当前时间
                     DateTime dateTime = DateTime.Now;
                     string date = dateTime.ToString("yyyy_MM_dd_HH_mm_ss");
-                    SequenceFileExpObject fob = new SequenceFileExpObject();
-                    fob.ExpStartTime = ExpStartTime;
-                    fob.ExpEndTime = ExpEndTime;
-                    fob.InputParams = InputParams;
-                    fob.OutputParams = OutputParams;
-                    fob.DeviceList = DeviceList;
-                    fob.D1ChartDatas = D1ChartDatas;
-                    fob.D2ChartDatas = D2ChartDatas;
-                    fob.WriteToFile(root, ODMRExperimentName + date + ".userdat");
+                    string name = ODMRExperimentName + date + ".userdat";
+                    CustomSaveFile(root, name);
                     SetExpState("实验完成,文件已保存.  " + GetExpState());
                     SavedFileName = Path.Combine(ODMRExperimentGroupName, ODMRExperimentName + date);
                 }
@@ -330,6 +323,20 @@ namespace ODMR_Lab.ODMR实验
             {
                 SetExpState("实验完成,文件未保存.  " + GetExpState());
             }
+        }
+
+        public void CustomSaveFile(string filepath, string filename)
+        {
+            SequenceFileExpObject fob = new SequenceFileExpObject();
+            fob.ExpStartTime = ExpStartTime;
+            fob.ExpEndTime = ExpEndTime;
+            fob.InputParams = InputParams;
+            fob.OutputParams = OutputParams;
+            fob.DeviceList = DeviceList;
+            fob.D1ChartDatas = D1ChartDatas;
+            fob.D2ChartDatas = D2ChartDatas;
+            fob.WriteToFile(filepath, filename);
+            SavedFileName = Path.Combine(filepath, filename);
         }
 
         /// <summary>
