@@ -31,6 +31,7 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
                 p.Add(new Coordinate(item.X, item.Y));
             }
             RingShape = new LinearRing(p.ToArray());
+            if (!RingShape.IsClosed) throw new Exception("扫描形状未闭合");
             XLo = ps.Min(x => x.X);
             XHi = ps.Max(x => x.X);
             YLo = ps.Min(x => x.Y);
@@ -43,6 +44,17 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
             ScanPoints = GeneratePointList();
         }
 
+        public override string GetDescription()
+        {
+            string s = "X: " + Math.Round(XLo, 5).ToString() + "—" + Math.Round(XHi, 5).ToString() + "  点数:" + XCount.ToString() + "\n" +
+                "Y: " + Math.Round(YLo, 5).ToString() + "—" + Math.Round(YHi, 5).ToString() + "  点数:" + YCount.ToString() + "\n";
+            s += "轮廓点(逆时针):\n";
+            foreach (var item in RingShape.Coordinates)
+            {
+                s += "X:" + Math.Round(item.X, 5).ToString() + "Y:" + Math.Round(item.Y, 5).ToString() + "\n";
+            }
+            return s;
+        }
     }
 
     /// <summary>

@@ -67,9 +67,45 @@ namespace ODMR_Lab.ODMR实验
         private string D2DataYName { get; set; } = "";
         private string D2DataZName { get; set; } = "";
 
-        public bool D2ChartXReverse { get; set; } = false;
+        private bool d2ChartXReverse = false;
+        public bool D2ChartXReverse
+        {
+            get
+            {
+                return d2ChartXReverse;
+            }
+            set
+            {
+                d2ChartXReverse = value;
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    if (ParentPage.CurrentExpObject == this)
+                    {
+                        ParentPage.Chart2D.ReverseX = value;
+                    }
+                });
+            }
+        }
 
-        public bool D2ChartYReverse { get; set; } = false;
+        private bool d2ChartYReverse = false;
+        public bool D2ChartYReverse
+        {
+            get
+            {
+                return d2ChartYReverse;
+            }
+            set
+            {
+                d2ChartYReverse = value;
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    if (ParentPage.CurrentExpObject == this)
+                    {
+                        ParentPage.Chart2D.ReverseY = value;
+                    }
+                });
+            }
+        }
 
         /// <summary>
         /// 设置当前选中数据(实验方法中禁用)
@@ -107,7 +143,8 @@ namespace ODMR_Lab.ODMR实验
             {
                 ParentPage.ChangeVisiblePanel(false);
                 ParentPage.Chart2D.SelectData(D2GroupName, D2DataXName, D2DataYName, D2DataZName);
-                ParentPage.Chart2D.
+                ParentPage.Chart2D.ReverseX = D2ChartXReverse;
+                ParentPage.Chart2D.ReverseY = D2ChartYReverse;
             }
         }
 

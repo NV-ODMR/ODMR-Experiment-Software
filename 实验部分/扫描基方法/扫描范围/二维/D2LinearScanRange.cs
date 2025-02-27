@@ -21,6 +21,12 @@ namespace ODMR_Lab.实验部分.扫描基方法
             ScanPoints = GeneratePointList();
         }
 
+        public override string GetDescription()
+        {
+            return "X: " + Math.Round(XLo, 5).ToString() + "—" + Math.Round(XHi, 5).ToString() + "  点数:" + XCount.ToString() + " , " +
+                "Y: " + Math.Round(YLo, 5).ToString() + "—" + Math.Round(YHi, 5).ToString() + "  点数:" + YCount.ToString();
+        }
+
         public D2LinearScanRangeBase(double xlo, double xhi, double xstep, double ylo, double yhi, double ystep, bool reverseX, bool reverseY, bool IsXFast)
         {
             var r1 = new D1LinearScanRange(xlo, xhi, xstep, false);

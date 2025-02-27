@@ -51,6 +51,12 @@ namespace ODMR_Lab.实验部分.扫描基方法
             return l.IndexOf(l.Min());
         }
 
+        /// <summary>
+        /// 生成范围描述
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetDescription();
+
 
         /// <summary>
         /// 返回和输入值最接近的列表的序号(x序号)

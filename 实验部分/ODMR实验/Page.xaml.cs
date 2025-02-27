@@ -13,7 +13,6 @@ using System.Windows.Forms;
 using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
 using System.Linq;
 using ODMR_Lab.ODMR实验;
 using System.IO;
@@ -385,5 +384,18 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 }
             }
         }
+
+        #region 图表翻转
+        private void RevXChanged(object sender, RoutedEventArgs e)
+        {
+            if (CurrentExpObject == null) return;
+            CurrentExpObject.D2ChartXReverse = ChartReverseX.IsSelected;
+        }
+        private void RevYChanged(object sender, RoutedEventArgs e)
+        {
+            if (CurrentExpObject == null) return;
+            CurrentExpObject.D2ChartYReverse = ChartReverseY.IsSelected;
+        }
+        #endregion
     }
 }

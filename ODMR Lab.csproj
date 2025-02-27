@@ -199,6 +199,7 @@
     <Compile Include="实验部分\ODMR实验\参数\SequenceExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\参数\SequenceFileExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\ODMRExperimentWithAFM.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\一维扫描\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMStopDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMDrop.cs" />
@@ -706,7 +707,6 @@
     <Resource Include="图片资源\ok.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="实验部分\ODMR实验\实验方法\AFM实验\一维扫描\" />
     <Folder Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

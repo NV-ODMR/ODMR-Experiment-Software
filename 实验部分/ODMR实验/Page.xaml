@@ -51,21 +51,21 @@
                         </WrapPanel>
                     </control:AutoScrollViewer.Content>
                 </control:AutoScrollViewer>
-                <control:DecoratedButton Click="ShowInput" Grid.Row="4" TextAreaRatio="1" Text="显示在独立窗口中" FontSize="12" Margin="2" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <control:DecoratedButton Click="ShowInput" Grid.Row="4" TextAreaRatio="1" Text="设置窗口" FontSize="12" Margin="2" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                 <control:AutoScrollViewer Margin="5" Name="OutputScroll" Grid.Row="9" Grid.Column="0" Background="#FF2E2E2E">
                     <control:AutoScrollViewer.Content>
                         <WrapPanel Name="OutputPanel" Width="{Binding ElementName=OutputScroll, Path=ActualWidth}" ItemWidth="{Binding ElementName=OutputScroll, Path=ActualWidth}">
                         </WrapPanel>
                     </control:AutoScrollViewer.Content>
                 </control:AutoScrollViewer>
-                <control:DecoratedButton Click="ShowOutput" Grid.Row="10" TextAreaRatio="1" Text="显示在独立窗口中" FontSize="12" Margin="2" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <control:DecoratedButton Click="ShowOutput" Grid.Row="10" TextAreaRatio="1" Text="预览窗口" FontSize="12" Margin="2" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                 <control:AutoScrollViewer Margin="5" Name="DeviceScroll" Grid.Row="6" Grid.Column="0" Background="#FF2E2E2E">
                     <control:AutoScrollViewer.Content>
                         <WrapPanel Name="DevicePanel" Width="{Binding ElementName=DeviceScroll, Path=ActualWidth}" ItemWidth="{Binding ElementName=DeviceScroll, Path=ActualWidth}">
                         </WrapPanel>
                     </control:AutoScrollViewer.Content>
                 </control:AutoScrollViewer>
-                <control:DecoratedButton Click="ShowDevice" Grid.Row="7" TextAreaRatio="1" Text="显示在独立窗口中" FontSize="12" Margin="2" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <control:DecoratedButton Click="ShowDevice" Grid.Row="7" TextAreaRatio="1" Text="设置窗口" FontSize="12" Margin="2" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                 <Grid Name="ControlButtonPanel" Grid.Row="11">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -97,21 +97,31 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <StackPanel Name="AutoSavePanel" Orientation="Horizontal" Grid.Row="0">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描范围类型：" Margin="20,0,0,0"/>
+                        <TextBlock x:Name="ScanRangeName" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1"/>
+                        <control:DecoratedButton Click="OpenRangeWindow" Width="100" TextAreaRatio="1" Text="一维图" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                    </StackPanel>
+                    <StackPanel Name="AutoSavePanel" Orientation="Horizontal" Grid.Row="1">
                         <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="实验文件名" Margin="20,0,0,0"/>
                         <Label Foreground="White" x:Name="SavedFileName" Width="400" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
                         <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="自动保存" Margin="20,0,0,0"/>
                         <control:Chooser Name="IsAutoSave" Selected="ChangeAutoSave" UnSelected="ChangeAutoSave" Height="15" Width="30"/>
                         <control:DecoratedButton Text="保存实验文件" Click="CustomSaveFile" Width="100" Margin="5" Visibility="Visible" Grid.Row="7" TextAreaRatio="1" FontSize="12" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
                         <control:DecoratedButton Name="D1Btn" Click="ChangePannel" KeepPressed="True" Width="100" TextAreaRatio="1" Text="一维图" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                         <control:DecoratedButton Name="D2Btn" Click="ChangePannel" Width="100" TextAreaRatio="1" Text="二维图" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                        <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="水平镜像" Margin="20,0,0,0"/>
+                        <control:Chooser Name="ChartReverseX" IsSelected="False" Selected="RevXChanged" UnSelected="RevXChanged" Height="15" Width="30"/>
+                        <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="垂直镜像" Margin="20,0,0,0"/>
+                        <control:Chooser Name="ChartReverseY" IsSelected="False" Selected="RevYChanged" UnSelected="RevYChanged" Height="15" Width="30"/>
                     </StackPanel>
-                    <image:ChartViewer1D x:Name="Chart1D" Grid.Row="2"/>
-                    <image:ChartViewer2D x:Name="Chart2D" Grid.Row="2" Visibility="Hidden"/>
+                    <image:ChartViewer1D x:Name="Chart1D" Grid.Row="3"/>
+                    <image:ChartViewer2D x:Name="Chart2D" Grid.Row="3" Visibility="Hidden"/>
                 </Grid>
                 <Grid Grid.Row="12" Grid.RowSpan="3" Name="gg" Grid.Column="1">
                     <WrapPanel Name="ButtonsPanel" Orientation="Horizontal" Width="{Binding ElementName=gg,Path=ActualWidth}">
