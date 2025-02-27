@@ -22,7 +22,7 @@
         <ColumnDefinition/>
         <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <control:ListViewer Name="ExpInformation" ItemHeight="100" Grid.Row="0" Grid.Column="1" Grid.RowSpan="6" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF047BFF">
+    <control:ListViewer Name="ExpInformation" ItemHeight="70" Grid.Row="0" Grid.Column="1" Grid.RowSpan="6" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF047BFF">
         <control:ListViewer.DataTemplate>
             <control:ViewerTemplate Descriptions="实验信息" DataType="String" Editable="False" DataDisplayWidth="*"/>
         </control:ListViewer.DataTemplate>

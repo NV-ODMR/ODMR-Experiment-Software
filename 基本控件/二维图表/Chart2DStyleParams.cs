@@ -22,7 +22,7 @@ namespace ODMR_Lab.基本控件
 
         public Param<bool> LockCursor { get; set; } = new Param<bool>("光标", false, "LockCursor");
 
-        public Param<bool> CrossThickness { get; set; } = new Param<bool>("光标线宽", false, "CrossThickness");
+        public Param<double> CrossThickness { get; set; } = new Param<double>("光标线宽", 1, "CrossThickness");
 
         /// <summary>
         /// 全局图表参数

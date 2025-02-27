@@ -27,6 +27,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
 
+
+        /// <summary>
+        /// 实验名称
+        /// </summary>
+        public override string ODMRExperimentName { get; set; }
+        /// <summary>
+        /// 实验分类名
+        /// </summary>
+        public override string ODMRExperimentGroupName { get; set; }
+
         public override void ExperimentEvent()
         {
             return;
@@ -39,18 +49,33 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
 
         protected override void InnerToDataVisualSource(DataVisualSource source)
         {
+            source.Params.Add("实验名:", ODMRExperimentGroupName + ":" + ODMRExperimentName);
             #region 读取输入输出参数
             foreach (var item in InputParams)
             {
-                source.Params.Add("配置参数:" + item.Description, ParamB.GetUnknownParamValue(item));
-            }
-            foreach (var item in OutputParams)
-            {
-                source.Params.Add("输出参数:" + item.Description, ParamB.GetUnknownParamValue(item));
+                var names = item.PropertyName.Split('_');
+                if (names.First() == "Input")
+                    source.Params.Add("配置参数:" + item.Description, ParamB.GetUnknownParamValue(item));
+                else
+                    source.Params.Add("配置参数:" + names[0] + ":" + names[1] + ":" + item.Description, ParamB.GetUnknownParamValue(item));
             }
             foreach (var item in DeviceList)
             {
-                source.Params.Add("设备:" + item.Value.Description, ParamB.GetUnknownParamValue(item.Value));
+                var names = item.Value.PropertyName.Split('_');
+                if (names.First() == "Dev")
+                    source.Params.Add("设备:" + item.Value.Description, ParamB.GetUnknownParamValue(item.Value));
+                else
+                    source.Params.Add("设备:" + names[0] + ":" + names[1] + ":" + item.Value.Description, ParamB.GetUnknownParamValue(item.Value));
+            }
+            foreach (var item in OutputParams)
+            {
+                var names = item.PropertyName.Split('_');
+                if (names.First() == "Output")
+                    source.Params.Add("输出参数:" + item.Description, ParamB.GetUnknownParamValue(item));
+                else
+                {
+                    source.Params.Add("输出参数:" + names[0] + ":" + names[1] + ":" + item.Description, ParamB.GetUnknownParamValue(item));
+                }
             }
             #endregion
             #region 读取图表
@@ -73,6 +98,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
 
         protected override void InnerWrite(FileObject obj)
         {
+            #region 导出实验名
+            obj.Descriptions.Add("实验分组", ODMRExperimentGroupName);
+            obj.Descriptions.Add("实验名", ODMRExperimentName);
+            #endregion
             #region 导出输入输出和设备参数
             foreach (var item in InputParams)
             {
@@ -114,6 +143,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
 
         protected override void InnerRead(FileObject fobj)
         {
+            #region 导入实验名
+            if (fobj.Descriptions.Keys.Contains("实验分组"))
+            {
+                ODMRExperimentGroupName = fobj.Descriptions["实验分组"];
+            }
+            if (fobj.Descriptions.Keys.Contains("实验名"))
+            {
+                ODMRExperimentName = fobj.Descriptions["实验名"];
+            }
+            #endregion
             #region 导入输入输出和设备参数
             foreach (var v in fobj.Descriptions)
             {

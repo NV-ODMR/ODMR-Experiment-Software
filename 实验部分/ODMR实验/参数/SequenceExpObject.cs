@@ -26,15 +26,6 @@ namespace ODMR_Lab.ODMR实验
     /// </summary>
     public abstract class ODMRExpObject : ODMRExpObjectBase
     {
-        /// <summary>
-        /// 实验名称
-        /// </summary>
-        public abstract string ODMRExperimentName { get; set; }
-        /// <summary>
-        /// 实验分类名
-        /// </summary>
-        public abstract string ODMRExperimentGroupName { get; set; }
-
         public DisplayPage ParentPage = null;
 
         public bool IsAutoSave { get; set; } = false;
@@ -338,6 +329,8 @@ namespace ODMR_Lab.ODMR实验
             fob.InputParams = InputParams;
             fob.OutputParams = OutputParams;
             fob.DeviceList = DeviceList;
+            fob.ODMRExperimentGroupName = ODMRExperimentGroupName;
+            fob.ODMRExperimentName = ODMRExperimentName;
             fob.D1ChartDatas = D1ChartDatas;
             fob.D2ChartDatas = D2ChartDatas;
             fob.WriteToFile(filepath, filename);

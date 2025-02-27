@@ -20,6 +20,16 @@ namespace ODMR_Lab.ODMR实验
     /// </summary>
     public abstract class ODMRExpObjectBase : ExperimentObject<ExpParamBase, ConfigBase>
     {
+
+        /// <summary>
+        /// 实验名称
+        /// </summary>
+        public abstract string ODMRExperimentName { get; set; }
+        /// <summary>
+        /// 实验分类名
+        /// </summary>
+        public abstract string ODMRExperimentGroupName { get; set; }
+
         public override ExperimentFileTypes ExpType { get; protected set; } = ExperimentFileTypes.ODMR实验;
 
         /// <summary>

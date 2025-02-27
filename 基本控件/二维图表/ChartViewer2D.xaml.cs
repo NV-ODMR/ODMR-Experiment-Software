@@ -287,7 +287,7 @@ namespace ODMR_Lab.基本控件
                 catch (Exception) { }
 
                 ChartObject.ColorMap = para.MapColorStyle.Value;
-
+                ChartObject.CrossHairLineThickness = para.CrossThickness.Value;
                 ChartObject.IsAutoScale = para.AutoScale.Value;
 
                 if (para.LockCursor.Value)
