@@ -32,12 +32,12 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// <summary>
         /// 扫描第一个点时进行的操作(源设备,扫描范围,值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public Func<T, ScanRange, double, List<object>, List<object>> FirstScanEvent = null;
+        public Func<T, D1ScanRangeBase, double, List<object>, List<object>> FirstScanEvent = null;
 
         /// <summary>
         /// 扫描其他点时进行的操作(源设备,扫描范围,值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public Func<T, ScanRange, double, List<object>, List<object>> ScanEvent = null;
+        public Func<T, D1ScanRangeBase, double, List<object>, List<object>> ScanEvent = null;
 
         /// <summary>
         /// 状态判断事件,此事件用来决定是否退出扫描步骤
@@ -53,14 +53,13 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// <param name="Hi"></param>
         /// <param name="D"></param>
         /// <returns></returns>
-        public List<object> BeginScan(ScanRange range, double progressLo = 0, double progressHi = 100, params object[] ps)
+        public List<object> BeginScan(D1ScanRangeBase range, double progressLo = 0, double progressHi = 100, params object[] ps)
         {
             SetProgress(progressLo);
 
-            var scanlist = range.GenerateScanList();
+            var scanlist = range.ScanPoints;
 
-            var progress = new ScanRange(progressLo, progressHi, range.Count).GenerateScanList();
-
+            var progress = new D1LinearScanRange(progressLo, progressHi, scanlist.Count).ScanPoints;
 
             bool IsFirstScan = true;
 

@@ -16,27 +16,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 {
     /// <summary>
     /// 二维扫描实验
     /// </summary>
     public class AFMScan2DExp : ODMRExperimentWithAFM
     {
-        Scan2DSession<NanoStageInfo, NanoStageInfo> D2Session = new Scan2DSession<NanoStageInfo, NanoStageInfo>();
+        CustomScan2DSession<NanoStageInfo, NanoStageInfo> PointsScanSession = new CustomScan2DSession<NanoStageInfo, NanoStageInfo>();
+
+        D2ScanRangeBase ScanType { get; set; } = null;
 
         public override string ODMRExperimentName { get; set; } = "";
         public override string ODMRExperimentGroupName { get; set; } = "AFM面扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("X扫描下限(μm)",0,"XRangeLo"),
-            new Param<double>("X扫描上限(μm)",0,"XRangeHi"),
-            new Param<double>("Y扫描下限(μm)",0,"YRangeLo"),
-            new Param<double>("Y扫描上限(μm)",0,"YRangeHi"),
-            new Param<int>("X扫描点数",0,"XCount"),
-            new Param<int>("Y扫描点数",0,"YCount"),
-            new Param<bool>("X扫描反向",false,"XReverse"),
-            new Param<bool>("Y扫描反向",false,"YReverse"),
             new Param<bool>("显示子实验窗口",true,"ShowSubMenu"),
             new Param<bool>("存储单点实验数据",true,"SaveSingleExpData"),
         };
@@ -68,23 +62,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
             NanoStageInfo dev1 = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo dev2 = GetDeviceByName("ScannerY") as NanoStageInfo;
 
-            ScanRange range1 = new ScanRange(GetInputParamValueByName("XRangeLo"), GetInputParamValueByName("XRangeHi"), GetInputParamValueByName("XCount"), GetInputParamValueByName("XReverse"));
-            ScanRange range2 = new ScanRange(GetInputParamValueByName("YRangeLo"), GetInputParamValueByName("YRangeHi"), GetInputParamValueByName("YCount"), GetInputParamValueByName("YReverse"));
-
-            D2Session.FirstScanEvent = ScanEvent;
-            D2Session.ScanEvent = ScanEvent;
-            D2Session.ScanSource1 = dev1;
-            D2Session.ScanSource2 = dev2;
-            D2Session.ProgressBarMethod = new Action<NanoStageInfo, NanoStageInfo, double>((devi1, devi2, val) =>
+            PointsScanSession.FirstScanEvent = ScanEvent;
+            PointsScanSession.ScanEvent = ScanEvent;
+            PointsScanSession.ScanSource1 = dev1;
+            PointsScanSession.ScanSource2 = dev2;
+            PointsScanSession.ProgressBarMethod = new Action<NanoStageInfo, NanoStageInfo, double>((devi1, devi2, val) =>
             {
                 SetProgress(val);
             });
-            D2Session.SetStateMethod = new Action<NanoStageInfo, NanoStageInfo, double, double>((devi1, devi2, val1, val2) =>
+            PointsScanSession.SetStateMethod = new Action<NanoStageInfo, NanoStageInfo, Point>((devi1, devi2, p) =>
             {
-                SetExpState("当前扫描点: X: " + Math.Round(val1, 5).ToString() + " Y: " + Math.Round(val2, 5).ToString());
+                SetExpState("当前扫描点: X: " + Math.Round(p.X, 5).ToString() + " Y: " + Math.Round(p.Y, 5).ToString());
             });
-            D2Session.StateJudgeEvent = JudgeThreadEndOrResume;
-            D2Session.BeginScan(range1, range2, 0, 100);
+            PointsScanSession.StateJudgeEvent = JudgeThreadEndOrResume;
+            PointsScanSession.BeginScan(ScanType, 0, 100);
         }
 
         /// <summary>
@@ -94,19 +85,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
         /// <param name="locvalue"></param>
         /// <param name="inputParams"></param>
         /// <returns></returns>
-        public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
+        public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, List<Point> scanPoints, Point currentPoint, List<object> inputParams)
         {
             //移动位移台
-            scannerx.Device.MoveToAndWait(loc1value, 60000);
+            scannerx.Device.MoveToAndWait(currentPoint.X, 120000);
             //移动位移台
-            scannery.Device.MoveToAndWait(loc2value, 60000);
+            scannery.Device.MoveToAndWait(currentPoint.Y, 120000);
             //进行实验
             ODMRExpObject exp = RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
 
             //获取输出参数
             double value = 0;
-            int indx = range1.GetNearestIndex(loc1value);
-            int indy = range2.GetNearestIndex(loc2value);
+            int indx = ScanType.GetNearestXIndex(currentPoint.X);
+            int indy = ScanType.GetNearestYIndex(currentPoint.Y);
             foreach (var item in exp.OutputParams)
             {
                 if (item.RawValue is bool)
@@ -141,13 +132,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描
 
         public override void PreExpEventWithAFM()
         {
-            ScanRange range1 = new ScanRange(GetInputParamValueByName("XRangeLo"), GetInputParamValueByName("XRangeHi"), GetInputParamValueByName("XCount"), GetInputParamValueByName("XReverse"));
-            ScanRange range2 = new ScanRange(GetInputParamValueByName("YRangeLo"), GetInputParamValueByName("YRangeHi"), GetInputParamValueByName("YCount"), GetInputParamValueByName("YReverse"));
+            //获取扫描范围类型
+            if (ScanType == null)
+            {
+                throw new Exception("扫描范围未选择");
+            }
             foreach (var item in SubExperiments)
             {
                 foreach (var par in item.OutputParams)
                 {
-                    D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(range1.Count, range1.Lo, range1.Hi, range2.Count, range2.Lo, range2.Hi)
+                    D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(ScanType.XCount, ScanType.XLo, ScanType.XHi, ScanType.YCount, ScanType.YLo, ScanType.YHi)
                     { XName = "轴1位置", YName = "轴2位置", ZName = item.ODMRExperimentName + ":" + par.Description })
                     { GroupName = "二维扫描数据" });
                 }

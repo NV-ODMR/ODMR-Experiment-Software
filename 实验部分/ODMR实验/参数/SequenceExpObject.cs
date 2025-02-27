@@ -76,6 +76,10 @@ namespace ODMR_Lab.ODMR实验
         private string D2DataYName { get; set; } = "";
         private string D2DataZName { get; set; } = "";
 
+        public bool D2ChartXReverse { get; set; } = false;
+
+        public bool D2ChartYReverse { get; set; } = false;
+
         /// <summary>
         /// 设置当前选中数据(实验方法中禁用)
         /// </summary>
@@ -112,6 +116,7 @@ namespace ODMR_Lab.ODMR实验
             {
                 ParentPage.ChangeVisiblePanel(false);
                 ParentPage.Chart2D.SelectData(D2GroupName, D2DataXName, D2DataYName, D2DataZName);
+                ParentPage.Chart2D.
             }
         }
 

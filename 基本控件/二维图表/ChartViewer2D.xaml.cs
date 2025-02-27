@@ -37,6 +37,40 @@ namespace ODMR_Lab.基本控件
         /// </summary>
         public Action<string, string, string, string> DataSelected = null;
 
+        private bool reverseX = false;
+        public bool ReverseX
+        {
+            get
+            {
+                return reverseX;
+            }
+            set
+            {
+                if (reverseX != value)
+                {
+                    ChartObject.RefreshPlot();
+                }
+                reverseX = value;
+            }
+        }
+
+        private bool reverseY = false;
+        public bool ReverseY
+        {
+            get
+            {
+                return reverseY;
+            }
+            set
+            {
+                if (reverseY != value)
+                {
+                    ChartObject.RefreshPlot();
+                }
+                reverseY = value;
+            }
+        }
+
         public ChartViewer2D()
         {
             InitializeComponent();

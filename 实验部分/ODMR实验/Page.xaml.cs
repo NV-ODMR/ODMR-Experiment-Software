@@ -12,14 +12,13 @@ using ODMR_Lab.实验类;
 using System.Windows.Forms;
 using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.二维扫描;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM.线扫描;
 using System.Linq;
 using ODMR_Lab.ODMR实验;
 using System.IO;
 using ODMR_Lab.Windows;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -75,9 +74,6 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 AFMScan2DExp afm2d = new AFMScan2DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
                 afm2d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm2d);
-                AFMScan0DExp afm0d = new AFMScan0DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
-                afm0d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
-                ExpObjects.Add(afm0d);
                 AFMScan1DExp afm1d = new AFMScan1DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
                 afm1d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm1d);
