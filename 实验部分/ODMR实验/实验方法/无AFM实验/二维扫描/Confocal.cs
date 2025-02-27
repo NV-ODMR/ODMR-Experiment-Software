@@ -28,7 +28,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
     public class Confocal : Scan2DExpBase<NanoStageInfo, NanoStageInfo>
     {
         public override string ODMRExperimentName { get; set; } = "共聚焦扫描";
-        public override string ODMRExperimentGroupName { get; set; } = "二维实验";
+        public override string ODMRExperimentGroupName { get; set; } = "实空间二维实验";
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
@@ -127,7 +127,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             return GetDeviceByName("LenY") as NanoStageInfo;
         }
 
-        public override void PreExpEventWithoutAFM()
+        protected override void Preview2DScanEventWithoutAFM()
         {
             //打开激光
             LaserOn lon = new LaserOn();
@@ -142,11 +142,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             apd.StartContinusSample();
             //创建数据集
             D2ScanRangeBase source = GetScanRange();
-            if(scanr)
             //新建数据集
             D2ChartDatas = new List<ChartData2D>()
             {
-                new ChartData2D(new FormattedDataSeries2D(r1.Count,r1.Lo,r1.Hi,r2.Count,r2.Lo,r2.Hi){
+                new ChartData2D(new FormattedDataSeries2D(source.XCount,source.XLo,source.XHi,source.YCount,source.YLo,source.YHi){
                     XName="X轴位置(μm)",YName="Y轴位置(μm)",ZName="计数率(cps)"}){ GroupName="共聚焦扫描结果"}
             };
             UpdatePlotChart();
@@ -154,7 +153,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             Show2DChartData("共聚焦扫描结果", "X轴位置(μm)", "Y轴位置(μm)", "计数率(cps)");
         }
 
-        public override void AfterExpEventWithoutAFM()
+        protected override void After2DScanEventWithoutAFM()
         {
             //关闭激光
             LaserOff loff = new LaserOff();

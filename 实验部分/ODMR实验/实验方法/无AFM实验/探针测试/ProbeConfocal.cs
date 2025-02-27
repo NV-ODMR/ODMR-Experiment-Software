@@ -32,14 +32,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("X扫描下限(μm)",0,"XRangeLo"),
-            new Param<double>("X扫描上限(μm)",0,"XRangeHi"),
-            new Param<double>("Y扫描下限(μm)",0,"YRangeLo"),
-            new Param<double>("Y扫描上限(μm)",0,"YRangeHi"),
-            new Param<int>("X扫描点数",0,"XCount"),
-            new Param<int>("Y扫描点数",0,"YCount"),
-            new Param<bool>("X扫描反向",false,"XReverse"),
-            new Param<bool>("Y扫描反向",false,"YReverse"),
             new Param<int>("采样率(Hz)",60,"SampleRate"),
             new Param<int>("位移台等待时间(ms)",0,"MoverWaitingTime"),
             new Param<int>("自动测量Autotrace次数",5,"AutotraceNumber")
@@ -53,6 +45,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
         {
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头X","","LenX")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Y","","LenY")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.镜头位移台,new Param<string>("镜头Z","","LenZ")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("激光触发源","","PB")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("APD Trace 触发源","","TraceSource")),
@@ -78,15 +71,52 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
 
         public override bool IsAFMSubExperiment { get; protected set; } = false;
 
-        public override string CreateThreadState(NanoStageInfo dev1, NanoStageInfo dev2, double currentvalue1, double currentvalue2)
+        public override string CreateThreadState(NanoStageInfo dev1, NanoStageInfo dev2, Point loc)
         {
-            return "共聚焦扫描 X: " + Math.Round(currentvalue1, 5).ToString() + " Y: " + Math.Round(currentvalue2, 5).ToString();
+            return "共聚焦扫描 X: " + Math.Round(loc.X, 5).ToString() + " Y: " + Math.Round(loc.Y, 5).ToString();
         }
 
-        public override List<object> FirstScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
+        protected override List<object> FirstScanEvent(NanoStageInfo device1, NanoStageInfo device2, D2ScanRangeBase range, Point loc, List<object> inputParams)
         {
-            return ScanEvent(device1, device2, range1, range2, loc1value, loc2value, inputParams);
+            device1.Device.MoveToAndWait(loc.X, 3000);
+            device2.Device.MoveToAndWait(loc.Y, 3000);
+            return ScanCore(device1, device2, range, loc, inputParams);
         }
+
+        protected override List<object> EndScanNewLineEvent(NanoStageInfo device1, NanoStageInfo device2, D2ScanRangeBase range, Point loc, List<object> inputParams)
+        {
+            device1.Device.MoveToAndWait(loc.X, 3000);
+            device2.Device.MoveToAndWait(loc.Y, 3000);
+            return ScanCore(device1, device2, range, loc, inputParams);
+        }
+
+        protected override List<object> StartScanNewLineEvent(NanoStageInfo device1, NanoStageInfo device2, D2ScanRangeBase range, Point loc, List<object> inputParams)
+        {
+            device1.Device.MoveToAndWait(loc.X, 3000);
+            device2.Device.MoveToAndWait(loc.Y, 3000);
+            return ScanCore(device1, device2, range, loc, inputParams);
+        }
+
+        protected override List<object> ScanEvent(NanoStageInfo device1, NanoStageInfo device2, D2ScanRangeBase range, Point loc, List<object> inputParams)
+        {
+            int waittime = GetInputParamValueByName("MoverWaitingTime");
+            device1.Device.MoveToAndWait(loc.X, waittime);
+            device2.Device.MoveToAndWait(loc.Y, waittime);
+            return ScanCore(device1, device2, range, loc, inputParams);
+        }
+
+        private List<object> ScanCore(NanoStageInfo device1, NanoStageInfo device2, D2ScanRangeBase range, Point loc, List<object> inputParams)
+        {
+            ConfocalAPDSample a = new ConfocalAPDSample();
+            var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByName("APD"));
+            int count = (int)(double)res[0];
+            //画图
+            var chartdata = Get2DChartData("计数率(cps)", "共聚焦扫描结果");
+            chartdata.Data.SetValue(range.GetNearestXIndex(loc.X), range.GetNearestYIndex(loc.Y), count);
+            UpdatePlotChartFlow(true);
+            return new List<object>();
+        }
+
 
         public override bool PreConfirmProcedure()
         {
@@ -96,53 +126,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             }
             return false;
         }
-
-        public override List<object> ScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
-        {
-            //如果是第一次移动
-            if (range2.GetCustomIndex(loc2value) == 0 || range2.GetCustomIndex(loc2value) == range2.Count - 1)
-            {
-                device1.Device.MoveToAndWait(loc1value, 3000);
-                device2.Device.MoveToAndWait(loc2value, 3000);
-            }
-            else
-            {
-                int waittime = GetInputParamValueByName("MoverWaitingTime");
-                device1.Device.MoveToAndWait(loc1value, waittime);
-                device2.Device.MoveToAndWait(loc2value, waittime);
-            }
-            ConfocalAPDSample a = new ConfocalAPDSample();
-            var res = a.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByName("APD"));
-            int count = (int)(double)res[0];
-            var chartdata = Get2DChartData("计数率(cps)", "共聚焦扫描结果");
-            chartdata.Data.SetValue(range1.GetNearestIndex(loc1value), range2.GetNearestIndex(loc2value), count);
-            UpdatePlotChartFlow(true);
-            return new List<object>();
-        }
-
-        public override List<object> ReverseScanEvent(NanoStageInfo device1, NanoStageInfo device2, ScanRange range1, ScanRange range2, double loc1value, double loc2value, List<object> inputParams)
-        {
-            return new List<object>();
-        }
-
-        public override ScanRange GetScanRange1()
-        {
-            double xlo = GetInputParamValueByName("XRangeLo");
-            double xhi = GetInputParamValueByName("XRangeHi");
-            int count = GetInputParamValueByName("XCount");
-            bool rev = GetInputParamValueByName("XReverse");
-            return new ScanRange(xlo, xhi, count, rev);
-        }
-
-        public override ScanRange GetScanRange2()
-        {
-            double ylo = GetInputParamValueByName("YRangeLo");
-            double yhi = GetInputParamValueByName("YRangeHi");
-            int count = GetInputParamValueByName("YCount");
-            bool rev = GetInputParamValueByName("YReverse");
-            return new ScanRange(ylo, yhi, count, rev);
-        }
-
         public override NanoStageInfo GetScanSource1()
         {
             return GetDeviceByName("LenX") as NanoStageInfo;
@@ -153,7 +136,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             return GetDeviceByName("LenY") as NanoStageInfo;
         }
 
-        public override void PreExpEventWithoutAFM()
+        protected override void Preview2DScanEventWithoutAFM()
         {
             //打开激光
             LaserOn lon = new LaserOn();
@@ -167,12 +150,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.StartContinusSample();
             //创建数据集
-            var r1 = GetScanRange1();
-            var r2 = GetScanRange2();
+            var r1 = GetScanRange();
             //新建数据集
             D2ChartDatas = new List<ChartData2D>()
             {
-                new ChartData2D(new FormattedDataSeries2D(r1.Count,r1.Lo,r1.Hi,r2.Count,r2.Lo,r2.Hi){
+                new ChartData2D(new FormattedDataSeries2D(r1.XCount,r1.XLo,r1.XHi,r1.YCount,r1.YLo,r1.YHi){
                     XName="X轴位置(μm)",YName="Y轴位置(μm)",ZName="计数率(cps)"}){ GroupName="共聚焦扫描结果"}
             };
             UpdatePlotChart();
@@ -180,7 +162,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             Show2DChartData("共聚焦扫描结果", "X轴位置(μm)", "Y轴位置(μm)", "计数率(cps)");
         }
 
-        public override void AfterExpEventWithoutAFM()
+        protected override void After2DScanEventWithoutAFM()
         {
             //关闭激光
             LaserOff loff = new LaserOff();
@@ -276,22 +258,30 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
                 }
             });
             if (!isContinue) return;
-            var ylocs = cursors.Select(x => x.Y).ToList();
+            var ylocs = cursors.Select(x => x.Y).ToHashSet().ToList();
             ylocs.Sort();
             List<Point> newps = new List<Point>();
             foreach (var item in ylocs)
             {
                 var xlocs = cursors.Where(x => x.Y == item).ToList();
-                xlocs.Sort((v1, v2) => v1.X.CompareTo(v1.Y));
+                xlocs.Sort((v1, v2) => v1.X.CompareTo(v2.X));
                 newps.AddRange(xlocs);
             }
             D1ChartDatas.Clear();
             UpdatePlotChart();
             //进行实验
             SetStartTime(DateTime.Now);
+            var locs = (GetDeviceByName("LenZ") as NanoStageInfo).Device.Position;
             ParentPage.Chart2D.LockPlotCursor();
             foreach (var item in newps)
             {
+                //刷新可用设备
+                GetDevices();
+                var lz = GetDeviceByName("LenZ") as NanoStageInfo;
+                DeviceDispatcher.UseDevices(lz);
+                lz.Device.MoveToAndWait(locs, 3000);
+                DeviceDispatcher.EndUseDevices(lz);
+
                 //移动到目标点
                 MoveToCursor(item);
                 int autotraceCount = GetInputParamValueByName("AutotraceNumber");

@@ -85,7 +85,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// <param name="locvalue"></param>
         /// <param name="inputParams"></param>
         /// <returns></returns>
-        public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, List<Point> scanPoints, Point currentPoint, List<object> inputParams)
+        public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, D2ScanRangeBase scanPoints, Point currentPoint, List<object> inputParams)
         {
             //移动位移台
             scannerx.Device.MoveToAndWait(currentPoint.X, 120000);

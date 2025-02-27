@@ -6,7 +6,6 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.线扫描;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -24,7 +23,7 @@ using System.Windows;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 {
-    public class CW : Scan1DExpBase<RFSourceInfo>
+    public class CW : ODMRExperimentWithoutAFM
     {
         public override string ODMRExperimentName { get; set; } = "连续波全谱CW";
 
@@ -62,12 +61,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         }
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
-        public override string CreateThreadState(RFSourceInfo dev, double currentvalue)
+
+        public override bool PreConfirmProcedure()
         {
-            return "CW谱扫描 当前频率: " + Math.Round(currentvalue, 5).ToString();
+            if (MessageWindow.ShowMessageBox("提示", "历史数据将被清除,是否要继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
+            {
+                return true;
+            }
+            return false;
         }
 
-        public override List<object> FirstScanEvent(RFSourceInfo device, ScanRange range, double locvalue, List<object> inputParams)
+        private List<object> FirstScanEvent(RFSourceInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
             var r1 = GetScanRange();
             //新建数据集
@@ -83,16 +87,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
             return ScanEvent(device, range, locvalue, inputParams);
         }
 
-        public override bool PreConfirmProcedure()
-        {
-            if (MessageWindow.ShowMessageBox("提示", "历史数据将被清除,是否要继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public override List<object> ScanEvent(RFSourceInfo device, ScanRange range, double locvalue, List<object> inputParams)
+        private List<object> ScanEvent(RFSourceInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
             CWCore cw = new CWCore();
             var result = cw.CoreMethod(new List<object>() { locvalue, GetInputParamValueByName("RFPower"), GetInputParamValueByName("LoopCount"), GetInputParamValueByName("TimeOut") },
@@ -111,18 +106,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
             return new List<object>();
         }
 
-        public override ScanRange GetScanRange()
+        public D1ScanRangeBase GetScanRange()
         {
             double xlo = GetInputParamValueByName("RFFreqLo");
             double xhi = GetInputParamValueByName("RFFreqHi");
             double step = GetInputParamValueByName("RFStep");
             bool rev = GetInputParamValueByName("Reverse");
-            return new ScanRange(xlo, xhi, step, rev);
-        }
-
-        public override RFSourceInfo GetScanSource()
-        {
-            return GetDeviceByName("RFSource") as RFSourceInfo;
+            return new D1LinearScanRange(xlo, xhi, step, rev);
         }
 
         protected override void InnerRead(FileObject fobj)
@@ -139,6 +129,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         public override void AfterExpEventWithoutAFM()
         {
+        }
+
+        public override void ODMRExpWithoutAFM()
+        {
+            Scan1DSession<RFSourceInfo> session = new Scan1DSession<RFSourceInfo>();
+            session.FirstScanEvent = FirstScanEvent;
+            session.ScanEvent = ScanEvent;
+            var dev = GetDeviceByName("RFSource") as RFSourceInfo;
+            session.ScanSource = dev;
+            session.ProgressBarMethod = new Action<RFSourceInfo, double>((sour, v) =>
+            {
+                SetProgress(v);
+            });
+            session.SetStateMethod = new Action<RFSourceInfo, double>((sour, v) =>
+            {
+                SetExpState("CW谱扫描,当前频率:" + Math.Round(v, 5).ToString());
+            });
+            session.BeginScan(GetScanRange(), 0, 100);
         }
     }
 }

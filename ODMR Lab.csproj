@@ -214,7 +214,6 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\AutoTrace.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\CW谱扫描\CWScan.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\探针测试\ProbeConfocal.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\Scan1DExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\T1.cs" />
     <Compile Include="实验部分\位移台界面\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -708,6 +707,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="实验部分\ODMR实验\实验方法\AFM实验\一维扫描\" />
+    <Folder Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

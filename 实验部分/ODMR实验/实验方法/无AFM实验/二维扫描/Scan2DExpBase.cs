@@ -84,7 +84,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             return ScanRange;
         }
 
-        public override void PreExpEvent()
+        public override void PreExpEventWithoutAFM()
         {
             //检查扫描范围
             if (ScanRange == null) throw new Exception("扫描范围未设置");
@@ -96,7 +96,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
         /// </summary>
         protected abstract void Preview2DScanEventWithoutAFM();
 
-        public override void AfterExpEvent()
+        public override void AfterExpEventWithoutAFM()
         {
             After2DScanEventWithoutAFM();
         }
