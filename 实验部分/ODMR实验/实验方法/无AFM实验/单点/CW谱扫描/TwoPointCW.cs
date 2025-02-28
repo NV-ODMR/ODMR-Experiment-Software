@@ -11,7 +11,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 {
     internal class TwoPointCW : CWBase
     {
-        public override string ODMRExperimentName { get; set; } = "双频点CW";
+        public override string ODMRExperimentName { get; set; } = "CW双频点";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("频率点1",2850,"Frequency1"),
