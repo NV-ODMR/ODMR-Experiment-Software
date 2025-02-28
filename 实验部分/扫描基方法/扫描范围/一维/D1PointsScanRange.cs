@@ -16,5 +16,12 @@ namespace ODMR_Lab.实验部分.扫描基方法
             Hi = points.Max();
             Counts = ScanPoints.Count;
         }
+
+        public override string ScanName { get; protected set; } = "一维点列表扫描";
+
+        public override string GetDescription()
+        {
+            return "";
+        }
     }
 }

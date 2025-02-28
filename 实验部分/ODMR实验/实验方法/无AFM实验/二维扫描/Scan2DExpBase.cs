@@ -14,14 +14,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
     {
         CustomScan2DSession<T1, T2> D2Session = new CustomScan2DSession<T1, T2>();
 
-        /// <summary>
-        /// 扫描范围
-        /// </summary>
-        D2ScanRangeBase ScanRange = null;
-
         public override void ODMRExpWithoutAFM()
         {
-            if (ScanRange == null) throw new Exception("没有设置扫描方式");
+            if (D2ScanRange == null) throw new Exception("没有设置扫描方式");
 
             T1 dev1 = GetScanSource1();
             T2 dev2 = GetScanSource2();
@@ -41,7 +36,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
                 SetExpState(CreateThreadState(devi1, devi2, p));
             });
             D2Session.StateJudgeEvent = JudgeThreadEndOrResume;
-            D2Session.BeginScan(ScanRange, 0, 100);
+            D2Session.BeginScan(D2ScanRange, 0, 100);
         }
 
         /// <summary>
@@ -81,13 +76,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
 
         protected D2ScanRangeBase GetScanRange()
         {
-            return ScanRange;
+            return D2ScanRange;
         }
 
         public override void PreExpEventWithoutAFM()
         {
             //检查扫描范围
-            if (ScanRange == null) throw new Exception("扫描范围未设置");
+            if (D2ScanRange == null) throw new Exception("扫描范围未设置");
             Preview2DScanEventWithoutAFM();
         }
 

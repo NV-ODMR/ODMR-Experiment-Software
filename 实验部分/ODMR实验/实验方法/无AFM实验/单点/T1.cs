@@ -58,7 +58,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
-        public List<object> FirstScanEvent(object device, ScanRange range, double locvalue, List<object> inputParams)
+        public List<object> FirstScanEvent(object device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
             return ScanEvent(device, range, locvalue, inputParams);
         }
@@ -73,7 +73,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         }
 
         private int CurrentLoop = 0;
-        public List<object> ScanEvent(object device, ScanRange range, double locvalue, List<object> inputParams)
+        public List<object> ScanEvent(object device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
             ScanCore.T1 method = new ScanCore.T1();
             List<object> res = method.CoreMethod(new List<object>(){
@@ -118,7 +118,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
                     SetExpState("当前扫描轮数:" + i.ToString() + ",弛豫时间长度: " + Math.Round(v, 5).ToString());
                 });
 
-                ScanRange range = new ScanRange(GetInputParamValueByName("T1min"), GetInputParamValueByName("T1max"), GetInputParamValueByName("T1points"));
+                D1ScanRangeBase range = new D1LinearScanRange(GetInputParamValueByName("T1min"), GetInputParamValueByName("T1max"), GetInputParamValueByName("T1points"));
 
                 Session.StateJudgeEvent = JudgeThreadEndOrResume;
                 Session.BeginScan(range, progressstep * i, progressstep * (i + 1));

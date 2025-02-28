@@ -7,6 +7,10 @@ using ODMR_Lab.实验类;
 using ODMR_Lab.实验部分.ODMR实验;
 using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验.实验方法;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
+using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
@@ -30,6 +34,16 @@ namespace ODMR_Lab.ODMR实验
 
         public bool IsAutoSave { get; set; } = false;
 
+        #region 二维和一维扫描范围
+        public D1ScanRangeBase D1ScanRange { get; set; } = null;
+        public D2ScanRangeBase D2ScanRange { get; set; } = null;
+
+        /// <summary>
+        /// 扫描范围窗口
+        /// </summary>
+        public ScanRangeSelectWindow RangeWindow { get; set; } = null;
+        #endregion
+
         /// <summary>
         /// 是否是AFM子实验
         /// </summary>
@@ -51,6 +65,22 @@ namespace ODMR_Lab.ODMR实验
                     }
                 });
             }
+        }
+
+        public static bool Is2DScanExperiment(ODMRExpObject exp)
+        {
+            Type ptype = exp.GetType();
+            while (ptype != null)
+            {
+                string name = ptype.FullName;
+                if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
+                if (name == typeof(AFMScan2DExp).FullName || name == typeof(Scan2DExpBase<,>).FullName)
+                {
+                    return true;
+                }
+                ptype = ptype.BaseType;
+            }
+            return false;
         }
 
         #region 当前选中的图表数据信息

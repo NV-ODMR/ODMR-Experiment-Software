@@ -199,6 +199,9 @@
     <Compile Include="实验部分\ODMR实验\参数\SequenceExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\参数\SequenceFileExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\ODMRExperimentWithAFM.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\ScanRangeSelectWindow.xaml.cs">
+      <DependentUpon>ScanRangeSelectWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\一维扫描\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMStopDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
@@ -251,6 +254,7 @@
     <Compile Include="实验部分\扫描基方法\Scan1DSession.cs" />
     <Compile Include="实验部分\扫描基方法\Scan2DSession.cs" />
     <Compile Include="实验部分\扫描基方法\ScanHelper.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描范围\ScanRangeBase.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1LinearScanRange.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1PointsScanRange.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1ScanRangeBase.cs" />
@@ -425,6 +429,10 @@
     <Page Include="实验部分\ODMR实验\SubExpWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\ODMR实验\实验方法\AFM实验\ScanRangeSelectWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\位移台界面\Page.xaml">
       <Generator>MSBuild:Compile</Generator>

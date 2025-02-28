@@ -10,7 +10,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
     /// <summary>
     /// 一维扫描范围基类
     /// </summary>
-    public class D1ScanRangeBase
+    public abstract class D1ScanRangeBase : ScanRangeBase
     {
         /// <summary>
         /// 扫描点

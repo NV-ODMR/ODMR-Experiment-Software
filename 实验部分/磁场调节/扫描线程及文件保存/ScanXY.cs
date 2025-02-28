@@ -78,7 +78,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             step = (scanrange) / (scancount - 1);
             while (step >= 0.1)
             {
-                session.BeginScan(new ScanRange(scanmin, scanmax, 6), ind * 100.0 / countApprox, (ind + 5) * 100.0 / countApprox, false, this, cw1, cw2);
+                session.BeginScan(new D1LinearScanRange(scanmin, scanmax, 6), ind * 100.0 / countApprox, (ind + 5) * 100.0 / countApprox, false, this, cw1, cw2);
                 ind += 6;
 
                 #region 根据二次函数计算当前峰值

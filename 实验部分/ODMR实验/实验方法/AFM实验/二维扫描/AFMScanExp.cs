@@ -25,7 +25,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
     {
         CustomScan2DSession<NanoStageInfo, NanoStageInfo> PointsScanSession = new CustomScan2DSession<NanoStageInfo, NanoStageInfo>();
 
-        D2ScanRangeBase ScanType { get; set; } = null;
+        public D2ScanRangeBase ScanType { get; set; } = null;
 
         public override string ODMRExperimentName { get; set; } = "";
         public override string ODMRExperimentGroupName { get; set; } = "AFM面扫描";

@@ -14,6 +14,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
     {
 
         public bool Reverse { get; private set; }
+        public override string ScanName { get; protected set; } = "一维线性扫描";
 
         public D1LinearScanRange(double lo, double hi, int count, bool reverse = false)
         {
@@ -39,6 +40,9 @@ namespace ODMR_Lab.实验部分.扫描基方法
                 ScanPoints = Enumerable.Range(0, Count).Select(x => Hi - Math.Abs(Hi - Lo) * x / (Count - 1)).ToList();
         }
 
-
+        public override string GetDescription()
+        {
+            return "扫描范围:" + Math.Round(Lo, 5).ToString() + "—" + Math.Round(Hi, 5).ToString() + "点数:" + Counts.ToString();
+        }
     }
 }

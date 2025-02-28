@@ -86,7 +86,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             WaitToDisplayFit = waitToDisplayFit;
         }
 
-        public List<object> FirstScanEvent(NanoStageInfo device, ScanRange range, double locvalue, List<object> inputParams)
+        public List<object> FirstScanEvent(NanoStageInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
             return ScanEvent(device, range, locvalue, inputParams);
         }
@@ -96,7 +96,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             return true;
         }
 
-        public List<object> ScanEvent(NanoStageInfo device, ScanRange range, double locvalue, List<object> inputParams)
+        public List<object> ScanEvent(NanoStageInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
             //移动位移台
             device.Device.MoveToAndWait(locvalue, 3000);
@@ -162,7 +162,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double range = GetInputParamValueByName("XRange");
             int count = GetInputParamValueByName("XCount");
             double pos = (GetDeviceByName("LenX") as NanoStageInfo).Device.Position;
-            session.BeginScan(new ScanRange(pos - range / 2, pos + range / 2, count), 0, 100.0 / 3);
+            session.BeginScan(new D1LinearScanRange(pos - range / 2, pos + range / 2, count), 0, 100.0 / 3);
             //拟合
             var locs = (Get1DChartData("位置", "AutoTrace X") as NumricChartData1D).Data;
             var counts = (Get1DChartData("计数", "AutoTrace X") as NumricChartData1D).Data;
@@ -183,7 +183,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
             SetOutputParamByName("XPeak", c);
             //设置拟合线
-            var fitx = new ScanRange(pos - range / 2, pos + range / 2, 500).GenerateScanList();
+            var fitx = new D1LinearScanRange(pos - range / 2, pos + range / 2, 500).ScanPoints;
             var fity = fitx.Select(x => GaussFunc(x, a, b, c, d)).ToList();
 
             //添加拟合曲线
@@ -214,7 +214,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             range = GetInputParamValueByName("YRange");
             count = GetInputParamValueByName("YCount");
             pos = (GetDeviceByName("LenY") as NanoStageInfo).Device.Position;
-            session.BeginScan(new ScanRange(pos - range / 2, pos + range / 2, count), 100.0 / 3, 2 * 100.0 / 3);
+            session.BeginScan(new D1LinearScanRange(pos - range / 2, pos + range / 2, count), 100.0 / 3, 2 * 100.0 / 3);
             //拟合
             locs = (Get1DChartData("位置", "AutoTrace Y") as NumricChartData1D).Data;
             counts = (Get1DChartData("计数", "AutoTrace Y") as NumricChartData1D).Data;
@@ -235,7 +235,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
             SetOutputParamByName("YPeak", c);
             //设置拟合线
-            fitx = new ScanRange(pos - range / 2, pos + range / 2, 500).GenerateScanList();
+            fitx = new D1LinearScanRange(pos - range / 2, pos + range / 2, 500).ScanPoints;
             fity = fitx.Select(x => GaussFunc(x, a, b, c, d)).ToList();
 
             //添加拟合曲线
@@ -266,7 +266,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             range = GetInputParamValueByName("ZRange");
             count = GetInputParamValueByName("ZCount");
             pos = (GetDeviceByName("LenZ") as NanoStageInfo).Device.Position;
-            session.BeginScan(new ScanRange(pos - range / 2, pos + range / 2, count), 2 * 100.0 / 3, 100);
+            session.BeginScan(new D1LinearScanRange(pos - range / 2, pos + range / 2, count), 2 * 100.0 / 3, 100);
             //拟合
             locs = (Get1DChartData("位置", "AutoTrace Z") as NumricChartData1D).Data;
             counts = (Get1DChartData("计数", "AutoTrace Z") as NumricChartData1D).Data;
@@ -288,7 +288,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             SetOutputParamByName("ZPeak", c);
 
             //设置拟合线
-            fitx = new ScanRange(pos - range / 2, pos + range / 2, 500).GenerateScanList();
+            fitx = new D1LinearScanRange(pos - range / 2, pos + range / 2, 500).ScanPoints;
             fity = fitx.Select(x => GaussFunc(x, a, b, c, d)).ToList();
 
             //添加拟合曲线

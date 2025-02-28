@@ -11,10 +11,8 @@ namespace ODMR_Lab.实验部分.扫描基方法
     /// <summary>
     /// 二维扫描范围基类
     /// </summary>
-    public abstract class D2ScanRangeBase
+    public abstract class D2ScanRangeBase : ScanRangeBase
     {
-        public abstract string ScanName { get; protected set; }
-
         public double XLo { get; protected set; } = 0;
 
         public double XHi { get; protected set; } = 1;
@@ -50,13 +48,6 @@ namespace ODMR_Lab.实验部分.扫描基方法
             var l = XScans.Select(x => Math.Abs(x - xloc)).ToList();
             return l.IndexOf(l.Min());
         }
-
-        /// <summary>
-        /// 生成范围描述
-        /// </summary>
-        /// <returns></returns>
-        public abstract string GetDescription();
-
 
         /// <summary>
         /// 返回和输入值最接近的列表的序号(x序号)

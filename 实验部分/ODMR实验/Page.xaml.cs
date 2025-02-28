@@ -18,6 +18,8 @@ using ODMR_Lab.ODMR实验;
 using System.IO;
 using ODMR_Lab.Windows;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -141,8 +143,17 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
                 CurrentExpObject?.DisConnectOuterControl();
 
-
                 CurrentExpObject = ExpObjects[index];
+
+                if (ODMRExpObject.Is2DScanExperiment(CurrentExpObject))
+                {
+                    ScanRangePanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ScanRangePanel.Visibility = Visibility.Hidden;
+                }
+
                 ExpName.Text = CurrentExpObject.ODMRExperimentName;
                 ExpGroupName.Text = CurrentExpObject.ODMRExperimentGroupName;
 
@@ -397,5 +408,23 @@ namespace ODMR_Lab.实验部分.ODMR实验
             CurrentExpObject.D2ChartYReverse = ChartReverseY.IsSelected;
         }
         #endregion
+
+        private void OpenRangeWindow(object sender, RoutedEventArgs e)
+        {
+            if (CurrentExpObject.RangeWindow != null)
+            {
+                CurrentExpObject.RangeWindow.Topmost = true;
+                CurrentExpObject.RangeWindow.Topmost = false;
+            }
+            else
+            {
+                if (ODMRExpObject.Is2DScanExperiment(CurrentExpObject))
+                {
+                    CurrentExpObject.RangeWindow = new ScanRangeSelectWindow(CurrentExpObject);
+                    var result = CurrentExpObject.D2ScanRange;
+                    CurrentExpObject.RangeWindow.ShowD2(result);
+                }
+            }
+        }
     }
 }
