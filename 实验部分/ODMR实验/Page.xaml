@@ -100,7 +100,7 @@
                         <RowDefinition Height="40"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <StackPanel Name="ScanRangePanel" Grid.Row="0" Orientation="Horizontal">
+                    <StackPanel Name="ScanRangePanel" Grid.Row="0" Visibility="Hidden" Orientation="Horizontal">
                         <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描范围类型：" Margin="20,0,0,0"/>
                         <TextBlock x:Name="ScanRangeName" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1"/>
                         <control:DecoratedButton Click="OpenRangeWindow" Width="100" TextAreaRatio="1" Text="设置扫描类型" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>

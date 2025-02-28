@@ -86,9 +86,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
                 D2RectScanYReverse.IsSelected = scanRangeBase.ReverseY;
                 D2RectScanXFast.IsSelected = scanRangeBase.IsXFastAxis;
                 if (scanRangeBase is D2LinearScanRange)
+                {
                     D2RectScanDirectionReverse.IsSelected = false;
+                }
                 if (scanRangeBase is D2LinearReverseScanRange)
+                {
                     D2RectScanDirectionReverse.IsSelected = true;
+                }
                 return;
             }
             if (scanRangeBase is D2ShapeScanRangeBase)
@@ -99,16 +103,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
                 D2ShapeScanXReverse.IsSelected = scanRangeBase.ReverseX;
                 D2ShapeScanYreverse.IsSelected = scanRangeBase.ReverseY;
                 D2ShapeScanXFast.IsSelected = scanRangeBase.IsXFastAxis;
-                var points = (scanRangeBase as D2ShapeScanRangeBase).RingShape.Coordinates;
+                var points = (scanRangeBase as D2ShapeScanRangeBase).Poly.Coordinates;
                 CounterPointAssemble = points.Select(x => new Point(x.X, x.Y)).ToList();
                 if (CounterPointAssemble.Count != 0)
                     CounterPointAssemble.Remove(CounterPointAssemble.Last());
                 UpdateCounterPoints();
                 UpdatePointCanvas();
                 if (scanRangeBase is D2ShapeScanRangeBase)
-                    D2RectScanDirectionReverse.IsSelected = false;
+                {
+                    D2ShapeScanDirectionReverse.IsSelected = false;
+                }
                 if (scanRangeBase is D2ShapeReverseScanRange)
-                    D2RectScanDirectionReverse.IsSelected = true;
+                {
+                    D2ShapeScanDirectionReverse.IsSelected = true;
+                }
                 return;
             }
         }

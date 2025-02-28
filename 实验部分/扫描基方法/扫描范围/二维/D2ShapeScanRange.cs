@@ -15,7 +15,7 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
     public abstract class D2ShapeScanRangeBase : D2ScanRangeBase
     {
 
-        public LinearRing RingShape = null;
+        public Polygon Poly = null;
 
         /// <summary>
         /// 
@@ -30,12 +30,15 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
             {
                 p.Add(new Coordinate(item.X, item.Y));
             }
-            RingShape = new LinearRing(p.ToArray());
+            var RingShape = new LinearRing(p.ToArray());
             if (!RingShape.IsClosed) throw new Exception("扫描形状未闭合");
+            Poly = new Polygon(RingShape, new LinearRing[0]);
             XLo = ps.Min(x => x.X);
             XHi = ps.Max(x => x.X);
             YLo = ps.Min(x => x.Y);
             YHi = ps.Max(x => x.Y);
+            this.XCount = XCount;
+            this.YCount = YCount;
             this.ReverseX = ReverseX;
             this.ReverseY = ReverseY;
             IsXFastAxis = IsXFast;
@@ -50,7 +53,7 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
                 "Y: " + Math.Round(YLo, 5).ToString() + "—" + Math.Round(YHi, 5).ToString() + "  点数:" + YCount.ToString() + "\n"
                 + "X反向:" + ReverseX.ToString() + " , " + "Y反向:" + ReverseY.ToString() + "\n" + "X为快轴:" + IsXFastAxis.ToString() + "\n";
             s += "轮廓点(逆时针):\n";
-            foreach (var item in RingShape.Coordinates)
+            foreach (var item in Poly.Coordinates)
             {
                 s += "X:" + Math.Round(item.X, 5).ToString() + "Y:" + Math.Round(item.Y, 5).ToString() + "\n";
             }
@@ -102,13 +105,13 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
                     if (IsXFastAxis)
                     {
                         NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(FastAxis[j], SlowAxis[i]);
-                        if (RingShape.Contains(newp))
+                        if (Poly.Contains(newp))
                             ps.Add(new TaggedPoint(FastAxis[j], SlowAxis[i], tag));
                     }
                     else
                     {
-                        NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(FastAxis[j], SlowAxis[i]);
-                        if (RingShape.Contains(newp))
+                        NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(SlowAxis[i], FastAxis[j]);
+                        if (Poly.Contains(newp))
                             ps.Add(new TaggedPoint(SlowAxis[i], FastAxis[j], tag));
                     }
                 }
@@ -168,13 +171,13 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
                     if (IsXFastAxis)
                     {
                         NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(reverse ? FastAxisRev[j] : FastAxis[j], SlowAxis[i]);
-                        if (RingShape.Contains(newp))
+                        if (Poly.Contains(newp))
                             ps.Add(new TaggedPoint(reverse ? FastAxisRev[j] : FastAxis[j], SlowAxis[i], tag));
                     }
                     else
                     {
                         NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(SlowAxis[i], reverse ? FastAxisRev[j] : FastAxis[j]);
-                        if (RingShape.Contains(newp))
+                        if (Poly.Contains(newp))
                             ps.Add(new TaggedPoint(SlowAxis[i], reverse ? FastAxisRev[j] : FastAxis[j], tag));
                     }
                 }

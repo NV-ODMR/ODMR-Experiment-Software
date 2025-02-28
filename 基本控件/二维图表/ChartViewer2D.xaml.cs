@@ -48,6 +48,7 @@ namespace ODMR_Lab.基本控件
             {
                 if (reverseX != value)
                 {
+                    ChartObject.ReverseHorizontal = value;
                     ChartObject.RefreshPlot();
                 }
                 reverseX = value;
@@ -65,6 +66,7 @@ namespace ODMR_Lab.基本控件
             {
                 if (reverseY != value)
                 {
+                    ChartObject.ReverseVertical = value;
                     ChartObject.RefreshPlot();
                 }
                 reverseY = value;

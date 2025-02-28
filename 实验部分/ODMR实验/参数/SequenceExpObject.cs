@@ -175,6 +175,8 @@ namespace ODMR_Lab.ODMR实验
                 ParentPage.Chart2D.SelectData(D2GroupName, D2DataXName, D2DataYName, D2DataZName);
                 ParentPage.Chart2D.ReverseX = D2ChartXReverse;
                 ParentPage.Chart2D.ReverseY = D2ChartYReverse;
+                ParentPage.ChartReverseX.IsSelected = D2ChartXReverse;
+                ParentPage.ChartReverseY.IsSelected = D2ChartYReverse;
             }
         }
 
@@ -592,6 +594,8 @@ namespace ODMR_Lab.ODMR实验
                 obj.Descriptions.Add("Dev" + "→" + item.Value.Description + "→" + item.Value.PropertyName + "→" + ODMRExperimentName + "→" + ODMRExperimentGroupName + "→" + GetType().FullName, ParamB.GetUnknownParamValueToString(item.Value));
             }
             obj.Descriptions.Add("IsAutoSave" + "→" + ODMRExperimentName + "→" + ODMRExperimentGroupName + "→" + GetType().FullName, IsAutoSave.ToString());
+            obj.Descriptions.Add("Reverse2DX" + "→" + ODMRExperimentName + "→" + ODMRExperimentGroupName + "→" + GetType().FullName, D2ChartXReverse.ToString());
+            obj.Descriptions.Add("Reverse2DY" + "→" + ODMRExperimentName + "→" + ODMRExperimentGroupName + "→" + GetType().FullName, D2ChartYReverse.ToString());
         }
 
         public void ReadFromFileAndLoadToPage(FileObject obj)
@@ -637,6 +641,20 @@ namespace ODMR_Lab.ODMR实验
                 return false;
             });
             if (autosave.Count() != 0) IsAutoSave = bool.Parse(autosave.ElementAt(0).Value);
+            autosave = filted.Where(x =>
+            {
+                string[] ss = x.Key.Split('→');
+                if (ss[0] == "Reverse2DX") return true;
+                return false;
+            });
+            if (autosave.Count() != 0) D2ChartXReverse = bool.Parse(autosave.ElementAt(0).Value);
+            autosave = filted.Where(x =>
+            {
+                string[] ss = x.Key.Split('→');
+                if (ss[0] == "Reverse2DY") return true;
+                return false;
+            });
+            if (autosave.Count() != 0) D2ChartYReverse = bool.Parse(autosave.ElementAt(0).Value);
         }
 
         protected override void InnerToDataVisualSource(DataVisualSource source)

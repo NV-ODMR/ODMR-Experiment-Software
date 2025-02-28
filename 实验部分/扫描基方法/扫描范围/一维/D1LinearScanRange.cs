@@ -22,7 +22,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
             Hi = Math.Max(lo, hi);
             int Count = count;
             Reverse = reverse;
-            if (Reverse)
+            if (!Reverse)
                 ScanPoints = Enumerable.Range(0, Count).Select(x => Lo + Math.Abs(Hi - Lo) * x / (Count - 1)).ToList();
             else
                 ScanPoints = Enumerable.Range(0, Count).Select(x => Hi - Math.Abs(Hi - Lo) * x / (Count - 1)).ToList();

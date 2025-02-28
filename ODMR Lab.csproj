@@ -60,21 +60,17 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+    <Reference Include="CodeHelper">
+      <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+    <Reference Include="Controls">
+      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
-    <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+    <Reference Include="HardWares">
+      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
-    <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+    <Reference Include="MathLib">
+      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -88,9 +84,8 @@
     <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>packages\OpenCvSharp4.Extensions.4.10.0.20241108\lib\netstandard2.0\OpenCvSharp.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+    <Reference Include="PythonHandler">
+      <HintPath>..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -669,13 +664,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="图片资源\refresh.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll" />
-    <Analyzer Include="..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll" />
-    <Analyzer Include="..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll" />
-    <Analyzer Include="..\..\..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll" />
-    <Analyzer Include="..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Python\LabviewHandler\AutoTraceVI.py">
