@@ -285,6 +285,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             name = name.Replace("]", "");
             name = name.Replace("{", "");
             name = name.Replace("}", "");
+            name = name.Replace(" ", "");
             return name;
         }
 

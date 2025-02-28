@@ -6,6 +6,7 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -159,11 +160,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
             LaserOff loff = new LaserOff();
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             loff.CoreMethod(new List<object>() { }, pb);
-            //打开APD
+            //关闭APD
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
             apd.EndContinusSample();
             //关闭APD触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
+        }
+
+        public override List<ParentPlotDataPack> GetD1PlotPacks()
+        {
+            return new List<ParentPlotDataPack>();
         }
     }
 }

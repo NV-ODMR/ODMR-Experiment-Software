@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace ODMR_Lab.ODMR实验
@@ -211,11 +212,6 @@ namespace ODMR_Lab.ODMR实验
                 item.PropertyName = "Input_" + item.PropertyName;
                 item.GroupName = ODMRExperimentGroupName + ":" + ODMRExperimentName;
             }
-            foreach (var item in OutputParams)
-            {
-                item.PropertyName = "Output_" + item.PropertyName;
-                item.GroupName = ODMRExperimentGroupName + ":" + ODMRExperimentName;
-            }
             foreach (var item in DeviceList)
             {
                 item.Value.PropertyName = "Device_" + item.Value.PropertyName;
@@ -254,13 +250,6 @@ namespace ODMR_Lab.ODMR实验
                 pnew.GroupName = exp.ODMRExperimentName;
                 Inparams.Add(pnew);
             }
-            foreach (var p in exp.OutputParams)
-            {
-                var pnew = p.Clone();
-                pnew.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + pnew.PropertyName;
-                pnew.GroupName = exp.ODMRExperimentName;
-                Outparams.Add(pnew);
-            }
             foreach (var p in exp.DeviceList)
             {
                 var pnew = p.Value.Clone();
@@ -273,6 +262,21 @@ namespace ODMR_Lab.ODMR实验
             DeviceList.AddRange(Devices);
         }
 
+        /// <summary>
+        /// 添加子实验的输入参数到主实验中
+        /// </summary>
+        /// <param name="exp"></param>
+        public void AddSubexpOutputParams(ODMRExpObject exp)
+        {
+            foreach (var p in exp.OutputParams)
+            {
+                var pnew = p.Clone();
+                pnew.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + pnew.PropertyName;
+                pnew.GroupName = exp.ODMRExperimentName;
+                OutputParams.Add(pnew);
+            }
+        }
+
         public override ConfigBase ReadConfig()
         {
             foreach (var item in InputParams)
@@ -280,6 +284,49 @@ namespace ODMR_Lab.ODMR实验
                 item.ReadFromPage(new FrameworkElement[] { ParentPage.InputPanel }, true);
             }
             return null;
+        }
+
+        private void ClearOutputParams()
+        {
+            OutputParams.Clear();
+            //清除面板参数
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (ParentPage.CurrentExpObject == this)
+                {
+                    for (int i = 0; i < ParentPage.OutputPanel.Children.Count; i++)
+                    {
+                        if ((ParentPage.OutputPanel.Children[i] as FrameworkElement).Name != "")
+                        {
+                            ParentPage.UnregisterName((ParentPage.OutputPanel.Children[i] as FrameworkElement).Name);
+                        }
+                        ParentPage.OutputPanel.Children.RemoveAt(i);
+                        --i;
+                    }
+                }
+            });
+        }
+
+        private void UpdateOutputParams()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                //生成子实验输出参数
+                foreach (var item in SubExperiments)
+                {
+                    AddSubexpOutputParams(item);
+                }
+                //更新到窗口
+                if (ParentPage.CurrentExpObject == this)
+                {
+                    ExpParamWindow win = new ExpParamWindow(ParentPage.CurrentExpObject, ParentPage, false, false, false);
+                    foreach (var item in OutputParams)
+                    {
+                        Grid g = win.GenerateControlBar(item, ParentPage, false);
+                        ParentPage.OutputPanel.Children.Add(g);
+                    }
+                }
+            });
         }
 
         public override void ExperimentEvent()
@@ -293,14 +340,20 @@ namespace ODMR_Lab.ODMR实验
             try
             {
                 PreExpEvent();
+                //清除输出参数
+                ClearOutputParams();
                 ODMRExperiment();
                 AfterExpEvent();
+                //刷新输出参数到窗口
+                UpdateOutputParams();
             }
             catch (Exception ex)
             {
                 try
                 {
                     AfterExpEvent();
+                    //刷新输出参数到窗口
+                    UpdateOutputParams();
                 }
                 catch (Exception e) { }
                 throw ex;
@@ -672,6 +725,19 @@ namespace ODMR_Lab.ODMR实验
         {
             var data = D1ChartDatas.Where(x => x.GroupName == groupname && x.Name == name);
             if (data.Count() != 0) return data.ElementAt(0);
+            return null;
+        }
+
+        /// <summary>
+        /// 获取一维数据
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="groupname"></param>
+        /// <returns></returns>
+        public List<double> Get1DChartDataSource(string name, string groupname)
+        {
+            var data = D1ChartDatas.Where(x => x.GroupName == groupname && x.Name == name);
+            if (data.Count() != 0) return (data.ElementAt(0) as NumricChartData1D).Data;
             return null;
         }
 

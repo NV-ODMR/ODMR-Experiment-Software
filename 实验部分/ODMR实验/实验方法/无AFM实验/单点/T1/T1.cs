@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using Controls.Windows;
 using HardWares.射频源.Rigol_DSG_3060;
+using MathLib.NormalMath.Decimal;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
@@ -37,7 +39,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
-            //////////////////拟合的T1
         };
         public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
@@ -80,19 +81,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
                 GetInputParamValueByName("Pi"), (int)locvalue, GetInputParamValueByName("SingleLoopCount"), GetInputParamValueByName("TimeMax"), GetInputParamValueByName("RFFrequency"),
                 GetInputParamValueByName("RFAmplitude")}, GetDeviceByName("PB"), GetDeviceByName("APD"), GetDeviceByName("RFSource"));
             int ind = range.GetNearestIndex(locvalue);
-            var freq = (D1ChartDatas[0] as NumricChartData1D).Data;
-            var signal = (D1ChartDatas[1] as NumricChartData1D).Data;
-            var reference = (D1ChartDatas[2] as NumricChartData1D).Data;
+            var freq = Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据");
+            var signal = Get1DChartDataSource("信号计数[sig]", "T1荧光数据");
+            var reference = Get1DChartDataSource("参考信号计数[ref]", "T1荧光数据");
+            var norm = Get1DChartDataSource("归一化数据[(ref-sig)/ref]", "T1荧光数据");
+
+            double sigcount = (double)res[0];
+            double refcount = (double)res[1];
+
             if (ind >= freq.Count)
             {
                 freq.Add(locvalue);
-                signal.Add((double)res[0]);
-                reference.Add((double)res[0]);
+                signal.Add(sigcount);
+                reference.Add(refcount);
+                double detcount = refcount - sigcount;
+                norm.Add(detcount);
             }
             else
             {
                 signal[ind] = (signal[ind] * CurrentLoop + (double)res[0]) / (CurrentLoop + 1);
                 reference[ind] = (reference[ind] * CurrentLoop + (double)res[1]) / (CurrentLoop + 1);
+                norm[ind] = reference[ind] - signal[ind];
             }
             UpdatePlotChartFlow(true);
             return new List<object>();
@@ -134,18 +143,47 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
             D1ChartDatas = new List<ChartData1D>()
             {
                 new NumricChartData1D("驰豫时间长度(ns)","T1荧光数据",ChartDataType.X),
-                new NumricChartData1D("信号计数","T1荧光数据",ChartDataType.Y),
-                new NumricChartData1D("参考信号计数","T1荧光数据",ChartDataType.Y),
+                new NumricChartData1D("信号计数[sig]","T1荧光数据",ChartDataType.Y),
+                new NumricChartData1D("参考信号计数[ref]","T1荧光数据",ChartDataType.Y),
+                new NumricChartData1D("归一化数据[(ref-sig)/ref]","T1荧光数据",ChartDataType.Y),
             };
             UpdatePlotChart();
 
             Show1DChartData("T1荧光数据", "驰豫时间长度(ns)", "信号计数", "参考信号计数");
         }
 
+        //T1拟合函数
+        private double T1FitFunc(double x, double[] ps)
+        {
+            double a = ps[0];
+            double tau = ps[1];
+            double b = ps[2];
+            return a * Math.Exp(-x / tau) + b;
+        }
+
         public override void AfterExpEventWithoutAFM()
         {
             RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
             RF.Device.IsRFOutOpen = false;
+            //计算T1
+            var xs = Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据");
+            var ys = Get1DChartDataSource("归一化数据[(ref-sig)/ref]", "T1荧光数据");
+            var tempdata = ys.Select(x => Math.Abs(x - (ys.Max() + ys.Min()) / 2)).ToList();
+            double inittau = xs[tempdata.IndexOf(tempdata.Min())];
+            double[] ps = CurveFitting.FitCurveWithFunc(xs, ys, new List<double>() { ys.Max() - ys.Min(), inittau, ys.Min() }, new List<double>() { 10, 10, 10 }, T1FitFunc, AlgorithmType.LevenbergMarquardt, 2000);
+            OutputParams.Add(new Param<double>("T1拟合值(ns)", ps[1], "T1FitData"));
+            //计算平均光子计数
+            OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("参考信号计数[ref]", "T1荧光数据").Average(), "AverageCount"));
+        }
+
+        public override List<ParentPlotDataPack> GetD1PlotPacks()
+        {
+            List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
+            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T1荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据"), false));
+            PlotData.Add(new ParentPlotDataPack("信号计数[sig]", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("信号计数[sig]", "T1荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("参考信号计数[ref]", "T1荧光数据", ChartDataType.X, Get1DChartDataSource("参考信号计数[ref]", "T1荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("归一化数据[(ref-sig)/ref]", "T1荧光数据", ChartDataType.X, Get1DChartDataSource("归一化数据[(ref-sig)/ref]", "T1荧光数据"), true));
+            return PlotData;
         }
     }
 }

@@ -21,28 +21,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描
 {
-    public class CW : ODMRExperimentWithoutAFM
+    public abstract class CWBase : ODMRExperimentWithoutAFM
     {
-        public override string ODMRExperimentName { get; set; } = "连续波全谱CW";
-
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
-        public override List<ParamB> InputParams
-        { get; set; } = new List<ParamB>()
-        {
-            new Param<double>("频率起始点(MHz)",2830,"RFFreqLo"),
-            new Param<double>("频率中止点(MHz)",2890,"RFFreqHi"),
-            new Param<double>("扫描步长(MHz)",1,"RFStep"),
-            new Param<double>("微波功率(dBm)",-20,"RFPower"),
-            new Param<bool>("反向扫描",false,"Reverse"),
-            new Param<int>("循环次数",1000,"LoopCount"),
-            new Param<int>("单点扫描时间上限(ms)",0,"TimeOut")
-        };
-        public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
-        {
-        };
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
+        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
+        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
 
         public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
@@ -50,10 +38,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
         };
-        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
-        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
-        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {
@@ -73,7 +57,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         private List<object> FirstScanEvent(RFSourceInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            var r1 = GetScanRange();
             //新建数据集
             D1ChartDatas = new List<ChartData1D>()
             {
@@ -90,7 +73,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         private List<object> ScanEvent(RFSourceInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
         {
             CWCore cw = new CWCore();
-            var result = cw.CoreMethod(new List<object>() { locvalue, GetInputParamValueByName("RFPower"), GetInputParamValueByName("LoopCount"), GetInputParamValueByName("TimeOut") },
+            var result = cw.CoreMethod(new List<object>() { locvalue, GetRFPower(), GetLoopCount(), GetPointTimeout() },
                 GetDeviceByName("PB"), GetDeviceByName("RFSource"), GetDeviceByName("APD"));
 
             double contrast = (double)result[0];
@@ -106,14 +89,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
             return new List<object>();
         }
 
-        public D1ScanRangeBase GetScanRange()
-        {
-            double xlo = GetInputParamValueByName("RFFreqLo");
-            double xhi = GetInputParamValueByName("RFFreqHi");
-            double step = GetInputParamValueByName("RFStep");
-            bool rev = GetInputParamValueByName("Reverse");
-            return new D1LinearScanRange(xlo, xhi, step, rev);
-        }
+        public abstract List<double> GetScanFrequences();
 
         protected override void InnerRead(FileObject fobj)
         {
@@ -129,7 +105,31 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         public override void AfterExpEventWithoutAFM()
         {
+            SetOutput();
         }
+
+        /// <summary>
+        /// 获取循环次数
+        /// </summary>
+        /// <returns></returns>
+        protected abstract int GetLoopCount();
+
+        /// <summary>
+        /// 获取单点超时时间
+        /// </summary>
+        /// <returns></returns>
+        protected abstract int GetPointTimeout();
+
+        /// <summary>
+        /// 获取微波功率
+        /// </summary>
+        /// <returns></returns>
+        protected abstract double GetRFPower();
+
+        /// <summary>
+        /// 扫描完成后设置输出结果
+        /// </summary>
+        protected abstract void SetOutput();
 
         public override void ODMRExpWithoutAFM()
         {
@@ -146,7 +146,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
             {
                 SetExpState("CW谱扫描,当前频率:" + Math.Round(v, 5).ToString());
             });
-            session.BeginScan(GetScanRange(), 0, 100);
+            session.BeginScan(new D1PointsScanRange(GetScanFrequences()), 0, 100);
+        }
+
+        protected List<double> GetFrequences()
+        {
+            return (Get1DChartData("频率", "CW对比度数据") as NumricChartData1D).Data;
+        }
+
+        protected List<double> GetContracts()
+        {
+            return (Get1DChartData("对比度", "CW对比度数据") as NumricChartData1D).Data; ;
+        }
+
+        protected List<double> GetReferenceCounts()
+        {
+            return (Get1DChartData("参考信号总计数", "CW荧光计数") as NumricChartData1D).Data; ;
+        }
+
+        protected List<double> GetSignalCounts()
+        {
+            return (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data; ;
         }
     }
 }

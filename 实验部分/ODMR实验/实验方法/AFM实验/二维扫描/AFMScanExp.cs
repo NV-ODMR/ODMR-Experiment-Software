@@ -5,6 +5,7 @@ using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
@@ -117,7 +118,25 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             }
             UpdatePlotChartFlow(true);
 
-            //设置二维图表
+            //设置一维图表
+            if (exp is ODMRExperimentWithoutAFM)
+            {
+                var plotpacks = (exp as ODMRExperimentWithoutAFM).GetD1PlotPacks();
+                foreach (var plot in plotpacks)
+                {
+                    if (!plot.IsContinusPlot)
+                    {
+                        if (Get1DChartData(plot.Name, plot.GroupName) == null)
+                        {
+                            D1ChartDatas.Add(new NumricChartData1D(plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
+                        }
+                    }
+                    else
+                    {
+                        D1ChartDatas.Add(new NumricChartData1D("X:" + Math.Round(currentPoint.X, 5).ToString() + "Y:" + Math.Round(currentPoint.Y, 5).ToString() + " " + plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
+                    }
+                }
+            }
 
             return new List<object>();
         }

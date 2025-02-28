@@ -9,6 +9,8 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -56,7 +58,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
         {
             new AutoTrace(),
-            new CW()
+            new TotalCW()
         };
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
@@ -325,5 +327,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
             SetEndTime(DateTime.Now);
         }
         #endregion
+
+        public override List<ParentPlotDataPack> GetD1PlotPacks()
+        {
+            return new List<ParentPlotDataPack>();
+        }
     }
 }
