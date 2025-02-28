@@ -21,6 +21,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 using Controls.Windows;
+using ODMR_Lab.实验部分.ODMR实验.实验方法;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -80,6 +81,8 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 afm1d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm1d);
             }
+
+            ExpObjects.Sort((e1, e2) => e1.ODMRExperimentName.CompareTo(e2.ODMRExperimentName));
         }
 
         public DisplayPage(bool isLoadExps)
@@ -185,6 +188,21 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 //刷新图表
 
                 CurrentExpObject.UpdatePlotChart();
+
+                if (CurrentExpObject.NewDisplayWindow == null)
+                {
+                    ShowInwindowPanel.Visibility = Visibility.Hidden;
+                    ExpPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    ShowInwindowPanel.Visibility = Visibility.Visible;
+                    ExpPanel.Visibility = Visibility.Hidden;
+                }
+                if (CurrentExpObject != null)
+                {
+                    ControlButtonPanel.Visibility = Visibility.Visible;
+                }
 
                 //加载这个实验的参数
                 InputPanel.Children.Clear();
@@ -331,7 +349,22 @@ namespace ODMR_Lab.实验部分.ODMR实验
             win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             var expobj = win.ShowDialog();
             if (expobj != null)
-                SelectExp(ExpObjects.IndexOf(expobj));
+            {
+                if (expobj.NewDisplayWindow != null)
+                {
+                    expobj.NewDisplayWindow.Topmost = true;
+                    expobj.NewDisplayWindow.Topmost = false;
+                    ExpPanel.Visibility = Visibility.Collapsed;
+                    ShowInwindowPanel.Visibility = Visibility.Visible;
+                    CurrentExpObject = expobj;
+                }
+                else
+                {
+                    ExpPanel.Visibility = Visibility.Visible;
+                    ShowInwindowPanel.Visibility = Visibility.Collapsed;
+                    SelectExp(ExpObjects.IndexOf(expobj));
+                }
+            }
         }
         /// <summary>
         /// 输出
@@ -437,6 +470,15 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 name = "扫描类型:" + CurrentExpObject.D2ScanRange.ScanName + "\n" + CurrentExpObject.D2ScanRange.GetDescription() + "\n";
             }
             MessageWindow.ShowTipWindow(name, Window.GetWindow(this));
+        }
+
+        private void ShowInWindow(object sender, RoutedEventArgs e)
+        {
+            if (CurrentExpObject == null) return;
+            CurrentExpObject.NewDisplayWindow = new ExpNewWindow(CurrentExpObject.ODMRExperimentGroupName + ":" + CurrentExpObject.ODMRExperimentName, CurrentExpObject, CurrentExpObject.ParentPage);
+            CurrentExpObject.NewDisplayWindow.Show();
+            ExpPanel.Visibility = Visibility.Hidden;
+            ShowInwindowPanel.Visibility = Visibility.Visible;
         }
     }
 }

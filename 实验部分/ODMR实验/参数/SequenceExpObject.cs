@@ -46,6 +46,11 @@ namespace ODMR_Lab.ODMR实验
         #endregion
 
         /// <summary>
+        /// 是否独立显示在窗口
+        /// </summary>
+        public ExpNewWindow NewDisplayWindow { get; set; } = null;
+
+        /// <summary>
         /// 是否是AFM子实验
         /// </summary>
         public abstract bool IsAFMSubExperiment { get; protected set; }

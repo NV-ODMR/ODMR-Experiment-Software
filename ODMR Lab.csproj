@@ -181,15 +181,6 @@
     <Compile Include="实验类\ExperimentObject.cs" />
     <Compile Include="实验类\RunningBehaviours.cs" />
     <Compile Include="实验部分\ExpPageBase.cs" />
-    <Compile Include="实验部分\ODMR实验\ExpParamWindow.xaml.cs">
-      <DependentUpon>ExpParamWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="实验部分\ODMR实验\ExpSelectWindow.xaml.cs">
-      <DependentUpon>ExpSelectWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="实验部分\ODMR实验\SubExpWindow.xaml.cs">
-      <DependentUpon>SubExpWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="实验部分\ODMR实验\参数\ODMRConfigParams.cs" />
     <Compile Include="实验部分\ODMR实验\参数\SequenceExpObject.cs" />
     <Compile Include="实验部分\ODMR实验\参数\SequenceFileExpObject.cs" />
@@ -220,6 +211,21 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\T1\T1.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PhotonSample.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\探针测试\ProbeConfocal.cs" />
+    <Compile Include="实验部分\ODMR实验\窗口\ExperimentEmptyWindow.xaml.cs">
+      <DependentUpon>ExperimentEmptyWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\ODMR实验\窗口\ExpNewWindow.xaml.cs">
+      <DependentUpon>ExpNewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\ODMR实验\窗口\ExpParamWindow.xaml.cs">
+      <DependentUpon>ExpParamWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\ODMR实验\窗口\ExpSelectWindow.xaml.cs">
+      <DependentUpon>ExpSelectWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\ODMR实验\窗口\SubExpWindow.xaml.cs">
+      <DependentUpon>SubExpWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="实验部分\位移台界面\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -419,21 +425,29 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="实验部分\ODMR实验\ExpParamWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="实验部分\ODMR实验\ExpSelectWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="实验部分\ODMR实验\SubExpWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="实验部分\ODMR实验\实验方法\AFM实验\ScanRangeSelectWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="实验部分\ODMR实验\窗口\ExperimentEmptyWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\ODMR实验\窗口\ExpNewWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\ODMR实验\窗口\ExpParamWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\ODMR实验\窗口\ExpSelectWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\ODMR实验\窗口\SubExpWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="实验部分\位移台界面\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
