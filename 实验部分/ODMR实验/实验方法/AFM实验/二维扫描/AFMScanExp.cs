@@ -24,9 +24,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
     public class AFMScan2DExp : ODMRExperimentWithAFM
     {
         CustomScan2DSession<NanoStageInfo, NanoStageInfo> PointsScanSession = new CustomScan2DSession<NanoStageInfo, NanoStageInfo>();
-
-        public D2ScanRangeBase ScanType { get; set; } = null;
-
         public override string ODMRExperimentName { get; set; } = "";
         public override string ODMRExperimentGroupName { get; set; } = "AFM面扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
@@ -75,7 +72,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 SetExpState("当前扫描点: X: " + Math.Round(p.X, 5).ToString() + " Y: " + Math.Round(p.Y, 5).ToString());
             });
             PointsScanSession.StateJudgeEvent = JudgeThreadEndOrResume;
-            PointsScanSession.BeginScan(ScanType, 0, 100);
+            PointsScanSession.BeginScan(D2ScanRange, 0, 100);
         }
 
         /// <summary>
@@ -96,8 +93,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
             //获取输出参数
             double value = 0;
-            int indx = ScanType.GetNearestXIndex(currentPoint.X);
-            int indy = ScanType.GetNearestYIndex(currentPoint.Y);
+            int indx = D2ScanRange.GetNearestXIndex(currentPoint.X);
+            int indy = D2ScanRange.GetNearestYIndex(currentPoint.Y);
             foreach (var item in exp.OutputParams)
             {
                 if (item.RawValue is bool)
@@ -132,16 +129,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventWithAFM()
         {
-            //获取扫描范围类型
-            if (ScanType == null)
+            LockinInfo info = GetDeviceByName("LockIn") as LockinInfo;
+            //下针信息确认
+            if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + info.Device.DemodR.ToString() + "\n" + "设定点:" + info.Device.SetPoint.ToString() + "\n"
+                + "P:" + info.Device.P.ToString() + "\n" + "I:" + info.Device.I.ToString() + "\n" + "D:" + info.Device.D.ToString() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
             {
-                throw new Exception("扫描范围未选择");
+                throw new Exception("实验已停止");
             }
+
             foreach (var item in SubExperiments)
             {
                 foreach (var par in item.OutputParams)
                 {
-                    D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(ScanType.XCount, ScanType.XLo, ScanType.XHi, ScanType.YCount, ScanType.YLo, ScanType.YHi)
+                    D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(D2ScanRange.XCount, D2ScanRange.XLo, D2ScanRange.XHi, D2ScanRange.YCount, D2ScanRange.YLo, D2ScanRange.YHi)
                     { XName = "轴1位置", YName = "轴2位置", ZName = item.ODMRExperimentName + ":" + par.Description })
                     { GroupName = "二维扫描数据" });
                 }
@@ -161,11 +161,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override bool PreConfirmProcedure()
         {
-            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据,并且将执行下针操作", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
+            if (D2ScanRange == null)
             {
-                return true;
+                MessageWindow.ShowTipWindow("扫描范围未设置", Window.GetWindow(ParentPage));
+                return false;
             }
-            return false;
+
+            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据,并且将执行下针操作", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+            {
+                return false;
+            }
+
+            //扫描范围信息
+            if (MessageWindow.ShowMessageBox("扫描范围确认", "扫描范围类型:" + D2ScanRange.ScanName + "\n" + D2ScanRange.GetDescription() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

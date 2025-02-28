@@ -20,6 +20,7 @@ using ODMR_Lab.Windows;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
+using Controls.Windows;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -96,6 +97,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ButtonsPanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunning));
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ScanRangePanel, RunningBehaviours.DisableWhenRunning));
             return ControlsStates;
         }
 
@@ -425,6 +427,16 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     CurrentExpObject.RangeWindow.ShowD2(result);
                 }
             }
+        }
+
+        private void ShowRangeInformation(object sender, RoutedEventArgs e)
+        {
+            string name = "未设置范围";
+            if (CurrentExpObject != null && CurrentExpObject.D2ScanRange != null)
+            {
+                name = "扫描类型:" + CurrentExpObject.D2ScanRange.ScanName + "\n" + CurrentExpObject.D2ScanRange.GetDescription() + "\n";
+            }
+            MessageWindow.ShowTipWindow(name, Window.GetWindow(this));
         }
     }
 }

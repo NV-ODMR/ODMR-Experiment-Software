@@ -15,7 +15,7 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
     public abstract class D2ShapeScanRangeBase : D2ScanRangeBase
     {
 
-        protected LinearRing RingShape = null;
+        public LinearRing RingShape = null;
 
         /// <summary>
         /// 
@@ -47,7 +47,8 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
         public override string GetDescription()
         {
             string s = "X: " + Math.Round(XLo, 5).ToString() + "—" + Math.Round(XHi, 5).ToString() + "  点数:" + XCount.ToString() + "\n" +
-                "Y: " + Math.Round(YLo, 5).ToString() + "—" + Math.Round(YHi, 5).ToString() + "  点数:" + YCount.ToString() + "\n";
+                "Y: " + Math.Round(YLo, 5).ToString() + "—" + Math.Round(YHi, 5).ToString() + "  点数:" + YCount.ToString() + "\n"
+                + "X反向:" + ReverseX.ToString() + " , " + "Y反向:" + ReverseY.ToString() + "\n" + "X为快轴:" + IsXFastAxis.ToString() + "\n";
             s += "轮廓点(逆时针):\n";
             foreach (var item in RingShape.Coordinates)
             {
@@ -63,8 +64,6 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
     public class D2ShapeScanRange : D2ShapeScanRangeBase
     {
         public override string ScanName { get; protected set; } = "特殊形状同向扫描";
-
-        private LinearRing RingShape = null;
 
         public D2ShapeScanRange(int XCount, int YCount, bool ReverseX, bool ReverseY, bool IsXFast, List<Point> ps) : base(XCount, YCount, ReverseX, ReverseY, IsXFast, ps)
         {

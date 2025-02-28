@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验" xmlns:controls="clr-namespace:Controls;assembly=Controls"
         xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls"
         mc:Ignorable="d"
-        Title="扫描范围设置"  Height="559" Width="911" WindowChrome.IsHitTestVisibleInChrome="False"  BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+        Title="扫描范围设置"  MinHeight="559" Width="911" WindowChrome.IsHitTestVisibleInChrome="False"  BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -112,9 +112,8 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
-                <controls:DecoratedButton Name="D2Btn1" Click="ChangePannel" KeepPressed="True" Width="100" TextAreaRatio="1" Text="正反向扫描" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
-                <controls:DecoratedButton Name="D2Btn2" Click="ChangePannel" Width="100" TextAreaRatio="1" Text="同向扫描" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
-                <controls:DecoratedButton Name="D2Btn3" Click="ChangePannel" Width="150" TextAreaRatio="1" Text="特殊形状扫描" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <controls:DecoratedButton Name="D2Btn1" Click="ChangePannel" KeepPressed="True" Width="100" TextAreaRatio="1" Text="矩形扫描" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <controls:DecoratedButton Name="D2Btn2" Click="ChangePannel" Width="150" TextAreaRatio="1" Text="特殊形状扫描" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
             </StackPanel>
             <Grid Name="D2Panel1" Grid.Row="1" HorizontalAlignment="Center" Visibility="Hidden" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -123,37 +122,6 @@
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="200"/>
-                </Grid.ColumnDefinitions>
-                <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴1范围："/>
-                <Label Foreground="White" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="—"/>
-                <TextBox Grid.Column="1" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <TextBox Grid.Column="3" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <Label Foreground="White" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴2范围："/>
-                <Label Foreground="White" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="—"/>
-                <TextBox Grid.Column="1" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <TextBox Grid.Column="3" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <Grid Grid.Row="4" Grid.ColumnSpan="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Label Foreground="White" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴1点数"/>
-                    <Label Foreground="White" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴2点数"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                    <TextBox Grid.Column="3" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                </Grid>
-            </Grid>
-            <Grid Name="D2Panel2" Grid.Row="1" HorizontalAlignment="Center" Visibility="Hidden" VerticalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="20"/>
@@ -165,28 +133,43 @@
                     <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
-                <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴1范围："/>
+                <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴X范围："/>
                 <Label Foreground="White" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="—"/>
-                <TextBox Grid.Column="1" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <TextBox Grid.Column="3" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <Label Foreground="White" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴2范围："/>
+                <TextBox Name="D2RectScanXLo" Grid.Column="1" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <TextBox Name="D2RectScanXHi" Grid.Column="3" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <Label Foreground="White" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴Y范围："/>
                 <Label Foreground="White" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="—"/>
-                <TextBox Grid.Column="1" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <TextBox Grid.Column="3" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <Grid Grid.Row="4" Grid.ColumnSpan="4">
+                <TextBox Name="D2RectScanYLo" Grid.Column="1" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <TextBox Name="D2RectScanYHi" Grid.Column="3" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <Grid Grid.Row="4" Grid.ColumnSpan="4" Grid.RowSpan="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label Foreground="White" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴1点数"/>
-                    <Label Foreground="White" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴2点数"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                    <TextBox Grid.Column="3" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                    <Label Foreground="White" Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴X点数"/>
+                    <Label Foreground="White" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴Y点数"/>
+                    <TextBox Name="D2RectScanXCount" Grid.Column="1" Grid.Row="0" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                    <TextBox Name="D2RectScanYCount" Grid.Column="3" Grid.Row="0" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                    <Label Foreground="White" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="X轴扫描反向"/>
+                    <controls:Chooser Name="D2RectScanXReverse" IsSelected="False" Grid.Column="1" Grid.Row="2" Height="15" Width="30" Margin="5" Background="#FF2E2E2E"/>
+                    <Label Foreground="White" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Y轴扫描反向"/>
+                    <controls:Chooser Name="D2RectScanYReverse" IsSelected="False" Grid.Column="3" Grid.Row="2" Height="15" Width="30" Margin="5" Background="#FF2E2E2E"/>
+                    <Label Foreground="White" Grid.Row="4" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="X轴为快轴"/>
+                    <controls:Chooser Name="D2RectScanXFast" Grid.Column="1" Grid.Row="4" Height="15" Width="30" Margin="5" Background="#FF2E2E2E"/>
+                    <Label Foreground="White" Grid.Row="4" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="往返扫描"/>
+                    <controls:Chooser Name="D2RectScanDirectionReverse" Grid.Column="3" Grid.Row="4" Height="15" Width="30" Margin="5" Background="#FF2E2E2E"/>
                 </Grid>
             </Grid>
-            <Grid Name="D2Panel3" Grid.Row="1">
+            <Grid Name="D2Panel2" Grid.Row="1" Visibility="Hidden">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20"/>
                     <RowDefinition Height="*"/>
@@ -242,11 +225,27 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="60"/>
                     </Grid.ColumnDefinitions>
                     <Label Foreground="White" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴1点数"/>
                     <Label Foreground="White" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="轴2点数"/>
-                    <TextBox Grid.Column="1" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                    <TextBox Grid.Column="3" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                    <TextBox Name="D2ShapeScanXCounts" Grid.Column="1" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                    <TextBox Name="D2ShapeScanYCounts" Grid.Column="3" Grid.Row="2" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                    <Label Foreground="White" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="X反向"/>
+                    <controls:Chooser Name="D2ShapeScanXReverse" IsSelected="False" Grid.Column="5" Height="15" Width="30" Grid.Row="2" Margin="5" Background="#FF2E2E2E"/>
+                    <Label Foreground="White" Grid.Row="2" Grid.Column="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Y反向"/>
+                    <controls:Chooser Name="D2ShapeScanYreverse" IsSelected="False" Grid.Column="7" Height="15" Width="30" Grid.Row="2" Margin="5" Background="#FF2E2E2E"/>
+                    <Label Foreground="White" Grid.Row="2" Grid.Column="8" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="X为快轴"/>
+                    <controls:Chooser Name="D2ShapeScanXFast" Grid.Column="9" Height="15" Width="30" Grid.Row="2" Margin="5" Background="#FF2E2E2E"/>
+                    <Label Foreground="White" Grid.Row="2" Grid.Column="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="往返扫描"/>
+                    <controls:Chooser Name="D2ShapeScanDirectionReverse" IsSelected="False" Grid.Column="11" Height="15" Width="30" Grid.Row="2" Margin="5" Background="#FF2E2E2E"/>
                 </Grid>
             </Grid>
             <controls:DecoratedButton Grid.Row="2" TextAreaRatio="1" Click="Apply" Text="应用" FontSize="12" Margin="6" IconMargin="7" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
