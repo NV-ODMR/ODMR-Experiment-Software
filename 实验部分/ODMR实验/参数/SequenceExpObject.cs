@@ -300,10 +300,11 @@ namespace ODMR_Lab.ODMR实验
 
         public override ConfigBase ReadConfig()
         {
-            foreach (var item in InputParams)
-            {
-                item.ReadFromPage(new FrameworkElement[] { ParentPage.InputPanel }, true);
-            }
+            if (ParentPage != null)
+                foreach (var item in InputParams)
+                {
+                    item.ReadFromPage(new FrameworkElement[] { ParentPage.InputPanel }, true);
+                }
             return null;
         }
 
@@ -312,20 +313,23 @@ namespace ODMR_Lab.ODMR实验
             //清除面板参数
             App.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var item in OutputParams)
+                if (ParentPage != null)
                 {
-                    ParentPage.UnregisterName(ExpParamWindow.GetValidName(item.PropertyName));
-                }
-                if (ParentPage.CurrentExpObject == this)
-                {
-                    for (int i = 0; i < ParentPage.OutputPanel.Children.Count; i++)
+                    foreach (var item in OutputParams)
                     {
-                        if ((ParentPage.OutputPanel.Children[i] as FrameworkElement).Name != "")
+                        ParentPage.UnregisterName(ExpParamWindow.GetValidName(item.PropertyName));
+                    }
+                    if (ParentPage.CurrentExpObject == this)
+                    {
+                        for (int i = 0; i < ParentPage.OutputPanel.Children.Count; i++)
                         {
-                            ParentPage.UnregisterName((ParentPage.OutputPanel.Children[i] as FrameworkElement).Name);
+                            if ((ParentPage.OutputPanel.Children[i] as FrameworkElement).Name != "")
+                            {
+                                ParentPage.UnregisterName((ParentPage.OutputPanel.Children[i] as FrameworkElement).Name);
+                            }
+                            ParentPage.OutputPanel.Children.RemoveAt(i);
+                            --i;
                         }
-                        ParentPage.OutputPanel.Children.RemoveAt(i);
-                        --i;
                     }
                 }
             });
@@ -342,17 +346,18 @@ namespace ODMR_Lab.ODMR实验
                     AddSubexpOutputParams(item);
                 }
                 //更新到窗口
-                if (ParentPage.CurrentExpObject == this)
-                {
-                    ExpParamWindow win = new ExpParamWindow(ParentPage.CurrentExpObject, ParentPage, false, false, false);
-                    foreach (var item in OutputParams)
+                if (ParentPage != null)
+                    if (ParentPage.CurrentExpObject == this)
                     {
-                        item.PropertyName = "Output_" + item.PropertyName;
-                        Grid g = win.GenerateControlBar(item, ParentPage, false);
-                        ParentPage.OutputPanel.Children.Add(g);
-                        item.LoadToPage(new FrameworkElement[] { ParentPage }, false);
+                        ExpParamWindow win = new ExpParamWindow(ParentPage.CurrentExpObject, ParentPage, false, false, false);
+                        foreach (var item in OutputParams)
+                        {
+                            item.PropertyName = "Output_" + item.PropertyName;
+                            Grid g = win.GenerateControlBar(item, ParentPage, false);
+                            ParentPage.OutputPanel.Children.Add(g);
+                            item.LoadToPage(new FrameworkElement[] { ParentPage }, false);
+                        }
                     }
-                }
             });
         }
 
@@ -789,8 +794,11 @@ namespace ODMR_Lab.ODMR实验
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                ParentPage.Chart1D.UpdateChartAndDataFlow(isAutoScale);
-                ParentPage.Chart2D.UpdateChartAndDataFlow();
+                if (ParentPage != null)
+                {
+                    ParentPage.Chart1D.UpdateChartAndDataFlow(isAutoScale);
+                    ParentPage.Chart2D.UpdateChartAndDataFlow();
+                }
             });
         }
 
@@ -802,12 +810,15 @@ namespace ODMR_Lab.ODMR实验
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                ParentPage.Chart1D.DataSource.Clear(false);
-                ParentPage.Chart1D.FitData.Clear(false);
-                ParentPage.Chart2D.DataSource.Clear(false);
-                ParentPage.Chart1D.DataSource.AddRange(D1ChartDatas);
-                ParentPage.Chart1D.FitData.AddRange(D1FitDatas);
-                ParentPage.Chart2D.DataSource.AddRange(D2ChartDatas);
+                if (ParentPage != null)
+                {
+                    ParentPage.Chart1D.DataSource.Clear(false);
+                    ParentPage.Chart1D.FitData.Clear(false);
+                    ParentPage.Chart2D.DataSource.Clear(false);
+                    ParentPage.Chart1D.DataSource.AddRange(D1ChartDatas);
+                    ParentPage.Chart1D.FitData.AddRange(D1FitDatas);
+                    ParentPage.Chart2D.DataSource.AddRange(D2ChartDatas);
+                }
             });
         }
 
@@ -846,6 +857,12 @@ namespace ODMR_Lab.ODMR实验
 
 
             SubExpWindow win = null;
+
+            subExp.JudgeThreadEndOrResumeAction = JudgeThreadEndOrResumeAction;
+            subExp.IsSubExperiment = true;
+            subExp.ParentExp = this;
+            subExp.DisConnectODMRParentExperiment();
+
             if (ShowWindow)
             {
                 App.Current.Dispatcher.Invoke(() =>
@@ -867,9 +884,6 @@ namespace ODMR_Lab.ODMR实验
                 });
             }
 
-            subExp.JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
-            subExp.IsSubExperiment = true;
-            subExp.ParentExp = this;
             subExp.Start();
 
             while (!subExp.IsExpEnd) { Thread.Sleep(50); }
@@ -905,13 +919,8 @@ namespace ODMR_Lab.ODMR实验
                     SetOutputParamByName(item.PropertyName, par.ElementAt(0).RawValue);
                 }
             }
-
-            var controlsStates = SubExperiments[index].ParentPage.GetControlsStates();
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, ParentPage.StartTime, ParentPage.EndTime, ParentPage.ProgressTitle, ParentPage.Progress, controlsStates);
-            });
-            if (subExp.ExpFailedException != null) throw subExp.ExpFailedException;
+            if (subExp.ExpFailedException != null)
+                throw subExp.ExpFailedException;
             return subExp;
         }
     }

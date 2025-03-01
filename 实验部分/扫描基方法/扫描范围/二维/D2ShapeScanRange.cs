@@ -105,13 +105,13 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
                     if (IsXFastAxis)
                     {
                         NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(FastAxis[j], SlowAxis[i]);
-                        if (Poly.Contains(newp))
+                        if (Poly.Contains(newp) || Poly.Boundary.Contains(newp))
                             ps.Add(new TaggedPoint(FastAxis[j], SlowAxis[i], tag));
                     }
                     else
                     {
                         NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(SlowAxis[i], FastAxis[j]);
-                        if (Poly.Contains(newp))
+                        if (Poly.Contains(newp) || Poly.Boundary.Contains(newp))
                             ps.Add(new TaggedPoint(SlowAxis[i], FastAxis[j], tag));
                     }
                 }
@@ -171,13 +171,13 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
                     if (IsXFastAxis)
                     {
                         NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(reverse ? FastAxisRev[j] : FastAxis[j], SlowAxis[i]);
-                        if (Poly.Contains(newp))
+                        if (Poly.Contains(newp) || Poly.Boundary.Contains(newp))
                             ps.Add(new TaggedPoint(reverse ? FastAxisRev[j] : FastAxis[j], SlowAxis[i], tag));
                     }
                     else
                     {
                         NetTopologySuite.Geometries.Point newp = new NetTopologySuite.Geometries.Point(SlowAxis[i], reverse ? FastAxisRev[j] : FastAxis[j]);
-                        if (Poly.Contains(newp))
+                        if (Poly.Contains(newp) || Poly.Boundary.Contains(newp))
                             ps.Add(new TaggedPoint(SlowAxis[i], reverse ? FastAxisRev[j] : FastAxis[j], tag));
                     }
                 }

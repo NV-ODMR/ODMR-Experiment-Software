@@ -49,7 +49,7 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             if (stage == AStage)
             {
-                ScanHelper.Move(stage, JudgeThreadEndOrResume, -150, 150, loc, 5000);
+                ScanHelper.Move(stage, JudgeThreadEndOrResumeAction, -150, 150, loc, 5000);
             }
 
             List<double> freqs1 = new List<double>();

@@ -59,12 +59,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventBeforeDropWithAFM()
         {
+            LockinInfo info = GetDeviceByName("LockIn") as LockinInfo;
+            //下针信息确认
+            bool iscontinue = true;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + info.Device.DemodR.ToString() + "\n" + "设定点:" + info.Device.SetPoint.ToString() + "\n"
+                    + "P:" + info.Device.P.ToString() + "\n" + "I:" + info.Device.I.ToString() + "\n" + "D:" + info.Device.D.ToString() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+                {
+                    iscontinue = false;
+                }
+            });
+            if (!iscontinue) throw new Exception("实验已停止");
             //将位移台复位
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
-            infox.Device.MoveToAndWait(GetInputParamValueByName("StartLocX"), 120000);
-            infoy.Device.MoveToAndWait(GetInputParamValueByName("StartLocY"), 120000);
+            infox.Device.MoveToAndWait(D1ScanRange.StartPoint.X, 120000);
+            infoy.Device.MoveToAndWait(D1ScanRange.StartPoint.Y, 120000);
         }
 
         public override void ODMRExpWithAFM()
@@ -75,7 +87,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             PointsScanSession.FirstScanEvent = ScanEvent;
             PointsScanSession.ScanEvent = ScanEvent;
             PointsScanSession.ScanSource1 = dev1;
-            PointsScanSession.ScanSource1 = dev2;
+            PointsScanSession.ScanSource2 = dev2;
             PointsScanSession.ProgressBarMethod = new Action<NanoStageInfo, NanoStageInfo, double>((devx, devy, val) =>
              {
                  SetProgress(val);
@@ -84,7 +96,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
              {
                  SetExpState("当前扫描位置: X:" + Math.Round(v.X, 5).ToString() + " Y: " + Math.Round(v.Y, 5).ToString());
              });
-            PointsScanSession.StateJudgeEvent = JudgeThreadEndOrResume;
+            PointsScanSession.StateJudgeEvent = JudgeThreadEndOrResumeAction;
             PointsScanSession.BeginScan(D1ScanRange, 0, 100);
         }
 
@@ -97,12 +109,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// <returns></returns>
         public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, D1PointsScanRangeBase scanPoints, Point currentloc, List<object> inputParams)
         {
-            scannerx.Device.MoveToAndWait(GetInputParamValueByName("StartLocX"), 120000);
-            scannery.Device.MoveToAndWait(GetInputParamValueByName("StartLocY"), 120000);
+            SetExpState("正在移动到目标位置 X: " + Math.Round(currentloc.X, 5).ToString() + " Y: " + Math.Round(currentloc.Y, 5));
+            scannerx.Device.MoveToAndWait(currentloc.X, 120000);
+            scannery.Device.MoveToAndWait(currentloc.Y, 120000);
 
+            SetExpState("正在进行实验...");
             //进行实验
             ODMRExpObject exp = RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
-
+            JudgeThreadEndOrResumeAction?.Invoke();
             //获取输出参数
             double value = 0;
             (Get1DChartDataSource("扫描点序号", "一维扫描数据")).Add(scanPoints.GetNearestIndex(currentloc));
@@ -124,8 +138,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 {
                     value = (float)item.RawValue;
                 }
-                Get1DChartDataSource(exp.ODMRExperimentName + ":" + item.Description, "一维扫描数据").Add(value);
+                var data = Get1DChartData(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "一维扫描数据");
+                if (data == null)
+                {
+                    data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "一维扫描数据", ChartDataType.Y);
+                    D1ChartDatas.Add(data);
+                    UpdatePlotChart();
+                }
+                (data as NumricChartData1D).Data.Add(value);
             }
+            //刷新形貌数据
+            var afm = Get1DChartDataSource("AFM形貌数据(PID输出)", "一维扫描数据");
+            afm.Add((GetDeviceByName("LockIn") as LockinInfo).Device.PIDValue);
+            UpdatePlotChartFlow(true);
 
             //设置一维图表
             if (exp is ODMRExperimentWithoutAFM)
@@ -158,20 +183,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventWithAFM()
         {
-            //获取扫描范围类型
-            if (D1ScanRange == null)
-            {
-                throw new Exception("扫描范围未选择");
-            }
             D1ChartDatas.Clear();
             D1ChartDatas.Add(new NumricChartData1D("扫描点序号", "一维扫描数据", ChartDataType.X));
-            foreach (var item in SubExperiments)
-            {
-                foreach (var par in item.OutputParams)
-                {
-                    D1ChartDatas.Add(new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + par.Description, "一维扫描数据", ChartDataType.Y));
-                }
-            }
+            D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据", "一维扫描数据", ChartDataType.Y));
             UpdatePlotChart();
         }
 
@@ -182,11 +196,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override bool PreConfirmProcedure()
         {
-            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据,并且将执行下针操作", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
+            if (D1ScanRange == null)
             {
-                return true;
+                MessageWindow.ShowTipWindow("扫描范围未设置", Window.GetWindow(ParentPage));
+                return false;
             }
-            return false;
+
+            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据,并且将执行下针操作", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+            {
+                return false;
+            }
+
+            //扫描范围信息
+            if (MessageWindow.ShowMessageBox("扫描范围确认", "扫描范围类型:" + D1ScanRange.ScanName + "\n" + D1ScanRange.GetDescription() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -488,9 +488,9 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             UIUpdater.SetUIControl(ExpPage.XState, "正在执行流程...");
             //移动Z轴
-            ScanHelper.Move(ZStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
+            ScanHelper.Move(ZStage, JudgeThreadEndOrResumeAction, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
             //旋转台移动到轴向沿Y
-            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleX, 60000, 360);
+            ScanHelper.Move(AStage, JudgeThreadEndOrResumeAction, -150, 150, Config.AngleX, 60000, 360);
             //X方向扫描
             ScanX();
             ExpPage.SetProgress("X", 100);
@@ -499,9 +499,9 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             UIUpdater.SetUIControl(ExpPage.YState, "正在执行流程...");
             //旋转台移动到轴向沿X
-            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleY, 10000);
+            ScanHelper.Move(AStage, JudgeThreadEndOrResumeAction, -150, 150, Config.AngleY, 10000);
             //移动X到最大值
-            ScanHelper.Move(XStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Param.XLoc.Value, 10000);
+            ScanHelper.Move(XStage, JudgeThreadEndOrResumeAction, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Param.XLoc.Value, 10000);
             //Y方向扫描
             ScanY();
             ExpPage.SetProgress("Y", 100);
@@ -510,7 +510,7 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             UIUpdater.SetUIControl(ExpPage.ZState, "正在执行流程...");
             //移动Y到最大值
-            ScanHelper.Move(YStage, JudgeThreadEndOrResume, Config.YRangeLo.Value, Config.YRangeHi.Value, Param.YLoc.Value, 10000);
+            ScanHelper.Move(YStage, JudgeThreadEndOrResumeAction, Config.YRangeLo.Value, Config.YRangeHi.Value, Param.YLoc.Value, 10000);
             //Z扫描
             ScanZ();
             ExpPage.SetProgress("Z", 100);
@@ -520,7 +520,7 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             UIUpdater.SetUIControl(ExpPage.AngleState, "正在执行流程...");
             //角度扫描
-            ScanHelper.Move(ZStage, JudgeThreadEndOrResume, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
+            ScanHelper.Move(ZStage, JudgeThreadEndOrResumeAction, Config.ZRangeLo.Value, Config.ZRangeHi.Value, Config.ZPlane.Value, 10000);
             ScanAngle();
             ExpPage.SetProgress("A", 100);
             UIUpdater.SetUIControl(ExpPage.AngleState, "已完成,NV的方位角θ和φ分别为:");

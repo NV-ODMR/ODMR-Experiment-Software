@@ -71,6 +71,9 @@ namespace ODMR_Lab.IO操作
             SCP = new StageControlConfigParams();
             SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
             WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
+            SCP = new StageControlConfigParams();
+            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.LenPanel }, false);
+            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.LenPanel.Name);
             #endregion
 
             #region Trace参数

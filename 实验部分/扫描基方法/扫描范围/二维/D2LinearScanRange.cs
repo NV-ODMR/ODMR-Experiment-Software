@@ -17,6 +17,8 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
             YScans = r2.ScanPoints;
             ReverseX = reverseX;
             ReverseY = reverseY;
+            XCount = xcount;
+            YCount = ycount;
             IsXFastAxis = IsXFast;
             ScanPoints = GeneratePointList();
         }

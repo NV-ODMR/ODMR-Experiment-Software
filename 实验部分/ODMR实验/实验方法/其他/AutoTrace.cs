@@ -145,7 +145,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             CurveFitting Fitting = new CurveFitting(gaussFitExpression, "x", new List<string>() { "a", "b", "c", "d" });
 
             Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
-            session.StateJudgeEvent = JudgeThreadEndOrResume;
+            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
             session.ProgressBarMethod = new Action<NanoStageInfo, double>((dev, v) =>
               {
                   SetProgress(v);

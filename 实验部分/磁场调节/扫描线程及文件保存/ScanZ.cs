@@ -20,12 +20,12 @@ namespace ODMR_Lab.实验部分.磁场调节
         private void ScanZ()
         {
             //扫第一个点
-            ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleX, 60000, 360);
+            ScanHelper.Move(AStage, JudgeThreadEndOrResumeAction, -150, 150, Config.AngleX, 60000, 360);
             Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
             session.ProgressBarMethod = SetProgressFromSession;
             session.FirstScanEvent = ScanEvent;
             session.ScanEvent = ScanEvent;
-            session.StateJudgeEvent = JudgeThreadEndOrResume;
+            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
             session.ScanSource = ZStage;
 
             //扫第一个点
@@ -43,7 +43,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             {
                 if (cp1.Bp / cp1.Bv < 0.1 || cp2.Bp / cp2.Bv < 0.1)
                 {
-                    ScanHelper.Move(AStage, JudgeThreadEndOrResume, -150, 150, Config.AngleY, 60000, 360);
+                    ScanHelper.Move(AStage, JudgeThreadEndOrResumeAction, -150, 150, Config.AngleY, 60000, 360);
 
                     ZPoints.Clear();
 

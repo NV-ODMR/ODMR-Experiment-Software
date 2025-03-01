@@ -176,7 +176,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
                 double temp = begin;
                 while ((temp - end) * sgn < 0)
                 {
-                    JudgeThreadEndOrResume();
+                    JudgeThreadEndOrResumeAction?.Invoke();
                     Dev.Device.TargetVoltage = temp;
                     g = Dev.Device.Measure();
                     IVTimes.Add(g.TimeStamp);

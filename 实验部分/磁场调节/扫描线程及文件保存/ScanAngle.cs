@@ -24,7 +24,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             session.ProgressBarMethod = SetProgressFromSession;
             session.FirstScanEvent = ScanAngleEvent;
             session.ScanEvent = ScanAngleEvent;
-            session.StateJudgeEvent = JudgeThreadEndOrResume;
+            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
             session.ScanSource = AStage;
 
             session.BeginScan(new D1NumricLinearScanRange(-140, 140, 14), 0, 100, false, this, 0.0, 0.0, 15, 0.1);

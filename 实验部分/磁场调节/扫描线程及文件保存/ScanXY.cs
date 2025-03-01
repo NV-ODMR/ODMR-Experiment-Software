@@ -52,7 +52,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             session.FirstScanEvent = ScanEvent;
             session.ScanEvent = ScanEvent;
             session.ProgressBarMethod = SetProgressFromSession;
-            session.StateJudgeEvent = JudgeThreadEndOrResume;
+            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
 
             double restrictlo = 0;
             double restricthi = 0;

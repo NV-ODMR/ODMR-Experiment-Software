@@ -2,6 +2,7 @@
 using Controls;
 using Controls.Windows;
 using ODMR_Lab.IO操作;
+using ODMR_Lab.ODMR实验;
 using ODMR_Lab.Windows;
 using ODMR_Lab.实验类;
 using ODMR_Lab.数据处理;
@@ -413,6 +414,16 @@ namespace ODMR_Lab
             ControlStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
         }
 
+        public void DisConnectODMRParentExperiment()
+        {
+            JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
+        }
+
+        public void ConnectODMRParentExperiment(ODMRExpObject obj)
+        {
+            JudgeThreadEndOrResumeAction = obj.JudgeThreadEndOrResume;
+        }
+
         /// <summary>
         /// 设置当前线程状态
         /// </summary>
@@ -685,7 +696,9 @@ namespace ODMR_Lab
                     if (ex is ExpStopException)
                     {
                         if (!IsSubExperiment)
+                        {
                             MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
+                        }
                     }
                     else
                     {
@@ -708,10 +721,12 @@ namespace ODMR_Lab
         private void ResumeEvent(object sender, RoutedEventArgs e)
         {
             ThreadResumeFlag = true;
+            SetExpState("暂停实验...");
         }
         private void StopEvent(object sender, RoutedEventArgs e)
         {
             ThreadEndFlag = true;
+            SetExpState("正在停止实验...");
         }
 
         #region 外部控制
@@ -757,7 +772,7 @@ namespace ODMR_Lab
         /// 如果状态为等待则挂起，如果状态为结束则抛出异常
         /// </summary>
         /// <exception cref="Exception"></exception>
-        protected void JudgeThreadEndOrResume()
+        private void JudgeThreadEndOrResume()
         {
             if (ThreadEndFlag)
             {
@@ -776,6 +791,8 @@ namespace ODMR_Lab
                 }
             }
         }
+
+
 
         public void Dispose()
         {
