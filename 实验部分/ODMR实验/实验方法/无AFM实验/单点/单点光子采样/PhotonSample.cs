@@ -62,8 +62,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         {
             SetProgress(0);
             ConfocalAPDSample confocalAPDSample = new ConfocalAPDSample();
-            var result = confocalAPDSample.CoreMethod(GetInputParamValueByName("SampleRate"), GetDeviceByName("APD"));
-            OutputParams.Add(new Param<int>("光子计数", result[0], "SampleCount"));
+            var result = confocalAPDSample.CoreMethod(new List<object>() { GetInputParamValueByName("SampleRate") }, GetDeviceByName("APD"));
+            OutputParams.Add(new Param<double>("光子计数", (double)result[0], "SampleCount"));
             SetProgress(100);
         }
 

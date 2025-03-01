@@ -1,5 +1,6 @@
 ﻿using MathLib.NormalMath.Decimal;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.磁场调节;
 using ODMR_Lab.设备部分.位移台部分;
@@ -26,7 +27,7 @@ namespace ODMR_Lab.实验部分.磁场调节
             session.StateJudgeEvent = JudgeThreadEndOrResume;
             session.ScanSource = AStage;
 
-            session.BeginScan(new D1LinearScanRange(-140, 140, 14), 0, 100, false, this, 0.0, 0.0, 15, 0.1);
+            session.BeginScan(new D1NumricLinearScanRange(-140, 140, 14), 0, 100, false, this, 0.0, 0.0, 15, 0.1);
 
             #region 进行拟合得到方位角
             List<double> locs = AnglePoints.Select((x) => x.MoverLoc).ToList();

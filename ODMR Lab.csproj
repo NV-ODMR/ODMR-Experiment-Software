@@ -60,17 +60,21 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeHelper">
-      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+    <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls">
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
+    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
-    <Reference Include="HardWares">
-      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+    <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
-    <Reference Include="MathLib">
-      <HintPath>..\..\..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+    <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -84,8 +88,9 @@
     <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>packages\OpenCvSharp4.Extensions.4.10.0.20241108\lib\netstandard2.0\OpenCvSharp.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="PythonHandler">
-      <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+    <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -258,12 +263,17 @@
       <DependentUpon>SequenceFileWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\扫描基方法\CustomScan2DSession.cs" />
+    <Compile Include="实验部分\扫描基方法\CustomScan1DLineSession.cs" />
     <Compile Include="实验部分\扫描基方法\Scan1DSession.cs" />
     <Compile Include="实验部分\扫描基方法\Scan2DSession.cs" />
     <Compile Include="实验部分\扫描基方法\ScanHelper.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\ScanRangeBase.cs" />
-    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1LinearScanRange.cs" />
-    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1PointsScanRange.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1NumricLinearScanRange.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1NumricScanRangeBase.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1NumricListScanRange.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1PointsScanRangeBase.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1PointsLinearScanRange.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1PointsListScanRange.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1ScanRangeBase.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\二维\D2ShapeScanRange.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\二维\D2ScanRangeBase.cs" />

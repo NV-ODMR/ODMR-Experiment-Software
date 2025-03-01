@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 
 namespace ODMR_Lab.实验部分.扫描基方法
 {
@@ -70,7 +71,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
         {
             SetProgress(progressLo);
 
-            var progress = new D1LinearScanRange(progressLo, progressHi, range.ScanPoints.Count, false).ScanPoints;
+            var progress = new D1NumricLinearScanRange(progressLo, progressHi, range.ScanPoints.Count, false).ScanPoints.ToList();
 
             bool IsFirstScan = true;
 

@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 using Point = System.Windows.Point;
 
-namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
+namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
 {
 
     public abstract class D2ShapeScanRangeBase : D2ScanRangeBase
@@ -42,8 +42,8 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围.二维
             this.ReverseX = ReverseX;
             this.ReverseY = ReverseY;
             IsXFastAxis = IsXFast;
-            XScans = new D1LinearScanRange(XLo, XHi, XCount, false).ScanPoints;
-            YScans = new D1LinearScanRange(YLo, YHi, XCount, false).ScanPoints;
+            XScans = new D1NumricLinearScanRange(XLo, XHi, XCount, false).ScanPoints;
+            YScans = new D1NumricLinearScanRange(YLo, YHi, XCount, false).ScanPoints;
             ScanPoints = GeneratePointList();
         }
 

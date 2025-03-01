@@ -8,18 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using ODMR_Lab.设备部分.位移台部分;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 
 namespace ODMR_Lab.实验部分.磁场调节
 {
     public partial class MagnetScanExpObject : ExperimentObject<MagnetScanExpParams, MagnetScanConfigParams>
     {
         #region 扫描实验步骤(扫谱后保存数据点)
-        private List<object> ScanEvent(NanoStageInfo stage, D1ScanRangeBase r, double loc, List<object> originOutput)
+        private List<object> ScanEvent(NanoStageInfo stage, D1NumricScanRangeBase r, double loc, List<object> originOutput)
         {
             return Experiment(stage, loc, 10, originOutput);
         }
 
-        private List<object> ScanAngleEvent(NanoStageInfo stage, D1ScanRangeBase r, double loc, List<object> originOutput)
+        private List<object> ScanAngleEvent(NanoStageInfo stage, D1NumricScanRangeBase r, double loc, List<object> originOutput)
         {
             // 获取偏心修正后的x,y位置
             List<double> xy = GetRealXYLoc(loc, Param.XLoc.Value, Param.YLoc.Value);

@@ -1,4 +1,5 @@
 ﻿using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.磁场调节;
 using ODMR_Lab.设备部分.位移台部分;
 using System;
@@ -29,10 +30,10 @@ namespace ODMR_Lab.实验部分.磁场调节
 
             //扫第一个点
             double height = Config.ZPlane.Value;
-            session.BeginScan(new D1LinearScanRange(height, height, 1), 0, 25, false, this, 0.0, 0.0);
+            session.BeginScan(new D1NumricLinearScanRange(height, height, 1), 0, 25, false, this, 0.0, 0.0);
             //扫第二个点
             height = Config.ZPlane.Value + GetReverseNum(Config.ReverseZ.Value);
-            session.BeginScan(new D1LinearScanRange(height, height, 1), 25, 50, false, this, 0.0, 0.0);
+            session.BeginScan(new D1NumricLinearScanRange(height, height, 1), 25, 50, false, this, 0.0, 0.0);
 
             CWPointObject cp1 = ZPoints[0];
             CWPointObject cp2 = ZPoints[1];
@@ -48,10 +49,10 @@ namespace ODMR_Lab.实验部分.磁场调节
 
                     //扫第一个点
                     height = Config.ZPlane.Value;
-                    session.BeginScan(new D1LinearScanRange(height, height, 1), 50, 75, false, this, 0.0, 0.0);
+                    session.BeginScan(new D1NumricLinearScanRange(height, height, 1), 50, 75, false, this, 0.0, 0.0);
                     //扫第二个点
                     height = Config.ZPlane.Value + GetReverseNum(Config.ReverseZ.Value);
-                    session.BeginScan(new D1LinearScanRange(height, height, 1), 75, 100, false, this, 0.0, 0.0);
+                    session.BeginScan(new D1NumricLinearScanRange(height, height, 1), 75, 100, false, this, 0.0, 0.0);
 
                     cp1 = ZPoints[0];
                     cp2 = ZPoints[1];

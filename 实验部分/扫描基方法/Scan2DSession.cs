@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 
 namespace ODMR_Lab.实验部分.扫描基方法
 {
@@ -32,16 +33,16 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// <summary>
         /// 扫描第一个点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public Func<T1, T2, D1LinearScanRange, D1LinearScanRange, double, double, List<object>, List<object>> FirstScanEvent = null;
+        public Func<T1, T2, D1NumricLinearScanRange, D1NumricLinearScanRange, double, double, List<object>, List<object>> FirstScanEvent = null;
 
         /// <summary>
         /// 正向扫描其他点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public Func<T1, T2, D1LinearScanRange, D1LinearScanRange, double, double, List<object>, List<object>> ScanEvent = null;
+        public Func<T1, T2, D1NumricLinearScanRange, D1NumricLinearScanRange, double, double, List<object>, List<object>> ScanEvent = null;
         /// <summary>
         /// 反向扫描其他点时进行的操作(源设备,轴1范围,轴2范围,轴1值,轴2值,输入参数,返回经过处理后的输入参数)
         /// </summary>
-        public Func<T1, T2, D1LinearScanRange, D1LinearScanRange, double, double, List<object>, List<object>> ReverseScanEvent = null;
+        public Func<T1, T2, D1NumricLinearScanRange, D1NumricLinearScanRange, double, double, List<object>, List<object>> ReverseScanEvent = null;
 
         /// <summary>
         /// 状态判断事件,此事件用来决定是否退出扫描步骤
@@ -57,7 +58,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
         /// <param name="Hi"></param>
         /// <param name="D"></param>
         /// <returns></returns>
-        public List<object> BeginScan(D1LinearScanRange axis1range, D1LinearScanRange axis2range, double progressLo = 0, double progressHi = 100, params object[] ps)
+        public List<object> BeginScan(D1NumricLinearScanRange axis1range, D1NumricLinearScanRange axis2range, double progressLo = 0, double progressHi = 100, params object[] ps)
         {
             SetProgress(progressLo);
             var scan1list = axis1range.ScanPoints;
@@ -66,7 +67,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
             var scan2revlist = scan2list.ToArray().ToList();
             scan2revlist.Reverse();
 
-            var progress = new D1LinearScanRange(progressLo, progressHi, scan1list.Count * scan2list.Count * 2).ScanPoints;
+            var progress = new D1NumricLinearScanRange(progressLo, progressHi, scan1list.Count * scan2list.Count * 2).ScanPoints;
 
 
             bool IsFirstScan = true;

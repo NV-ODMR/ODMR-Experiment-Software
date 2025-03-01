@@ -35,6 +35,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEvent()
         {
+            PreExpEventBeforeDropWithAFM();
             SetExpState("正在下针...");
             //下针
             AFMDrop drop = new AFMDrop();
@@ -51,6 +52,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// AFM下针后,实验开始前要进行的操作
         /// </summary>
         public abstract void PreExpEventWithAFM();
+
+        /// <summary>
+        /// AFM下针前,实验开始前要进行的操作
+        /// </summary>
+        public abstract void PreExpEventBeforeDropWithAFM();
 
         /// <summary>
         /// 获取AFM所需的LockIn设备

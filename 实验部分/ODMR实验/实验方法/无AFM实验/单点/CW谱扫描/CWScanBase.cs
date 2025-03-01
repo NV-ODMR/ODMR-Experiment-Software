@@ -7,6 +7,7 @@ using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
@@ -55,7 +56,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             return false;
         }
 
-        private List<object> FirstScanEvent(RFSourceInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
+        private List<object> FirstScanEvent(RFSourceInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
             //新建数据集
             D1ChartDatas = new List<ChartData1D>()
@@ -70,7 +71,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             return ScanEvent(device, range, locvalue, inputParams);
         }
 
-        private List<object> ScanEvent(RFSourceInfo device, D1ScanRangeBase range, double locvalue, List<object> inputParams)
+        private List<object> ScanEvent(RFSourceInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
             CWCore cw = new CWCore();
             var result = cw.CoreMethod(new List<object>() { locvalue, GetRFPower(), GetLoopCount(), GetPointTimeout() },
@@ -146,7 +147,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             {
                 SetExpState("CW谱扫描,当前频率:" + Math.Round(v, 5).ToString());
             });
-            session.BeginScan(new D1PointsScanRange(GetScanFrequences()), 0, 100);
+            session.BeginScan(new D1NumricListScanRange(GetScanFrequences()), 0, 100);
         }
 
         protected List<double> GetFrequences()

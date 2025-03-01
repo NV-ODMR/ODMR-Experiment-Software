@@ -1,6 +1,7 @@
 ﻿using Controls.Windows;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
                 SetExpState(CreateThreadState(devi1, devi2, p));
             });
             D2Session.StateJudgeEvent = JudgeThreadEndOrResume;
-            
+
             D2Session.BeginScan(D2ScanRange, 0, 100);
         }
 

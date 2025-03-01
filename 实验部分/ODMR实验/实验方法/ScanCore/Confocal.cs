@@ -14,7 +14,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         /// <summary>
         /// 共聚焦单点光子采样方法：输入参数：采样率（Hz）
         /// 设备:光子计数器
-        /// 返回参数:光子计数率(整数)
+        /// 返回参数:光子计数率(小数)
         /// </summary>
         /// <param name="InputParams"></param>
         /// <param name="devices"></param>

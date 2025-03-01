@@ -42,8 +42,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
         {
             var page = SubExpContent.Children[0] as DisplayPage;
             page.ExpObjects.Add(Exp);
-            page.SelectExp(0);
             Exp.ParentPage = SubExpContent.Children[0] as DisplayPage;
+            page.SelectExp(0);
             Exp.ParentPage.ExpPanel.Visibility = Visibility.Visible;
             Exp.ParentPage.ShowInwindowPanel.Visibility = Visibility.Hidden;
             base.Show();

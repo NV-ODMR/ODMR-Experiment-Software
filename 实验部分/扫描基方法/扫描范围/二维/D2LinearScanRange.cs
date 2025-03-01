@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.扫描基方法
+namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
 {
     public abstract class D2LinearScanRangeBase : D2ScanRangeBase
     {
         public D2LinearScanRangeBase(double xlo, double xhi, int xcount, double ylo, double yhi, int ycount, bool reverseX, bool reverseY, bool IsXFast)
         {
-            var r1 = new D1LinearScanRange(xlo, xhi, xcount, false);
+            var r1 = new D1NumricLinearScanRange(xlo, xhi, xcount, false);
             XScans = r1.ScanPoints;
-            var r2 = new D1LinearScanRange(ylo, yhi, ycount, false);
+            var r2 = new D1NumricLinearScanRange(ylo, yhi, ycount, false);
             YScans = r2.ScanPoints;
             ReverseX = reverseX;
             ReverseY = reverseY;
@@ -30,9 +30,9 @@ namespace ODMR_Lab.实验部分.扫描基方法
 
         public D2LinearScanRangeBase(double xlo, double xhi, double xstep, double ylo, double yhi, double ystep, bool reverseX, bool reverseY, bool IsXFast)
         {
-            var r1 = new D1LinearScanRange(xlo, xhi, xstep, false);
+            var r1 = new D1NumricLinearScanRange(xlo, xhi, xstep, false);
             XScans = r1.ScanPoints;
-            var r2 = new D1LinearScanRange(ylo, yhi, ystep, false);
+            var r2 = new D1NumricLinearScanRange(ylo, yhi, ystep, false);
             YScans = r2.ScanPoints;
             ReverseX = reverseX;
             ReverseY = reverseY;

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.扫描基方法
+namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
 {
     /// <summary>
     /// 二维扫描范围基类

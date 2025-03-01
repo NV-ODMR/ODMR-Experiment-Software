@@ -7,6 +7,7 @@ using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
@@ -144,6 +145,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         public override void AfterExpEventWithAFM()
         {
 
+        }
+
+        public override void PreExpEventBeforeDropWithAFM()
+        {
+            //将位移台复位
+            SetExpState("正在将位移台复位到零点...");
+            NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
+            NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
+            infox.Device.MoveToAndWait(infox.Device.CustomRangeLo, 120000);
+            infoy.Device.MoveToAndWait(infoy.Device.CustomRangeLo, 120000);
         }
 
         public override void PreExpEventWithAFM()

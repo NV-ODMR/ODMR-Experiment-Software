@@ -11,6 +11,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
@@ -36,7 +37,7 @@ namespace ODMR_Lab.ODMR实验
         public bool IsAutoSave { get; set; } = false;
 
         #region 二维和一维扫描范围
-        public D1ScanRangeBase D1ScanRange { get; set; } = null;
+        public D1PointsScanRangeBase D1ScanRange { get; set; } = null;
         public D2ScanRangeBase D2ScanRange { get; set; } = null;
 
         /// <summary>
@@ -293,10 +294,13 @@ namespace ODMR_Lab.ODMR实验
 
         private void ClearOutputParams()
         {
-            OutputParams.Clear();
             //清除面板参数
             App.Current.Dispatcher.Invoke(() =>
             {
+                foreach (var item in OutputParams)
+                {
+                    ParentPage.UnregisterName(ExpParamWindow.GetValidName(item.PropertyName));
+                }
                 if (ParentPage.CurrentExpObject == this)
                 {
                     for (int i = 0; i < ParentPage.OutputPanel.Children.Count; i++)
@@ -310,6 +314,7 @@ namespace ODMR_Lab.ODMR实验
                     }
                 }
             });
+            OutputParams.Clear();
         }
 
         private void UpdateOutputParams()
@@ -327,8 +332,10 @@ namespace ODMR_Lab.ODMR实验
                     ExpParamWindow win = new ExpParamWindow(ParentPage.CurrentExpObject, ParentPage, false, false, false);
                     foreach (var item in OutputParams)
                     {
+                        item.PropertyName = "Output_" + item.PropertyName;
                         Grid g = win.GenerateControlBar(item, ParentPage, false);
                         ParentPage.OutputPanel.Children.Add(g);
+                        item.LoadToPage(new FrameworkElement[] { ParentPage }, false);
                     }
                 }
             });

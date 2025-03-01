@@ -27,7 +27,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         /// <summary>
         /// T1单点扫描方法：输入参数：0.Pi脉冲长度(整数),1.T1间隔长度(整数),2.采样循环次数(整数)，3.超时时间（整数）4.微波频率（小数）5.微波功率（小数）
         /// 设备:板卡，光子计数器,微波源
-        /// 返回:信号计数,参考信号计数
+        /// 返回:信号对比度(小数),参考信号对比度(小数),光子计数(整数)
         /// </summary>
         /// <param name="InputParams"></param>
         /// <param name="devices"></param>
@@ -50,7 +50,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             List<CommandBase> Lines = new List<CommandBase>();
             pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
             apd.StartTriggerSample(sequence.LoopCount * 8); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
-            Thread.Sleep(100);
+            Thread.Sleep(20);
             pb.Device.Start();//板卡开始输出
             List<int> ApdResult = apd.GetTriggerSamples((int)InputParams[3]);//apd读取，判断时间
             apd.EndTriggerSample();//停止计数
@@ -76,13 +76,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                     Sum2 += ApdCount.ElementAt(4 * i + 2);
                     Sum3 += ApdCount.ElementAt(4 * i + 3);
                 }
-                double ContrastRef = (Sum0 - Sum1) / Sum1;
-                double ContrastSig = (Sum2 - Sum3) / Sum3;
-                return new List<object>() { ContrastSig, ContrastRef };
+                double ContrastRef = Sum0 / Sum1;
+                double ContrastSig = Sum2 / Sum3;
+                return new List<object>() { ContrastSig, ContrastRef, Sum0 + Sum2 + Sum3 };
             }
             catch (Exception ex)
             {
-                return new List<object>() { 0.0, 0.0 };
+                return new List<object>() { 0.0, 0.0, 0 };
             }
         }
     }

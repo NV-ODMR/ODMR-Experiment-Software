@@ -3,7 +3,7 @@ using Controls.Charts;
 using Controls.Windows;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.实验部分.扫描基方法;
-using ODMR_Lab.实验部分.扫描基方法.扫描范围.二维;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
             helper.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 6, 30);
         }
 
-        public void ShowD1(D1ScanRangeBase scanrange)
+        public void ShowD1(D1PointsScanRangeBase scanrange)
         {
             IsD1 = true;
             D1Panel.Visibility = Visibility.Visible;
@@ -61,7 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
             Show();
         }
 
-        private void SetD1Panel(D1ScanRangeBase scanRangeBase)
+        private void SetD1Panel(D1PointsScanRangeBase scanRangeBase)
         {
 
         }
