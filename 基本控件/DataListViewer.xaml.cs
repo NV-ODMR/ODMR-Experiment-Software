@@ -21,11 +21,81 @@ namespace ODMR_Lab.基本控件
     /// </summary>
     public partial class DataListViewer : Grid
     {
-        public ChartData1D Data { get; set; } = new NumricChartData1D("", "");
+
+
+        public List<ViewerTemplate> HeaderTemplate { get; set; } = new List<ViewerTemplate>();
+
+
+        public double MinItemWidth
+        {
+            get { return (double)GetValue(MinItemWidthProperty); }
+            set { SetValue(MinItemWidthProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MinItemWidth.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MinItemWidthProperty =
+            DependencyProperty.Register("MinItemWidth", typeof(double), typeof(DataListViewer), new PropertyMetadata(200.0));
+
+
+
+        public double ItemHeight
+        {
+            get { return (double)GetValue(ItemHeightProperty); }
+            set { SetValue(ItemHeightProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ItemHeight.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ItemHeightProperty =
+            DependencyProperty.Register("ItemHeight", typeof(double), typeof(DataListViewer), new PropertyMetadata(30.0));
+
+
+
+        public double HeaderHeight
+        {
+            get { return (double)GetValue(HeaderHeightProperty); }
+            set { SetValue(HeaderHeightProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HeaderHeight.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HeaderHeightProperty =
+            DependencyProperty.Register("HeaderHeight", typeof(double), typeof(DataListViewer), new PropertyMetadata(30.0));
+
+
+
+
 
         public DataListViewer()
         {
             InitializeComponent();
+            datacontentscroll.HeaderHeight = HeaderHeight;
+            datacontentscroll.ItemHeight = ItemHeight;
+            datacontentscroll.DataTemplate = HeaderTemplate;
+            datacontentscroll.MinItemWidth = MinItemWidth;
+            datacontentscroll.ItemSelected += DataItemSelected;
+            datacontentscroll.ItemValueChanged += DataItemValueChanged;
+            datacontentscroll.ItemContextMenuSelected += DataItemContextMenuSelected;
+            datacontentscroll.UpdateHeader();
+        }
+
+        public event Action<int, object> ItemSelected = null;
+
+        public event Action<int, int, object> ItemValueChanged = null;
+
+        public event Action<int, int, object> ItemContextMenuSelected = null;
+
+        private void DataItemValueChanged(int arg1, int arg2, object arg3)
+        {
+            values[CurrentPageIndex * DisplayCount + arg1][arg2] = arg3;
+            ItemValueChanged?.Invoke(CurrentPageIndex * DisplayCount + arg1, arg2, arg3);
+        }
+
+        private void DataItemSelected(int arg1, object arg2)
+        {
+            ItemSelected?.Invoke(CurrentPageIndex * DisplayCount + arg1, arg2);
+        }
+        private void DataItemContextMenuSelected(int arg1, int arg2, object arg3)
+        {
+            ItemContextMenuSelected?.Invoke(arg1, CurrentPageIndex * DisplayCount + arg2, arg3);
         }
 
         /// <summary>
@@ -33,62 +103,95 @@ namespace ODMR_Lab.基本控件
         /// </summary>
         int DisplayCount = 10;
 
-        public int CurrentDisplayIndex { private set; get; } = 0;
+        public int CurrentPageIndex { private set; get; } = 0;
 
-        public void UpdatePointList(int startindex, string name = "")
+        public void UpdatePointList(int pageindex, string name = "")
         {
-            datacontentscroll.DataTemplate = new List<Controls.ViewerTemplate>() {
-                new Controls.ViewerTemplate("序号",ListDataTypes.String,new GridLength(100),false),
-                new Controls.ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false) };
-            if (name == "")
-            {
-                Title.Content = Data.Name;
-            }
-            else
-            {
-                Title.Content = Data.GroupName + ":" + Data.Name;
-            }
+            int startIndex = DisplayCount * pageindex;
             datacontentscroll.UpdateHeader();
-            if (startindex > Data.GetCount() - DisplayCount)
+            if (startIndex > tags.Count() - 1)
             {
-                startindex = Data.GetCount() - DisplayCount;
+                startIndex = DisplayCount * (pageindex - 1);
             }
-            if (startindex < 0)
+            if (startIndex < 0)
             {
-                startindex = 0;
+                startIndex = 0;
             }
 
-            CurrentDisplayIndex = startindex;
+            CurrentPageIndex = startIndex / DisplayCount;
 
             datacontentscroll.ClearItems();
-            for (int i = startindex; i < startindex + DisplayCount; i++)
+            for (int i = startIndex; i < startIndex + DisplayCount; i++)
             {
-                if (i > Data.GetCount() - 1) continue;
-                string value = "";
-                if (Data is TimeChartData1D)
-                {
-                    value = (Data as TimeChartData1D).Data[i].ToString("yyyy/MM/dd HH:mm:ss:FFF");
-                }
-                if (Data is NumricChartData1D)
-                {
-                    value = (Data as NumricChartData1D).Data[i].ToString();
-                }
-                datacontentscroll.AddItem(null, i, value);
+                if (i > tags.Count - 1) continue;
+                datacontentscroll.AddItem(tags[i], values[i].ToList());
             }
+        }
+
+        List<object> tags = new List<object>();
+        List<object[]> values = new List<object[]>();
+
+        public void AddItem(object tag, params object[] value)
+        {
+            tags.Add(tag);
+            values.Add(value);
+            //如果在显示范围内则加载
+            if (tags.Count - 1 < (CurrentPageIndex + 1) * DisplayCount && tags.Count - 1 >= CurrentPageIndex * DisplayCount)
+            {
+                datacontentscroll.AddItem(tag, value.ToList());
+            }
+        }
+
+        public void SetCellValue(int rowind, int columnind, object value)
+        {
+            values[rowind][columnind] = value;
+
+            //如果在显示范围内则加载
+            if (rowind < (CurrentPageIndex + 1) * DisplayCount && rowind >= CurrentPageIndex * DisplayCount)
+            {
+                datacontentscroll.SetCelValue(rowind - CurrentPageIndex * DisplayCount, columnind, value);
+            }
+        }
+
+        public object GetCellValue(int rowind, int columnind)
+        {
+            //如果在显示范围内则加载
+            if (tags.Count - 1 < (CurrentPageIndex + 1) * DisplayCount && tags.Count - 1 >= CurrentPageIndex * DisplayCount)
+            {
+                return datacontentscroll.GetCellValue(rowind - CurrentPageIndex * DisplayCount, columnind);
+            }
+            return values[rowind][columnind];
+        }
+
+        public object GetTag(int rowind)
+        {
+            return tags[rowind];
+        }
+
+        public int GetRowCount()
+        {
+            return tags.Count;
+        }
+
+        public void ClearItems()
+        {
+            tags.Clear();
+            values.Clear();
+            datacontentscroll.ClearItems();
         }
 
         private void FormerDataList(object sender, RoutedEventArgs e)
         {
-            int ind = CurrentDisplayIndex - DisplayCount;
-            UpdatePointList(ind);
-            DisplayIndex.Text = CurrentDisplayIndex.ToString();
+            CurrentPageIndex -= 1;
+            UpdatePointList(CurrentPageIndex);
+            DisplayIndex.Text = CurrentPageIndex.ToString();
         }
 
         private void LaterDataList(object sender, RoutedEventArgs e)
         {
-            int ind = CurrentDisplayIndex + DisplayCount;
-            UpdatePointList(ind);
-            DisplayIndex.Text = CurrentDisplayIndex.ToString();
+            CurrentPageIndex += 1;
+            UpdatePointList(CurrentPageIndex);
+            DisplayIndex.Text = CurrentPageIndex.ToString();
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
@@ -100,10 +203,16 @@ namespace ODMR_Lab.基本控件
                     TextBox b = sender as TextBox;
                     uint ind = uint.Parse(b.Text);
                     UpdatePointList((int)ind);
-                    DisplayIndex.Text = CurrentDisplayIndex.ToString();
+                    DisplayIndex.Text = CurrentPageIndex.ToString();
                 }
                 catch (Exception ex) { }
             }
+        }
+
+        private void Grid_Loaded(object sender, RoutedEventArgs e)
+        {
+            datacontentscroll.DataTemplate = HeaderTemplate;
+            datacontentscroll.UpdateHeader();
         }
     }
 }

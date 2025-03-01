@@ -344,7 +344,7 @@ namespace ODMR_Lab.基本控件
         {
             foreach (var item in DataPanel.Children)
             {
-                (item as DataListViewer).UpdatePointList((item as DataListViewer).CurrentDisplayIndex);
+                (item as DataListViewer).UpdatePointList((item as DataListViewer).CurrentPageIndex);
             }
         }
 
@@ -553,17 +553,39 @@ namespace ODMR_Lab.基本控件
             data.Value.IsInDataDisplay = true;
             foreach (var item in DataPanel.Children)
             {
-                if ((item as DataListViewer).Data == data.Value) return;
+                if ((item as DataListViewer).Tag == data.Value) return;
             }
-            DataListViewer v = new DataListViewer();
-            v.Data = data.Key;
-            v.UpdatePointList(0, data.Value.GroupName + ":" + data.Value.Name + " 时间值");
+            DataListViewer v = new DataListViewer()
+            {
+                HeaderTemplate = new List<ViewerTemplate>()
+                {
+                    new ViewerTemplate("序号",ListDataTypes.Double,new GridLength(30),false),
+                    new ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false),
+                }
+            };
+            var times = data.Key.GetDataCopyAsString().ToList();
+            for (int i = 0; i < times.Count; i++)
+            {
+                v.AddItem(null, i, times[i]);
+            }
             v.Width = 250;
+            v.Tag = data.Key;
             DataPanel.Children.Add(v);
-            v = new DataListViewer();
-            v.Data = data.Value;
-            v.UpdatePointList(0, data.Value.GroupName + ":" + data.Value.Name);
+            v = new DataListViewer()
+            {
+                HeaderTemplate = new List<ViewerTemplate>()
+                {
+                    new ViewerTemplate("序号",ListDataTypes.Double,new GridLength(30),false),
+                    new ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false),
+                }
+            };
+            var vals = data.Value.GetDataCopyAsString().ToList();
+            for (int i = 0; i < vals.Count; i++)
+            {
+                v.AddItem(null, i, vals[i]);
+            }
             v.Width = 250;
+            v.Tag = data.Value;
             DataPanel.Children.Add(v);
         }
         private void DataNames_MultiItemUnSelected(int arg1, object arg2)
@@ -572,13 +594,13 @@ namespace ODMR_Lab.基本控件
             data.Value.IsInDataDisplay = false;
             for (int i = 0; i < DataPanel.Children.Count; i++)
             {
-                if ((DataPanel.Children[i] as DataListViewer).Data == data.Key)
+                if ((DataPanel.Children[i] as DataListViewer).Tag == data.Key)
                 {
                     DataPanel.Children.Remove(DataPanel.Children[i] as DataListViewer);
                     --i;
                     continue;
                 };
-                if ((DataPanel.Children[i] as DataListViewer).Data == data.Value)
+                if ((DataPanel.Children[i] as DataListViewer).Tag == data.Value)
                 {
                     DataPanel.Children.Remove(DataPanel.Children[i] as DataListViewer);
                     --i;

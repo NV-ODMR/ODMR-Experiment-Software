@@ -82,7 +82,12 @@ namespace ODMR_Lab.数据处理
         private void ShowDataList(int index, object obj)
         {
             ChartData1D data = (obj as List<object>)[0] as ChartData1D;
-            DataListView.Data = data;
+            var values = data.GetDataCopyAsString().ToList();
+            DataListView.ClearItems();
+            for (int i = 0; i < values.Count; i++)
+            {
+                DataListView.AddItem(null, i, values[i]);
+            }
             if (int.TryParse(DataListView.DisplayIndex.Text, out int value) == false)
             {
                 DataListView.UpdatePointList(0);

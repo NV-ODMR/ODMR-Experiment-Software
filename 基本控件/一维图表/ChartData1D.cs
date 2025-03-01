@@ -64,6 +64,18 @@ namespace ODMR_Lab.基本控件
                 return (this as TimeChartData1D).Data.Select(x => x.ToOADate()).ToArray();
             }
         }
+
+        public string[] GetDataCopyAsString()
+        {
+            if (this is NumricChartData1D)
+            {
+                return (this as NumricChartData1D).Data.Select(x => x.ToString()).ToArray();
+            }
+            else
+            {
+                return (this as TimeChartData1D).Data.Select(x => x.ToString("yyyy-MM-dd HH:mm:ss:fff")).ToArray();
+            }
+        }
     }
 
     public class NumricChartData1D : ChartData1D

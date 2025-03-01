@@ -5,6 +5,7 @@ using Controls.Windows;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.基本窗口.数据拟合;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,6 +26,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Clipboard = System.Windows.Clipboard;
 using Label = System.Windows.Controls.Label;
+using Window = System.Windows.Window;
 
 namespace ODMR_Lab.基本控件
 {
@@ -239,10 +241,10 @@ namespace ODMR_Lab.基本控件
                         continue;
                     }
                     if (item.DataAxisType != ChartDataType.Y || (item is TimeChartData1D))
-                        XDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
+                        XDataSet.AddItem(item, XDataSet.GetRowCount(), item.Name, item.GetCount().ToString(), item.IsSelectedAsX);
                     if (item is NumricChartData1D && item.DataAxisType != ChartDataType.X)
                     {
-                        YDataSet.AddItem(item, item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
+                        YDataSet.AddItem(item, YDataSet.GetRowCount(), item.Name, item.GetCount().ToString(), item.IsSelectedAsY);
                     }
                 }
             }
@@ -289,12 +291,12 @@ namespace ODMR_Lab.基本控件
         {
             for (int i = 0; i < XDataSet.GetRowCount(); i++)
             {
-                XDataSet.SetCelValue(i, 1, (XDataSet.GetTag(i) as ChartData1D).GetCount());
+                XDataSet.SetCellValue(i, 2, (XDataSet.GetTag(i) as ChartData1D).GetCount());
             }
 
             for (int i = 0; i < YDataSet.GetRowCount(); i++)
             {
-                YDataSet.SetCelValue(i, 1, (YDataSet.GetTag(i) as ChartData1D).GetCount());
+                YDataSet.SetCellValue(i, 2, (YDataSet.GetTag(i) as ChartData1D).GetCount());
             }
         }
 
@@ -419,7 +421,7 @@ namespace ODMR_Lab.基本控件
         {
             foreach (var item in DataPanel.Children)
             {
-                (item as DataListViewer).UpdatePointList((item as DataListViewer).CurrentDisplayIndex);
+                (item as DataListViewer).UpdatePointList((item as DataListViewer).CurrentPageIndex);
             }
         }
 
@@ -448,7 +450,6 @@ namespace ODMR_Lab.基本控件
                     strs.Add(item.Name);
             }
             DataSelectionChanged?.Invoke(s, strs, fgroupname);
-
             UpdateDataPanel();
             UpdateChartAndDataFlow(true);
         }
@@ -723,12 +724,23 @@ namespace ODMR_Lab.基本控件
             data.IsInDataDisplay = true;
             foreach (var item in DataPanel.Children)
             {
-                if ((item as DataListViewer).Data == data) return;
+                if ((item as DataListViewer).Tag == data) return;
             }
-            DataListViewer v = new DataListViewer();
-            v.Data = data;
-            v.UpdatePointList(0, data.GroupName + ":" + data.Name);
+            DataListViewer v = new DataListViewer()
+            {
+                HeaderTemplate = new List<ViewerTemplate>()
+                {
+                    new ViewerTemplate("序号",ListDataTypes.Double,new GridLength(30),false),
+                    new ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false),
+                }
+            };
+            var vs = data.GetDataCopyAsString().ToList();
+            for (int i = 0; i < vs.Count; i++)
+            {
+                v.AddItem(null, i, vs[i]);
+            }
             v.Width = 250;
+            v.Tag = data;
             DataPanel.Children.Add(v);
         }
         private void DataNames_MultiItemUnSelected(int arg1, object arg2)
@@ -737,7 +749,7 @@ namespace ODMR_Lab.基本控件
             data.IsInDataDisplay = false;
             foreach (var item in DataPanel.Children)
             {
-                if ((item as DataListViewer).Data == data)
+                if ((item as DataListViewer).Tag == data)
                 {
                     DataPanel.Children.Remove(item as DataListViewer);
                     return;
@@ -817,5 +829,6 @@ namespace ODMR_Lab.基本控件
             CursorCount.Content = chart.GetCursorCount();
         }
         #endregion
+
     }
 }

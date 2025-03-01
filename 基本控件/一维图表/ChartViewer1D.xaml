@@ -43,38 +43,22 @@
             </Grid.RowDefinitions>
             <scroll:ComboBox Name="ChartGroups" DefaultSelectIndex="0" SelectionChanged="ChangeGroup" Margin="5" MaxPanelHeight="600" FontSize="11" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
             </scroll:ComboBox>
-            <scroll:ListViewer Grid.Row="1" Name="XDataSet" HeaderHeight="30" ItemHeight="30" MinItemWidth="150" ItemValueChanged="XDataSelectionChanged" ItemBarSelectedColor="#FF1A1A1A" ItemBarBackground="#FF1A1A1A">
-                <scroll:ListViewer.DataTemplate>
-                    <scroll:ViewerTemplate Descriptions="X数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
-                    <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="60" />
+            <local:DataListViewer Grid.Row="1" x:Name="XDataSet" ItemValueChanged="XDataSelectionChanged">
+                <local:DataListViewer.HeaderTemplate>
+                    <scroll:ViewerTemplate Descriptions="序号" DataType="String" Editable="False" DataDisplayWidth="40"/>
+                    <scroll:ViewerTemplate Descriptions="X数据名" DataType="String" Editable="False" DataDisplayWidth="2*"/>
+                    <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="50"/>
                     <scroll:ViewerTemplate Descriptions="选中" DataType="Bool" Editable="True" DataDisplayWidth="35" />
-                </scroll:ListViewer.DataTemplate>
-                <scroll:ListViewer.HeaderLabelTemplate>
-                    <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                </scroll:ListViewer.HeaderLabelTemplate>
-                <scroll:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                </scroll:ListViewer.UnEditableTextTemplate>
-                <scroll:ListViewer.EditableBooleanTemplate>
-                    <scroll:Chooser Width="30" Height="15"/>
-                </scroll:ListViewer.EditableBooleanTemplate>
-            </scroll:ListViewer>
-            <scroll:ListViewer Grid.Row="2" Name="YDataSet" MinItemWidth="150" ItemHeight="30"  HeaderHeight="30" ItemValueChanged="YDataSelectionChanged" ItemBarBackground="#FF1A1A1A" ItemBarSelectedColor="#FF1A1A1A">
-                <scroll:ListViewer.DataTemplate>
+                </local:DataListViewer.HeaderTemplate>
+            </local:DataListViewer>
+            <local:DataListViewer Grid.Row="2" x:Name="YDataSet" MinItemWidth="150" ItemHeight="30"  HeaderHeight="30" ItemValueChanged="YDataSelectionChanged">
+                <local:DataListViewer.HeaderTemplate>
+                    <scroll:ViewerTemplate Descriptions="序号" DataType="String" Editable="False" DataDisplayWidth="40"/>
                     <scroll:ViewerTemplate Descriptions="Y数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
                     <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="60" />
                     <scroll:ViewerTemplate Descriptions="选中" DataType="Bool" Editable="True" DataDisplayWidth="35" />
-                </scroll:ListViewer.DataTemplate>
-                <scroll:ListViewer.HeaderLabelTemplate>
-                    <Label HorizontalContentAlignment="Center" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
-                </scroll:ListViewer.HeaderLabelTemplate>
-                <scroll:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                </scroll:ListViewer.UnEditableTextTemplate>
-                <scroll:ListViewer.EditableBooleanTemplate>
-                    <scroll:Chooser Width="30" Height="15"/>
-                </scroll:ListViewer.EditableBooleanTemplate>
-            </scroll:ListViewer>
+                </local:DataListViewer.HeaderTemplate>
+            </local:DataListViewer>
             <scroll:ListViewer Grid.Row="1" Grid.RowSpan="2" Visibility="Hidden" Name="TimeDataSet" MinItemWidth="150" ItemHeight="30"  HeaderHeight="30" ItemValueChanged="YDataSelectionChanged" ItemBarBackground="#FF1A1A1A" ItemBarSelectedColor="#FF1A1A1A">
                 <scroll:ListViewer.DataTemplate>
                     <scroll:ViewerTemplate Descriptions="数据" DataType="String" Editable="False" DataDisplayWidth="2*" />
