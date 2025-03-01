@@ -89,6 +89,21 @@ namespace ODMR_Lab.ODMR实验
             }
             return false;
         }
+        public static bool Is1DScanExperiment(ODMRExpObject exp)
+        {
+            Type ptype = exp.GetType();
+            while (ptype != null)
+            {
+                string name = ptype.FullName;
+                if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
+                if (name == typeof(AFMScan1DExp).FullName)
+                {
+                    return true;
+                }
+                ptype = ptype.BaseType;
+            }
+            return false;
+        }
 
         #region 当前选中的图表数据信息
         private bool IsPlot1D { get; set; } = false;

@@ -18,9 +18,9 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
         {
             StartPoint = start;
             EndPoint = end;
-            int Count = count;
+            Counts = count;
             Reverse = reverse;
-            var scanlist = Enumerable.Range(0, Count).Select(x => x / (Count - 1)).ToList();
+            var scanlist = Enumerable.Range(0, Counts).Select(x => x / (Counts - 1)).ToList();
             double length = (StartPoint - EndPoint).Length;
 
             if (Reverse)

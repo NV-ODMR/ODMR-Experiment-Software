@@ -150,7 +150,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
                 CurrentExpObject = ExpObjects[index];
 
-                if (ODMRExpObject.Is2DScanExperiment(CurrentExpObject))
+                if (ODMRExpObject.Is2DScanExperiment(CurrentExpObject) || ODMRExpObject.Is1DScanExperiment(CurrentExpObject))
                 {
                     ScanRangePanel.Visibility = Visibility.Visible;
                 }
@@ -459,6 +459,12 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     var result = CurrentExpObject.D2ScanRange;
                     CurrentExpObject.RangeWindow.ShowD2(result);
                 }
+                if (ODMRExpObject.Is1DScanExperiment(CurrentExpObject))
+                {
+                    CurrentExpObject.RangeWindow = new ScanRangeSelectWindow(CurrentExpObject);
+                    var result = CurrentExpObject.D1ScanRange;
+                    CurrentExpObject.RangeWindow.ShowD1(result);
+                }
             }
         }
 
@@ -468,6 +474,10 @@ namespace ODMR_Lab.实验部分.ODMR实验
             if (CurrentExpObject != null && CurrentExpObject.D2ScanRange != null)
             {
                 name = "扫描类型:" + CurrentExpObject.D2ScanRange.ScanName + "\n" + CurrentExpObject.D2ScanRange.GetDescription() + "\n";
+            }
+            if (CurrentExpObject != null && CurrentExpObject.D1ScanRange != null)
+            {
+                name = "扫描类型:" + CurrentExpObject.D1ScanRange.ScanName + "\n" + CurrentExpObject.D1ScanRange.GetDescription() + "\n";
             }
             MessageWindow.ShowTipWindow(name, Window.GetWindow(this));
         }

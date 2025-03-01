@@ -63,7 +63,25 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
 
         private void SetD1Panel(D1PointsScanRangeBase scanRangeBase)
         {
-
+            if (scanRangeBase is D1PointsLinearScanRange)
+            {
+                ChangePannel(D1Btn1, new RoutedEventArgs());
+                D1LineStartPointX.Text = scanRangeBase.StartPoint.X.ToString();
+                D1LineStartPointY.Text = scanRangeBase.StartPoint.Y.ToString();
+                D1LineEndPointX.Text = scanRangeBase.EndPoint.X.ToString();
+                D1LineEndPointY.Text = scanRangeBase.EndPoint.Y.ToString();
+                D1LineScanPoints.Text = scanRangeBase.Counts.ToString();
+                D1LineScanReverse.IsSelected = scanRangeBase.Reverse;
+                return;
+            }
+            if (scanRangeBase is D1PointsListScanRange)
+            {
+                ChangePannel(D1Btn2, new RoutedEventArgs());
+                var points = (scanRangeBase as D1PointsListScanRange).ScanPoints;
+                D1ScanPointAssemble = points.Select(x => new Point(x.X, x.Y)).ToList();
+                UpdateScanPointsList();
+                return;
+            }
         }
 
         private void SetD2Panel(D2ScanRangeBase scanRangeBase)
@@ -207,6 +225,32 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
                     Exp.RangeWindow = null;
                     return;
                 }
+                if (D1Panel.Visibility == Visibility.Visible)
+                {
+                    D1PointsScanRangeBase resrange = null;
+                    #region 直线扫描
+                    if (D1Panel1.Visibility == Visibility.Visible)
+                    {
+                        resrange = new D1PointsLinearScanRange(new Point(double.Parse(D1LineStartPointX.Text), double.Parse(D1LineStartPointY.Text)),
+                            new Point(double.Parse(D1LineEndPointX.Text), double.Parse(D1LineEndPointY.Text)), int.Parse(D1LineScanPoints.Text),
+                            D1LineScanReverse.IsSelected);
+                    }
+                    #endregion
+                    #region 点列表扫描
+                    if (D1Panel2.Visibility == Visibility.Visible)
+                    {
+                        if (D1ScanPointAssemble.Count == 0)
+                            throw new Exception("扫描点不能为空");
+                        resrange = new D1PointsListScanRange(D1ScanPointAssemble);
+                    }
+                    #endregion
+                    Exp.D1ScanRange = resrange;
+                    if (Exp.ParentPage != null)
+                        Exp.ParentPage.ScanRangeName.Text = resrange.ScanName;
+                    Close();
+                    Exp.RangeWindow = null;
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -293,5 +337,49 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
             Exp.RangeWindow = null;
             Close();
         }
+
+        #region 一维点列表扫描
+        List<Point> D1ScanPointAssemble = new List<Point>();
+        private void AddScanPoint(object sender, RoutedEventArgs e)
+        {
+            Point p = new Point(double.NaN, double.NaN);
+            D1ScanPointAssemble.Add(p);
+
+        }
+        private void UpdateScanPointsList()
+        {
+            D1PointList.ClearItems();
+            foreach (var item in D1ScanPointAssemble)
+            {
+                D1PointList.AddItem(item, Math.Round(item.X, 5).ToString(), Math.Round(item.Y, 5).ToString());
+            }
+        }
+
+        private void D1ScanPoints_ItemValueChanged(int arg1, int arg2, object arg3)
+        {
+            try
+            {
+                if (arg2 == 0)
+                {
+                    D1ScanPointAssemble[arg1] = new Point(double.Parse(arg3 as string), D1ScanPointAssemble[arg1].Y);
+                }
+                if (arg2 == 1)
+                {
+                    D1ScanPointAssemble[arg1] = new Point(D1ScanPointAssemble[arg1].X, double.Parse(arg3 as string));
+                }
+                UpdateScanPointsList();
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void D1ScanPoints_ItemContextMenuSelected(int arg1, int arg2, object arg3)
+        {
+            D1ScanPointAssemble.RemoveAt(arg2);
+            UpdateScanPointsList();
+        }
+        #endregion
     }
 }

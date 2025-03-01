@@ -9,11 +9,11 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
 {
     internal class D1PointsListScanRange : D1PointsScanRangeBase
     {
-        public D1PointsListScanRange(List<double> points)
+        public D1PointsListScanRange(List<Point> points)
         {
-            ScanPoints = points.Where(x => !double.IsNaN(x)).Select(v => new Point(0, v)).ToList();
-            StartPoint = new Point(0, points.Min());
-            EndPoint = new Point(0, points.Max());
+            ScanPoints = points.ToArray().ToList();
+            StartPoint = points.First();
+            EndPoint = points.Last();
             Counts = ScanPoints.Count;
         }
 
