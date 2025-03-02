@@ -60,7 +60,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
 
             var scanlist = range.ScanPoints;
 
-            var progress = Enumerable.Range(0, range.ScanPoints.Count).Select(x => progressLo + (progressHi - progressLo * x / (range.ScanPoints.Count - 1))).ToList();
+            var progress = Enumerable.Range(0, range.ScanPoints.Count).Select(x => progressLo + (progressHi - progressLo) * x / (range.ScanPoints.Count - 1)).ToList();
 
             bool IsFirstScan = true;
 

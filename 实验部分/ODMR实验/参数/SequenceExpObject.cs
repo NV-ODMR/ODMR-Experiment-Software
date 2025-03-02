@@ -52,6 +52,11 @@ namespace ODMR_Lab.ODMR实验
         public ExpNewWindow NewDisplayWindow { get; set; } = null;
 
         /// <summary>
+        /// 子程序执行要显示的窗口
+        /// </summary>
+        public SubExpWindow SubExpDisplayWindow { get; set; } = null;
+
+        /// <summary>
         /// 是否是AFM子实验
         /// </summary>
         public abstract bool IsAFMSubExperiment { get; protected set; }
@@ -317,7 +322,13 @@ namespace ODMR_Lab.ODMR实验
                 {
                     foreach (var item in OutputParams)
                     {
-                        ParentPage.UnregisterName(ExpParamWindow.GetValidName(item.PropertyName));
+                        try
+                        {
+                            ParentPage.UnregisterName(ExpParamWindow.GetValidName(item.PropertyName));
+                        }
+                        catch (Exception)
+                        {
+                        }
                     }
                     if (ParentPage.CurrentExpObject == this)
                     {
@@ -617,8 +628,11 @@ namespace ODMR_Lab.ODMR实验
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                ParentPage.ChangeVisiblePanel(true);
-                ParentPage.Chart1D.SelectData(groupname, xname, ynames.ToList());
+                if (ParentPage != null)
+                {
+                    ParentPage.ChangeVisiblePanel(true);
+                    ParentPage.Chart1D.SelectData(groupname, xname, ynames.ToList());
+                }
             });
         }
 
@@ -630,8 +644,11 @@ namespace ODMR_Lab.ODMR实验
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                ParentPage.ChangeVisiblePanel(true);
-                ParentPage.Chart1D.SelectFitData(FitDataName.ToList());
+                if (ParentPage != null)
+                {
+                    ParentPage.ChangeVisiblePanel(true);
+                    ParentPage.Chart1D.SelectFitData(FitDataName.ToList());
+                }
             });
         }
 
@@ -643,8 +660,11 @@ namespace ODMR_Lab.ODMR实验
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                ParentPage.ChangeVisiblePanel(false);
-                ParentPage.Chart2D.SelectData(groupname, xname, yname, zname);
+                if (ParentPage != null)
+                {
+                    ParentPage.ChangeVisiblePanel(false);
+                    ParentPage.Chart2D.SelectData(groupname, xname, yname, zname);
+                }
             });
         }
 
@@ -854,10 +874,6 @@ namespace ODMR_Lab.ODMR实验
 
             DisConnectOuterControl();
 
-
-
-            SubExpWindow win = null;
-
             subExp.JudgeThreadEndOrResumeAction = JudgeThreadEndOrResumeAction;
             subExp.IsSubExperiment = true;
             subExp.ParentExp = this;
@@ -867,8 +883,8 @@ namespace ODMR_Lab.ODMR实验
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    win = new SubExpWindow("子实验: " + subExp.ODMRExperimentGroupName + ":" + subExp.ODMRExperimentName + " , " + "母实验: " + ODMRExperimentGroupName + ":" + ODMRExperimentName);
-                    win.Show(subExp);
+                    if (subExp.SubExpDisplayWindow == null) subExp.SubExpDisplayWindow = new SubExpWindow("子实验: " + subExp.ODMRExperimentGroupName + ":" + subExp.ODMRExperimentName + " , " + "母实验: " + ODMRExperimentGroupName + ":" + ODMRExperimentName);
+                    subExp.SubExpDisplayWindow.Show(subExp);
                     //设置状态
                     subExp.DisConnectOuterControl();
                     subExp.ConnectOuterControl(ParentPage.StartBtn, ParentPage.StopBtn, ParentPage.ResumeBtn, null, null, subExp.ParentPage.ProgressTitle, subExp.ParentPage.Progress, subExp.ParentPage.GetControlsStates());
@@ -896,14 +912,13 @@ namespace ODMR_Lab.ODMR实验
             });
 
             //关闭子窗口//
-            if (win != null)
+            if (ShowWindow)
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     try
                     {
-                        win.Close();
-                        win = null;
+                        subExp.SubExpDisplayWindow.EndUse();
                     }
                     catch (Exception) { }
                 });

@@ -86,6 +86,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             (Get1DChartData("频率", "CW荧光计数") as NumricChartData1D).Data.Add(locvalue);
             (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(signalcount);
             (Get1DChartData("参考信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(refcount);
+            Show1DChartData("CW对比度数据", "频率", "对比度");
             UpdatePlotChartFlow(true);
             return new List<object>();
         }

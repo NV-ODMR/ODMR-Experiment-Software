@@ -21,12 +21,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
     /// </summary>
     public partial class SubExpWindow : Window
     {
+        WindowResizeHelper h = null;
         public SubExpWindow(string title)
         {
             InitializeComponent();
-            WindowResizeHelper h = new WindowResizeHelper();
+            h = new WindowResizeHelper();
             h.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 6, 30);
-
             SubExpContent.Children.Add(new DisplayPage(false));
             Title = title;
             TitleWindow.Content = title;
@@ -39,6 +39,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
             page.SelectExp(0);
             subexp.ParentPage = SubExpContent.Children[0] as DisplayPage;
             Show();
+        }
+
+        public void EndUse()
+        {
+            Hide();
         }
     }
 }
