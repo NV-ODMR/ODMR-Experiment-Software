@@ -92,8 +92,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             NanoStageInfo dev1 = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo dev2 = GetDeviceByName("ScannerY") as NanoStageInfo;
             #region 自动Trace参数
-            ScanPointCount = 0;
             ScanPointGap = GetInputParamValueByName("TraceGap");
+            ScanPointCount = ScanPointGap;
             AllowAutoTrace = GetInputParamValueByName("UseAutoTrace");
             #endregion
 
@@ -127,6 +127,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             scannery.Device.MoveToAndWait(currentloc.Y, 120000);
 
             SetExpState("正在进行实验...");
+
+            if (ScanPointCount >= ScanPointGap && AllowAutoTrace)
+            {
+                //执行Trace
+                RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
+                ScanPointCount = 0;
+            }
+
             //进行实验
             ODMRExpObject exp = RunSubExperimentBlock(1, GetInputParamValueByName("ShowSubMenu"));
             JudgeThreadEndOrResumeAction?.Invoke();
@@ -188,12 +196,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             UpdatePlotChartFlow(true);
 
             ++ScanPointCount;
-            if (ScanPointCount >= ScanPointGap && AllowAutoTrace)
-            {
-                //执行Trace
-                RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
-                ScanPointCount = 0;
-            }
 
             return new List<object>();
         }

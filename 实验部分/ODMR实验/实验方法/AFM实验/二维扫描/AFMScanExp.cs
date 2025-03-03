@@ -79,8 +79,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             NanoStageInfo dev1 = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo dev2 = GetDeviceByName("ScannerY") as NanoStageInfo;
             #region 自动Trace参数
-            ScanPointCount = 0;
             ScanPointGap = GetInputParamValueByName("TraceGap");
+            ScanPointCount = ScanPointGap;
             AllowAutoTrace = GetInputParamValueByName("UseAutoTrace");
             #endregion
             PointsScanSession.FirstScanEvent = ScanEvent;
@@ -113,13 +113,23 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             scannerx.Device.MoveToAndWait(currentPoint.X, 120000);
             //移动位移台
             scannery.Device.MoveToAndWait(currentPoint.Y, 120000);
+
+            int indx = D2ScanRange.GetNearestXIndex(currentPoint.X);
+            int indy = D2ScanRange.GetNearestYIndex(currentPoint.Y);
+
+            if (ScanPointCount >= ScanPointGap && AllowAutoTrace)
+            {
+                //执行Trace
+                RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
+                ScanPointCount = 0;
+            }
+
             //进行实验
             ODMRExpObject exp = RunSubExperimentBlock(1, GetInputParamValueByName("ShowSubMenu"));
             JudgeThreadEndOrResumeAction?.Invoke();
             //获取输出参数
             double value = 0;
-            int indx = D2ScanRange.GetNearestXIndex(currentPoint.X);
-            int indy = D2ScanRange.GetNearestYIndex(currentPoint.Y);
+
             foreach (var item in exp.OutputParams)
             {
                 if (item.RawValue is bool)
