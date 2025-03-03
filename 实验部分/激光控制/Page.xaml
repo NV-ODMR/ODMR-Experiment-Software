@@ -52,7 +52,7 @@
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Grid.Column="0" Content="亮度"/>
-            <control:Slider Name="LightSlide" Grid.Row="1" Grid.Column="0" Margin="10" MinValue="0" MaxValue="1"/>
+            <control:Slider Name="LightSlide" Grid.Row="1" Grid.Column="0" Margin="10" MinValue="0" Value="1" MaxValue="1"/>
             <control:DecoratedButton Name="BeginTraceBtn" CornerRadius="10" TextAreaRatio="0.7" Grid.Row="2" Height="50" Grid.Column="5" Grid.ColumnSpan="1" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="StartAPDSample" Text="Trace" FontWeight="Bold" FontSize="18" IconMargin="8" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF008ED1" PressedColor="#FF0075AC" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/play.png"/>
             <control:DecoratedButton Name="EndTraceBtn" CornerRadius="10" TextAreaRatio="0.7" IsEnabled="False" Height="50" Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="1" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="EndAPDSample" Text="停止Trace" FontWeight="Bold" FontSize="18" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF008ED1" PressedColor="#FF0075AC" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/stop.png"/>
             <TextBlock FontWeight="Bold" Name="CountRate" Text="0" FontSize="35" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="LightGreen"/>
