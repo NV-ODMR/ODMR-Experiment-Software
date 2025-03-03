@@ -31,9 +31,9 @@
             <Label Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Content="对比度"/>
             <Label Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Content="亮度"/>
             <Label Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Content="饱和度"/>
-            <Controls:Slider Name="ContrastSlider" ValueChanged="ContrastSlider_ValueChanged" Grid.Row="1" Grid.Column="2"/>
-            <Controls:Slider Name="LightnessSlider" ValueChanged="LightnessSlider_ValueChanged" Grid.Row="2" Grid.Column="2"/>
-            <Controls:Slider Name="SaturationSlider" ValueChanged="SaturationSlider_ValueChanged" Grid.Row="3" Grid.Column="2"/>
+            <Controls:Slider Name="ContrastSlider" MinValue="0" MaxValue="2" ValueChanged="ContrastSlider_ValueChanged" Grid.Row="1" Grid.Column="2"/>
+            <Controls:Slider Name="LightnessSlider" MinValue="-256" MaxValue="256" ValueChanged="LightnessSlider_ValueChanged" Grid.Row="2" Grid.Column="2"/>
+            <Controls:Slider Name="SaturationSlider" MinValue="0" MaxValue="2" ValueChanged="SaturationSlider_ValueChanged" Grid.Row="3" Grid.Column="2"/>
         </Grid>
     </Grid>
 </Window>

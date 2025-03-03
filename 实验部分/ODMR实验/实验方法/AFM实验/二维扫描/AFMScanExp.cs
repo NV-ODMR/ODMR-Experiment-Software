@@ -184,12 +184,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
             ++ScanPointCount;
-            if (ScanPointCount >= ScanPointGap && AllowAutoTrace)
-            {
-                //执行Trace
-                RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
-                ScanPointCount = 0;
-            }
             return new List<object>();
         }
 
