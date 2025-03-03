@@ -60,16 +60,20 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeHelper">
+    <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls">
+    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
-    <Reference Include="HardWares">
+    <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
-    <Reference Include="MathLib">
+    <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -84,7 +88,8 @@
     <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>packages\OpenCvSharp4.Extensions.4.10.0.20241108\lib\netstandard2.0\OpenCvSharp.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="PythonHandler">
+    <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />

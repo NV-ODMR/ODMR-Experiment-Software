@@ -33,6 +33,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             new Param<bool>("显示子实验窗口",true,"ShowSubMenu"),
             new Param<bool>("存储单点实验数据",true,"SaveSingleExpData"),
+            new Param<bool>("尝试多次下针",true,"MultiAFMDrop"),
+            new Param<int>("最大尝试下针次数",5,"DropCount"),
+            new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
+            new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -44,6 +48,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.AFM扫描台,new Param<string>("扫描台X","","ScannerX")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.AFM扫描台,new Param<string>("扫描台Y","","ScannerY")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.样品位移台,new Param<string>("样品Z轴","","SampleZ")),
         };
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
 
@@ -214,6 +219,30 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             }
 
             return true;
+        }
+
+        protected override bool GetAllowMultiDrop()
+        {
+            return GetInputParamValueByName("MultiAFMDrop");
+        }
+
+        protected override int GetMaxDropCount()
+        {
+            return GetInputParamValueByName("DropCount");
+        }
+
+        protected override double GetDropDet()
+        {
+            return GetInputParamValueByName("DropDet");
+        }
+
+        protected override bool GetSampleAxisReverse()
+        {
+            return GetInputParamValueByName("SampleAxisReverse");
+        }
+        protected override NanoStageInfo GetSampleZ()
+        {
+            return GetDeviceByName("SampleZ") as NanoStageInfo;
         }
     }
 }
