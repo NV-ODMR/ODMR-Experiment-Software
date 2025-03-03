@@ -67,6 +67,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventBeforeDropWithAFM()
         {
+            //添加范围参数
+            OutputParams.Add(new Param<string>("扫描范围信息", D1ScanRange.ScanName + "\n" + D1ScanRange.GetDescription(), "ScanRangeInform"));
             //将位移台复位
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
@@ -115,7 +117,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             JudgeThreadEndOrResumeAction?.Invoke();
             //获取输出参数
             double value = 0;
-            (Get1DChartDataSource("扫描点序号", "一维扫描数据")).Add(scanPoints.GetNearestIndex(currentloc));
+            Get1DChartDataSource("扫描点序号", "一维扫描数据").Add(scanPoints.GetNearestIndex(currentloc));
             foreach (var item in exp.OutputParams)
             {
                 if (item.RawValue is bool)
@@ -181,7 +183,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             D1ChartDatas.Clear();
             D1ChartDatas.Add(new NumricChartData1D("扫描点序号", "一维扫描数据", ChartDataType.X));
-            D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据", "一维扫描数据", ChartDataType.Y));
+            D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据(PID输出)", "一维扫描数据", ChartDataType.Y));
             UpdatePlotChart();
         }
 
@@ -235,39 +237,5 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             return GetDeviceByName("SampleZ") as NanoStageInfo;
         }
-
-        #region 按键功能
-        private void MoveScanner()
-        {
-            ParamInputWindow win = new ParamInputWindow("设置位移台移动目标");
-            Dictionary<string, string> dic = new Dictionary<string, string>();
-            dic.Add("X目标位置", "");
-            dic.Add("Y目标位置", "");
-            dic = win.ShowDialog(dic);
-            try
-            {
-                SetExpState("正在移动扫描台...");
-                NanoStageInfo infx = GetDeviceByName("ScannerX") as NanoStageInfo;
-                NanoStageInfo infy = GetDeviceByName("ScannerY") as NanoStageInfo;
-                double xloc = double.Parse(dic["X目标位置"]);
-                double yloc = double.Parse(dic["Y目标位置"]);
-                DeviceDispatcher.UseDevices(infx, infy);
-                infx.Device.MoveToAndWait(xloc, 120000);
-                infy.Device.MoveToAndWait(yloc, 120000);
-                SetExpState("扫描台位置 X: " + Math.Round(xloc, 5).ToString() + " Y: " + Math.Round(yloc, 5).ToString());
-                DeviceDispatcher.EndUseDevices(infx, infy);
-            }
-            catch (Exception ex)
-            {
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    MessageWindow.ShowTipWindow("移动未完成" + ex.Message, Window.GetWindow(ParentPage));
-                });
-                SetExpState("");
-            }
-        }
-
-
-        #endregion
     }
 }

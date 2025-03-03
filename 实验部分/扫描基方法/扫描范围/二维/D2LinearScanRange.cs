@@ -11,6 +11,10 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
     {
         public D2LinearScanRangeBase(double xlo, double xhi, int xcount, double ylo, double yhi, int ycount, bool reverseX, bool reverseY, bool IsXFast)
         {
+            XLo = xlo;
+            XHi = xhi;
+            YLo = ylo;
+            YHi = yhi;
             var r1 = new D1NumricLinearScanRange(xlo, xhi, xcount, false);
             XScans = r1.ScanPoints;
             var r2 = new D1NumricLinearScanRange(ylo, yhi, ycount, false);

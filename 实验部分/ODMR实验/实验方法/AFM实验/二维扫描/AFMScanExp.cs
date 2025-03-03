@@ -240,39 +240,5 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             return GetDeviceByName("SampleZ") as NanoStageInfo;
         }
-
-        #region 按键功能
-        private void MoveScanner()
-        {
-            ParamInputWindow win = new ParamInputWindow("设置位移台移动目标");
-            Dictionary<string, string> dic = new Dictionary<string, string>();
-            dic.Add("X目标位置", "");
-            dic.Add("Y目标位置", "");
-            dic = win.ShowDialog(dic);
-            try
-            {
-                SetExpState("正在移动扫描台...");
-                NanoStageInfo infx = GetDeviceByName("ScannerX") as NanoStageInfo;
-                NanoStageInfo infy = GetDeviceByName("ScannerY") as NanoStageInfo;
-                double xloc = double.Parse(dic["X目标位置"]);
-                double yloc = double.Parse(dic["Y目标位置"]);
-                DeviceDispatcher.UseDevices(infx, infy);
-                infx.Device.MoveToAndWait(xloc, 120000);
-                infy.Device.MoveToAndWait(yloc, 120000);
-                SetExpState("扫描台位置 X: " + Math.Round(xloc, 5).ToString() + " Y: " + Math.Round(yloc, 5).ToString());
-                DeviceDispatcher.EndUseDevices(infx, infy);
-            }
-            catch (Exception ex)
-            {
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    MessageWindow.ShowTipWindow("移动未完成" + ex.Message, Window.GetWindow(ParentPage));
-                });
-                SetExpState("");
-            }
-        }
-
-
-        #endregion
     }
 }

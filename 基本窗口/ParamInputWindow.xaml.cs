@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using CodeHelper;
 
 namespace ODMR_Lab.基本窗口
 {
@@ -22,6 +23,8 @@ namespace ODMR_Lab.基本窗口
         public ParamInputWindow(string wintitle)
         {
             InitializeComponent();
+            WindowResizeHelper h = new WindowResizeHelper();
+            h.RegisterWindow(this, null, null, null, 5, 30);
             Title = wintitle;
             title.Content = "     " + wintitle;
         }
@@ -49,10 +52,11 @@ namespace ODMR_Lab.基本窗口
             UIUpdater.CloneStyle(tbTemplate, b);
             g.Children.Add(b);
             Grid.SetColumn(b, 0);
-            TextBox tb = new TextBox() { Text = content };
+            TextBox tb = new TextBox() { Text = value };
             UIUpdater.CloneStyle(TextTemplate, tb);
             g.Children.Add(tb);
             Grid.SetColumn(tb, 1);
+            g.Margin = new Thickness(10);
             return g;
         }
 

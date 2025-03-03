@@ -26,13 +26,15 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
             if (Reverse)
             {
                 Vector unitvec = StartPoint - EndPoint;
-                unitvec.Normalize();
+                if (unitvec.Length != 0)
+                    unitvec.Normalize();
                 ScanPoints = scanlist.Select(x => EndPoint + unitvec * x * length).ToList();
             }
             else
             {
                 Vector unitvec = EndPoint - StartPoint;
-                unitvec.Normalize();
+                if (unitvec.Length != 0)
+                    unitvec.Normalize();
                 ScanPoints = scanlist.Select(x => StartPoint + unitvec * x * length).ToList();
             }
         }
@@ -50,13 +52,15 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
             if (Reverse)
             {
                 Vector unitvec = StartPoint - EndPoint;
-                unitvec.Normalize();
+                if (unitvec.Length != 0)
+                    unitvec.Normalize();
                 ScanPoints = scanlist.Select(x => EndPoint + unitvec * x * length).ToList();
             }
             else
             {
                 Vector unitvec = EndPoint - StartPoint;
-                unitvec.Normalize();
+                if (unitvec.Length != 0)
+                    unitvec.Normalize();
                 ScanPoints = scanlist.Select(x => StartPoint + unitvec * x * length).ToList();
             }
         }

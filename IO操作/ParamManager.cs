@@ -161,6 +161,9 @@ namespace ODMR_Lab.IO操作
             SCP = new StageControlConfigParams();
             ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
             SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
+            SCP = new StageControlConfigParams();
+            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.LenPanel.Name);
+            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.LenPanel }, false);
             #endregion
 
             #region ODMR实验

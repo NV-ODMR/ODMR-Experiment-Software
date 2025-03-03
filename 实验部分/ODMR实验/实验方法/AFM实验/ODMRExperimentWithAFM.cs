@@ -10,6 +10,8 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
 using ODMR_Lab.IO操作;
+using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 {
@@ -134,5 +136,42 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// </summary>
         /// <returns></returns>
         public abstract LockinInfo GetLockIn();
+
+        #region 按键功能
+        protected void MoveScanner()
+        {
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ParamInputWindow win = new ParamInputWindow("设置位移台移动目标");
+                dic.Add("X目标位置", "");
+                dic.Add("Y目标位置", "");
+                dic = win.ShowDialog(dic);
+            });
+            try
+            {
+                GetDevices();
+                if (dic.Count == 0) return;
+                SetExpState("正在移动扫描台...");
+                NanoStageInfo infx = GetDeviceByName("ScannerX") as NanoStageInfo;
+                NanoStageInfo infy = GetDeviceByName("ScannerY") as NanoStageInfo;
+                double xloc = double.Parse(dic["X目标位置"]);
+                double yloc = double.Parse(dic["Y目标位置"]);
+                DeviceDispatcher.UseDevices(infx, infy);
+                infx.Device.MoveToAndWait(xloc, 120000);
+                infy.Device.MoveToAndWait(yloc, 120000);
+                SetExpState("扫描台位置 X: " + Math.Round(xloc, 5).ToString() + " Y: " + Math.Round(yloc, 5).ToString());
+                DeviceDispatcher.EndUseDevices(infx, infy);
+            }
+            catch (Exception ex)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageWindow.ShowTipWindow("移动未完成" + ex.Message, Window.GetWindow(ParentPage));
+                });
+                SetExpState("");
+            }
+        }
+        #endregion
     }
 }
