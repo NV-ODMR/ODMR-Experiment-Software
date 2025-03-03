@@ -355,5 +355,11 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
         }
 
         #endregion
+
+        private void ImageProcess(object sender, RoutedEventArgs e)
+        {
+            ImageProcessWindow win = new ImageProcessWindow(Camera);
+            win.ShowDialog();
+        }
     }
 }

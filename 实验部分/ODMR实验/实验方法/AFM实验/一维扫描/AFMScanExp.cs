@@ -6,6 +6,7 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
@@ -34,6 +35,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             new Param<bool>("显示子实验窗口",true,"ShowSubMenu"),
             new Param<bool>("存储单点实验数据",true,"SaveSingleExpData"),
+            new Param<bool>("自动Trace",false,"UseAutoTrace"),
+            new Param<int>("Trace间隔",10,"TraceGap"),
             new Param<bool>("尝试多次下针",true,"MultiAFMDrop"),
             new Param<int>("最大尝试下针次数",5,"DropCount"),
             new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
@@ -51,7 +54,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.样品位移台,new Param<string>("样品Z轴","","SampleZ")),
         };
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
+        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+        {
+            new AutoTrace()
+        };
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {
@@ -77,10 +83,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             infoy.Device.MoveToAndWait(D1ScanRange.StartPoint.Y, 120000);
         }
 
+        private int ScanPointCount = 0;
+        private int ScanPointGap = 0;
+        private bool AllowAutoTrace = false;
+
         public override void ODMRExpWithAFM()
         {
             NanoStageInfo dev1 = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo dev2 = GetDeviceByName("ScannerY") as NanoStageInfo;
+            #region 自动Trace参数
+            ScanPointCount = 0;
+            ScanPointGap = GetInputParamValueByName("TraceGap");
+            AllowAutoTrace = GetInputParamValueByName("UseAutoTrace");
+            #endregion
 
             PointsScanSession.FirstScanEvent = ScanEvent;
             PointsScanSession.ScanEvent = ScanEvent;
@@ -113,7 +128,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
             SetExpState("正在进行实验...");
             //进行实验
-            ODMRExpObject exp = RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
+            ODMRExpObject exp = RunSubExperimentBlock(1, GetInputParamValueByName("ShowSubMenu"));
             JudgeThreadEndOrResumeAction?.Invoke();
             //获取输出参数
             double value = 0;
@@ -171,6 +186,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             }
 
             UpdatePlotChartFlow(true);
+
+            ++ScanPointCount;
+            if (ScanPointCount >= ScanPointGap && AllowAutoTrace)
+            {
+                //执行Trace
+                RunSubExperimentBlock(0, GetInputParamValueByName("ShowSubMenu"));
+                ScanPointCount = 0;
+            }
+
             return new List<object>();
         }
 
