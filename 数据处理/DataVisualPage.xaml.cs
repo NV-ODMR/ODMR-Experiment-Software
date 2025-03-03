@@ -39,6 +39,7 @@ using DragEventArgs = System.Windows.DragEventArgs;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
 using Controls.Windows;
+using Clipboard = System.Windows.Clipboard;
 
 namespace ODMR_Lab.数据处理
 {
@@ -410,6 +411,25 @@ namespace ODMR_Lab.数据处理
             win.ParentDataSource = Source[ind];
             win.ShowDialog();
             UpdateFromSource(Source[ind]);
+        }
+
+        /// <summary>
+        /// 复制为文本
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        private void SaveSnap(int arg1, int arg2, object arg3)
+        {
+            var source = Source[GetSelectedIndex()];
+            string configs = "";
+            foreach (var item in source.Params)
+            {
+                configs += item.Key + "→" + item.Value + "\n";
+            }
+            Clipboard.SetText(configs);
+            TimeWindow win = new TimeWindow();
+            win.ShowWindow("实验信息已复制到剪切板");
         }
     }
 }

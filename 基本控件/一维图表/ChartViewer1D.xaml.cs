@@ -726,14 +726,9 @@ namespace ODMR_Lab.基本控件
             {
                 if ((item as DataListViewer).Tag == data) return;
             }
-            DataListViewer v = new DataListViewer()
-            {
-                HeaderTemplate = new List<ViewerTemplate>()
-                {
-                    new ViewerTemplate("序号",ListDataTypes.Double,new GridLength(30),false),
-                    new ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false),
-                }
-            };
+            DataListViewer v = new DataListViewer();
+            v.HeaderTemplate.Add(new ViewerTemplate("序号", ListDataTypes.Double, new GridLength(40), false));
+            v.HeaderTemplate.Add(new ViewerTemplate("值", ListDataTypes.String, new GridLength(1, GridUnitType.Star), false));
             var vs = data.GetDataCopyAsString().ToList();
             for (int i = 0; i < vs.Count; i++)
             {

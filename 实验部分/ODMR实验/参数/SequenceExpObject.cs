@@ -94,6 +94,23 @@ namespace ODMR_Lab.ODMR实验
             }
             return false;
         }
+
+        public static bool IsAFMScanExperiment(ODMRExpObject exp)
+        {
+            Type ptype = exp.GetType();
+            while (ptype != null)
+            {
+                string name = ptype.FullName;
+                if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
+                if (name == typeof(AFMScan1DExp).FullName || name == typeof(AFMScan2DExp).FullName)
+                {
+                    return true;
+                }
+                ptype = ptype.BaseType;
+            }
+            return false;
+        }
+
         public static bool Is1DScanExperiment(ODMRExpObject exp)
         {
             Type ptype = exp.GetType();
@@ -382,11 +399,13 @@ namespace ODMR_Lab.ODMR实验
             SetExpState("");
             try
             {
-                PreExpEvent();
                 //清除输出参数
                 ClearOutputParams();
+
+                PreExpEvent();
                 ODMRExperiment();
                 AfterExpEvent();
+
                 //刷新输出参数到窗口
                 UpdateOutputParams();
             }

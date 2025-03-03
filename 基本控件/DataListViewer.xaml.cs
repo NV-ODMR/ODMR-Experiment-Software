@@ -22,8 +22,7 @@ namespace ODMR_Lab.基本控件
     public partial class DataListViewer : Grid
     {
 
-
-        public List<ViewerTemplate> HeaderTemplate { get; set; } = new List<ViewerTemplate>();
+        public ItemsList<ViewerTemplate> HeaderTemplate { get; set; } = new ItemsList<ViewerTemplate>();
 
 
         public double MinItemWidth
@@ -62,26 +61,49 @@ namespace ODMR_Lab.基本控件
 
 
 
+        public bool IsMultiSelected
+        {
+            get { return (bool)GetValue(IsMultiSelectedProperty); }
+            set { SetValue(IsMultiSelectedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsMultiSelected.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsMultiSelectedProperty =
+            DependencyProperty.Register("IsMultiSelected", typeof(bool), typeof(DataListViewer), new PropertyMetadata(false));
+
+
+
 
 
         public DataListViewer()
         {
             InitializeComponent();
             datacontentscroll.HeaderHeight = HeaderHeight;
-            datacontentscroll.ItemHeight = ItemHeight;
-            datacontentscroll.DataTemplate = HeaderTemplate;
-            datacontentscroll.MinItemWidth = MinItemWidth;
+            HeaderTemplate.ItemChanged += UpdateHeader;
             datacontentscroll.ItemSelected += DataItemSelected;
             datacontentscroll.ItemValueChanged += DataItemValueChanged;
             datacontentscroll.ItemContextMenuSelected += DataItemContextMenuSelected;
+            datacontentscroll.MultiItemSelected += DataMultiSelected;
+            datacontentscroll.MultiItemUnSelected += DataMultiUnSelected;
             datacontentscroll.UpdateHeader();
         }
+
+        private void UpdateHeader(object sender, RoutedEventArgs e)
+        {
+            datacontentscroll.DataTemplate = HeaderTemplate.ToList();
+            datacontentscroll.UpdateHeader();
+        }
+
 
         public event Action<int, object> ItemSelected = null;
 
         public event Action<int, int, object> ItemValueChanged = null;
 
         public event Action<int, int, object> ItemContextMenuSelected = null;
+
+        public event Action<int, object> MultiItemSelected = null;
+
+        public event Action<int, object> MultiItemUnSelected = null;
 
         private void DataItemValueChanged(int arg1, int arg2, object arg3)
         {
@@ -98,12 +120,28 @@ namespace ODMR_Lab.基本控件
             ItemContextMenuSelected?.Invoke(arg1, CurrentPageIndex * DisplayCount + arg2, arg3);
         }
 
+        private void DataMultiUnSelected(int arg1, object arg2)
+        {
+            MultiItemUnSelected?.Invoke(CurrentPageIndex * DisplayCount + arg1, arg2);
+        }
+
+        private void DataMultiSelected(int arg1, object arg2)
+        {
+            MultiItemSelected?.Invoke(CurrentPageIndex * DisplayCount + arg1, arg2);
+        }
+
         /// <summary>
         /// 显示的点数量
         /// </summary>
         int DisplayCount = 10;
 
         public int CurrentPageIndex { private set; get; } = 0;
+
+        public void Select(int ind)
+        {
+            UpdatePointList(ind / DisplayCount);
+            datacontentscroll.Select(ind - CurrentPageIndex * DisplayCount);
+        }
 
         public void UpdatePointList(int pageindex, string name = "")
         {
@@ -211,7 +249,11 @@ namespace ODMR_Lab.基本控件
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
+
             datacontentscroll.DataTemplate = HeaderTemplate;
+            datacontentscroll.ItemHeight = ItemHeight;
+            datacontentscroll.MinItemWidth = MinItemWidth;
+            datacontentscroll.IsMultiSelected = IsMultiSelected;
             datacontentscroll.UpdateHeader();
         }
     }

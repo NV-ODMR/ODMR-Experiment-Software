@@ -1,0 +1,30 @@
+﻿<Window x:Class="ODMR_Lab.基本窗口.ParamInputWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls"
+        mc:Ignorable="d"
+        Title="参数输入窗口" Height="448" Width="632" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="60"/>
+        </Grid.ColumnDefinitions>
+        <Label Name="title" Grid.Row="0" Content="" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <TextBlock Name="tbTemplate" Foreground="White" FontSize="11" Visibility="Hidden" HorizontalAlignment="Center" Text="111" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+        <TextBox Name="TextTemplate" Foreground="White" BorderThickness="0" Visibility="Hidden" Text="111" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" Background="#FF2E2E2E" BorderBrush="{x:Null}" CaretBrush="White"/>
+        <control:DecoratedButton Grid.Row="2" Grid.ColumnSpan="2" Margin="5" Text="确定" Click="Apply" Background="#FF2E2E2E" Foreground="White" MoveInForeground="White" PressedForeground="White" MoveInColor="#FF4D4D4D" PressedColor="#FF424242"/>
+        <control:AutoScrollViewer Grid.Row="1" Name="sc">
+            <control:AutoScrollViewer.Content>
+                <WrapPanel Name="PasContent" Width="{Binding ElementName=sc, Path=ActualWidth}" ItemWidth="{Binding ElementName=sc, Path=ActualWidth}"/>
+            </control:AutoScrollViewer.Content>
+        </control:AutoScrollViewer>
+    </Grid>
+</Window>

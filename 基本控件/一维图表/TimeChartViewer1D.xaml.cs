@@ -555,14 +555,9 @@ namespace ODMR_Lab.基本控件
             {
                 if ((item as DataListViewer).Tag == data.Value) return;
             }
-            DataListViewer v = new DataListViewer()
-            {
-                HeaderTemplate = new List<ViewerTemplate>()
-                {
-                    new ViewerTemplate("序号",ListDataTypes.Double,new GridLength(30),false),
-                    new ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false),
-                }
-            };
+            DataListViewer v = new DataListViewer();
+            v.HeaderTemplate.Add(new ViewerTemplate("序号", ListDataTypes.Double, new GridLength(40), false));
+            v.HeaderTemplate.Add(new ViewerTemplate("值", ListDataTypes.String, new GridLength(1, GridUnitType.Star), false));
             var times = data.Key.GetDataCopyAsString().ToList();
             for (int i = 0; i < times.Count; i++)
             {
@@ -571,14 +566,9 @@ namespace ODMR_Lab.基本控件
             v.Width = 250;
             v.Tag = data.Key;
             DataPanel.Children.Add(v);
-            v = new DataListViewer()
-            {
-                HeaderTemplate = new List<ViewerTemplate>()
-                {
-                    new ViewerTemplate("序号",ListDataTypes.Double,new GridLength(30),false),
-                    new ViewerTemplate("值",ListDataTypes.String,new GridLength(1,GridUnitType.Star),false),
-                }
-            };
+            v = new DataListViewer();
+            v.HeaderTemplate.Add(new ViewerTemplate("序号", ListDataTypes.Double, new GridLength(40), false));
+            v.HeaderTemplate.Add(new ViewerTemplate("值", ListDataTypes.String, new GridLength(1, GridUnitType.Star), false));
             var vals = data.Value.GetDataCopyAsString().ToList();
             for (int i = 0; i < vals.Count; i++)
             {

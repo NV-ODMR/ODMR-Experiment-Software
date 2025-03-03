@@ -142,7 +142,7 @@
             </scroll:AutoScrollViewer.Content>
         </scroll:AutoScrollViewer>
     </Grid>
-    <Grid Grid.Column="1" Name="DataView" Visibility="Collapsed">
+    <Grid Grid.Column="1" Name="DataView" Visibility="Hidden">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
@@ -153,21 +153,12 @@
         </Grid.ColumnDefinitions>
         <scroll:ComboBox Name="DataGroups" DefaultSelectIndex="0" SelectionChanged="ChangeGroup" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
         </scroll:ComboBox>
-        <scroll:ListViewer Margin="5" Grid.RowSpan="1" Grid.Row="1" IsMultiSelected="True" MultiItemSelected="DataNames_MultiItemSelected" MultiItemUnSelected="DataNames_MultiItemUnSelected" Name="DataNames" ItemBarBackground="#FF4D4D4D" ItemBarSelectedColor="#FF2894FF" Background="#FF2E2E2E">
-            <scroll:ListViewer.DataTemplate>
+        <local:DataListViewer Margin="5" Grid.RowSpan="1" Grid.Row="1" IsMultiSelected="True" MultiItemSelected="DataNames_MultiItemSelected" MultiItemUnSelected="DataNames_MultiItemUnSelected" x:Name="DataNames" Background="#FF2E2E2E">
+            <local:DataListViewer.HeaderTemplate>
                 <scroll:ViewerTemplate Descriptions="名称" DataType="String" DataDisplayWidth="*" Editable="False"/>
                 <scroll:ViewerTemplate Descriptions="点数" DataType="String" DataDisplayWidth="100" Editable="False"/>
-            </scroll:ListViewer.DataTemplate>
-            <scroll:ListViewer.HeaderLabelTemplate>
-                <Label HorizontalContentAlignment="Center" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="14"/>
-            </scroll:ListViewer.HeaderLabelTemplate>
-            <scroll:ListViewer.UnEditableTextTemplate>
-                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" VerticalAlignment="Center" TextWrapping="Wrap" Foreground="White" FontSize="10"/>
-            </scroll:ListViewer.UnEditableTextTemplate>
-            <scroll:ListViewer.EditableBooleanTemplate>
-                <scroll:Chooser Width="40" Height="20"/>
-            </scroll:ListViewer.EditableBooleanTemplate>
-        </scroll:ListViewer>
+            </local:DataListViewer.HeaderTemplate>
+        </local:DataListViewer>
         <scroll:AutoScrollViewer Grid.Column="1" Grid.RowSpan="2" Name="scroll">
             <scroll:AutoScrollViewer.Content>
                 <WrapPanel Name="DataPanel" Orientation="Horizontal" Height="{Binding ElementName=scroll,Path=ActualHeight}" ItemHeight="{Binding ElementName=scroll,Path=ActualHeight}" MinHeight="200">

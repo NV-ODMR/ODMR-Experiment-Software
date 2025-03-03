@@ -5,6 +5,7 @@ using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
@@ -53,7 +54,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {
-            return new List<KeyValuePair<string, Action>>();
+            List<KeyValuePair<string, Action>> btns = new List<KeyValuePair<string, Action>>();
+            btns.Add(new KeyValuePair<string, Action>("移动扫描台到指定位置", MoveScanner));
+            return btns;
         }
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
@@ -167,18 +170,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventBeforeDropWithAFM()
         {
-            LockinInfo info = GetDeviceByName("LockIn") as LockinInfo;
-            //下针信息确认
-            bool iscontinue = true;
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + info.Device.DemodR.ToString() + "\n" + "设定点:" + info.Device.SetPoint.ToString() + "\n"
-                    + "P:" + info.Device.P.ToString() + "\n" + "I:" + info.Device.I.ToString() + "\n" + "D:" + info.Device.D.ToString() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
-                {
-                    iscontinue = false;
-                }
-            });
-            if (!iscontinue) throw new Exception("实验已停止");
+            //添加范围参数
+            OutputParams.Add(new Param<string>("扫描范围信息", D2ScanRange.ScanName + "\n" + D2ScanRange.GetDescription(), "ScanRangeInform"));
             //将位移台复位
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
@@ -247,5 +240,39 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             return GetDeviceByName("SampleZ") as NanoStageInfo;
         }
+
+        #region 按键功能
+        private void MoveScanner()
+        {
+            ParamInputWindow win = new ParamInputWindow("设置位移台移动目标");
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("X目标位置", "");
+            dic.Add("Y目标位置", "");
+            dic = win.ShowDialog(dic);
+            try
+            {
+                SetExpState("正在移动扫描台...");
+                NanoStageInfo infx = GetDeviceByName("ScannerX") as NanoStageInfo;
+                NanoStageInfo infy = GetDeviceByName("ScannerY") as NanoStageInfo;
+                double xloc = double.Parse(dic["X目标位置"]);
+                double yloc = double.Parse(dic["Y目标位置"]);
+                DeviceDispatcher.UseDevices(infx, infy);
+                infx.Device.MoveToAndWait(xloc, 120000);
+                infy.Device.MoveToAndWait(yloc, 120000);
+                SetExpState("扫描台位置 X: " + Math.Round(xloc, 5).ToString() + " Y: " + Math.Round(yloc, 5).ToString());
+                DeviceDispatcher.EndUseDevices(infx, infy);
+            }
+            catch (Exception ex)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageWindow.ShowTipWindow("移动未完成" + ex.Message, Window.GetWindow(ParentPage));
+                });
+                SetExpState("");
+            }
+        }
+
+
+        #endregion
     }
 }

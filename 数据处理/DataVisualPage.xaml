@@ -22,10 +22,17 @@
         <ColumnDefinition/>
         <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <control:ListViewer Name="ExpInformation" ItemHeight="70" Grid.Row="0" Grid.Column="1" Grid.RowSpan="6" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF047BFF">
+    <control:ListViewer Name="ExpInformation" ItemContextMenuSelected="SaveSnap" ItemHeight="70" Grid.Row="0" Grid.Column="1" Grid.RowSpan="6" ItemBarBackground="#FF2E2E2E" ItemBarSelectedColor="#FF047BFF">
         <control:ListViewer.DataTemplate>
             <control:ViewerTemplate Descriptions="实验信息" DataType="String" Editable="False" DataDisplayWidth="*"/>
         </control:ListViewer.DataTemplate>
+        <control:ListViewer.ItemContextMenu>
+            <control:ContextMenu>
+                <control:ContextMenu.Items>
+                    <control:DecoratedButton Text="复制信息到剪切板" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                </control:ContextMenu.Items>
+            </control:ContextMenu>
+        </control:ListViewer.ItemContextMenu>
         <control:ListViewer.HeaderLabelTemplate>
             <Label Content="实验信息" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Row="0" Grid.Column="1"/>
         </control:ListViewer.HeaderLabelTemplate>
