@@ -97,7 +97,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="40"/>
                 </Grid.RowDefinitions>
-                <control:ListViewer Grid.Row="0" Grid.Column="1" Margin="5" ItemContextMenuSelected="SignalPanel_ItemContextMenuSelected" Name="SignalPanel" HeaderHeight="30" ItemHeight="30" MinItemWidth="150" ItemValueChanged="WaveFormValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
+                <control:ListViewer Grid.Row="0" Grid.Column="1" Margin="5" ItemContextMenuSelected="SignalPanel_ItemContextMenuSelected" Name="SignalPanel" HeaderHeight="30" ItemHeight="30" MinItemWidth="150" ItemSelected="SignalPanel_ItemSelected" ItemValueChanged="WaveFormValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
                     <control:ListViewer.DataTemplate>
                         <control:ViewerTemplate Descriptions="脉冲名称" DataType="String" Editable="True" DataDisplayWidth="2*" />
                         <control:ViewerTemplate Descriptions="波形类型" DataType="Enum" Editable="True" DataDisplayWidth="*" />

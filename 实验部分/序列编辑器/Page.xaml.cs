@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Charts;
 using Controls.Windows;
 using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using HardWares.温度控制器;
@@ -9,6 +10,7 @@ using HardWares.端口基类部分;
 using HardWares.纳米位移台;
 using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
+using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.序列编辑器;
 using System;
@@ -122,6 +124,14 @@ namespace ODMR_Lab.序列编辑器
 
             List<int> SeqTimes = new List<int>();
 
+            double loloc = double.NaN;
+            double hiloc = double.NaN;
+
+            SequenceWaveSeg seg = null;
+
+            if (SignalPanel.GetSelectedTag() != null)
+                seg = SignalPanel.GetSelectedTag() as SequenceWaveSeg;
+
             foreach (var item in Sequence.Channels)
             {
                 item.ChannelWaveData.Name = Enum.GetName(item.ChannelInd.GetType(), item.ChannelInd);
@@ -144,6 +154,11 @@ namespace ODMR_Lab.序列编辑器
                         item.ChannelWaveData.Y.Add(1);
                         item.ChannelWaveData.X.Add(timex + peak.PeakSpan + peak.Step * LoopIndex);
                         item.ChannelWaveData.Y.Add(1);
+                    }
+                    if (seg == peak)
+                    {
+                        loloc = timex;
+                        hiloc = timex + peak.PeakSpan + peak.Step * LoopIndex;
                     }
                     timex += peak.PeakSpan + peak.Step * LoopIndex;
                 }
@@ -178,6 +193,10 @@ namespace ODMR_Lab.序列编辑器
                 ind += 1.1;
                 chart.DataList.Add(item.ChannelWaveData);
             }
+            if (!double.IsNaN(loloc))
+                chart.DataList.Add(new NumricDataSeries("", new List<double>() { loloc, loloc }, new List<double>() { 0, ind }) { LineColor = Colors.LightGreen, LineThickness = 1, MarkerSize = 0 });
+            if (!double.IsNaN(hiloc))
+                chart.DataList.Add(new NumricDataSeries("", new List<double>() { hiloc, hiloc }, new List<double>() { 0, ind }) { LineColor = Colors.LightGreen, LineThickness = 1, MarkerSize = 0 });
             chart.RefreshPlotWithAutoScale();
         }
 
@@ -382,7 +401,7 @@ namespace ODMR_Lab.序列编辑器
             }
         }
 
-        private void ChannelPanel_ItemValueChanged_1(int arg1, int arg2, object arg3)
+        private void SignalPanel_ItemSelected(int arg1, object arg2)
         {
 
         }
