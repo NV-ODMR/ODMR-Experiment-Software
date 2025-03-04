@@ -171,7 +171,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             //刷新形貌数据
             var afm = Get1DChartDataSource("AFM形貌数据(PID输出)", "一维扫描数据");
             afm.Add((GetDeviceByName("LockIn") as LockinInfo).Device.PIDValue);
-            UpdatePlotChartFlow(true);
 
             //设置一维图表
             if (exp is ODMRExperimentWithoutAFM)
@@ -192,7 +191,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     }
                 }
             }
-
+            UpdatePlotChart();
             UpdatePlotChartFlow(true);
 
             ++ScanPointCount;
