@@ -27,13 +27,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
-        public override List<ParamB> PulseExpInputParams { get; set; } = new List<ParamB>()
+        public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             //0.Pi脉冲长度(整数),1.T1间隔长度(整数),2.采样循环次数(整数)，3.超时时间（整数）4.微波频率（小数）5.微波功率（小数）
             new Param<int>("T2*最小值(ns)",20,"T2Starmin"),
             new Param<int>("T2*最大值(ns)",100,"T2Starmax"),
             new Param<int>("T2*点数(ns)",20,"T2Starpoints"),
-            new Param<int>("循环次数",1000,"LoopCount"),
+            new Param<int>("测量次数",1000,"LoopCount"),
+            new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude")
         };
@@ -60,7 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         public override bool PreConfirmProcedure()
         {
-            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据", System.Windows.MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
+            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
             {
                 return true;
             }
@@ -72,7 +73,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         {
             GlobalPulseParams.SetGlobalPulseLength("T2StarStep", (int)locvalue);
 
-            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), 4);
+            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4);
 
             double signalcount = pack.GetPhotonsAtIndex(0).Average();
             double refcount = pack.GetPhotonsAtIndex(1).Average();

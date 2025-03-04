@@ -21,28 +21,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
 {
     public abstract class PulseExpBase : ODMRExperimentWithoutAFM
     {
-        public PulseExpBase()
-        {
-            //添加输入参数
-            InputParams.AddRange(PulseExpInputParams);
-        }
-
-        public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
-        {
-            new Param<int>("Pi脉冲长度(ns)",20,"Pi"),
-            new Param<int>("初始化时间(ns)",2000,"LaserPolar"),
-            new Param<int>("初始化后等待时间(ns)",40,"LasetWait"),
-            new Param<int>("荧光收集时间(ns)",800,"CountTime"),
-            new Param<int>("单次采样循环次数",1000,"SingleLoopCount"),
-            new Param<int>("单次采样超时时间(ms)",100000,"TimeMax"),
-        };
-
-        /// <summary>
-        /// 脉冲实验的输入参数
-        /// </summary>
-        public abstract List<ParamB> PulseExpInputParams { get; set; }
-
-
         public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
             /// 设备:板卡，光子计数器,微波源
@@ -78,7 +56,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="rfpower">微波功率(dbm)</param>
         /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>>
         /// <returns></returns>
-        protected PulsePhotonPack DoPulseExp(double rffrequency, double rfpower, int LaserCountPulses)
+        protected PulsePhotonPack DoPulseExp(double rffrequency, double rfpower, int loopcount, int LaserCountPulses)
         {
             //设置微波
             RFSourceInfo Rf = GetDeviceByName("RFSource") as RFSourceInfo;
@@ -92,7 +70,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 sequence.ChangeWaveSegSpan(item.PulseName, item.PulseLength);
             }
 
-            sequence.LoopCount = GetInputParamValueByName("SingleLoopCount");
+            sequence.LoopCount = loopcount;
             //设置pb
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
