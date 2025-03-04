@@ -104,7 +104,6 @@
                         <control:ViewerTemplate Descriptions="脉冲名称" DataType="List" Editable="True" DataDisplayWidth="2*" />
                         <control:ViewerTemplate Descriptions="波形类型" DataType="Enum" Editable="True" DataDisplayWidth="*" />
                         <control:ViewerTemplate Descriptions="起始宽度(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />
-                        <control:ViewerTemplate Descriptions="步进(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />
                     </control:ListViewer.DataTemplate>
                     <control:ListViewer.ItemContextMenu>
                         <control:ContextMenu>
@@ -146,6 +145,7 @@
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -153,10 +153,11 @@
                 </Grid.ColumnDefinitions>
                 <Label Foreground="White" Grid.Row="0" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="序列名称"/>
                 <TextBox x:Name="SequenceName" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="seq"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
-                <Label Foreground="White" Grid.Row="4" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="总循环次数"/>
-                <TextBox x:Name="LoopStep"  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="1"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
-                <Label Foreground="White" Grid.Row="2" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="当前循环序号"/>
-                <TextBox x:Name="CurrentLoopIndex" KeyDown="CurrentLoopIndex_KeyDown" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+                <control:ComboBox Name="PulseName" Foreground="White" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" FontSize="11" Click="UpdateGlobals" Background="#FF2E2E2E" MoveInColor="#FF4D4D4D" PressedForeground="White" MoveInForeground="White" PressedColor="#FF4A4A4A"/>
+                <Label Foreground="White" Grid.Row="2" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="全局脉冲名"/>
+                <Label Foreground="White" Grid.Row="4" Grid.ColumnSpan="2" FontSize="11" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="脉冲时长"/>
+                <TextBox x:Name="PulseValue" KeyDown="CurrentLoopIndex_KeyDown" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Text="0"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White"/>
+                <control:DecoratedButton Text="确定" Click="Confirm" Grid.Row="6" Grid.ColumnSpan="2" Margin="5" FontSize="12" Background="#FF2E2E2E" Foreground="White" MoveInForeground="White" PressedForeground="White" MoveInColor="#FF4D4D4D" PressedColor="#FF3C3C3C"/>
             </Grid>
         </Grid>
         <Grid Name="TipPanel" Visibility="Hidden" Grid.Row="1">

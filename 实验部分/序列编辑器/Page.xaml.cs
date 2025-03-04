@@ -103,8 +103,7 @@ namespace ODMR_Lab.序列编辑器
                 #endregion
                 SignalPanel.ClearItems();
                 SequenceName.Text = Sequence.Name;
-                LoopStep.Text = Sequence.LoopCount.ToString();
-                RefreshPlot(int.Parse(LoopStep.Text));
+                RefreshPlot();
             }
             catch { }
         }
@@ -120,7 +119,7 @@ namespace ODMR_Lab.序列编辑器
             }
         }
 
-        private void RefreshPlot(int LoopIndex)
+        private void RefreshPlot()
         {
             if (Sequence == null) return;
 
@@ -147,22 +146,22 @@ namespace ODMR_Lab.序列编辑器
                     {
                         item.ChannelWaveData.X.Add(timex);
                         item.ChannelWaveData.Y.Add(0);
-                        item.ChannelWaveData.X.Add(timex + peak.PeakSpan + peak.Step * LoopIndex);
+                        item.ChannelWaveData.X.Add(timex + peak.PeakSpan);
                         item.ChannelWaveData.Y.Add(0);
                     }
                     if (peak.WaveValue == WaveValues.One)
                     {
                         item.ChannelWaveData.X.Add(timex);
                         item.ChannelWaveData.Y.Add(1);
-                        item.ChannelWaveData.X.Add(timex + peak.PeakSpan + peak.Step * LoopIndex);
+                        item.ChannelWaveData.X.Add(timex + peak.PeakSpan);
                         item.ChannelWaveData.Y.Add(1);
                     }
                     if (seg == peak)
                     {
                         loloc = timex;
-                        hiloc = timex + peak.PeakSpan + peak.Step * LoopIndex;
+                        hiloc = timex + peak.PeakSpan;
                     }
-                    timex += peak.PeakSpan + peak.Step * LoopIndex;
+                    timex += peak.PeakSpan;
                 }
                 SeqTimes.Add(timex);
             }
@@ -215,7 +214,7 @@ namespace ODMR_Lab.序列编辑器
                     SignalPanel.AddItem(seq, GlobalPulseParams.GetGlobalPulses(), seq.WaveValue, seq.PeakSpan, seq.Step);
                     SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, seq.PeakName);
                 }
-                RefreshPlot(int.Parse(CurrentLoopIndex.Text));
+                RefreshPlot();
                 #endregion
             }
             catch (Exception) { }
@@ -243,7 +242,7 @@ namespace ODMR_Lab.序列编辑器
             {
                 try
                 {
-                    RefreshPlot(int.Parse(CurrentLoopIndex.Text));
+                    RefreshPlot();
                 }
                 catch (Exception)
                 {
@@ -286,7 +285,6 @@ namespace ODMR_Lab.序列编辑器
                 //读取参数
                 SequenceDataAssemble a = new SequenceDataAssemble();
                 a.Name = SequenceName.Text;
-                a.LoopCount = int.Parse(LoopStep.Text);
                 foreach (var item in Sequence.Channels)
                 {
                     a.Channels.Add(item);
@@ -348,8 +346,20 @@ namespace ODMR_Lab.序列编辑器
                 data.PeakName = SignalPanel.GetCellValue(arg1, 0) as string;
                 data.WaveValue = (WaveValues)Enum.Parse(typeof(WaveValues), SignalPanel.GetCellValue(arg1, 1) as string);
                 data.PeakSpan = int.Parse(SignalPanel.GetCellValue(arg1, 2) as string);
-                data.Step = int.Parse(SignalPanel.GetCellValue(arg1, 3) as string);
-                RefreshPlot(int.Parse(CurrentLoopIndex.Text));
+                data.Step = 0;
+                try
+                {
+                    int length = GlobalPulseParams.GetGlobalPulseLength(data.PeakName);
+                    if (data.PeakName != "Custom")
+                    {
+                        data.PeakSpan = length;
+                    }
+                    SignalPanel.SetCelValue(arg1, 2, data.PeakSpan);
+                    RefreshPlot();
+                }
+                catch (Exception)
+                {
+                }
             }
             catch
             {
@@ -364,7 +374,7 @@ namespace ODMR_Lab.序列编辑器
                 channel.ChannelInd = (SequenceChannel)Enum.Parse(typeof(SequenceChannel), ChannelPanel.GetCellValue(arg1, 0) as string);
                 channel.IsDisplay = (bool)ChannelPanel.GetCellValue(arg1, 2);
                 ChannelPanel.SetCelValue(arg1, 1, GetChannelDescription(channel.ChannelInd));
-                RefreshPlot(int.Parse(CurrentLoopIndex.Text));
+                RefreshPlot();
             }
             catch (Exception) { }
         }
@@ -393,14 +403,14 @@ namespace ODMR_Lab.序列编辑器
             if (arg1 == 1)
             {
                 var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Insert(arg1 - 1 < 0 ? 0 : arg1 - 1, new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, seg.ParentChannel));
+                seg.ParentChannel.Peaks.Insert(arg2 < 0 ? 0 : arg2, new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, seg.ParentChannel));
                 UpdatePeakData();
             }
             //下方插入
             if (arg1 == 2)
             {
                 var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Insert(arg1, new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, seg.ParentChannel));
+                seg.ParentChannel.Peaks.Insert(arg2 + 1, new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, seg.ParentChannel));
                 UpdatePeakData();
             }
         }
@@ -409,7 +419,7 @@ namespace ODMR_Lab.序列编辑器
         {
             try
             {
-                RefreshPlot(int.Parse(CurrentLoopIndex.Text));
+                RefreshPlot();
             }
             catch (Exception)
             {
@@ -422,6 +432,29 @@ namespace ODMR_Lab.序列编辑器
             win.Owner = Window.GetWindow(this);
             win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             win.ShowDialog();
+        }
+
+        private void UpdateGlobals(object sender, RoutedEventArgs e)
+        {
+            PulseName.Items.Clear();
+            PulseName.TemplateButton = PulseName;
+            foreach (var item in GlobalPulseParams.GetGlobalPulses())
+            {
+                PulseName.Items.Add(new DecoratedButton() { Text = item });
+            }
+        }
+
+        private void Confirm(object sender, RoutedEventArgs e)
+        {
+            if (PulseName.SelectedItem == null || Sequence == null) return;
+            try
+            {
+                Sequence.ChangeWaveSegSpan(PulseName.SelectedItem.Text, int.Parse(PulseValue.Text));
+                RefreshPlot();
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }
