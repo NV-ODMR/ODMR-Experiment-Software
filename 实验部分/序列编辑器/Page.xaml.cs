@@ -12,6 +12,7 @@ using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.序列编辑器;
 using System;
 using System.Collections.Generic;
@@ -114,7 +115,8 @@ namespace ODMR_Lab.序列编辑器
             SequenceChannelData data = arg2 as SequenceChannelData;
             foreach (var item in data.Peaks)
             {
-                SignalPanel.AddItem(item, item.PeakName, item.WaveValue, item.PeakSpan, item.Step);
+                SignalPanel.AddItem(item, GlobalPulseParams.GetGlobalPulses(), item.WaveValue, item.PeakSpan, item.Step);
+                SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, item.PeakName);
             }
         }
 
@@ -197,7 +199,8 @@ namespace ODMR_Lab.序列编辑器
                 chart.DataList.Add(new NumricDataSeries("", new List<double>() { loloc, loloc }, new List<double>() { 0, ind }) { LineColor = Colors.LightGreen, LineThickness = 1, MarkerSize = 0 });
             if (!double.IsNaN(hiloc))
                 chart.DataList.Add(new NumricDataSeries("", new List<double>() { hiloc, hiloc }, new List<double>() { 0, ind }) { LineColor = Colors.LightGreen, LineThickness = 1, MarkerSize = 0 });
-            chart.RefreshPlotWithAutoScale();
+            if (!double.IsNaN(loloc) && !double.IsNaN(hiloc))
+                chart.RefreshPlotWithCustomScale(loloc, hiloc);
         }
 
         public void UpdatePeakData()
@@ -209,7 +212,8 @@ namespace ODMR_Lab.序列编辑器
                 if (ChannelPanel.GetSelectedTag() == null) return;
                 foreach (var seq in (ChannelPanel.GetSelectedTag() as SequenceChannelData).Peaks)
                 {
-                    SignalPanel.AddItem(seq, seq.PeakName, seq.WaveValue, seq.PeakSpan, seq.Step);
+                    SignalPanel.AddItem(seq, GlobalPulseParams.GetGlobalPulses(), seq.WaveValue, seq.PeakSpan, seq.Step);
+                    SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, seq.PeakName);
                 }
                 RefreshPlot(int.Parse(CurrentLoopIndex.Text));
                 #endregion
@@ -403,7 +407,21 @@ namespace ODMR_Lab.序列编辑器
 
         private void SignalPanel_ItemSelected(int arg1, object arg2)
         {
+            try
+            {
+                RefreshPlot(int.Parse(CurrentLoopIndex.Text));
+            }
+            catch (Exception)
+            {
+            }
+        }
 
+        private void OpenGlobalSeqPanel(object sender, RoutedEventArgs e)
+        {
+            GlobalSequenceWindow win = new GlobalSequenceWindow();
+            win.Owner = Window.GetWindow(this);
+            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            win.ShowDialog();
         }
     }
 }

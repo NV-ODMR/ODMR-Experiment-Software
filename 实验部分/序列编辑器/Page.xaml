@@ -21,13 +21,15 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <control:DecoratedButton Margin="3" Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="1" Click="OpenSequence" Text="打开已有序列" FontSize="10" TextAreaRatio="1" IconMargin="4" ToolTip="打开已有序列" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
             <control:DecoratedButton Margin="3" Grid.Column="1" Click="NewSequence" Grid.Row="5" Grid.ColumnSpan="1" Text="新建序列" FontSize="10"  TextAreaRatio="1" IconMargin="4" ToolTip="新建序列" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
             <control:DecoratedButton Margin="3" Grid.Column="3"  Click="SaveSequence" Grid.Row="6" Grid.ColumnSpan="1" Text="保存序列" FontSize="10"  TextAreaRatio="1" IconMargin="4" ToolTip="保存序列" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-            <Label Grid.Column="4" Content="序列名称:" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
-            <Label Name="SequenceFileName" Grid.Column="5" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
+            <control:DecoratedButton Margin="3" Grid.Column="4"  Click="OpenGlobalSeqPanel" Grid.Row="6" Grid.ColumnSpan="1" Text="全局序列名" FontSize="10"  TextAreaRatio="1" IconMargin="4" ToolTip="全局序列名" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+            <Label Grid.Column="5" Content="序列名称:" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
+            <Label Name="SequenceFileName" Grid.Column="6" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="10"/>
         </Grid>
         <Grid Name="SequencePanel" Visibility="Visible" Grid.Row="1">
             <Grid.RowDefinitions>
@@ -99,7 +101,7 @@
                 </Grid.RowDefinitions>
                 <control:ListViewer Grid.Row="0" Grid.Column="1" Margin="5" ItemContextMenuSelected="SignalPanel_ItemContextMenuSelected" Name="SignalPanel" HeaderHeight="30" ItemHeight="30" MinItemWidth="150" ItemSelected="SignalPanel_ItemSelected" ItemValueChanged="WaveFormValueChanged" ItemBarSelectedColor="#FF0894FF" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E">
                     <control:ListViewer.DataTemplate>
-                        <control:ViewerTemplate Descriptions="脉冲名称" DataType="String" Editable="True" DataDisplayWidth="2*" />
+                        <control:ViewerTemplate Descriptions="脉冲名称" DataType="List" Editable="True" DataDisplayWidth="2*" />
                         <control:ViewerTemplate Descriptions="波形类型" DataType="Enum" Editable="True" DataDisplayWidth="*" />
                         <control:ViewerTemplate Descriptions="起始宽度(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />
                         <control:ViewerTemplate Descriptions="步进(ns)" DataType="String" Editable="True" DataDisplayWidth="*" />

@@ -12,6 +12,8 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
+using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
@@ -19,46 +21,39 @@ using ODMR_Lab.设备部分.射频源_锁相放大器;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 {
-    class T1 : ODMRExperimentWithoutAFM
+    class T1 : PulseExpBase
     {
         public override string ODMRExperimentName { get; set; } = "驰豫时间测量(T1)";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
-        public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
+        public override List<ParamB> PulseExpInputParams { get; set; } = new List<ParamB>()
         {
-            //0.Pi脉冲长度(整数),1.T1间隔长度(整数),2.采样循环次数(整数)，3.超时时间（整数）4.微波频率（小数）5.微波功率（小数）
-            new Param<int>("Pi脉冲长度(ns)",20,"Pi"),
             new Param<int>("T1最小值(ns)",20,"T1min"),
             new Param<int>("T1最大值(ns)",100,"T1max"),
             new Param<int>("T1点数(ns)",20,"T1points"),
-            new Param<int>("单次采样循环次数",1000,"SingleLoopCount"),
             new Param<int>("循环次数",1000,"LoopCount"),
-            new Param<int>("超时时间(ms)",100000,"TimeMax"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude")
         };
+
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
         };
-        public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
-        {
-            /// 设备:板卡，光子计数器,微波源
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.射频源,new Param<string>("射频源","","RFSource")),
-        };
-        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();/////是什么？是之后需要用它画图吗？
+
+        public override List<ParamB> PulseExpDevices { get; set; } = new List<ParamB>();
+
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
 
-        protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
+        public override bool IsAFMSubExperiment { get; protected set; } = true;
+
+        protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()
         {
             return new List<KeyValuePair<string, Action>>();
         }
-
-        public override bool IsAFMSubExperiment { get; protected set; } = true;
 
         public List<object> FirstScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
@@ -77,32 +72,55 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         private int CurrentLoop = 0;
         public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            ScanCore.T1 method = new ScanCore.T1();
-            List<object> res = method.CoreMethod(new List<object>(){
-                GetInputParamValueByName("Pi"), (int)locvalue, GetInputParamValueByName("SingleLoopCount"), GetInputParamValueByName("TimeMax"), GetInputParamValueByName("RFFrequency"),
-                GetInputParamValueByName("RFAmplitude")}, GetDeviceByName("PB"), GetDeviceByName("APD"), GetDeviceByName("RFSource"));
+            //设置T1弛豫时间长度
+            GlobalPulseParams.SetGlobalPulseLength("T1Step", (int)locvalue);
+
+            PulsePhotonPack photonpack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), 8);
+
+            double refcounts1 = photonpack.GetPhotonsAtIndex(0).Average();
+            double refcounts2 = photonpack.GetPhotonsAtIndex(1).Average();
+            double refcounts3 = photonpack.GetPhotonsAtIndex(3).Average();
+            double signalcounts = photonpack.GetPhotonsAtIndex(2).Average();
+
             int ind = range.GetNearestIndex(locvalue);
             var freq = Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据");
-            var signal = Get1DChartDataSource("驰豫信号对比度[sig]", "T1荧光数据");
-            var reference = Get1DChartDataSource("对比实验信号对比度[ref]", "T1荧光数据");
+            var signal = Get1DChartDataSource("驰豫信号对比度[sig]", "T1对比度数据");
+            var reference = Get1DChartDataSource("对比实验信号对比度[ref]", "T1对比度数据");
+            var det = Get1DChartDataSource("对比度差值[ref-sig]", "T1对比度数据");
             var count = Get1DChartDataSource("平均光子数", "T1荧光数据");
+            var sigcount = Get1DChartDataSource("实验光子数", "T1荧光数据");
 
-            double sigcount = (double)res[0];
-            double refcount = (double)res[1];
-            int counts = (int)res[2];
+            var refave = (refcounts1 + refcounts2 + refcounts3) / 3;
+
+            double signalcontrast = 1;
+            double refcontrast = 1;
+            try
+            {
+                signalcontrast = signalcounts / refcounts3;
+                refcontrast = refcounts1 / refcounts2;
+            }
+            catch (Exception)
+            {
+            }
+
+            double detv = refcontrast - signalcontrast;
 
             if (ind >= freq.Count)
             {
                 freq.Add(locvalue);
-                signal.Add(sigcount);
-                reference.Add(refcount);
-                count.Add(counts);
+                signal.Add(signalcontrast);
+                reference.Add(refcontrast);
+                count.Add(refave);
+                sigcount.Add(signalcounts);
+                det.Add(detv);
             }
             else
             {
-                signal[ind] = (signal[ind] * CurrentLoop + sigcount) / (CurrentLoop + 1);
-                reference[ind] = (reference[ind] * CurrentLoop + refcount) / (CurrentLoop + 1);
-                count[ind] = (count[ind] * CurrentLoop + counts) / (CurrentLoop + 1);
+                signal[ind] = (signal[ind] * CurrentLoop + signalcontrast) / (CurrentLoop + 1);
+                reference[ind] = (reference[ind] * CurrentLoop + refcontrast) / (CurrentLoop + 1);
+                count[ind] = (count[ind] * CurrentLoop + refave) / (CurrentLoop + 1);
+                sigcount[ind] = (sigcount[ind] * CurrentLoop + signalcounts) / (CurrentLoop + 1);
+                det[ind] = (det[ind] * CurrentLoop + detv) / (CurrentLoop + 1);
             }
             UpdatePlotChartFlow(true);
             return new List<object>();
@@ -143,14 +161,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
             D1ChartDatas = new List<ChartData1D>()
             {
+                new NumricChartData1D("驰豫时间长度(ns)","T1对比度数据",ChartDataType.X),
+                new NumricChartData1D("驰豫信号对比度[sig]","T1对比度数据",ChartDataType.Y),
+                new NumricChartData1D("对比实验信号对比度[ref]","T1对比度数据",ChartDataType.Y),
+                new NumricChartData1D("对比度差值[ref-sig]","T1对比度数据",ChartDataType.Y),
                 new NumricChartData1D("驰豫时间长度(ns)","T1荧光数据",ChartDataType.X),
-                new NumricChartData1D("驰豫信号对比度[sig]","T1荧光数据",ChartDataType.Y),
-                new NumricChartData1D("对比实验信号对比度[ref]","T1荧光数据",ChartDataType.Y),
                 new NumricChartData1D("平均光子数","T1荧光数据",ChartDataType.Y),
+                new NumricChartData1D("实验光子数","T1荧光数据",ChartDataType.Y),
             };
             UpdatePlotChart();
 
-            Show1DChartData("T1荧光数据", "驰豫时间长度(ns)", "驰豫信号对比度[sig]", "对比实验信号对比度[ref]", "平均光子数");
+            Show1DChartData("T1对比度数据", "驰豫时间长度(ns)", "驰豫信号对比度[sig]", "对比实验信号对比度[ref]", "对比度差值[ref-sig]");
         }
 
         //T1拟合函数
@@ -182,10 +203,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
             List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
+            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T1对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T1对比度数据"), false));
+            PlotData.Add(new ParentPlotDataPack("驰豫信号对比度[sig]", "T1对比度数据", ChartDataType.Y, Get1DChartDataSource("驰豫信号对比度[sig]", "T1对比度数据"), true));
+            PlotData.Add(new ParentPlotDataPack("对比实验信号对比度[ref]", "T1对比度数据", ChartDataType.Y, Get1DChartDataSource("对比实验信号对比度[ref]", "T1对比度数据"), true));
+            PlotData.Add(new ParentPlotDataPack("对比度差值[ref-sig]", "T1对比度数据", ChartDataType.Y, Get1DChartDataSource("对比度差值[ref-sig]", "T1对比度数据"), true));
+
             PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T1荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据"), false));
-            PlotData.Add(new ParentPlotDataPack("驰豫信号对比度[sig]", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("驰豫信号对比度[sig]", "T1荧光数据"), true));
-            PlotData.Add(new ParentPlotDataPack("对比实验信号对比度[ref]", "T1荧光数据", ChartDataType.X, Get1DChartDataSource("对比实验信号对比度[ref]", "T1荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("平均光子数", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("平均光子数", "T1荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("实验光子数", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("实验光子数", "T1荧光数据"), true));
             return PlotData;
+        }
+
+        protected override SequenceDataAssemble GetExperimentSequence()
+        {
+            return SequenceDataAssemble.ReadFromSequenceName("T1");
         }
     }
 }

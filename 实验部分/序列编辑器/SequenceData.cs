@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace ODMR_Lab.实验部分.序列编辑器
 {
-    internal class SequenceChannelData
+    public class SequenceChannelData
     {
         /// <summary>
         /// 序列名称
@@ -58,7 +58,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
     /// <summary>
     /// 脉冲峰位置
     /// </summary>
-    internal class SequenceWaveSeg
+    public class SequenceWaveSeg
     {
         public SequenceChannelData ParentChannel { get; set; } = null;
 
@@ -88,7 +88,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
         }
     }
 
-    internal enum WaveValues
+    public enum WaveValues
     {
         Zero = 0,
         One = 1

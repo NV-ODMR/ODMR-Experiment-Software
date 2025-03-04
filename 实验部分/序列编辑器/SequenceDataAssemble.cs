@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace ODMR_Lab.实验部分.序列编辑器
 {
-    internal class SequenceDataAssemble
+    public class SequenceDataAssemble
     {
         public string Name { get; set; } = "";
 

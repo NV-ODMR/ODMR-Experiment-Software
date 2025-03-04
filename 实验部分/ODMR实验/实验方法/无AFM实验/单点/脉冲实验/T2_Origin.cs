@@ -19,7 +19,7 @@ using ODMR_Lab.设备部分.射频源_锁相放大器;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 {
-    class T2 : ODMRExperimentWithoutAFM
+    class T2Origin : ODMRExperimentWithoutAFM
     {
         public override string ODMRExperimentName { get; set; } = "退相干时间测量(T2*)";
 
@@ -28,13 +28,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             //0.Pi脉冲长度(整数),1.T1间隔长度(整数),2.采样循环次数(整数)，3.超时时间（整数）4.微波频率（小数）5.微波功率（小数）
-            new Param<int>("Pi/2脉冲长度(ns)",20,"HalfPi"),
-            new Param<int>("T2最小值(ns)",20,"T2min"),
-            new Param<int>("T2最大值(ns)",100,"T2max"),
-            new Param<int>("T2点数(ns)",20,"T2points"),
-            new Param<int>("单次采样循环次数",1000,"SingleLoopCount"),
+            new Param<int>("T2*最小值(ns)",20,"T2min"),
+            new Param<int>("T2*最大值(ns)",100,"T2max"),
+            new Param<int>("T2*点数(ns)",20,"T2points"),
             new Param<int>("循环次数",1000,"LoopCount"),
-            new Param<int>("超时时间(ms)",100000,"TimeMax"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude")
         };
@@ -77,33 +74,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         private int CurrentLoop = 0;
         public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            ScanCore.T1 method = new ScanCore.T1();
-            List<object> res = method.CoreMethod(new List<object>(){
-                GetInputParamValueByName("HalfPi"), (int)locvalue, GetInputParamValueByName("SingleLoopCount"), GetInputParamValueByName("TimeMax"), GetInputParamValueByName("RFFrequency"),
-                GetInputParamValueByName("RFAmplitude")}, GetDeviceByName("PB"), GetDeviceByName("APD"), GetDeviceByName("RFSource"));
-            int ind = range.GetNearestIndex(locvalue);
             var freq = Get1DChartDataSource("驰豫时间长度(ns)", "T2*荧光数据");
             var signal = Get1DChartDataSource("驰豫信号对比度[sig]", "T2*荧光数据");
             var reference = Get1DChartDataSource("对比实验信号对比度[ref]", "T2*荧光数据");
             var count = Get1DChartDataSource("平均光子数", "T2*荧光数据");
-
-            double sigcount = (double)res[0];
-            double refcount = (double)res[1];
-            int counts = (int)res[2];
-
-            if (ind >= freq.Count)
-            {
-                freq.Add(locvalue);
-                signal.Add(sigcount);
-                reference.Add(refcount);
-                count.Add(counts);
-            }
-            else
-            {
-                signal[ind] = (signal[ind] * CurrentLoop + sigcount) / (CurrentLoop + 1);
-                reference[ind] = (reference[ind] * CurrentLoop + refcount) / (CurrentLoop + 1);
-                count[ind] = (count[ind] * CurrentLoop + counts) / (CurrentLoop + 1);
-            }
             UpdatePlotChartFlow(true);
             return new List<object>();
         }

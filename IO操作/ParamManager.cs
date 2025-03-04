@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using CodeHelper;
 using ODMR_Lab.实验部分.ODMR实验.参数;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.位移台界面.参数;
 using ODMR_Lab.实验部分.场效应器件测量;
 using ODMR_Lab.实验部分.温度监测;
@@ -103,6 +104,7 @@ namespace ODMR_Lab.IO操作
             ODMRSaveFile.SaveToFile(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
             #endregion
 
+
             if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "UIParam")))
             {
                 Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "UIParam"));
@@ -181,6 +183,10 @@ namespace ODMR_Lab.IO操作
                     item.ReadFromFileAndLoadToPage(ODMRSaveFile);
                 }
             }
+            #endregion
+
+            #region 全局序列参数
+            GlobalPulseParams.ReadFromFile();
             #endregion
         }
 
