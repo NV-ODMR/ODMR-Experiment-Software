@@ -37,5 +37,21 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
             var l = ScanPoints.Select(x => Math.Abs(x - value)).ToList();
             return l.IndexOf(l.Min());
         }
+
+        /// <summary>
+        /// 返回和输入值最接近的正向扫描列表的序号
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public int GetNearestFormalIndex(double value)
+        {
+            var list = ScanPoints.ToArray().ToList();
+            if (Reverse)
+            {
+                list.Reverse();
+            }
+            var l = list.Select(x => Math.Abs(x - value)).ToList();
+            return l.IndexOf(l.Min());
+        }
     }
 }

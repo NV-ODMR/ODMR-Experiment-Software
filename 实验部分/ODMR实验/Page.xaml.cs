@@ -114,7 +114,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 if (index > ExpObjects.Count - 1 || index < 0) return;
 
                 //存储上一个实验的参数
-                if (CurrentExpObject != null)
+                if (CurrentExpObject != null && !CurrentExpObject.IsSubExperiment)
                 {
                     foreach (var item in CurrentExpObject.InputParams)
                     {
@@ -211,53 +211,57 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
                 ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, false, false, false);
 
-                HashSet<string> gnames = CurrentExpObject.InputParams.Select(x => x.GroupName).ToHashSet();
-                foreach (var item in gnames)
+                //更新输入参数
+                if (!CurrentExpObject.IsSubExperiment)
                 {
-                    TextBlock l = new TextBlock() { Text = item };
-                    l.Height = 30;
-                    UIUpdater.CloneStyle(TextBlockTemplate, l);
-                    InputPanel.Children.Add(l);
-                    var ps = CurrentExpObject.InputParams.Where(x => x.GroupName == item);
-                    foreach (var p in ps)
+                    HashSet<string> gnames = CurrentExpObject.InputParams.Select(x => x.GroupName).ToHashSet();
+                    foreach (var item in gnames)
                     {
-                        Grid g = win.GenerateControlBar(p, this, true);
-                        InputPanel.Children.Add(g);
-                        p.LoadToPage(new FrameworkElement[] { this }, false);
+                        TextBlock l = new TextBlock() { Text = item };
+                        l.Height = 30;
+                        UIUpdater.CloneStyle(TextBlockTemplate, l);
+                        InputPanel.Children.Add(l);
+                        var ps = CurrentExpObject.InputParams.Where(x => x.GroupName == item);
+                        foreach (var p in ps)
+                        {
+                            Grid g = win.GenerateControlBar(p, this, true);
+                            InputPanel.Children.Add(g);
+                            p.LoadToPage(new FrameworkElement[] { this }, false);
+                        }
                     }
-                }
-                gnames = CurrentExpObject.OutputParams.Select(x => x.GroupName).ToHashSet();
-                foreach (var item in gnames)
-                {
-                    TextBlock l = new TextBlock() { Text = item };
-                    l.Height = 30;
-                    UIUpdater.CloneStyle(TextBlockTemplate, l);
-                    OutputPanel.Children.Add(l);
-                    var ps = CurrentExpObject.OutputParams.Where(x => x.GroupName == item);
-                    foreach (var p in ps)
+                    gnames = CurrentExpObject.OutputParams.Select(x => x.GroupName).ToHashSet();
+                    foreach (var item in gnames)
                     {
-                        Grid g = win.GenerateControlBar(p, this, true);
-                        OutputPanel.Children.Add(g);
-                        p.LoadToPage(new FrameworkElement[] { this }, false);
+                        TextBlock l = new TextBlock() { Text = item };
+                        l.Height = 30;
+                        UIUpdater.CloneStyle(TextBlockTemplate, l);
+                        OutputPanel.Children.Add(l);
+                        var ps = CurrentExpObject.OutputParams.Where(x => x.GroupName == item);
+                        foreach (var p in ps)
+                        {
+                            Grid g = win.GenerateControlBar(p, this, true);
+                            OutputPanel.Children.Add(g);
+                            p.LoadToPage(new FrameworkElement[] { this }, false);
+                        }
                     }
-                }
 
-                gnames = CurrentExpObject.DeviceList.Select(x => x.Value.GroupName).ToHashSet();
-                foreach (var item in gnames)
-                {
-                    TextBlock l = new TextBlock() { Text = item };
-                    l.Height = 30;
-                    UIUpdater.CloneStyle(TextBlockTemplate, l);
-                    DevicePanel.Children.Add(l);
-                    var ps = CurrentExpObject.DeviceList.Where(x => x.Value.GroupName == item);
-                    foreach (var p in ps)
+                    gnames = CurrentExpObject.DeviceList.Select(x => x.Value.GroupName).ToHashSet();
+                    foreach (var item in gnames)
                     {
-                        Grid g = win.GenerateDeviceBar(p.Key, p.Value, this);
-                        DevicePanel.Children.Add(g);
-                        p.Value.LoadToPage(new FrameworkElement[] { this }, false);
+                        TextBlock l = new TextBlock() { Text = item };
+                        l.Height = 30;
+                        UIUpdater.CloneStyle(TextBlockTemplate, l);
+                        DevicePanel.Children.Add(l);
+                        var ps = CurrentExpObject.DeviceList.Where(x => x.Value.GroupName == item);
+                        foreach (var p in ps)
+                        {
+                            Grid g = win.GenerateDeviceBar(p.Key, p.Value, this);
+                            DevicePanel.Children.Add(g);
+                            p.Value.LoadToPage(new FrameworkElement[] { this }, false);
+                        }
                     }
+                    IsAutoSave.IsSelected = CurrentExpObject.IsAutoSave;
                 }
-                IsAutoSave.IsSelected = CurrentExpObject.IsAutoSave;
                 return;
             }
             catch (Exception ex)

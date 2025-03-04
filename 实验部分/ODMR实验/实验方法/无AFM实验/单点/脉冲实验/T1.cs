@@ -41,7 +41,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
         {
         };
 
-        public override List<ParamB> PulseExpDevices { get; set; } = new List<ParamB>();
+        public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>();
 
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
@@ -82,11 +82,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
             double refcounts3 = photonpack.GetPhotonsAtIndex(3).Average();
             double signalcounts = photonpack.GetPhotonsAtIndex(2).Average();
 
-            int ind = range.GetNearestIndex(locvalue);
-            var freq = Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据");
+            int ind = range.GetNearestFormalIndex(locvalue);
+
+            var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T1对比度数据");
             var signal = Get1DChartDataSource("驰豫信号对比度[sig]", "T1对比度数据");
             var reference = Get1DChartDataSource("对比实验信号对比度[ref]", "T1对比度数据");
             var det = Get1DChartDataSource("对比度差值[ref-sig]", "T1对比度数据");
+
+            var florfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据");
             var count = Get1DChartDataSource("平均光子数", "T1荧光数据");
             var sigcount = Get1DChartDataSource("实验光子数", "T1荧光数据");
 
@@ -105,9 +108,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
             double detv = refcontrast - signalcontrast;
 
-            if (ind >= freq.Count)
+            if (ind >= contrfreq.Count)
             {
-                freq.Add(locvalue);
+                contrfreq.Add(locvalue);
+                florfreq.Add(locvalue);
                 signal.Add(signalcontrast);
                 reference.Add(refcontrast);
                 count.Add(refave);
@@ -165,6 +169,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
                 new NumricChartData1D("驰豫信号对比度[sig]","T1对比度数据",ChartDataType.Y),
                 new NumricChartData1D("对比实验信号对比度[ref]","T1对比度数据",ChartDataType.Y),
                 new NumricChartData1D("对比度差值[ref-sig]","T1对比度数据",ChartDataType.Y),
+
                 new NumricChartData1D("驰豫时间长度(ns)","T1荧光数据",ChartDataType.X),
                 new NumricChartData1D("平均光子数","T1荧光数据",ChartDataType.Y),
                 new NumricChartData1D("实验光子数","T1荧光数据",ChartDataType.Y),
