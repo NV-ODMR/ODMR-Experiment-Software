@@ -61,8 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             //查找无AFM实验类型
             foreach (var item in SequenceTypes)
             {
-                if (item.BaseType.FullName == typeof(ODMRExperimentWithoutAFM).FullName ||
-                    item.BaseType.BaseType.FullName == typeof(ODMRExperimentWithoutAFM).FullName)
+                if (ODMRExpObject.IsNoAFMScanExperiment(item))
                 {
                     ODMRExpObject exp = Activator.CreateInstance(item) as ODMRExpObject;
                     exp.ParentPage = this;

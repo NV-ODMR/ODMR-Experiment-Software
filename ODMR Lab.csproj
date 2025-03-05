@@ -200,7 +200,6 @@
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMStopDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMDrop.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\CW.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOff.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOn.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\ScanCoreBase.cs" />
@@ -210,12 +209,12 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\AutoTrace.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\CW谱扫描\CWFitModes.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\CW谱扫描\CWScanBase.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\CW谱扫描\FourPointCW.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\CW谱扫描\TwoPointCW.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\CW谱扫描\TotalCW.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PhotonSample.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\CWFitModes.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\CWScanBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\FourPointCW.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\TotalCW.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\TwoPointCW.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\PulseExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\PulsePhotonPack.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\Rabi.cs" />

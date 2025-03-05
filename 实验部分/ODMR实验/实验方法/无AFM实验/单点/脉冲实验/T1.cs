@@ -19,7 +19,7 @@ using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
     class T1 : PulseExpBase
     {

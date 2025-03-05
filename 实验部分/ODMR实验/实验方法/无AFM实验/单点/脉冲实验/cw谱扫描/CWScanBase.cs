@@ -6,6 +6,9 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
+using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.数据处理;
@@ -24,7 +27,7 @@ using System.Windows;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描
 {
-    public abstract class CWBase : ODMRExperimentWithoutAFM
+    public abstract class CWBase : PulseExpBase
     {
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
@@ -33,14 +36,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
 
-        public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
-        {
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.射频源,new Param<string>("射频源","","RFSource")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
-        };
+        public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>();
 
-        protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
+        protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()
         {
             return new List<KeyValuePair<string, Action>>();
         }
@@ -73,19 +71,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 
         private List<object> ScanEvent(RFSourceInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            CWCore cw = new CWCore();
-            var result = cw.CoreMethod(new List<object>() { locvalue, GetRFPower(), GetLoopCount(), GetPointTimeout() },
-                GetDeviceByName("PB"), GetDeviceByName("RFSource"), GetDeviceByName("APD"));
+            PulsePhotonPack pack = DoPulseExp(locvalue, GetRFPower(), GetLoopCount(), 4);
 
-            double contrast = (double)result[0];
-            double signalcount = (int)result[1];
-            double refcount = (int)result[2];
+            double signal = pack.GetPhotonsAtIndex(0).Average();
+            double reference = pack.GetPhotonsAtIndex(1).Average();
+            double contrast = 0;
+            try
+            {
+                contrast = (signal - reference) / reference;
+            }
+            catch (Exception)
+            {
+            }
 
             (Get1DChartData("频率", "CW对比度数据") as NumricChartData1D).Data.Add(locvalue);
             (Get1DChartData("对比度", "CW对比度数据") as NumricChartData1D).Data.Add(contrast);
             (Get1DChartData("频率", "CW荧光计数") as NumricChartData1D).Data.Add(locvalue);
-            (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(signalcount);
-            (Get1DChartData("参考信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(refcount);
+            (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(signal);
+            (Get1DChartData("参考信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(reference);
             Show1DChartData("CW对比度数据", "频率", "对比度");
             UpdatePlotChartFlow(true);
             return new List<object>();
@@ -170,6 +173,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         protected List<double> GetSignalCounts()
         {
             return (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data; ;
+        }
+
+        protected override SequenceDataAssemble GetExperimentSequence()
+        {
+            return SequenceDataAssemble.ReadFromSequenceName("CW");
         }
     }
 }

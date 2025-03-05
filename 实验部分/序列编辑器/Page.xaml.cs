@@ -449,8 +449,12 @@ namespace ODMR_Lab.序列编辑器
             if (PulseName.SelectedItem == null || Sequence == null) return;
             try
             {
-                Sequence.ChangeWaveSegSpan(PulseName.SelectedItem.Text, int.Parse(PulseValue.Text));
-                RefreshPlot();
+                if (MessageBoxResult.Yes == MessageWindow.ShowMessageBox("提示", "此操作将修改全局变量的值,是否继续？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)))
+                {
+                    GlobalPulseParams.SetGlobalPulseLength(PulseName.SelectedItem.Text, int.Parse(PulseValue.Text));
+                    Sequence.ChangeWaveSegSpan(PulseName.SelectedItem.Text, int.Parse(PulseValue.Text));
+                    RefreshPlot();
+                }
             }
             catch (Exception)
             {

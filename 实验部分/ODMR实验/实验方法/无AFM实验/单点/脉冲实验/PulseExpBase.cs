@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验
 {

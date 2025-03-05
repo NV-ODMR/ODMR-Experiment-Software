@@ -9,6 +9,7 @@ using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验.实验方法;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
@@ -119,6 +120,38 @@ namespace ODMR_Lab.ODMR实验
                 string name = ptype.FullName;
                 if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
                 if (name == typeof(AFMScan1DExp).FullName)
+                {
+                    return true;
+                }
+                ptype = ptype.BaseType;
+            }
+            return false;
+        }
+
+        public static bool IsNoAFMScanExperiment(ODMRExpObject exp)
+        {
+            Type ptype = exp.GetType();
+            while (ptype != null)
+            {
+                string name = ptype.FullName;
+                if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
+                if (name == typeof(ODMRExperimentWithoutAFM).FullName)
+                {
+                    return true;
+                }
+                ptype = ptype.BaseType;
+            }
+            return false;
+        }
+
+        public static bool IsNoAFMScanExperiment(Type exptype)
+        {
+            Type ptype = exptype;
+            while (ptype != null)
+            {
+                string name = ptype.FullName;
+                if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
+                if (name == typeof(ODMRExperimentWithoutAFM).FullName)
                 {
                     return true;
                 }
