@@ -434,7 +434,11 @@ namespace ODMR_Lab.ODMR实验
             {
                 //清除输出参数
                 ClearOutputParams();
-
+                //清除图表数据
+                D1ChartDatas.Clear();
+                D2ChartDatas.Clear();
+                D1FitDatas.Clear();
+                UpdatePlotChart();
                 PreExpEvent();
                 ODMRExperiment();
                 AfterExpEvent();

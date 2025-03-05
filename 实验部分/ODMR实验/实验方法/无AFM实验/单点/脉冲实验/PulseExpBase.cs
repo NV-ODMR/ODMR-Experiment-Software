@@ -78,7 +78,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             //设置板卡指令
             List<CommandBase> Lines = new List<CommandBase>();
             pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
-            apd.StartTriggerSample(sequence.LoopCount * 8); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
+            apd.StartTriggerSample(sequence.LoopCount * LaserCountPulses); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
             Thread.Sleep(20);
             pb.Device.Start();//板卡开始输出
             List<int> ApdResult = apd.GetTriggerSamples(sequence.LoopCount * LaserCountPulses);//apd读取，判断时间
@@ -95,9 +95,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 //按脉冲实验次数分割
                 PulsePhotonPack pack = new PulsePhotonPack();
                 int index = 0;
+                SinglePulsePhotonPack single = new SinglePulsePhotonPack();
                 for (int j = 0; j < det.Count; j++)
                 {
-                    SinglePulsePhotonPack single = new SinglePulsePhotonPack();
+                   
                     single.Photons.Add(det[j]);
                     ++index;
                     if (index >= LaserCountPulses / 2)
@@ -118,30 +119,42 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         #region 交互按钮
         private void SetGlobalParams()
         {
-            //打开设置界面
-            ParamInputWindow win = new ParamInputWindow("全局脉冲长度设置");
             Dictionary<string, string> pulses = new Dictionary<string, string>();
-            foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
+            App.Current.Dispatcher.Invoke(() =>
             {
-                pulses.Add(item.PulseName, item.PulseLength.ToString());
-            }
-            win.Owner = Window.GetWindow(ParentPage);
-            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            pulses = win.ShowDialog(pulses);
+                //打开设置界面
+                ParamInputWindow win = new ParamInputWindow("全局脉冲长度设置");
+                foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
+                {
+                    pulses.Add(item.PulseName, item.PulseLength.ToString());
+                }
+                win.Owner = Window.GetWindow(ParentPage);
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                pulses = win.ShowDialog(pulses);
+            });
             try
             {
-                foreach (var item in pulses)
+                if (pulses.Count != 0)
                 {
-                    GlobalPulseParams.GlobalPulseConfigs.Where(x => x.PulseName == item.Key).ElementAt(0).PulseLength = (int)double.Parse(item.Value);
+                    foreach (var item in pulses)
+                    {
+                        GlobalPulseParams.GlobalPulseConfigs.Where(x => x.PulseName == item.Key).ElementAt(0).PulseLength = (int)double.Parse(item.Value);
+                    }
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        TimeWindow twin = new TimeWindow();
+                        twin.Owner = Window.GetWindow(ParentPage);
+                        twin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        twin.ShowWindow("设置成功");
+                    });
                 }
-                TimeWindow twin = new TimeWindow();
-                twin.Owner = Window.GetWindow(ParentPage);
-                twin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                twin.ShowWindow("设置成功");
             }
             catch (Exception ex)
             {
-                MessageWindow.ShowTipWindow("设置未完成\n" + ex.Message, Window.GetWindow(ParentPage));
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageWindow.ShowTipWindow("设置未完成\n" + ex.Message, Window.GetWindow(ParentPage));
+                });
             }
         }
         #endregion

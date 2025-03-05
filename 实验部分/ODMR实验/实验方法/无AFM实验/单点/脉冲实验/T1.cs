@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using Controls.Charts;
 using Controls.Windows;
 using HardWares.射频源.Rigol_DSG_3060;
 using MathLib.NormalMath.Decimal;
@@ -201,6 +203,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             var tempdata = sub.Select(x => Math.Abs(x - (sub.Max() + sub.Min()) / 2)).ToList();
             double inittau = xs[tempdata.IndexOf(tempdata.Min())];
             double[] ps = CurveFitting.FitCurveWithFunc(xs, sub, new List<double>() { sub.Max() - sub.Min(), inittau, sub.Min() }, new List<double>() { 10, 10, 10 }, T1FitFunc, AlgorithmType.LevenbergMarquardt, 2000);
+
+            //设置拟合曲线
+            var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;
+            var fitys = ftxs.Select(x => T1FitFunc(x, ps)).ToList();
+            D1FitDatas.Add(new FittedData1D("a*Exp(-x/tau)+b", "x", new List<string>() { "a", "tau", "b" }, ps.ToList(), "驰豫时间长度(ns)", "T1对比度数据", new NumricDataSeries("拟合曲线", ftxs, fitys) { LineColor = Colors.LightSkyBlue }));
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
             OutputParams.Add(new Param<double>("T1拟合值(ns)", ps[1], "T1FitData"));
             //计算平均光子计数
             OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("平均光子数", "T1荧光数据").Average(), "AverageCount"));

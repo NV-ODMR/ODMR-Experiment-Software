@@ -66,6 +66,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
                 new NumricChartData1D("参考信号总计数","CW荧光计数",ChartDataType.Y),
             };
             UpdatePlotChart();
+            Show1DChartData("CW对比度数据", "频率", "对比度");
             return ScanEvent(device, range, locvalue, inputParams);
         }
 
@@ -73,8 +74,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         {
             PulsePhotonPack pack = DoPulseExp(locvalue, GetRFPower(), GetLoopCount(), 4);
 
-            double signal = pack.GetPhotonsAtIndex(0).Average();
-            double reference = pack.GetPhotonsAtIndex(1).Average();
+            double signal = pack.GetPhotonsAtIndex(0).Sum();
+            double reference = pack.GetPhotonsAtIndex(1).Sum();
             double contrast = 0;
             try
             {
@@ -89,7 +90,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             (Get1DChartData("频率", "CW荧光计数") as NumricChartData1D).Data.Add(locvalue);
             (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(signal);
             (Get1DChartData("参考信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(reference);
-            Show1DChartData("CW对比度数据", "频率", "对比度");
             UpdatePlotChartFlow(true);
             return new List<object>();
         }

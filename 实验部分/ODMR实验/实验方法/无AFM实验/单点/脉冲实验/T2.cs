@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using Controls.Charts;
 using Controls.Windows;
 using HardWares.射频源.Rigol_DSG_3060;
 using MathLib.NormalMath.Decimal;
@@ -83,12 +85,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double signalcount = pack.GetPhotonsAtIndex(0).Average();
             double refcount = pack.GetPhotonsAtIndex(1).Average();
 
-            var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2*对比度数据");
-            var signal = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2*对比度数据");
+            var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2对比度数据");
+            var signal = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2对比度数据");
 
-            var florfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2*荧光数据");
+            var florfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据");
             var count = Get1DChartDataSource("平均光子数", "T2*荧光数据");
-            var sigcount = Get1DChartDataSource("信号光子数", "T2*荧光数据");
+            var sigcount = Get1DChartDataSource("信号光子数", "T2荧光数据");
 
             int ind = range.GetNearestFormalIndex(locvalue);
 
@@ -155,16 +157,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             D1ChartDatas = new List<ChartData1D>()
             {
-                new NumricChartData1D("驰豫时间长度(ns)","T2*对比度数据",ChartDataType.X),
-                new NumricChartData1D("退相干信号对比度[ref/sig]","T2*对比度数据",ChartDataType.Y),
+                new NumricChartData1D("驰豫时间长度(ns)","T2对比度数据",ChartDataType.X),
+                new NumricChartData1D("退相干信号对比度[ref/sig]","T2对比度数据",ChartDataType.Y),
 
-                new NumricChartData1D("驰豫时间长度(ns)","T2*荧光数据",ChartDataType.X),
-                new NumricChartData1D("平均光子数","T2*荧光数据",ChartDataType.Y),
-                new NumricChartData1D("信号光子数","T2*荧光数据",ChartDataType.Y),
+                new NumricChartData1D("驰豫时间长度(ns)","T2荧光数据",ChartDataType.X),
+                new NumricChartData1D("平均光子数","T2荧光数据",ChartDataType.Y),
+                new NumricChartData1D("信号光子数","T2荧光数据",ChartDataType.Y),
             };
             UpdatePlotChart();
 
-            Show1DChartData("T2*对比度数据", "驰豫时间长度(ns)", "退相干信号对比度[ref/sig]");
+            Show1DChartData("T2对比度数据", "驰豫时间长度(ns)", "退相干信号对比度[ref/sig]");
         }
 
         //T1拟合函数
@@ -181,24 +183,32 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
             RF.Device.IsRFOutOpen = false;
             //计算T1
-            var xs = Get1DChartDataSource("驰豫时间长度(ns)", "T2*荧光数据");
-            var ys = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2*对比度数据");
+            var xs = Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据");
+            var ys = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2对比度数据");
             var tempdata = ys.Select(x => Math.Abs(x - (ys.Max() + ys.Min()) / 2)).ToList();
             double inittau = xs[tempdata.IndexOf(tempdata.Min())];
             double[] ps = CurveFitting.FitCurveWithFunc(xs, ys, new List<double>() { ys.Max() - ys.Min(), inittau, ys.Min() }, new List<double>() { 10, 10, 10 }, T2FitFunc, AlgorithmType.LevenbergMarquardt, 2000);
-            OutputParams.Add(new Param<double>("T2*拟合值(ns)", ps[1], "T2StarFitData"));
+
+            //设置拟合曲线
+            var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;
+            var fitys = ftxs.Select(x => T2FitFunc(x, ps)).ToList();
+            D1FitDatas.Add(new FittedData1D("a*Exp(-x/tau)+b", "x", new List<string>() { "a", "tau", "b" }, ps.ToList(), "驰豫时间长度(ns)", "T2对比度数据", new NumricDataSeries("拟合曲线", ftxs, fitys) { LineColor = Colors.LightSkyBlue }));
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
+
+            OutputParams.Add(new Param<double>("T2拟合值(ns)", ps[1], "T2StarFitData"));
             //计算平均光子计数
-            OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("平均光子数", "T2*荧光数据").Average(), "AverageCount"));
+            OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("平均光子数", "T2荧光数据").Average(), "AverageCount"));
         }
 
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
             List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
-            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2*对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2*对比度数据"), false));
-            PlotData.Add(new ParentPlotDataPack("退相干信号对比度[ref/sig]", "T2*对比度数据", ChartDataType.Y, Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2*对比度数据"), true));
-            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2*荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2*荧光数据"), false));
-            PlotData.Add(new ParentPlotDataPack("平均光子数", "T2*荧光数据", ChartDataType.X, Get1DChartDataSource("平均光子数", "T2*荧光数据"), true));
-            PlotData.Add(new ParentPlotDataPack("信号光子数", "T2*荧光数据", ChartDataType.X, Get1DChartDataSource("信号光子数", "T2*荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2对比度数据"), false));
+            PlotData.Add(new ParentPlotDataPack("退相干信号对比度[ref/sig]", "T2对比度数据", ChartDataType.Y, Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2对比度数据"), true));
+            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据"), false));
+            PlotData.Add(new ParentPlotDataPack("平均光子数", "T2荧光数据", ChartDataType.X, Get1DChartDataSource("平均光子数", "T2荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("信号光子数", "T2荧光数据", ChartDataType.X, Get1DChartDataSource("信号光子数", "T2荧光数据"), true));
             return PlotData;
         }
     }
