@@ -18,6 +18,9 @@ using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
+using MathNet.Numerics;
+using MathNet.Numerics.IntegralTransforms;
+using Window = System.Windows.Window;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -36,7 +39,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("测量次数",1000,"LoopCount"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
-            new Param<double>("微波功率(dBm)",-20,"RFAmplitude")
+            new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<bool>("将结果同步到全局脉冲",true,"ToGlobal")
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -78,19 +82,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double signalcount = pack.GetPhotonsAtIndex(0).Average();
             double refcount = pack.GetPhotonsAtIndex(1).Average();
 
-            var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2*对比度数据");
-            var signal = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2*对比度数据");
+            var contrfreq = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
+            var signal = Get1DChartDataSource("Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
 
-            var florfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2*荧光数据");
-            var count = Get1DChartDataSource("平均光子数", "T2*荧光数据");
-            var sigcount = Get1DChartDataSource("信号光子数", "T2*荧光数据");
+            var florfreq = Get1DChartDataSource("微波驱动时间(ns)", "Rabi荧光数据");
+            var count = Get1DChartDataSource("平均光子数", "Rabi荧光数据");
+            var sigcount = Get1DChartDataSource("信号光子数", "Rabi荧光数据");
 
             int ind = range.GetNearestFormalIndex(locvalue);
 
-            double signalcontrast = 1;
+            double signalcontrast = 0;
             try
             {
-                signalcontrast = refcount / signalcount;
+                signalcontrast = signalcount / refcount;
             }
             catch (Exception)
             {
@@ -135,7 +139,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     SetExpState("当前扫描轮数:" + i.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
                 });
 
-                D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("T2Starmin"), GetInputParamValueByName("T2Starmax"), GetInputParamValueByName("T2Starpoints"));
+                D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("Rabimin"), GetInputParamValueByName("Rabimax"), GetInputParamValueByName("Rabipoints"));
 
                 Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
                 Session.BeginScan(range, progressstep * i, progressstep * (i + 1));
@@ -150,50 +154,80 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             D1ChartDatas = new List<ChartData1D>()
             {
-                new NumricChartData1D("驰豫时间长度(ns)","T2*对比度数据",ChartDataType.X),
-                new NumricChartData1D("退相干信号对比度[ref/sig]","T2*对比度数据",ChartDataType.Y),
+                new NumricChartData1D("微波驱动时间(ns)","Rabi对比度数据",ChartDataType.X),
+                new NumricChartData1D("Rabi信号对比度[(sig-ref)/ref]","Rabi对比度数据",ChartDataType.Y),
 
-                new NumricChartData1D("驰豫时间长度(ns)","T2*荧光数据",ChartDataType.X),
-                new NumricChartData1D("平均光子数","T2*荧光数据",ChartDataType.Y),
-                new NumricChartData1D("信号光子数","T2*荧光数据",ChartDataType.Y),
+                new NumricChartData1D("微波驱动时间(ns)","Rabi荧光数据",ChartDataType.X),
+                new NumricChartData1D("平均光子数","Rabi荧光数据",ChartDataType.Y),
+                new NumricChartData1D("信号光子数","Rabi荧光数据",ChartDataType.Y),
             };
             UpdatePlotChart();
 
-            Show1DChartData("T2*对比度数据", "驰豫时间长度(ns)", "退相干信号对比度[ref/sig]");
+            Show1DChartData("Rabi对比度数据", "微波驱动时间(ns)", "Rabi信号对比度[(sig-ref)/ref]");
         }
 
         //T1拟合函数
-        private double T2FitFunc(double x, double[] ps)
+        private double RabiFitFunc(double x, double[] ps)
         {
             double a = ps[0];
             double tau = ps[1];
             double b = ps[2];
-            return a * Math.Exp(-x / tau) + b;
+            double c = ps[3];
+            double d = ps[4];
+            return a * Math.Exp(-x / tau) * Math.Sin(2 * Math.PI / b * (x - c)) + d;
         }
 
         public override void AfterExpEventWithoutAFM()
         {
             RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
             RF.Device.IsRFOutOpen = false;
-            //计算T1
-            var xs = Get1DChartDataSource("驰豫时间长度(ns)", "T2*荧光数据");
-            var ys = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2*对比度数据");
-            var tempdata = ys.Select(x => Math.Abs(x - (ys.Max() + ys.Min()) / 2)).ToList();
-            double inittau = xs[tempdata.IndexOf(tempdata.Min())];
-            double[] ps = CurveFitting.FitCurveWithFunc(xs, ys, new List<double>() { ys.Max() - ys.Min(), inittau, ys.Min() }, new List<double>() { 10, 10, 10 }, T2FitFunc, AlgorithmType.LevenbergMarquardt, 2000);
-            OutputParams.Add(new Param<double>("T2*拟合值(ns)", ps[1], "T2StarFitData"));
+            //计算Rabi脉冲周期
+            var xs = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
+            var ys = Get1DChartDataSource("Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+
+            double tau = (xs.Min() + xs.Max()) / 2;
+            double d = ys.Average();
+            double a = Math.Abs(xs.Min() - xs.Max()) / 2;
+            double c = 0;
+            //Pi脉冲时间
+            double b = 0;
+            try
+            {
+                var fys = ys.ToArray();
+                Fourier.Forward(fys.ToArray(), Enumerable.Repeat(0.0, ys.Count).ToArray(), FourierOptions.Matlab);
+                var freqs = Fourier.FrequencyScale(ys.Count, (int)1.0 / Math.Abs(xs[0] - xs[1]));
+                b = 1.0 / freqs[fys.ToList().IndexOf(fys.Max())];
+            }
+            catch (Exception)
+            {
+            }
+
+            double[] ps = CurveFitting.FitCurveWithFunc(xs, ys, new List<double>() { a, tau, b, c, d }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 2000);
+            OutputParams.Add(new Param<double>("Pi脉冲长度(ns)", ps[2] / 2 + ps[3], "PiLength"));
+            OutputParams.Add(new Param<double>("Pi/2脉冲长度(ns)", ps[2] + ps[3], "HalfPiLength"));
+            OutputParams.Add(new Param<double>("3Pi/2脉冲长度(ns)", 3 * ps[2] / 2 + ps[3], "3HalfPiLength"));
+            OutputParams.Add(new Param<double>("2Pi脉冲长度(ns)", 2 * ps[2] + ps[3], "2PiLength"));
             //计算平均光子计数
-            OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("平均光子数", "T2*荧光数据").Average(), "AverageCount"));
+            OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("平均光子数", "Rabi荧光数据").Average(), "AverageCount"));
+
+            //
+            if (GetInputParamValueByName("ToGlobal") == true)
+            {
+                GlobalPulseParams.SetGlobalPulseLength("HalfPi", (int)(ps[2] / 2 + ps[3]));
+                GlobalPulseParams.SetGlobalPulseLength("Pi", (int)(ps[2] + ps[3]));
+                GlobalPulseParams.SetGlobalPulseLength("3HalfPi", (int)(3 * ps[2] / 2 + ps[3]));
+                GlobalPulseParams.SetGlobalPulseLength("2Pi", (int)(2 * ps[2] + ps[3]));
+            }
         }
 
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
             List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
-            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2*对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2*对比度数据"), false));
-            PlotData.Add(new ParentPlotDataPack("退相干信号对比度[ref/sig]", "T2*对比度数据", ChartDataType.Y, Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2*对比度数据"), true));
-            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2*荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2*荧光数据"), false));
-            PlotData.Add(new ParentPlotDataPack("平均光子数", "T2*荧光数据", ChartDataType.X, Get1DChartDataSource("平均光子数", "T2*荧光数据"), true));
-            PlotData.Add(new ParentPlotDataPack("信号光子数", "T2*荧光数据", ChartDataType.X, Get1DChartDataSource("信号光子数", "T2*荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "Rabi对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "Rabi对比度数据"), false));
+            PlotData.Add(new ParentPlotDataPack("退相干信号对比度[ref/sig]", "Rabi对比度数据", ChartDataType.Y, Get1DChartDataSource("退相干信号对比度[ref/sig]", "Rabi对比度数据"), true));
+            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "Rabi荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "Rabi荧光数据"), false));
+            PlotData.Add(new ParentPlotDataPack("平均光子数", "Rabi荧光数据", ChartDataType.X, Get1DChartDataSource("平均光子数", "Rabi荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("信号光子数", "Rabi荧光数据", ChartDataType.X, Get1DChartDataSource("信号光子数", "Rabi荧光数据"), true));
             return PlotData;
         }
 
