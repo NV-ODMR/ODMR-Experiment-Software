@@ -171,6 +171,7 @@ namespace ODMR_Lab.基本控件
 
         public void AddItem(object tag, params object[] value)
         {
+            UpdateHeader(null, new RoutedEventArgs());
             tags.Add(tag);
             values.Add(value);
             //如果在显示范围内则加载

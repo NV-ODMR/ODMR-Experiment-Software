@@ -77,7 +77,7 @@ namespace ODMR_Lab.场效应器件测量
         public void InitIVThread()
         {
             IVMeasureObj.ExpPage = this;
-            IVMeasureObj.ConnectOuterControl(IVBeginBtn, null, IVStopBtn, IVStartTime, IVEndTime, null, IVMeasureProgress, new List<KeyValuePair<FrameworkElement, RunningBehaviours>>());
+            IVMeasureObj.ConnectOuterControl(IVBeginBtn, IVStopBtn, null, IVStartTime, IVEndTime, null, IVMeasureProgress, new List<KeyValuePair<FrameworkElement, RunningBehaviours>>());
         }
 
         /// <summary>
@@ -201,10 +201,9 @@ namespace ODMR_Lab.场效应器件测量
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateDeviceList(object sender, RoutedEventArgs e)
+        private void UpdateIVDeviceList(object sender, RoutedEventArgs e)
         {
             IVDevice.Items.Clear();
-            VoltageSetDevice.Items.Clear();
             foreach (PowerMeterInfo meter in MainWindow.Dev_PowerMeterPage.PowerMeterList)
             {
                 DecoratedButton btn = new DecoratedButton();
@@ -212,8 +211,20 @@ namespace ODMR_Lab.场效应器件测量
                 IVBeginBtn.CloneStyleTo(btn);
                 IVDevice.Items.Add(btn);
                 btn.Tag = meter;
+            }
+        }
 
-                btn = new DecoratedButton();
+        /// <summary>
+        /// 更新设备列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateVoltDeviceList(object sender, RoutedEventArgs e)
+        {
+            VoltageSetDevice.Items.Clear();
+            foreach (PowerMeterInfo meter in MainWindow.Dev_PowerMeterPage.PowerMeterList)
+            {
+                DecoratedButton btn = new DecoratedButton();
                 btn.Text = meter.Device.ProductName;
                 IVBeginBtn.CloneStyleTo(btn);
                 VoltageSetDevice.Items.Add(btn);

@@ -45,7 +45,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Label Foreground="White" Height="30" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Content="源表设备"/>
-                <control:ComboBox Name="IVDevice" Height="30" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="5" Background="#FF2E2E2E" Margin="5" ImagePlace="Right" Click="UpdateDeviceList" IconMargin="4" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="#FF4D4D4D" PressedForeground="White" PressedColor="#FF2E2E2E"/>
+                <control:ComboBox Name="IVDevice" Height="30" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="5" Background="#FF2E2E2E" Margin="5" ImagePlace="Right" Click="UpdateIVDeviceList" IconMargin="4" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="#FF4D4D4D" PressedForeground="White" PressedColor="#FF2E2E2E"/>
                 <Label Foreground="White" Height="30" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,10,10,10" Content="扫描路径(V)"/>
                 <control:AutoScrollViewer Name="scroll" Margin="10" Grid.Row="2" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="4" Background="#FF2E2E2E">
                     <control:AutoScrollViewer.Content>
@@ -98,7 +98,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Label Foreground="White" Height="30" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10" Content="源表设备"/>
-                <control:ComboBox Name="VoltageSetDevice" Height="30" Click="UpdateDeviceList" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="5" Background="#FF2E2E2E" Margin="10" ImagePlace="Right"  IconMargin="4" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" Foreground="White" PressedForeground="White" MoveInForeground="White" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E"/>
+                <control:ComboBox Name="VoltageSetDevice" Height="30" Click="UpdateVoltDeviceList" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="5" Background="#FF2E2E2E" Margin="10" ImagePlace="Right"  IconMargin="4" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" Foreground="White" PressedForeground="White" MoveInForeground="White" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E"/>
                 <control:DecoratedButton Grid.Column="0" Height="30" Grid.Row="4" Margin="10" Click="SetMeterVoltage" Text="设置" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" Grid.ColumnSpan="8"/>
                 <Label Foreground="White" Height="30" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="10,10,10,10" Content="电压(V)"/>
                 <TextBox x:Name="SetVoltage" Height="30" Grid.Row="1" Text="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" BorderThickness="0" Background="#FF2E2E2E" BorderBrush="{x:Null}" Foreground="White" Grid.Column="4" Grid.ColumnSpan="4" Margin="10"/>
