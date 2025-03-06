@@ -326,6 +326,7 @@ namespace ODMR_Lab
 
         public void ConnectOuterControl(DecoratedButton StartBtn, DecoratedButton StopBtn, DecoratedButton ResumeBtn, Label StartTimeLabel, Label EndTimeLabel, TextBlock ThreadState, ProgressBar ThreadProgress, List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlPanels)
         {
+            DisConnectOuterControl();
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 if (StartBtn != null)

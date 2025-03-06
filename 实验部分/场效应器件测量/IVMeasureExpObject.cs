@@ -178,6 +178,9 @@ namespace ODMR_Lab.实验部分.场效应器件测量
                 {
                     JudgeThreadEndOrResumeAction?.Invoke();
                     Dev.Device.TargetVoltage = temp;
+                    if (Math.Abs(temp) > 0.1)
+                        Thread.Sleep(500);
+                    Dev.Device.Output = true;
                     g = Dev.Device.Measure();
                     IVTimes.Add(g.TimeStamp);
                     IVIData.Add(g.Current);
@@ -201,6 +204,8 @@ namespace ODMR_Lab.实验部分.场效应器件测量
 
             //测量完成后返回0V
             Dev.Device.TargetVoltage = 0;
+            //停止自动采样
+            Dev.AllowAutoMeasure = true;
             SetProgress(100);
         }
 

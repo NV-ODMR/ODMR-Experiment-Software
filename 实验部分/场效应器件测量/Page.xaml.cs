@@ -77,6 +77,7 @@ namespace ODMR_Lab.场效应器件测量
         public void InitIVThread()
         {
             IVMeasureObj.ExpPage = this;
+            IVMeasureObj.DisConnectOuterControl();
             IVMeasureObj.ConnectOuterControl(IVBeginBtn, IVStopBtn, null, IVStartTime, IVEndTime, null, IVMeasureProgress, new List<KeyValuePair<FrameworkElement, RunningBehaviours>>());
         }
 
