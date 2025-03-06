@@ -23,7 +23,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             double duty = (double)InputParams[0];
             PulseBlasterInfo pb = devices[0] as PulseBlasterInfo;
             SequenceChannel ch = pb.FindChannelEnumOfDescription("激光触发通道");
-            int totaltime = 10 * 1000;
+            int totaltime = 300 * 1000;
             List<CommandBase> cmds = new List<CommandBase>();
             if (duty == 1)
             {

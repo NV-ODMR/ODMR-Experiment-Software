@@ -218,6 +218,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\PulseExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\PulsePhotonPack.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\Rabi.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\CounterWindow.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\T1.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\T2.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\T2Star.cs" />

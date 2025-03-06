@@ -21,6 +21,8 @@ using ODMR_Lab.设备部分.射频源_锁相放大器;
 using MathNet.Numerics;
 using MathNet.Numerics.IntegralTransforms;
 using Window = System.Windows.Window;
+using Controls.Charts;
+using System.Windows.Media;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -40,6 +42,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<int>("单点超时时间",10000,"TimeOut"),
             new Param<bool>("将结果同步到全局脉冲",true,"ToGlobal")
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
@@ -77,10 +80,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)locvalue);
 
-            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4);
+            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
 
-            double signalcount = pack.GetPhotonsAtIndex(0).Average();
-            double refcount = pack.GetPhotonsAtIndex(1).Average();
+            double signalcount = pack.GetPhotonsAtIndex(0).Sum();
+            double refcount = pack.GetPhotonsAtIndex(1).Sum();
 
             var contrfreq = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
             var signal = Get1DChartDataSource("Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
@@ -94,7 +97,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double signalcontrast = 0;
             try
             {
-                signalcontrast = signalcount / refcount;
+                signalcontrast = (signalcount - refcount) / refcount;
             }
             catch (Exception)
             {
@@ -174,7 +177,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double b = ps[2];
             double c = ps[3];
             double d = ps[4];
-            return a * Math.Exp(-x / tau) * Math.Sin(2 * Math.PI / b * (x - c)) + d;
+            return a * Math.Exp(-x / tau) * Math.Cos(2 * Math.PI / b * (x - c)) + d;
         }
 
         public override void AfterExpEventWithoutAFM()
@@ -187,36 +190,60 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             double tau = (xs.Min() + xs.Max()) / 2;
             double d = ys.Average();
-            double a = Math.Abs(xs.Min() - xs.Max()) / 2;
-            double c = 0;
+            double a = Math.Abs(ys.Min() - ys.Max()) / 2;
+            double c = 10;
             //Pi脉冲时间
             double b = 0;
             try
             {
-                var fys = ys.ToArray();
-                Fourier.Forward(fys.ToArray(), Enumerable.Repeat(0.0, ys.Count).ToArray(), FourierOptions.Matlab);
+                var fys = ys.Select(x => x - ys.Average()).ToArray();
+                Fourier.Forward(fys, Enumerable.Repeat(0.0, ys.Count).ToArray(), FourierOptions.Matlab);
+                fys = fys.ToList().GetRange(0, (fys.Length - 1) / 2).ToArray();
                 var freqs = Fourier.FrequencyScale(ys.Count, (int)1.0 / Math.Abs(xs[0] - xs[1]));
+                freqs = freqs.ToList().GetRange(0, (freqs.Length - 1) / 2).ToArray();
                 b = 1.0 / freqs[fys.ToList().IndexOf(fys.Max())];
+                if (double.IsInfinity(b)) b = 0;
             }
             catch (Exception)
             {
             }
 
-            double[] ps = CurveFitting.FitCurveWithFunc(xs, ys, new List<double>() { a, tau, b, c, d }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 2000);
+            double[] ps = CurveFitting.FitCurveWithFunc(xs, ys, new List<double>() { a, tau, b, c, d }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 5000);
+
+            //设置拟合曲线
+            var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;
+            var fitys = ftxs.Select(x => RabiFitFunc(x, ps)).ToList();
+            D1FitDatas.Add(new FittedData1D("a*exp(-x/t)*cos(2*pi/b*(x-c))+d", "x", new List<string>() { "a", "t", "b", "c", "d" }, ps.ToList(), "微波驱动时间(ns)", "Rabi对比度数据", new NumricDataSeries("拟合曲线", ftxs, fitys) { LineColor = Colors.LightSkyBlue }));
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
+            Show1DFittedData("拟合曲线");
+
             OutputParams.Add(new Param<double>("Pi脉冲长度(ns)", ps[2] / 2 + ps[3], "PiLength"));
-            OutputParams.Add(new Param<double>("Pi/2脉冲长度(ns)", ps[2] + ps[3], "HalfPiLength"));
-            OutputParams.Add(new Param<double>("3Pi/2脉冲长度(ns)", 3 * ps[2] / 2 + ps[3], "3HalfPiLength"));
-            OutputParams.Add(new Param<double>("2Pi脉冲长度(ns)", 2 * ps[2] + ps[3], "2PiLength"));
+            OutputParams.Add(new Param<double>("Pi/2脉冲长度(ns)", ps[2] / 4 + ps[3], "HalfPiLength"));
+            OutputParams.Add(new Param<double>("3Pi/2脉冲长度(ns)", 3 * ps[2] / 4 + ps[3], "3HalfPiLength"));
+            OutputParams.Add(new Param<double>("2Pi脉冲长度(ns)", ps[2] + ps[3], "2PiLength"));
             //计算平均光子计数
             OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("平均光子数", "Rabi荧光数据").Average(), "AverageCount"));
 
-            //
+            int pi = (int)(ps[2] / 2 + ps[3]);
+            int hpi = (int)(ps[2] / 4 + ps[3]);
+            int h3pi = (int)(3 * ps[2] / 4 + ps[3]);
+            int pi2 = (int)(ps[2] + ps[3]);
+            if (pi < 0)
+                pi = (int)(ps[2] + ps[2] / 2 + ps[3]);
+            if (hpi < 0)
+                hpi = (int)(ps[2] + ps[2] / 4 + ps[3]);
+            if (h3pi < 0)
+                pi = (int)(ps[2] + 3 * ps[2] / 4 + ps[3]);
+            if (pi2 < 0)
+                pi = (int)(ps[2] + ps[2] + ps[3]);
+
             if (GetInputParamValueByName("ToGlobal") == true)
             {
-                GlobalPulseParams.SetGlobalPulseLength("HalfPi", (int)(ps[2] / 2 + ps[3]));
-                GlobalPulseParams.SetGlobalPulseLength("Pi", (int)(ps[2] + ps[3]));
-                GlobalPulseParams.SetGlobalPulseLength("3HalfPi", (int)(3 * ps[2] / 2 + ps[3]));
-                GlobalPulseParams.SetGlobalPulseLength("2Pi", (int)(2 * ps[2] + ps[3]));
+                GlobalPulseParams.SetGlobalPulseLength("HalfPi", hpi);
+                GlobalPulseParams.SetGlobalPulseLength("Pi", pi);
+                GlobalPulseParams.SetGlobalPulseLength("3HalfPi", h3pi);
+                GlobalPulseParams.SetGlobalPulseLength("2Pi", pi2);
             }
         }
 

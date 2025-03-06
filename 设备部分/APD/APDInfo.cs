@@ -138,7 +138,7 @@ namespace ODMR_Lab.设备部分.光子探测器
                 var cs = Device.GetCounts(timeout);
                 return cs;
             }
-            catch (Exception) { return new List<int>(); }
+            catch (Exception ex) { return new List<int>(); }
         }
 
         /// <summary>

@@ -32,13 +32,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             //0.Pi脉冲长度(整数),1.T1间隔长度(整数),2.采样循环次数(整数)，3.超时时间（整数）4.微波频率（小数）5.微波功率（小数）
-            new Param<int>("T2*最小值(ns)",20,"T2min"),
-            new Param<int>("T2*最大值(ns)",100,"T2max"),
-            new Param<int>("T2*点数(ns)",20,"T2points"),
+            new Param<int>("T2最小值(ns)",20,"T2min"),
+            new Param<int>("T2最大值(ns)",100,"T2max"),
+            new Param<int>("T2点数(ns)",20,"T2points"),
             new Param<int>("测量次数",1000,"LoopCount"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
-            new Param<double>("微波功率(dBm)",-20,"RFAmplitude")
+            new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<int>("单点超时时间",10000,"TimeOut"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -80,24 +81,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             GlobalPulseParams.SetGlobalPulseLength("T2Step", (int)locvalue);
 
-            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4);
+            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
 
             double signalcount = pack.GetPhotonsAtIndex(0).Average();
             double refcount = pack.GetPhotonsAtIndex(1).Average();
 
             var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2对比度数据");
-            var signal = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2对比度数据");
+            var signal = Get1DChartDataSource("退相干信号对比度[(sig-ref)/ref]", "T2对比度数据");
 
             var florfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据");
-            var count = Get1DChartDataSource("平均光子数", "T2*荧光数据");
+            var count = Get1DChartDataSource("平均光子数", "T2荧光数据");
             var sigcount = Get1DChartDataSource("信号光子数", "T2荧光数据");
 
             int ind = range.GetNearestFormalIndex(locvalue);
 
-            double signalcontrast = 1;
+            double signalcontrast = 0;
             try
             {
-                signalcontrast = refcount / signalcount;
+                signalcontrast = (signalcount - refcount) / refcount;
             }
             catch (Exception)
             {
@@ -158,7 +159,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             D1ChartDatas = new List<ChartData1D>()
             {
                 new NumricChartData1D("驰豫时间长度(ns)","T2对比度数据",ChartDataType.X),
-                new NumricChartData1D("退相干信号对比度[ref/sig]","T2对比度数据",ChartDataType.Y),
+                new NumricChartData1D("退相干信号对比度[(sig-ref)/ref]","T2对比度数据",ChartDataType.Y),
 
                 new NumricChartData1D("驰豫时间长度(ns)","T2荧光数据",ChartDataType.X),
                 new NumricChartData1D("平均光子数","T2荧光数据",ChartDataType.Y),
@@ -166,7 +167,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             };
             UpdatePlotChart();
 
-            Show1DChartData("T2对比度数据", "驰豫时间长度(ns)", "退相干信号对比度[ref/sig]");
+            Show1DChartData("T2对比度数据", "驰豫时间长度(ns)", "退相干信号对比度[(sig-ref)/ref]");
         }
 
         //T1拟合函数
@@ -182,7 +183,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
             RF.Device.IsRFOutOpen = false;
-            //计算T1
+            //计算T2
             var xs = Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据");
             var ys = Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2对比度数据");
             var tempdata = ys.Select(x => Math.Abs(x - (ys.Max() + ys.Min()) / 2)).ToList();
@@ -192,9 +193,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             //设置拟合曲线
             var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;
             var fitys = ftxs.Select(x => T2FitFunc(x, ps)).ToList();
-            D1FitDatas.Add(new FittedData1D("a*Exp(-x/tau)+b", "x", new List<string>() { "a", "tau", "b" }, ps.ToList(), "驰豫时间长度(ns)", "T2对比度数据", new NumricDataSeries("拟合曲线", ftxs, fitys) { LineColor = Colors.LightSkyBlue }));
+            D1FitDatas.Add(new FittedData1D("a*Exp(-x/t)+b", "x", new List<string>() { "a", "t", "b" }, ps.ToList(), "驰豫时间长度(ns)", "T2对比度数据", new NumricDataSeries("拟合曲线", ftxs, fitys) { LineColor = Colors.LightSkyBlue }));
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
+            Show1DFittedData("拟合曲线");
 
             OutputParams.Add(new Param<double>("T2拟合值(ns)", ps[1], "T2StarFitData"));
             //计算平均光子计数
@@ -205,7 +207,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
             PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2对比度数据"), false));
-            PlotData.Add(new ParentPlotDataPack("退相干信号对比度[ref/sig]", "T2对比度数据", ChartDataType.Y, Get1DChartDataSource("退相干信号对比度[ref/sig]", "T2对比度数据"), true));
+            PlotData.Add(new ParentPlotDataPack("退相干信号对比度[(sig-ref)/ref]", "T2对比度数据", ChartDataType.Y, Get1DChartDataSource("退相干信号对比度[(sig-ref)/ref]", "T2对比度数据"), true));
             PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T2荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据"), false));
             PlotData.Add(new ParentPlotDataPack("平均光子数", "T2荧光数据", ChartDataType.X, Get1DChartDataSource("平均光子数", "T2荧光数据"), true));
             PlotData.Add(new ParentPlotDataPack("信号光子数", "T2荧光数据", ChartDataType.X, Get1DChartDataSource("信号光子数", "T2荧光数据"), true));

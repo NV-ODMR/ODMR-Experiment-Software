@@ -77,7 +77,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             {
                 pulse[0].PulseLength = length;
                 GlobalPulseParams.WriteToFile();
+                return;
             }
+            throw new Exception("未找到序列" + name);
         }
 
         /// <summary>

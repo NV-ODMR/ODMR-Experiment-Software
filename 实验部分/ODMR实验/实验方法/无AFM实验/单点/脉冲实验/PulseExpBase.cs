@@ -57,7 +57,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="rfpower">微波功率(dbm)</param>
         /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>>
         /// <returns></returns>
-        protected PulsePhotonPack DoPulseExp(double rffrequency, double rfpower, int loopcount, int LaserCountPulses)
+        protected PulsePhotonPack DoPulseExp(double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
         {
             //设置微波
             RFSourceInfo Rf = GetDeviceByName("RFSource") as RFSourceInfo;
@@ -81,7 +81,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             apd.StartTriggerSample(sequence.LoopCount * LaserCountPulses); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
             Thread.Sleep(20);
             pb.Device.Start();//板卡开始输出
-            List<int> ApdResult = apd.GetTriggerSamples(sequence.LoopCount * LaserCountPulses);//apd读取，判断时间
+            List<int> ApdResult = apd.GetTriggerSamples(timeout);//apd读取，判断时间
             apd.EndTriggerSample();//停止计数
             pb.Device.End();//关板卡
 
@@ -98,7 +98,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 SinglePulsePhotonPack single = new SinglePulsePhotonPack();
                 for (int j = 0; j < det.Count; j++)
                 {
-                   
+
                     single.Photons.Add(det[j]);
                     ++index;
                     if (index >= LaserCountPulses / 2)
