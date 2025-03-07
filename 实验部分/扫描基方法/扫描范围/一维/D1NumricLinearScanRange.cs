@@ -40,7 +40,7 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
 
             if (reverse)
             {
-                ScanPoints = Enumerable.Range(0, Counts).Select(x => hi + (hi - lo) * x / (Counts - 1)).ToList();
+                ScanPoints = Enumerable.Range(0, Counts).Select(x => hi + (lo - hi) * x / (Counts - 1)).ToList();
             }
             else
             {
