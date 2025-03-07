@@ -133,23 +133,21 @@ namespace ODMR_Lab.基本控件
             {
                 groups.Add(data.Value.GroupName);
             }
-            ChartGroups.Items.Clear();
-            foreach (var item in groups)
+            ChartGroups.UpdateItems(groups.Select(x =>
             {
-                DecoratedButton btn = new DecoratedButton() { Text = item };
+                DecoratedButton btn = new DecoratedButton() { Text = x };
                 GraphBtn.CloneStyleTo(btn);
-                btn.Tag = item;
-                ChartGroups.Items.Add(btn);
-            }
+                btn.Tag = x;
+                return btn;
+            }));
 
-            DataGroups.Items.Clear();
-            foreach (var item in groups)
+            DataGroups.UpdateItems(groups.Select(x =>
             {
-                DecoratedButton btn = new DecoratedButton() { Text = item };
+                DecoratedButton btn = new DecoratedButton() { Text = x };
                 GraphBtn.CloneStyleTo(btn);
-                btn.Tag = item;
-                DataGroups.Items.Add(btn);
-            }
+                btn.Tag = x;
+                return btn;
+            }));
             #endregion
         }
 
@@ -279,8 +277,15 @@ namespace ODMR_Lab.基本控件
             //刷新数据显示
             UpdateDataDisplay();
 
-            while (UpdateThread != null && UpdateThread.ThreadState == ThreadState.Running)
+            while (UpdateThread != null && UpdateThread.ThreadState != ThreadState.Stopped)
             {
+                if (UpdateThread.ThreadState == ThreadState.WaitSleepJoin)
+                {
+                    UpdateThread.IsBackground = true;
+                    UpdateThread.Abort();
+                    while (UpdateThread.ThreadState != ThreadState.Aborted) Thread.Sleep(20);
+                    break;
+                }
                 Thread.Sleep(50);
             }
             UpdateThread = new Thread(() =>

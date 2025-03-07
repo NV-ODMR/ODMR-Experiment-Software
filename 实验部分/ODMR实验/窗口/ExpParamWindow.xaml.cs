@@ -222,6 +222,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 parent.RegisterName(GetValidName(param.PropertyName), ui);
             }
             g.Tag = param;
+            if (param.Helper != "") g.ToolTip = param.Helper;
             return g;
         }
 
@@ -274,6 +275,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             g.Children.Add(box);
             g.Tag = param;
             Grid.SetColumn(box, 1);
+            if (param.Helper != "") g.ToolTip = param.Helper;
             return g;
         }
 

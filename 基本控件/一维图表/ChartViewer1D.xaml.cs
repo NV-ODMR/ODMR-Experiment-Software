@@ -160,23 +160,21 @@ namespace ODMR_Lab.基本控件
             {
                 groups.Add(data.GroupName);
             }
-            ChartGroups.Items.Clear();
-            foreach (var item in groups)
+            ChartGroups.UpdateItems(groups.Select(x =>
             {
-                DecoratedButton btn = new DecoratedButton() { Text = item };
+                DecoratedButton btn = new DecoratedButton() { Text = x };
                 GraphBtn.CloneStyleTo(btn);
-                btn.Tag = item;
-                ChartGroups.Items.Add(btn);
-            }
+                btn.Tag = x;
+                return btn;
+            }));
 
-            DataGroups.Items.Clear();
-            foreach (var item in groups)
+            DataGroups.UpdateItems(groups.Select(x =>
             {
-                DecoratedButton btn = new DecoratedButton() { Text = item };
+                DecoratedButton btn = new DecoratedButton() { Text = x };
                 GraphBtn.CloneStyleTo(btn);
-                btn.Tag = item;
-                DataGroups.Items.Add(btn);
-            }
+                btn.Tag = x;
+                return btn;
+            }));
             #endregion
         }
 
@@ -311,39 +309,32 @@ namespace ODMR_Lab.基本控件
             //刷新数据显示
             UpdateDataDisplay();
 
-            while (UpdateThread != null && UpdateThread.ThreadState != ThreadState.Stopped)
+            SelectedXdata = null;
+            foreach (var item in DataSource)
+            {
+                if (item.IsSelectedAsX) SelectedXdata = item;
+            }
+            if (SelectedXdata == null)
+            {
+                chart.DataList.Clear();
+                chart.RefreshPlotWithAutoScaleY();
+                return;
+            }
+
+            bool HasName = chart.XAxisName == SelectedXdata.Name;
+
+            while (UpdateThread != null && UpdateThread.ThreadState != ThreadState.Stopped && UpdateThread.ThreadState != ThreadState.Aborted)
             {
                 if (UpdateThread.ThreadState == ThreadState.WaitSleepJoin)
                 {
                     UpdateThread.Abort();
-                    while (UpdateThread.ThreadState != ThreadState.Aborted) Thread.Sleep(20);
+                    UpdateThread.Join();
                     break;
                 }
                 Thread.Sleep(50);
             }
             UpdateThread = new Thread(() =>
             {
-                SelectedXdata = null;
-                foreach (var item in DataSource)
-                {
-                    if (item.IsSelectedAsX) SelectedXdata = item;
-                }
-                if (SelectedXdata == null)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        chart.DataList.Clear();
-                        chart.RefreshPlotWithAutoScaleY();
-                    });
-                    return;
-                }
-
-                bool HasName = false;
-                Dispatcher.Invoke(() =>
-                {
-                    HasName = chart.XAxisName == SelectedXdata.Name;
-                });
-
                 ///刷新要添加的线
                 List<ChartData1D> DataToAdd = DataSource.Where(x => x.IsSelectedAsY).ToList();
 

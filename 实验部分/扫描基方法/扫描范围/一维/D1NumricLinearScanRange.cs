@@ -21,13 +21,17 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
             Hi = Math.Max(hi, lo);
             Counts = count;
             Reverse = reverse;
-            if (reverse)
-            {
-                ScanPoints = Enumerable.Range(0, Counts).Select(x => hi + (lo - hi) * x / (Counts - 1)).ToList();
-            }
+            if (Counts == 1) ScanPoints = new List<double>() { (Lo + Hi) / 2 };
             else
             {
-                ScanPoints = Enumerable.Range(0, Counts).Select(x => lo + (hi - lo) * x / (Counts - 1)).ToList();
+                if (reverse)
+                {
+                    ScanPoints = Enumerable.Range(0, Counts).Select(x => hi + (lo - hi) * x / (Counts - 1)).ToList();
+                }
+                else
+                {
+                    ScanPoints = Enumerable.Range(0, Counts).Select(x => lo + (hi - lo) * x / (Counts - 1)).ToList();
+                }
             }
         }
 
@@ -38,13 +42,17 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描范围
             Counts = (int)(Math.Abs(hi - lo) / step) + 1;
             Reverse = reverse;
 
-            if (reverse)
-            {
-                ScanPoints = Enumerable.Range(0, Counts).Select(x => hi + (lo - hi) * x / (Counts - 1)).ToList();
-            }
+            if (Counts == 1) ScanPoints = new List<double>() { (Lo + Hi) / 2 };
             else
             {
-                ScanPoints = Enumerable.Range(0, Counts).Select(x => lo + (hi - lo) * x / (Counts - 1)).ToList();
+                if (reverse)
+                {
+                    ScanPoints = Enumerable.Range(0, Counts).Select(x => hi + (lo - hi) * x / (Counts - 1)).ToList();
+                }
+                else
+                {
+                    ScanPoints = Enumerable.Range(0, Counts).Select(x => lo + (hi - lo) * x / (Counts - 1)).ToList();
+                }
             }
         }
 

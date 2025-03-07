@@ -147,6 +147,11 @@ namespace ODMR_Lab.IO操作
         public string Description { get; protected set; } = "";
 
         /// <summary>
+        /// 参数帮助
+        /// </summary>
+        public string Helper { get; protected set; } = "";
+
+        /// <summary>
         /// 分组名
         /// </summary>
         public string GroupName { get; set; } = "";

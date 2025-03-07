@@ -16,6 +16,8 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
@@ -29,7 +31,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
     /// <summary>
     /// AutoTrace定位NV
     /// </summary>
-    class AutoTrace : ODMRExpObject
+    class AutoTrace : ODMRExperimentWithoutAFM
     {
         public override string ODMRExperimentName { get; set; } = "AutoTrace";
 
@@ -138,7 +140,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             return a * Math.Exp(-(x - c) * (x - c) * 4 * Math.Log(2) / (b * b)) + d;
         }
 
-        public override void ODMRExperiment()
+        public override void ODMRExpWithoutAFM()
         {
             //高斯拟合函数表达式
             string gaussFitExpression = "a*exp(-(x-c)*(x-c)*4*ln(2)/(b*b))+d";
@@ -147,9 +149,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
             session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
             session.ProgressBarMethod = new Action<NanoStageInfo, double>((dev, v) =>
-              {
-                  SetProgress(v);
-              });
+            {
+                SetProgress(v);
+            });
             session.FirstScanEvent = ScanEvent;
             session.ScanEvent = ScanEvent;
 
@@ -311,10 +313,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             #endregion
         }
 
-        /// <summary>
-        /// 实验前操作
-        /// </summary>
-        public override void PreExpEvent()
+        public override void PreExpEventWithoutAFM()
         {
             //设置图表
             D1ChartDatas = new List<ChartData1D>()
@@ -337,7 +336,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.Start();
         }
 
-        public override void AfterExpEvent()
+        public override void AfterExpEventWithoutAFM()
         {
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             //关闭激光
@@ -345,6 +344,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             loff.CoreMethod(new List<object>() { }, pb);
             //关闭APD Trace触发源
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.End();
+        }
+
+        public override List<ParentPlotDataPack> GetD1PlotPacks()
+        {
+            return new List<ParentPlotDataPack>();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares.纳米位移台.PI;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验类;
@@ -15,6 +16,7 @@ using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -144,9 +146,9 @@ namespace ODMR_Lab.ODMR实验
             return false;
         }
 
-        public static bool IsNoAFMScanExperiment(Type exptype)
+        public static bool IsNoAFMScanExperiment(Type exp)
         {
-            Type ptype = exptype;
+            Type ptype = exp;
             while (ptype != null)
             {
                 string name = ptype.FullName;
@@ -574,7 +576,8 @@ namespace ODMR_Lab.ODMR实验
                 if (!IsSubExperiment)
                     item.Value.ReadFromPage(new FrameworkElement[] { ParentPage.DevicePanel }, true);
                 var res = DeviceDispatcher.GetDevice(item.Key, item.Value.Value);
-                if (res == null) throw new Exception("设备未找到:" + item.Value.Description);
+                //if (res == null) throw new Exception("设备未找到:" + item.Value.Description);
+                if (res == null) res = new NanoStageInfo(new NanoMoverInfo(), new PIStage("1", null));
                 ExperimentDevices.Add(new KeyValuePair<string, InfoBase>(item.Value.PropertyName, res));
                 //如果是子程序那么遇到和主程序相同的设备时不用连接 
                 if (ParentExp != null)
@@ -643,6 +646,40 @@ namespace ODMR_Lab.ODMR实验
             foreach (var item in InputParams)
             {
                 if (item.PropertyName == "Input_" + name)
+                {
+                    return ParamB.GetUnknownParamValue(item);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 根据描述获取输入参数
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public dynamic GetOutPutParamValueByDescription(string description)
+        {
+            foreach (var item in OutputParams)
+            {
+                if (item.Description == description)
+                {
+                    return ParamB.GetUnknownParamValue(item);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 根据参数名获取输入参数
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public dynamic GetOutputParamValueByName(string name)
+        {
+            foreach (var item in OutputParams)
+            {
+                if (item.PropertyName == name || item.PropertyName == "Output_" + name)
                 {
                     return ParamB.GetUnknownParamValue(item);
                 }
@@ -898,10 +935,16 @@ namespace ODMR_Lab.ODMR实验
             });
         }
 
+
         /// <summary>
         /// 运行子实验（阻塞）,子实验运行失败则报错,返回执行的子实验
         /// </summary>
-        public ODMRExpObject RunSubExperimentBlock(int index, bool ShowWindow = false)
+        /// <param name="index"></param>
+        /// <param name="ShowWindow"></param>
+        /// <param name="InputParams">需要预设的参数,参数名要和实验参数名保持一致，Description不必一致</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public ODMRExpObject RunSubExperimentBlock(int index, bool ShowWindow = false, List<ParamB> InputParams = null)
         {
             if (index < 0 || index > SubExperiments.Count - 1) throw new Exception("没有找到子实验");
             ODMRExpObject subExp = SubExperiments[index];
@@ -913,6 +956,16 @@ namespace ODMR_Lab.ODMR实验
                 var par = subExp.InputParams.Where(x => x.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
                 if (par.Count() != 0)
                 {
+                    if (InputParams != null)
+                    {
+                        var inp = InputParams.Where(x => x.PropertyName == par.ElementAt(0).PropertyName);
+                        if (inp.Count() != 0)
+                        {
+                            //如果在预设参数中设置则优先选择预设参数
+                            ParamB.SetUnknownParamValue(par.ElementAt(0), inp.ElementAt(0).RawValue);
+                            continue;
+                        }
+                    }
                     ParamB.SetUnknownParamValue(par.ElementAt(0), item.RawValue);
                 }
             }
