@@ -576,8 +576,7 @@ namespace ODMR_Lab.ODMR实验
                 if (!IsSubExperiment)
                     item.Value.ReadFromPage(new FrameworkElement[] { ParentPage.DevicePanel }, true);
                 var res = DeviceDispatcher.GetDevice(item.Key, item.Value.Value);
-                //if (res == null) throw new Exception("设备未找到:" + item.Value.Description);
-                if (res == null) res = new NanoStageInfo(new NanoMoverInfo(), new PIStage("1", null));
+                if (res == null) throw new Exception("设备未找到:" + item.Value.Description);
                 ExperimentDevices.Add(new KeyValuePair<string, InfoBase>(item.Value.PropertyName, res));
                 //如果是子程序那么遇到和主程序相同的设备时不用连接 
                 if (ParentExp != null)
@@ -944,7 +943,7 @@ namespace ODMR_Lab.ODMR实验
         /// <param name="InputParams">需要预设的参数,参数名要和实验参数名保持一致，Description不必一致</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public ODMRExpObject RunSubExperimentBlock(int index, bool ShowWindow = false, List<ParamB> InputParams = null)
+        public ODMRExpObject RunSubExperimentBlock(int index, bool ShowWindow = false, List<ParamB> inputParams = null)
         {
             if (index < 0 || index > SubExperiments.Count - 1) throw new Exception("没有找到子实验");
             ODMRExpObject subExp = SubExperiments[index];
@@ -956,9 +955,9 @@ namespace ODMR_Lab.ODMR实验
                 var par = subExp.InputParams.Where(x => x.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
                 if (par.Count() != 0)
                 {
-                    if (InputParams != null)
+                    if (inputParams != null)
                     {
-                        var inp = InputParams.Where(x => x.PropertyName == par.ElementAt(0).PropertyName);
+                        var inp = inputParams.Where(x => "Input_" + x.PropertyName == par.ElementAt(0).PropertyName);
                         if (inp.Count() != 0)
                         {
                             //如果在预设参数中设置则优先选择预设参数

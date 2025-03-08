@@ -30,16 +30,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             // 获取偏心修正后的x,y位置
             List<double> xy = GetRealXYLoc(loc, GetOutputParamValueByName("XLoc"), GetOutputParamValueByName("YLoc"));
             // 设置XY
-            //(GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(xy[0], 5000);
-            //(GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(xy[1], 5000);
+            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(xy[0], 5000);
+            (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(xy[1], 5000);
 
-            return Experiment(stage, loc, 30, originOutput);
+            return Experiment(stage, loc, 50, originOutput);
         }
 
         private List<object> Experiment(NanoStageInfo stage, double loc, double scanWidth, List<object> originOutput)
         {
-            Thread.Sleep(500);
-            //stage.Device.MoveToAndWait(loc, 60000);
+            stage.Device.MoveToAndWait(loc, 60000);
 
             List<double> freqs = new List<double>();
             List<double> contracts = new List<double>();
@@ -47,7 +46,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             if ((double)originOutput[1] == 0 && (double)originOutput[2] == 0)
             {
                 //AutoTrace
-                //RunSubExperimentBlock(0, true);
+                RunSubExperimentBlock(0, true);
                 JudgeThreadEndOrResumeAction();
                 TotalCWPeaks2OrException(out List<double> peaks, out freqs, out contracts);
                 JudgeThreadEndOrResumeAction();
@@ -58,20 +57,23 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             else
             {
                 //AutoTrace
-                //RunSubExperimentBlock(0, true);
+                RunSubExperimentBlock(0, true);
                 JudgeThreadEndOrResumeAction();
                 ScanCW2(out double cw1, out double cw2, out freqs, out contracts, (double)originOutput[1], (double)originOutput[2], scanWidth);
                 JudgeThreadEndOrResumeAction();
                 if (cw1 == 0 || cw2 == 0)
                 {
+                    TotalCWPeaks2OrException(out List<double> peaks, out freqs, out contracts);
+                    originOutput[1] = Math.Min(peaks[0], peaks[1]);
+                    originOutput[2] = Math.Max(peaks[0], peaks[1]);
                     //未扫描到谱峰，添加提示信息
                     MessageLogger.AddLogger("磁场定位", "位移台" + stage.MoverType.ToString() + "=" + Math.Round(loc, 5).ToString() + "时未扫描到完整的共振峰谱", MessageTypes.Information);
+                }
+                else
+                {
                     originOutput[1] = cw1;
                     originOutput[2] = cw2;
-                    return originOutput;
                 }
-                originOutput[1] = cw1;
-                originOutput[2] = cw2;
             }
 
             //画图

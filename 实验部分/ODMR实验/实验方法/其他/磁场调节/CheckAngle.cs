@@ -28,16 +28,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
             #region 移动并测量第一个点
             SetExpState("移动并测量第一个点...");
-            //(GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(x1, 10000);
+            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(x1, 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //(GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y1, 10000);
+            (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y1, 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //(GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z1, 10000);
+            (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z1, 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //(GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(a1, 60000);
+            (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(a1, 60000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //测量
-            //RunSubExperimentBlock(0, true);
+            RunSubExperimentBlock(0, true);
             JudgeThreadEndOrResumeAction?.Invoke();
             TotalCWPeaks2OrException(out List<double> peaks, out List<double> freqs, out List<double> contracts);
             JudgeThreadEndOrResumeAction?.Invoke();
@@ -49,16 +49,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
             #region 移动并测量第二个点
             SetExpState("移动并测量第二个点...");
-            //(GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(x2, 10000);
+            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(x2, 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //(GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y2, 10000);
+            (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y2, 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //(GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z2, 10000);
+            (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z2, 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //(GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(a2, 60000);
+            (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(a2, 60000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //测量
-            //RunSubExperimentBlock(0, true);
+            RunSubExperimentBlock(0, true);
             JudgeThreadEndOrResumeAction?.Invoke();
             TotalCWPeaks2OrException(out peaks, out freqs, out contracts);
             JudgeThreadEndOrResumeAction?.Invoke();

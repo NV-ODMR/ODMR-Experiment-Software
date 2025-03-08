@@ -64,9 +64,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

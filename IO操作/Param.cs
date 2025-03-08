@@ -149,7 +149,7 @@ namespace ODMR_Lab.IO操作
         /// <summary>
         /// 参数帮助
         /// </summary>
-        public string Helper { get; protected set; } = "";
+        public string Helper { get; set; } = "";
 
         /// <summary>
         /// 分组名

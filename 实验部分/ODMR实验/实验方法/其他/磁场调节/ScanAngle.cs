@@ -26,7 +26,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double a = ps[0];
             double b = ps[1];
             double c = ps[2];
-            return Math.Pow(a * Math.Cos((x - b) * Math.PI / 180) + c, 2);
+            return a * Math.Cos((x - b) * Math.PI / 180) + c;
         }
 
         /// <summary>
@@ -50,19 +50,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             List<double> locs = Get1DChartDataSource("位置", "角度方向磁场信息");
             List<double> bs = Get1DChartDataSource("总磁场(G)", "角度方向磁场信息");
             List<double> sindata = Get1DChartDataSource("沿轴磁场(G)", "角度方向磁场信息");
-            List<double> approxsindata = ConvertAbsDataToSin(sindata);
             for (int i = 0; i < locs.Count; i++)
             {
                 locs[i] = GetReverseNum(GetInputParamValueByName("ReverseA")) * locs[i] - GetInputParamValueByName("AngleStart");
             }
 
-            double[] result = CurveFitting.FitCurveWithFunc(locs, sindata, new List<double>() { (approxsindata.Max() + approxsindata.Min()) / 2, 180, approxsindata.Average() }, new List<double>() { 180, 180, 180 }, SinFunc, AlgorithmType.LevenbergMarquardt, 5000);
+            ConvertAbsDataToSin(locs, sindata, out var xx, out var yy);
+
+            double[] result = CurveFitting.FitCurveWithFunc(xx, yy, new List<double>() { (yy.Max() - yy.Min()) / 2, 180, yy.Average() }, new List<double>() { 180, 180, 180 }, SinFunc, AlgorithmType.LevenbergMarquardt, 5000);
 
             //添加拟合曲线
             var xs = new D1NumricLinearScanRange(locs.Min(), locs.Max(), 500).ScanPoints;
-            var ys = xs.Select(x => SinFunc(x, result)).ToList();
+            var ys = xs.Select(x => Math.Abs(result[0] * Math.Cos((x - result[1]) * Math.PI / 180) + result[2])).ToList();
 
-            D1FitDatas.Add(new FittedData1D("pow(a * cos((x - b) * pi / 180) + c, 2)", "x", new List<string>() { "a", "b", "c" }, result.ToList(), "位置", "角度方向磁场信息",
+            D1FitDatas.Add(new FittedData1D("abs(a*cos((x-b)*pi/180)+c)", "x", new List<string>() { "a", "b", "c" }, result.ToList(), "位置", "角度方向磁场信息",
                 new NumricDataSeries("拟合数据", xs, ys) { LineColor = Colors.LightSkyBlue }));
             UpdatePlotChart();
             UpdatePlotChartFlow(true);

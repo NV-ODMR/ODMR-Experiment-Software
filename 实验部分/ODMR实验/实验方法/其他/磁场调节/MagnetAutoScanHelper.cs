@@ -64,8 +64,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
         protected void AddScanDataToChart(double loc, string LocType, List<double> Freqs, List<double> Contracts)
         {
-            D1ChartDatas.Add(new NumricChartData1D(LocType + ":" + Math.Round(loc, 5).ToString() + "频率", LocType + " " + "CW谱数据") { Data = Freqs });
-            D1ChartDatas.Add(new NumricChartData1D(LocType + ":" + Math.Round(loc, 5).ToString() + "对比度", LocType + " " + "CW谱数据") { Data = Contracts });
+            D1ChartDatas.Add(new NumricChartData1D(LocType + ":" + Math.Round(loc, 5).ToString() + "频率", LocType + " " + "CW谱数据", ChartDataType.X) { Data = Freqs });
+            D1ChartDatas.Add(new NumricChartData1D(LocType + ":" + Math.Round(loc, 5).ToString() + "对比度", LocType + " " + "CW谱数据", ChartDataType.Y) { Data = Contracts });
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
         }
@@ -90,7 +90,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             if (det1 < 0)
                 det1 = 0;
             Bv = Math.Sqrt(det1) / gammaE;
-            double det2 = detminus / Math.Pow(2 * gammaE, 2) - Math.Pow(Bv * Bv * gammaE / (2 * D), 2);
+            double det2 = Math.Pow(detminus / (2 * gammaE), 2) - Math.Pow(Bv * Bv * gammaE / (2 * D), 2);
             if (det2 < 0)
                 det2 = 0;
             Bp = Math.Sqrt(det2);
@@ -207,17 +207,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             Frequences = new List<double>();
             Contracts = new List<double>();
             #region 测试代码，生成随机结果
-            double cc = r.Next(0, 40);
-            fitpeaks.Add(2870 - cc);
-            fitpeaks.Add(2870 + cc);
-            fitcontracts.Add(0.7);
-            fitcontracts.Add(0.7);
-            for (int i = 0; i < 10; i++)
-            {
-                Frequences.Add(r.NextDouble());
-                Contracts.Add(r.NextDouble());
-            }
-            return;
+            //double cc = r.Next(0, 40);
+            //fitpeaks.Add(2870 - cc);
+            //fitpeaks.Add(2870 + cc);
+            //fitcontracts.Add(0.7);
+            //fitcontracts.Add(0.7);
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Frequences.Add(r.NextDouble());
+            //    Contracts.Add(r.NextDouble());
+            //}
+            //return;
             #endregion
             CWFitModes fitmode = CWFitModes.单峰洛伦兹拟合;
             if (peakcount == 2)
@@ -502,16 +502,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         {
             return value ? -1 : 1;
         }
-
         /// <summary>
         /// 将绝对值数据转换成三角函数
         /// </summary>
-        private List<double> ConvertAbsDataToSin(List<double> y)
+        private void ConvertAbsDataToSin(List<double> x, List<double> y, out List<double> xx, out List<double> yy)
         {
-            List<double> ny = new List<double>();
+            yy = new List<double>();
+            xx = new List<double>();
             if (y.Count < 3)
             {
-                return y;
+                xx = x;
+                yy = y;
             }
 
             List<int> revs = new List<int>();
@@ -534,10 +535,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 {
                     if (i > item) sgn *= -1;
                 }
-                ny.Add(sgn * y[i]);
+                if (revs.Where(v => v == i).Count() == 0)
+                {
+                    yy.Add(sgn * y[i]);
+                    xx.Add(x[i]);
+                }
             }
-
-            return ny;
         }
 
         /// <summary>

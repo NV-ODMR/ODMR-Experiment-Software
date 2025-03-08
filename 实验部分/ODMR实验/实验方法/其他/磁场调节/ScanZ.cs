@@ -23,7 +23,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         private void ScanZ(double progresslo, double progresshi)
         {
             //扫第一个点
-            //(GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
+            (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
             Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
             session.ProgressBarMethod = new Action<NanoStageInfo, double>((dev, v) =>
             {
@@ -55,7 +55,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             {
                 if (bps[0] / bvs[0] < 0.1 || bps[1] / bvs[1] < 0.1)
                 {
-                    //(GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleY(), 60000);
+                    (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleY(), 60000);
                     ClearMagnetDataFromChart("Z方向磁场信息");
                     //扫第一个点
                     height = GetInputParamValueByName("ZPlane");
