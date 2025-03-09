@@ -61,7 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
                 double angle1 = double.Parse(Angle1.Text);
 
-                MagnetAutoScanHelper.GetZeroOffset(angle1, x1, y1, angle1 - 180, x2, y2, exp.GetInputParamValueByName("ReverseX"), exp.GetInputParamValueByName("ReverseY"), exp.GetInputParamValueByName("ReverseA"), exp.GetInputParamValueByName("AngleStart"), out double offx, out double offy);
+                MagnetLoc.GetZeroOffset(angle1, x1, y1, angle1 - 180, x2, y2, exp.GetInputParamValueByName("ReverseX"), exp.GetInputParamValueByName("ReverseY"), exp.GetInputParamValueByName("ReverseA"), exp.GetInputParamValueByName("AngleStart"), out double offx, out double offy);
                 XOffset.Text = offx.ToString();
                 YOffset.Text = offy.ToString();
             }

@@ -47,10 +47,6 @@ namespace ODMR_Lab
         /// </summary>
         public static TemperaturePage Exp_TemPeraPage = new TemperaturePage();
         /// <summary>
-        /// 磁场控制
-        /// </summary>
-        public static 磁场调节.DisplayPage Exp_MagnetControlPage = new 磁场调节.DisplayPage();
-        /// <summary>
         /// 样品定位
         /// </summary>
         public static 样品定位.DisplayPage Exp_SamplePage = new 样品定位.DisplayPage();
@@ -356,11 +352,6 @@ namespace ODMR_Lab
             {
                 CurrentPage = Exp_StagePage;
                 AddPageToView(Exp_StagePage);
-            }
-            if (btn.Text == "磁场定位")
-            {
-                CurrentPage = Exp_MagnetControlPage;
-                AddPageToView(Exp_MagnetControlPage);
             }
 
             if (btn.Text == "样品定位")

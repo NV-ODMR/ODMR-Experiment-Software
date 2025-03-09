@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ODMR_Lab.Python.LbviewHandler;
 using System.Windows.Threading;
 using ODMR_Lab.实验部分.磁场调节;
 using System.Threading;

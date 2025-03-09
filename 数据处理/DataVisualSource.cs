@@ -45,12 +45,6 @@ namespace ODMR_Lab.数据处理
                 obj.ReadFromFile(path);
                 return obj.ToDataVisualSource();
             }
-            if (type == ExperimentFileTypes.磁场调节)
-            {
-                MagnetScanExpObject obj = new MagnetScanExpObject();
-                obj.ReadFromFile(path);
-                return obj.ToDataVisualSource();
-            }
             if (type == ExperimentFileTypes.自定义数据)
             {
                 UserCustomExpObject obj = new UserCustomExpObject();

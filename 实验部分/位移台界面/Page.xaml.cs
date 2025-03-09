@@ -30,7 +30,6 @@ using Path = System.IO.Path;
 using MathNet.Numerics.Distributions;
 using System.Diagnostics.Contracts;
 using MathNet.Numerics;
-using ODMR_Lab.Python.LbviewHandler;
 using System.Windows.Forms;
 using ContextMenu = Controls.ContextMenu;
 using ODMR_Lab.实验部分.样品定位;

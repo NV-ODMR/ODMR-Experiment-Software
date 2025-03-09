@@ -1,5 +1,4 @@
 ﻿using Controls;
-using ODMR_Lab.磁场调节;
 using System;
 using System.Collections.Generic;
 using System.Linq;

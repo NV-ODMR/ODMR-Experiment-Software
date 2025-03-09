@@ -13,7 +13,6 @@ using ODMR_Lab.实验部分.位移台界面.参数;
 using ODMR_Lab.实验部分.场效应器件测量;
 using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.激光控制;
-using ODMR_Lab.磁场调节;
 using ODMR_Lab.设备部分.光子探测器;
 using ODMR_Lab.设备部分.源表;
 
@@ -36,12 +35,6 @@ namespace ODMR_Lab.IO操作
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
             P1.ReadFromPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
             WriteParamToFile(P1, fobj);
-            #endregion
-
-            #region 磁场调节参数
-            MagnetScanConfigParams P = new MagnetScanConfigParams();
-            P.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_MagnetControlPage }, false);
-            WriteParamToFile(P, fobj);
             #endregion
 
             #region 温度监控参数
@@ -127,12 +120,6 @@ namespace ODMR_Lab.IO操作
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
             ReadFromFile(P1, fobj);
             P1.LoadToPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
-            #endregion
-
-            #region 磁场调节参数
-            MagnetScanConfigParams P = new MagnetScanConfigParams();
-            ReadFromFile(P, fobj);
-            P.LoadToPage(new FrameworkElement[] { MainWindow.Exp_MagnetControlPage });
             #endregion
 
             #region 温度监控参数

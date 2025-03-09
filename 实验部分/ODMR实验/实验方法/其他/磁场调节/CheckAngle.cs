@@ -1,17 +1,7 @@
 ﻿using ODMR_Lab.IO操作;
-using ODMR_Lab.ODMR实验;
-using ODMR_Lab.Python.LbviewHandler;
-using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
-using ODMR_Lab.实验部分.扫描基方法;
-using ODMR_Lab.磁场调节;
 using ODMR_Lab.设备部分.位移台部分;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Threading;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {

@@ -6,7 +6,7 @@ using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.温度监测部分;
-using ODMR_Lab.磁场调节;
+
 using ODMR_Lab.设备部分;
 using OpenCvSharp;
 using System;
@@ -18,7 +18,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using ComboBox = Controls.ComboBox;
-using DisplayPage = ODMR_Lab.磁场调节.DisplayPage;
 
 namespace ODMR_Lab.实验部分.磁场调节
 {
