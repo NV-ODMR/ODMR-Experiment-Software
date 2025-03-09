@@ -31,7 +31,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(xy[0], 5000);
             (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(xy[1], 5000);
 
-            return Experiment(stage, loc, 50, originOutput);
+            return Experiment(stage, loc, 100, originOutput);
         }
 
         private List<object> Experiment(NanoStageInfo stage, double loc, double scanWidth, List<object> originOutput)

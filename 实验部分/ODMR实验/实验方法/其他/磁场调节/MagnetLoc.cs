@@ -93,76 +93,35 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         {
             SetExpState("正在扫描X轴...");
             //移动Z轴
-            //(GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(GetInputParamValueByName("ZPlane"), 10000);
+            (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(GetInputParamValueByName("ZPlane"), 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //旋转台移动到轴向沿Y
-            //(GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
+            (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
             //X方向扫描
             ScanX(0, 20);
             SetExpState("正在扫描Y轴...");
             //旋转台移动到轴向沿X
-            //(GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleY(), 60000);
+            (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleY(), 60000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //移动X到最大值
-            //(GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("XLoc"), 60000);
+            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("XLoc"), 60000);
             //Y方向扫描
             ScanY(20, 40);
             JudgeThreadEndOrResumeAction?.Invoke();
             SetExpState("正在扫描Z轴...");
-            //移动Y到最大值
-            //(GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("YLoc"), 10000);
+            //移动X,Y到最大值
+            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("XLoc"), 10000);
+            JudgeThreadEndOrResumeAction?.Invoke();
+            (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("YLoc"), 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //Z扫描
-            //ScanZ(40, 60);
-            var bps = new List<double>() { 17.86237825, 13.23614853 };
-            var bs = new List<double>() { 71.47079267, 55.36433278 };
-            var locs = new List<double>() { 21.5, 20.5 };
-
-            double ratio = bps[0] / bps[1];
-            double zloc = 0;
-            if (ratio < 1)
-            {
-                ratio = bps[1] / bps[0];
-                zloc = locs[1];
-            }
-            else
-            {
-                zloc = locs[0];
-            }
-            if (double.IsInfinity(ratio))
-            {
-                ratio = bs[0] / bs[1];
-                zloc = locs[0];
-                if (ratio < 1)
-                {
-                    ratio = bs[1] / bs[0];
-                    zloc = locs[1];
-                }
-            }
-            OutputParams.Add(new Param<double>("Z方向参考位置", zloc, "ZLoc"));
-            OutputParams.Add(new Param<double>("参考位置与NV的距离", new Magnet(GetInputParamValueByName("MRadius"), GetInputParamValueByName("MLength"), 1).FindZRoot(locs[0], locs[1], ratio), "ZDistance"));
-
+            ScanZ(40, 60);
             JudgeThreadEndOrResumeAction?.Invoke();
             //角度扫描
             SetExpState("正在扫描角度轴...");
             (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("ZLoc"), 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //ScanAngle(60, 80);
-            double t1 = 57.93253;
-            OutputParams.Add(new Param<double>("θ值1", t1, "Theta1"));
-            OutputParams.Add(new Param<double>("θ值2", 180 - t1, "Theta2"));
-            double phase = 191.8347;
-            double phi2 = phase + 180;
-            while (phi2 > 360)
-            {
-                phi2 -= 360;
-            }
-            while (phi2 < -360)
-            {
-                phi2 += 360;
-            }
-            OutputParams.Add(new Param<double>("φ值1", phase, "Phi1"));
-            OutputParams.Add(new Param<double>("φ值2", phi2, "Phi2"));
+            ScanAngle(60, 80);
             JudgeThreadEndOrResumeAction?.Invoke();
             //角度检查
             CheckAngle(80, 100);
@@ -236,6 +195,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             var btns = new List<KeyValuePair<string, Action>>();
             btns.Add(new KeyValuePair<string, Action>("偏心参数计算", ShowOffsetWindow));
             btns.Add(new KeyValuePair<string, Action>("磁场预测", ShowPredictWindow));
+            btns.Add(new KeyValuePair<string, Action>("磁场强度系数标定", ShowIntensityWindow));
             return btns;
         }
 
@@ -263,6 +223,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 predictwin.Owner = Window.GetWindow(ParentPage);
                 predictwin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 predictwin.Show();
+            });
+        }
+
+        MIntensityWindow intensitywin = null;
+        private void ShowIntensityWindow()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (intensitywin == null)
+                    intensitywin = new MIntensityWindow(this);
+                intensitywin.Owner = Window.GetWindow(ParentPage);
+                intensitywin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                intensitywin.Show();
             });
         }
         #endregion

@@ -78,7 +78,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         /// <param name="D"></param>
         /// <param name="Bp"></param>
         /// <param name="Bv"></param>
-        protected void CalculateB(double freq1, double freq2, out double Bp, out double Bv, out double B)
+        public void CalculateB(double freq1, double freq2, out double Bp, out double Bv, out double B)
         {
             double D = GetInputParamValueByName("D");
             double detplus = (freq2 + freq1) / 2;
@@ -271,7 +271,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         /// <param name="freqs2"></param>
         /// <param name="contracts2"></param>
         /// <exception cref="Exception"></exception>
-        protected void TotalCWPeaks2OrException(out List<double> peaks, out List<double> freqs, out List<double> contracts)
+        public void TotalCWPeaks2OrException(out List<double> peaks, out List<double> freqs, out List<double> contracts)
         {
             TotalCW(out peaks, out freqs, out contracts);
             if (peaks.Count == 0)
@@ -614,7 +614,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 {
                     //如果可能的话计算预测的磁场强度 
                     double Intensity = GetInputParamValueByName("MIntensity");
-                    PData.PredictB = Intensity * B * 10000;
+                    PData.PredictB = Intensity * B;
                 }
                 catch (Exception) { }
             }

@@ -30,8 +30,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
         public double Magnetization { get; set; } = 1;
 
-        private double miu { get; set; } = 4 * Math.PI * Math.Pow(10, -7);
-
         public Magnet(double r, double l0, double mag)
         {
             Radius = r;

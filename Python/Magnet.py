@@ -213,8 +213,8 @@ def FindDire(r0, l0, targetthe, targetphi, distance):
     while detphi < -360:
         detphi += 360
 
-    return detphi, r * math.cos(detphi / 180 * math.pi), r * math.sin(detphi / 180 * math.pi), math.sqrt(
-        B[0] ** 2 + B[1] ** 2 + B[2] ** 2)
+    return [detphi, r * math.cos(detphi / 180 * math.pi), r * math.sin(detphi / 180 * math.pi), math.sqrt(
+        B[0] ** 2 + B[1] ** 2 + B[2] ** 2)]
 
 
 # 根据Z方向测到的两个值估算Z方向的距离
