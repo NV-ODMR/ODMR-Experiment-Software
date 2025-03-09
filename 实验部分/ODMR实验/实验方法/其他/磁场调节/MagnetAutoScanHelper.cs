@@ -153,19 +153,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         private void TotalCW(out List<double> peaks, out List<double> freqs, out List<double> contracts)
         {
             //粗扫
-            CW(out freqs, out contracts, out List<double> ps, out List<double> fitcontracts, 2600, 3200, 3, 500, 2);
+            CW(out freqs, out contracts, out List<double> ps, out List<double> fitcontracts, 2600, 3200, 3, 500, 2, EndPointCount: 5);
 
             if (ps.Count == 1)
             {
                 peaks = new List<double>();
                 //细扫
-                CW(out List<double> freqs1, out List<double> contracts1, out List<double> peaks1, out List<double> fitcontracts1, ps[0] - 10, ps[0] + 10, 1, 2000, 1, isReverse: false);
+                CW(out List<double> freqs1, out List<double> contracts1, out List<double> peaks1, out List<double> fitcontracts1, ps[0] - 10, ps[0] + 10, 1, 2000, 1, EndPointCount: 10, isReverse: false);
                 if (peaks1.Count != 0)
                 {
                     ResortCWData(freqs, freqs1, contracts, contracts1, out freqs, out contracts);
                     peaks.Add(peaks1.Min());
                 }
-                CW(out List<double> freqs2, out List<double> contracts2, out peaks1, out fitcontracts1, ps[0] - 10, ps[0] + 10, 1, 2000, 1, isReverse: true);
+                CW(out List<double> freqs2, out List<double> contracts2, out peaks1, out fitcontracts1, ps[0] - 10, ps[0] + 10, 1, 2000, 1, EndPointCount: 10, isReverse: true);
                 if (peaks1.Count != 0)
                 {
                     ResortCWData(freqs, freqs2, contracts, contracts2, out freqs, out contracts);
@@ -178,13 +178,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 peaks = new List<double>();
                 double minfreq = Math.Min(ps[0], ps[1]);
                 double maxfreq = Math.Max(ps[0], ps[1]);
-                CW(out List<double> freqs1, out List<double> contracts1, out List<double> peaks1, out List<double> fitcontracts1, minfreq - 5, minfreq + 5, 1, 2000, 1, isReverse: false);
+                CW(out List<double> freqs1, out List<double> contracts1, out List<double> peaks1, out List<double> fitcontracts1, minfreq - 5, minfreq + 5, 1, 2000, 1, EndPointCount: 10, isReverse: false);
                 if (peaks1.Count != 0)
                 {
                     ResortCWData(freqs, freqs1, contracts, contracts1, out freqs, out contracts);
                     peaks.Add(peaks1.Min());
                 }
-                CW(out List<double> freqs2, out List<double> contracts2, out peaks1, out fitcontracts1, maxfreq - 5, maxfreq + 5, 1, 2000, 1, isReverse: false);
+                CW(out List<double> freqs2, out List<double> contracts2, out peaks1, out fitcontracts1, maxfreq - 5, maxfreq + 5, 1, 2000, 1, EndPointCount: 10, isReverse: false);
                 if (peaks1.Count != 0)
                 {
                     ResortCWData(freqs, freqs2, contracts, contracts2, out freqs, out contracts);
@@ -200,7 +200,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         }
 
         Random r = new Random();
-        public void CW(out List<double> Frequences, out List<double> Contracts, out List<double> fitpeaks, out List<double> fitcontracts, double startFreq, double endFreq, double step, int averagetime, int peakcount, bool isReverse = false)
+        public void CW(out List<double> Frequences, out List<double> Contracts, out List<double> fitpeaks, out List<double> fitcontracts, double startFreq, double endFreq, double step, int averagetime, int peakcount, int EndPointCount = 5, bool isReverse = false)
         {
             fitpeaks = new List<double>();
             fitcontracts = new List<double>();
@@ -219,21 +219,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             //}
             //return;
             #endregion
-            CWFitModes fitmode = CWFitModes.单峰洛伦兹拟合;
-            if (peakcount == 2)
-                fitmode = CWFitModes.双峰洛伦兹拟合;
             List<ParamB> InputParams = new List<ParamB>()
             {
                 new Param<double>("频率起始点(MHz)",startFreq,"RFFreqLo"),
                 new Param<double>("频率中止点(MHz)",endFreq,"RFFreqHi"),
                 new Param<double>("扫描步长(MHz)",step,"RFStep"),
-                new Param<CWFitModes>("谱峰拟合类型",fitmode,"FitType"),
+                new Param<int>("扫描峰个数",peakcount,"PeakCount"),
                 new Param<int>("循环次数",averagetime,"LoopCount"),
+                new Param<int>("结束前扫描点数", EndPointCount, "BeforeEndScanRange"),
+                new Param<bool>("反向扫描", isReverse, "Reverse"),
             };
             var exp = RunSubExperimentBlock(1, true, InputParams);
 
             //限定对比度范围
-            if (fitmode == CWFitModes.单峰洛伦兹拟合)
+            if (peakcount == 1)
             {
                 double peak1 = exp.GetOutputParamValueByName("PeakLoc1");
                 double contrast1 = exp.GetOutputParamValueByName("PeakContrast1");
@@ -243,7 +242,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                     fitcontracts.Add(contrast1);
                 }
             }
-            if (fitmode == CWFitModes.双峰洛伦兹拟合)
+            if (peakcount == 2)
             {
                 double peak1 = exp.GetOutputParamValueByName("PeakLoc1");
                 double contrast1 = exp.GetOutputParamValueByName("PeakContrast1");
@@ -293,7 +292,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         // 扫描出CW谱的准确峰位置
         // 先粗扫后细扫(步长先设置为2MHz,确定峰位置之后按步长0.2MHz扫描)
         // 范围限制,扫描范围在2400Mhz到3400Mhz之间
-        protected void ScanCW(out List<double> peaks, out List<double> freqvalues, out List<double> contractvalues, double peakapprox, double scanWidth = 30, bool isReverse = false)
+        protected void ScanCW(out List<double> peaks, out List<double> freqvalues, out List<double> contractvalues, double peakapprox, int EndPointCount, double scanWidth = 30, bool isReverse = false)
         {
             if (peakapprox < 2100 || peakapprox > 3500)
             {
@@ -303,7 +302,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 return;
             }
             peaks = new List<double>();
-            CW(out freqvalues, out contractvalues, out List<double> freqs, out List<double> fitcontracts, startFreq: peakapprox - scanWidth, endFreq: peakapprox + scanWidth, step: 2, averagetime: 500, peakcount: 1, isReverse: isReverse);
+            CW(out freqvalues, out contractvalues, out List<double> freqs, out List<double> fitcontracts, startFreq: peakapprox - scanWidth, endFreq: peakapprox + scanWidth, step: 2, averagetime: 500, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
 
             double f1 = 0;
             if (freqs.Count != 0)
@@ -316,11 +315,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 //如果扫到的峰在范围边缘则扩大范围扫描
                 if (Math.Abs(f1 - peakapprox + scanWidth) < 3)
                 {
-                    CW(out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox - scanWidth - 20, endFreq: peakapprox - scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, isReverse: isReverse);
+                    CW(out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox - scanWidth - 20, endFreq: peakapprox - scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
                     if (freqs.Count != 0)
                     {
                         //细扫
-                        CW(out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, isReverse: isReverse);
+                        CW(out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
                         if (f1s.Count != 0)
                         {
                             peaks.Add(f1s[0]);
@@ -329,10 +328,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 }
                 if (Math.Abs(f1 - peakapprox - scanWidth) < 3)
                 {
-                    CW(out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox + scanWidth - 20, endFreq: peakapprox + scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, isReverse: isReverse);
+                    CW(out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox + scanWidth - 20, endFreq: peakapprox + scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
                     if (freqs.Count != 0)
                     {
-                        CW(out freqvalues, out fitcontracts, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, isReverse: isReverse);
+                        CW(out freqvalues, out fitcontracts, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
                         if (f1s.Count != 0)
                         {
                             peaks.Add(f1s[0]);
@@ -341,7 +340,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 }
                 if (Math.Abs(f1 - peakapprox + scanWidth) >= 3 && Math.Abs(f1 - peakapprox - scanWidth) >= 3)
                 {
-                    CW(out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: f1 - 5, endFreq: f1 + 5, step: 1, averagetime: 2000, peakcount: 1, isReverse: isReverse);
+                    CW(out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: f1 - 5, endFreq: f1 + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
                     if (f1s.Count != 0)
                     {
                         peaks.Add(f1s[0]);
@@ -354,14 +353,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         /// <summary>
         /// 扫两频点的CW谱
         /// </summary>
-        protected void ScanCW2(out double peakout1, out double peakout2, out List<double> freqsout, out List<double> contrastout, double peakapprox1, double peakapprox2, double scanWidth = 30)
+        protected void ScanCW2(out double peakout1, out double peakout2, out List<double> freqsout, out List<double> contrastout, double peakapprox1, double peakapprox2, int EndPointCount, double scanWidth = 30)
         {
             //寻找峰值较小值，正向扫描
             double p1 = Math.Min(peakapprox1, peakapprox2);
             double p2 = Math.Max(peakapprox1, peakapprox2);
 
-            ScanCW(out List<double> peak1, out List<double> freqsout1, out List<double> contrastout1, p1, scanWidth, isReverse: false);
-            ScanCW(out List<double> peak2, out List<double> freqsout2, out List<double> contrastout2, p2, scanWidth, isReverse: true);
+            ScanCW(out List<double> peak1, out List<double> freqsout1, out List<double> contrastout1, p1, EndPointCount, scanWidth, isReverse: false);
+            ScanCW(out List<double> peak2, out List<double> freqsout2, out List<double> contrastout2, p2, EndPointCount, scanWidth, isReverse: true);
 
             if (peak1.Count == 0 || peak2.Count == 0)
             {

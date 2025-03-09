@@ -225,6 +225,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\AutoTrace.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PhotonSample.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\AdjustedCWScan.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\CWFitModes.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\CWScanBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\FourPointCW.cs" />

@@ -72,7 +72,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
         {
             new AutoTrace(),
-            new TotalCW()
+            new AdjustedCW()
         };
 
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
