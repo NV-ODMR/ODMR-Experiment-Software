@@ -38,6 +38,7 @@ using ODMR_Lab.基本控件;
 using Clipboard = System.Windows.Clipboard;
 using Controls.Windows;
 using Window = System.Windows.Window;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace ODMR_Lab.样品定位
 {
@@ -383,15 +384,15 @@ namespace ODMR_Lab.样品定位
                     Grid.SetColumn(l4, 3);
 
 
-                    FontChangeText tmoverx = new FontChangeText();
-                    template.CloneStyleTo(tmoverx);
-                    tmoverx.InnerTextBox.Text = item.TargetMoverLoc.X.ToString();
+                    TextBox tmoverx = new TextBox();
+                    UIUpdater.CloneStyle(template, tmoverx);
+                    tmoverx.Text = item.TargetMoverLoc.X.ToString();
                     g.Children.Add(tmoverx);
                     Grid.SetColumn(tmoverx, 4);
 
-                    FontChangeText tmovery = new FontChangeText();
-                    template.CloneStyleTo(tmovery);
-                    tmovery.InnerTextBox.Text = item.TargetMoverLoc.Y.ToString();
+                    TextBox tmovery = new TextBox();
+                    UIUpdater.CloneStyle(template, tmovery);
+                    tmovery.Text = item.TargetMoverLoc.Y.ToString();
                     g.Children.Add(tmovery);
                     Grid.SetColumn(tmovery, 5);
 
@@ -504,8 +505,8 @@ namespace ODMR_Lab.样品定位
                 //读取位移台数据
                 foreach (var item in PointPanel.Children)
                 {
-                    double x = double.Parse(((item as Grid).Children[4] as FontChangeText).InnerTextBox.Text);
-                    double y = double.Parse(((item as Grid).Children[5] as FontChangeText).InnerTextBox.Text);
+                    double x = double.Parse(((item as Grid).Children[4] as TextBox).Text);
+                    double y = double.Parse(((item as Grid).Children[5] as TextBox).Text);
                     int ind = PointPanel.Children.IndexOf(item as Grid);
                     CorrelatePointCollection.CorrelatePoints[ind].TargetMoverLoc = new Point(x, y);
                 }

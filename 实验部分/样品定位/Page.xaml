@@ -97,11 +97,7 @@
         <control:AutoScrollViewer Name="scr" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6" MinWidth="200">
             <control:AutoScrollViewer.Content>
                 <WrapPanel Name="PointPanel" MinWidth="200" Width="{Binding ElementName=scr,Path=ActualWidth}" ItemWidth="{Binding ElementName=scr,Path=ActualWidth}">
-                    <control:FontChangeText Visibility="Collapsed" BorderThickness="0,1,0,1" Name="template" Height="39" Width="152" FixedFontsize="True">
-                        <control:FontChangeText.InnerTextBox>
-                            <TextBox Text="111" Background="{x:Null}" BorderThickness="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" BorderBrush="{x:Null}" Foreground="White" CaretBrush="White"/>
-                        </control:FontChangeText.InnerTextBox>
-                    </control:FontChangeText>
+                    <TextBox Visibility="Collapsed" BorderThickness="0" Name="template" Height="39" Width="152" CaretBrush="White" Background="#FF3E3E42" BorderBrush="{x:Null}"/>
                 </WrapPanel>
             </control:AutoScrollViewer.Content>
         </control:AutoScrollViewer>

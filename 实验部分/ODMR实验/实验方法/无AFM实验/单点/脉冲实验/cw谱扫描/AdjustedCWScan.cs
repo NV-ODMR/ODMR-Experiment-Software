@@ -47,7 +47,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             return new List<KeyValuePair<string, Action>>();
         }
 
-        public override bool IsAFMSubExperiment { get; protected set; } = false;
+        public override bool IsAFMSubExperiment { get; protected set; } = true;
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("频率起始点(MHz)",2830,"RFFreqLo"),
@@ -123,12 +123,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             }
             if (BeginEnd)
             {
-                ++EndPointCount;
                 if (EndPointCount >= GetInputParamValueByName("BeforeEndScanRange"))
                 {
                     //结束实验
                     throw new Exception("自适应扫描结束");
                 }
+                ++EndPointCount;
             }
             return new List<object>();
         }
