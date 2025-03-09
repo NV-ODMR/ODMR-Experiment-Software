@@ -70,12 +70,6 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
-        <Label Content="源X(像素)" Grid.Column="0" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
-        <Label Content="源Y(像素)" Grid.Column="1" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
-        <Label Content="目标X(像素)" Grid.Column="2" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
-        <Label Content="目标Y(像素)" Grid.Column="3" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
-        <Label Content="目标X(位移台值)" Grid.Column="4" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
-        <Label Content="目标Y(位移台值)" Grid.Column="5" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
         <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -94,13 +88,30 @@
             <Label Content="反转X" Grid.Column="0" Grid.Row="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
             <Label Content="反转Y" Grid.Column="0" Grid.Row="1" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="13"/>
         </Grid>
-        <control:AutoScrollViewer Name="scr" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6" MinWidth="200">
-            <control:AutoScrollViewer.Content>
-                <WrapPanel Name="PointPanel" MinWidth="200" Width="{Binding ElementName=scr,Path=ActualWidth}" ItemWidth="{Binding ElementName=scr,Path=ActualWidth}">
-                    <TextBox Visibility="Collapsed" BorderThickness="0" Name="template" Height="39" Width="152" CaretBrush="White" Background="#FF3E3E42" BorderBrush="{x:Null}"/>
-                </WrapPanel>
-            </control:AutoScrollViewer.Content>
-        </control:AutoScrollViewer>
+        <control:ListViewer x:Name="PointPanel" Grid.Row="0" ItemSelected="SelectPointBar" ItemValueChanged="PointPanel_ItemValueChanged" ItemContextMenuSelected="PointPanel_ItemContextMenuSelected" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="6" MinWidth="200" ItemBarBackground="#FF1A1A1A" ItemBarSelectedColor="#FF0C9DFF">
+            <control:ListViewer.DataTemplate>
+                <control:ViewerTemplate Descriptions="源X(像素)" DataType="String" Editable="False" DataDisplayWidth="*"/>
+                <control:ViewerTemplate Descriptions="源Y(像素)" DataType="String" Editable="False" DataDisplayWidth="*"/>
+                <control:ViewerTemplate Descriptions="目标X(像素)" DataType="String" Editable="False" DataDisplayWidth="*"/>
+                <control:ViewerTemplate Descriptions="目标Y(像素)" DataType="String" Editable="False" DataDisplayWidth="*"/>
+                <control:ViewerTemplate Descriptions="目标X(位移台值)" DataType="String" Editable="True" DataDisplayWidth="*"/>
+                <control:ViewerTemplate Descriptions="目标Y(位移台值)" DataType="String" Editable="True" DataDisplayWidth="*"/>
+            </control:ListViewer.DataTemplate>
+            <control:ListViewer.UnEditableTextTemplate>
+                <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="12"/>
+            </control:ListViewer.UnEditableTextTemplate>
+            <control:ListViewer.EditableBoxTemplate>
+                <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="12" Background="#FF2E2E2E" CaretBrush="White"/>
+            </control:ListViewer.EditableBoxTemplate>
+            <control:ListViewer.HeaderLabelTemplate>
+                <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="White" FontSize="12"/>
+            </control:ListViewer.HeaderLabelTemplate>
+            <control:ListViewer.ItemContextMenu>
+                <control:ContextMenu>
+                    <control:DecoratedButton Text="删除" FontSize="12" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+                </control:ContextMenu>
+            </control:ListViewer.ItemContextMenu>
+        </control:ListViewer>
     </Grid>
     <control:DecoratedButton Name="btnTemplate" Margin="5" Click="AddCorrelatePoint" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="添加关联点 " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     <control:DecoratedButton Name="PredictBtn" Margin="5" Click="PredictLoc" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="位置预测 " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>

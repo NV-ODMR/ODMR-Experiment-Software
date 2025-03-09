@@ -28,8 +28,14 @@ namespace ODMR_Lab.基本控件
 
         public void SetLoc(double x, double y)
         {
-            Canvas.SetLeft(Geometry, x - Geometry.ActualWidth / 2);
-            Canvas.SetTop(Geometry, y - Geometry.ActualHeight / 2);
+            try
+            {
+                Canvas.SetLeft(Geometry, x - Geometry.ActualWidth / 2);
+                Canvas.SetTop(Geometry, y - Geometry.ActualHeight / 2);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public ImageLabel()

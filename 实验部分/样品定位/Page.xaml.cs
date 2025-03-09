@@ -333,70 +333,12 @@ namespace ODMR_Lab.样品定位
         {
             Dispatcher.Invoke(() =>
             {
-                PointPanel.Children.Clear();
+                PointPanel.ClearItems();
 
                 foreach (var item in CorrelatePointCollection.CorrelatePoints)
                 {
-                    MouseColorHelper helper = new MouseColorHelper(Brushes.Transparent, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838")), new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838")));
-                    Grid g = new Grid() { Height = 40 };
-                    g.ColumnDefinitions.Add(new ColumnDefinition());
-                    g.ColumnDefinitions.Add(new ColumnDefinition());
-                    g.ColumnDefinitions.Add(new ColumnDefinition());
-                    g.ColumnDefinitions.Add(new ColumnDefinition());
-                    g.ColumnDefinitions.Add(new ColumnDefinition());
-                    g.ColumnDefinitions.Add(new ColumnDefinition());
-                    helper.RegistateTarget(g);
-                    g.MouseLeftButtonUp += SelectPointBar;
-                    g.MouseRightButtonUp += SelectPointBar;
-                    ContextMenu menu = new ContextMenu();
-
-                    DecoratedButton btn = new DecoratedButton();
-                    BtnTemplate.CloneStyleTo(btn);
-                    btn.Text = "删除";
-                    btn.Tag = g;
-                    btn.Click += DeleteCorrelatePoint;
-                    menu.Items.Add(btn);
-
-                    btn = new DecoratedButton();
-                    BtnTemplate.CloneStyleTo(btn);
-                    btn.Text = "获取当前位移台值";
-                    btn.Tag = g;
-                    btn.Click += DeleteCorrelatePoint;
-                    menu.Items.Add(btn);
-
-                    menu.ApplyToControl(g);
-                    g.Tag = helper;
-
-                    Label l1 = new Label() { Content = item.SourcePixelLoc.X.ToString(), Foreground = Brushes.White, VerticalContentAlignment = VerticalAlignment.Center };
-                    g.Children.Add(l1);
-                    Grid.SetColumn(l1, 0);
-
-                    Label l2 = new Label() { Content = item.SourcePixelLoc.Y.ToString(), Foreground = Brushes.White, VerticalContentAlignment = VerticalAlignment.Center };
-                    g.Children.Add(l2);
-                    Grid.SetColumn(l2, 1);
-
-                    Label l3 = new Label() { Content = item.TargetPixelLoc.X.ToString(), Foreground = Brushes.White, VerticalContentAlignment = VerticalAlignment.Center };
-                    g.Children.Add(l3);
-                    Grid.SetColumn(l3, 2);
-
-                    Label l4 = new Label() { Content = item.TargetPixelLoc.Y.ToString(), Foreground = Brushes.White, VerticalContentAlignment = VerticalAlignment.Center };
-                    g.Children.Add(l4);
-                    Grid.SetColumn(l4, 3);
-
-
-                    TextBox tmoverx = new TextBox();
-                    UIUpdater.CloneStyle(template, tmoverx);
-                    tmoverx.Text = item.TargetMoverLoc.X.ToString();
-                    g.Children.Add(tmoverx);
-                    Grid.SetColumn(tmoverx, 4);
-
-                    TextBox tmovery = new TextBox();
-                    UIUpdater.CloneStyle(template, tmovery);
-                    tmovery.Text = item.TargetMoverLoc.Y.ToString();
-                    g.Children.Add(tmovery);
-                    Grid.SetColumn(tmovery, 5);
-
-                    PointPanel.Children.Add(g);
+                    PointPanel.AddItem(item, item.SourcePixelLoc.X, item.SourcePixelLoc.Y, item.TargetPixelLoc.X, item.TargetPixelLoc.Y,
+                        item.TargetMoverLoc.X, item.TargetMoverLoc.Y);
                 }
             });
         }
@@ -404,44 +346,23 @@ namespace ODMR_Lab.样品定位
         /// <summary>
         /// 删除关联点
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        private void DeleteCorrelatePoint(object sender, RoutedEventArgs e)
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        private void PointPanel_ItemContextMenuSelected(int arg1, int arg2, object arg3)
         {
             try
             {
-                int ind = PointPanel.Children.IndexOf((sender as DecoratedButton).Tag as Grid);
-                CorrelatePointCollection.CorrelatePoints.RemoveAt(ind);
-                SourceImage.RemoveCursour(ind);
-                TargetImage.RemoveCursour(ind);
+                CorrelatePointCollection.CorrelatePoints.Remove(arg3 as CorrelatePoint);
                 UpdateCorrelatePoints();
             }
             catch (Exception exc) { return; }
         }
 
-        private void SelectPointBar(object sender, MouseButtonEventArgs e)
+        private void SelectPointBar(int arg1, object arg2)
         {
-            foreach (var item in PointPanel.Children)
-            {
-                ((item as Grid).Tag as MouseColorHelper).CancelEvent(item as Grid);
-                if (item == sender)
-                {
-                    (item as Grid).Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838"));
-                    //选定对应的点
-                    try
-                    {
-                        int ind = PointPanel.Children.IndexOf(item as Grid);
-                        SourceImage.SelectCursor(ind);
-                        TargetImage.SelectCursor(ind);
-                    }
-                    catch (Exception ex) { return; }
-                }
-                else
-                {
-                    ((item as Grid).Tag as MouseColorHelper).RegistateTarget(item as Grid);
-                }
-            }
+            SourceImage.SelectCursor(arg1);
+            TargetImage.SelectCursor(arg1);
         }
 
         private void SourceImageSelected(object sender, MouseButtonEventArgs e)
@@ -502,14 +423,6 @@ namespace ODMR_Lab.样品定位
         {
             try
             {
-                //读取位移台数据
-                foreach (var item in PointPanel.Children)
-                {
-                    double x = double.Parse(((item as Grid).Children[4] as TextBox).Text);
-                    double y = double.Parse(((item as Grid).Children[5] as TextBox).Text);
-                    int ind = PointPanel.Children.IndexOf(item as Grid);
-                    CorrelatePointCollection.CorrelatePoints[ind].TargetMoverLoc = new Point(x, y);
-                }
                 CorrelatePointCollection.ReverseX = ReverseXChooser.IsSelected;
                 CorrelatePointCollection.ReverseY = ReverseYChooser.IsSelected;
                 CorrelatePointCollection.CalculateTransformParams();
@@ -518,6 +431,18 @@ namespace ODMR_Lab.样品定位
             catch (Exception ex)
             {
                 MessageWindow.ShowTipWindow(ex.Message, Window.GetWindow(this));
+            }
+        }
+
+        private void PointPanel_ItemValueChanged(int arg1, int arg2, object arg3)
+        {
+            try
+            {
+                var point = PointPanel.GetTag(arg1) as CorrelatePoint;
+                point.TargetMoverLoc = new Point(double.Parse(PointPanel.GetCellValue(arg1, 4) as string), double.Parse(PointPanel.GetCellValue(arg1, 5) as string));
+            }
+            catch (Exception)
+            {
             }
         }
 
