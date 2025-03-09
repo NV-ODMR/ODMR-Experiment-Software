@@ -160,7 +160,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         /// <returns></returns>
         public List<double> FindDire(double targetthe, double targetphi, double distance)
         {
-            double r = FindRoots.OfFunction((x => GetAngle(x, distance) - targetthe), 0, 100);
+            double r = FindRoots.OfFunction((x => GetAngle(x, distance) - targetthe), -1, 1);
 
             //计算以X轴为正向的给定theta角的距离
             var B = GetField(0, distance, r);

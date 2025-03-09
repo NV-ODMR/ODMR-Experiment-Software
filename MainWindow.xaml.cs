@@ -172,8 +172,8 @@ namespace ODMR_Lab
 
         private void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)
         {
-            MessageWindow.ShowTipWindow("程序运行出现异常,即将退出,异常原因：\n" + ((Exception)e.ExceptionObject).Message, this);
             PrintStacktrace((Exception)e.ExceptionObject);
+            MessageWindow.ShowTipWindow("程序运行出现异常,即将退出,异常原因：\n" + ((Exception)e.ExceptionObject).Message, this);
             //保存界面参数
             ParamManager.SaveParams();
             DeviceDispatcher.CloseDevicesAndSave();

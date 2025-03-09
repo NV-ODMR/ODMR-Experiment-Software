@@ -421,6 +421,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             Magnet m = new Magnet(GetInputParamValueByName("MRadius"), GetInputParamValueByName("MLength"), 1);
             #region 第一个方向
             List<double> res = m.FindDire(GetOutputParamValueByName("Theta1"), GetOutputParamValueByName("Phi1"), GetOutputParamValueByName("ZDistance"));
+
             double ang = res[0] * GetReverseNum(GetInputParamValueByName("ReverseA"));
             double dx = res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
             double dy = res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
@@ -557,9 +558,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 double currentzloc = PData.ZPredictHeightInput;
 
 
-                double zdis = GetReverseNum(GetInputParamValueByName("ReverseZ").Value) * (currentzloc - PData.ZLoc) + PData.ZDistance;
+                double zdis = GetReverseNum(GetInputParamValueByName("ReverseZ")) * (currentzloc - PData.ZLoc) + PData.ZDistance;
 
-                Magnet m = new Magnet(GetInputParamValueByName("ReverseZ").MRadius.Value, GetInputParamValueByName("ReverseZ").MLength.Value, 1);
+                Magnet m = new Magnet(GetInputParamValueByName("MRadius"), GetInputParamValueByName("MLength"), 1);
 
                 List<double> res = m.FindDire(the, phi, currentzloc);
                 double ang = res[0];
@@ -567,11 +568,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 double dy = res[2];
                 double B = res[3];
                 double dz = zdis - PData.ZDistance;
-                dx *= GetReverseNum(GetInputParamValueByName("ReverseZ").ReverseX.Value);
-                dy *= GetReverseNum(GetInputParamValueByName("ReverseZ").ReverseY.Value);
-                dz *= GetReverseNum(GetInputParamValueByName("ReverseZ").ReverseZ.Value);
-                ang *= GetReverseNum(GetInputParamValueByName("ReverseZ").ReverseA.Value);
-                double ang1 = GetInputParamValueByName("ReverseZ").AngleStart.Value + ang;
+                dx *= GetReverseNum(GetInputParamValueByName("ReverseX"));
+                dy *= GetReverseNum(GetInputParamValueByName("ReverseY"));
+                dz *= GetReverseNum(GetInputParamValueByName("ReverseZ"));
+                ang *= GetReverseNum(GetInputParamValueByName("ReverseA"));
+                double ang1 = GetInputParamValueByName("AngleStart") + ang;
 
                 List<double> doffs = GetTargetOffset(ang1);
                 double doffx = doffs[0];
@@ -591,10 +592,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                     dy = res[2];
                     B = res[3];
                     dz = zdis - PData.ZDistance;
-                    dx *= GetReverseNum(GetInputParamValueByName("ReverseZ"));
-                    dy *= GetReverseNum(GetInputParamValueByName("ReverseZ"));
+                    dx *= GetReverseNum(GetInputParamValueByName("ReverseX"));
+                    dy *= GetReverseNum(GetInputParamValueByName("ReverseY"));
                     dz *= GetReverseNum(GetInputParamValueByName("ReverseZ"));
-                    ang *= GetReverseNum(GetInputParamValueByName("ReverseZ"));
+                    ang *= GetReverseNum(GetInputParamValueByName("ReverseA"));
                     ang1 = GetInputParamValueByName("AngleStart") + ang;
 
                     if (ang1 > 150)

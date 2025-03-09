@@ -61,7 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 JudgeThreadEndOrResumeAction();
                 ScanCW2(out double cw1, out double cw2, out freqs, out contracts, (double)originOutput[1], (double)originOutput[2], scanWidth);
                 JudgeThreadEndOrResumeAction();
-                if (cw1 == 0 || cw2 == 0)
+                if (cw1 == 0 || cw2 == 0 || Math.Abs(cw1 - cw2) < 5)
                 {
                     TotalCWPeaks2OrException(out List<double> peaks, out freqs, out contracts);
                     originOutput[1] = Math.Min(peaks[0], peaks[1]);

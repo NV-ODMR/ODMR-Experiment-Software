@@ -73,7 +73,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 locs = Get1DChartDataSource("位置", "Z方向磁场信息");
             }
             #endregion
-
+            bps = new List<double>() { 17.86237825, 13.23614853 };
+            bs = new List<double>() { 71.47079267, 55.36433278 };
+            locs = new List<double>() { 21.5, 20.5 };
 
             #region 计算位置
             double ratio = bps[0] / bps[1];
