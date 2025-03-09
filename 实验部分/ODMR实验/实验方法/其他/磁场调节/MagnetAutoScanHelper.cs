@@ -6,7 +6,6 @@ using MathNet.Numerics.RootFinding;
 using System.Windows.Interop;
 using System.Windows.Documents;
 using System.Collections.Generic;
-using ODMR_Lab.Python.LbviewHandler;
 using static System.Net.WebRequestMethods;
 using System.Linq;
 using PythonHandler;

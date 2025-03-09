@@ -1,5 +1,4 @@
-﻿using ODMR_Lab.Python.LbviewHandler;
-using ODMR_Lab.实验部分.扫描基方法;
+﻿using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.磁场调节;
 using System;
 using System.Collections.Generic;

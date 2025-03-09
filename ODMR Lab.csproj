@@ -147,7 +147,6 @@
     <Compile Include="IO操作\ParamManager.cs" />
     <Compile Include="MessageLogger.cs" />
     <Compile Include="PageBase.cs" />
-    <Compile Include="Python\LabviewHandler\LabviewConverter.cs" />
     <Compile Include="UI刷新部分\UIUpdater.cs" />
     <Compile Include="基本控件\DataListViewer.xaml.cs">
       <DependentUpon>DataListViewer.xaml</DependentUpon>
@@ -747,15 +746,6 @@
     <Resource Include="图片资源\refresh.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Python\LabviewHandler\AutoTraceVI.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Python\LabviewHandler\CWVI.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Python\LabviewHandler\InitLabview.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Resource Include="图片资源\text.png" />
     <Resource Include="图片资源\fit.png" />
     <Resource Include="图片资源\power.png" />
