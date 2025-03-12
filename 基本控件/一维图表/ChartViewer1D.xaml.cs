@@ -298,7 +298,6 @@ namespace ODMR_Lab.基本控件
             }
         }
 
-        Thread UpdateThread = null;
         /// <summary>
         /// 从DataSource中同步数据并刷新绘图
         /// </summary>
@@ -321,88 +320,71 @@ namespace ODMR_Lab.基本控件
                 return;
             }
 
+            ///刷新要添加的线
+            List<ChartData1D> DataToAdd = DataSource.Where(x => x.IsSelectedAsY).ToList();
+
+            List<DataSeries> PlotData = new List<DataSeries>();
+            foreach (var item in DataToAdd)
+            {
+                DataSeries data = null;
+                if (SelectedXdata is TimeChartData1D)
+                    data = new TimeDataSeries(item.Name)
+                    {
+                        X = (SelectedXdata as TimeChartData1D).Data,
+                        Y = item.GetDataCopyAsDouble().ToList()
+                    };
+                if (SelectedXdata is NumricChartData1D)
+                    data = new NumricDataSeries(item.Name)
+                    {
+                        X = (SelectedXdata as NumricChartData1D).Data,
+                        Y = item.GetDataCopyAsDouble().ToList()
+                    };
+                data.LineColor = item.DisplayColor;
+                //检查是否在原来的线中
+                int ind = chart.DataList.FindIndex(x => item.Name == x.Name);
+                if (ind != -1)
+                {
+                    data.LineThickness = chart.DataList[ind].LineThickness;
+                    data.MarkerSize = chart.DataList[ind].MarkerSize;
+                    data.Smooth = chart.DataList[ind].Smooth;
+                    data.Name = chart.DataList[ind].Name;
+                }
+                else
+                {
+                    //不在原来的线中
+                    data.Smooth = StyleParam.IsSmooth.Value;
+                    data.MarkerSize = StyleParam.PointSize.Value;
+                    data.LineThickness = StyleParam.LineWidth.Value;
+                }
+                PlotData.Add(data);
+            }
+
+            //刷新拟合线
+            foreach (var item in FitData)
+            {
+                if (item.IsDisplay && item.XAxisName == SelectedXdata.Name && item.GroupName == SelectedXdata.GroupName)
+                {
+                    PlotData.Add(item.FittedData);
+                }
+            }
+
             bool HasName = chart.XAxisName == SelectedXdata.Name;
 
-            while (UpdateThread != null && UpdateThread.ThreadState != ThreadState.Stopped && UpdateThread.ThreadState != ThreadState.Aborted)
+            if (SelectedXdata == null) return;
+            chart.XAxisName = SelectedXdata.Name;
+
+            chart.DataList = PlotData;
+
+            ApplyChartStyle(StyleParam);
+
+            if (IsAutoScale)
             {
-                if (UpdateThread.ThreadState == ThreadState.WaitSleepJoin)
-                {
-                    UpdateThread.Abort();
-                    UpdateThread.Join();
-                    break;
-                }
-                Thread.Sleep(50);
+                chart.RefreshPlotWithAutoScale();
             }
-            UpdateThread = new Thread(() =>
+            else
             {
-                ///刷新要添加的线
-                List<ChartData1D> DataToAdd = DataSource.Where(x => x.IsSelectedAsY).ToList();
-
-                List<DataSeries> PlotData = new List<DataSeries>();
-                foreach (var item in DataToAdd)
-                {
-                    DataSeries data = null;
-                    if (SelectedXdata is TimeChartData1D)
-                        data = new TimeDataSeries(item.Name)
-                        {
-                            X = (SelectedXdata as TimeChartData1D).Data,
-                            Y = item.GetDataCopyAsDouble().ToList()
-                        };
-                    if (SelectedXdata is NumricChartData1D)
-                        data = new NumricDataSeries(item.Name)
-                        {
-                            X = (SelectedXdata as NumricChartData1D).Data,
-                            Y = item.GetDataCopyAsDouble().ToList()
-                        };
-                    data.LineColor = item.DisplayColor;
-                    //检查是否在原来的线中
-                    int ind = chart.DataList.FindIndex(x => item.Name == x.Name);
-                    if (ind != -1)
-                    {
-                        data.LineThickness = chart.DataList[ind].LineThickness;
-                        data.MarkerSize = chart.DataList[ind].MarkerSize;
-                        data.Smooth = chart.DataList[ind].Smooth;
-                        data.Name = chart.DataList[ind].Name;
-                    }
-                    else
-                    {
-                        //不在原来的线中
-                        data.Smooth = StyleParam.IsSmooth.Value;
-                        data.MarkerSize = StyleParam.PointSize.Value;
-                        data.LineThickness = StyleParam.LineWidth.Value;
-                    }
-                    PlotData.Add(data);
-                }
-
-                //刷新拟合线
-                foreach (var item in FitData)
-                {
-                    if (item.IsDisplay && item.XAxisName == SelectedXdata.Name && item.GroupName == SelectedXdata.GroupName)
-                    {
-                        PlotData.Add(item.FittedData);
-                    }
-                }
-                chart.DataList = PlotData;
-
-                Dispatcher.Invoke(() =>
-                {
-                    if (SelectedXdata == null) return;
-                    chart.XAxisName = SelectedXdata.Name;
-
-                    ApplyChartStyle(StyleParam);
-
-                    if (IsAutoScale)
-                    {
-                        chart.RefreshPlotWithAutoScale();
-                    }
-                    else
-                    {
-                        chart.RefreshPlotWithAutoScaleY();
-                    }
-                });
-
-            });
-            UpdateThread.Start();
+                chart.RefreshPlotWithAutoScaleY();
+            }
         }
 
         /// <summary>
@@ -515,11 +497,15 @@ namespace ODMR_Lab.基本控件
 
         private void Snap(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chart));
-            TimeWindow window = new TimeWindow();
-            window.Owner = Window.GetWindow(this);
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            window.ShowWindow("截图已复制到剪切板");
+            try
+            {
+                Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chart));
+                TimeWindow window = new TimeWindow();
+                window.Owner = Window.GetWindow(this);
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                window.ShowWindow("截图已复制到剪切板");
+            }
+            catch (Exception ex) { }
         }
 
         private void FitCurve(object sender, RoutedEventArgs e)
@@ -815,6 +801,5 @@ namespace ODMR_Lab.基本控件
             CursorCount.Content = chart.GetCursorCount();
         }
         #endregion
-
     }
 }

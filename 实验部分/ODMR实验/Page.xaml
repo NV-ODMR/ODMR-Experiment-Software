@@ -129,7 +129,7 @@
                         </StackPanel>
                         <StackPanel Name="AutoSavePanel" Orientation="Horizontal" Grid.Row="1">
                             <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="实验文件名" Margin="20,0,0,0"/>
-                            <Label Foreground="White" x:Name="SavedFileName" Width="400" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
+                            <Label Foreground="White" x:Name="SavedFileName" Width="700" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
                             <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="自动保存" Margin="20,0,0,0"/>
                             <control:Chooser Name="IsAutoSave" Selected="ChangeAutoSave" UnSelected="ChangeAutoSave" Height="15" Width="30"/>
                             <control:DecoratedButton Text="保存实验文件" Click="CustomSaveFile" Width="100" Margin="5" Visibility="Visible" Grid.Row="7" TextAreaRatio="1" FontSize="12" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>

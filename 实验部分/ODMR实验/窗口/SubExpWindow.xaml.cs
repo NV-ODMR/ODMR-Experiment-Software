@@ -35,6 +35,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
         public void Show(ODMRExpObject subexp)
         {
             var page = SubExpContent.Children[0] as DisplayPage;
+            page.ExpObjects.Clear();
             page.ExpObjects.Add(subexp);
             page.SelectExp(0);
             subexp.ParentPage = SubExpContent.Children[0] as DisplayPage;

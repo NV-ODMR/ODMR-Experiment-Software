@@ -196,7 +196,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             Show1DFittedData("高斯拟合(X)");
             if (WaitToDisplayFit)
             {
-                Thread.Sleep(1500);
+                Thread.Sleep(500);
             }
             //移动位移台
             double newloc = c;
@@ -248,7 +248,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             Show1DFittedData("高斯拟合(Y)");
             if (WaitToDisplayFit)
             {
-                Thread.Sleep(1500);
+                Thread.Sleep(500);
             }
             //移动位移台
             newloc = c;
@@ -301,7 +301,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             Show1DFittedData("高斯拟合(Z)");
             if (WaitToDisplayFit)
             {
-                Thread.Sleep(1500);
+                Thread.Sleep(500);
             }
             //移动位移台
             newloc = c;
@@ -332,7 +332,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             lon.CoreMethod(new List<object>() { 1.0 }, pb);
             //打开APD Trace触发源
-            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.PulseFrequency = 20;
+            (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.PulseFrequency = 40;
             (GetDeviceByName("TraceSource") as PulseBlasterInfo).Device.Start();
         }
 

@@ -208,11 +208,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 OutputPanel.Children.Clear();
                 DevicePanel.Children.Clear();
 
-                ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, false, false, false);
-
                 //更新输入参数
                 if (!CurrentExpObject.IsSubExperiment)
                 {
+                    ExpParamWindow win = new ExpParamWindow(CurrentExpObject, this, false, false, false);
+
                     HashSet<string> gnames = CurrentExpObject.InputParams.Select(x => x.GroupName).ToHashSet();
                     foreach (var item in gnames)
                     {

@@ -410,7 +410,7 @@ namespace ODMR_Lab.ODMR实验
                 }
                 //更新到窗口
                 if (ParentPage != null)
-                    if (ParentPage.CurrentExpObject == this)
+                    if (ParentPage.CurrentExpObject == this && !ParentPage.CurrentExpObject.IsSubExperiment)
                     {
                         ExpParamWindow win = new ExpParamWindow(ParentPage.CurrentExpObject, ParentPage, false, false, false);
                         foreach (var item in OutputParams)
