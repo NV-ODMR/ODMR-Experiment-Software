@@ -114,7 +114,7 @@ namespace ODMR_Lab.序列编辑器
             SequenceChannelData data = arg2 as SequenceChannelData;
             foreach (var item in data.Peaks)
             {
-                SignalPanel.AddItem(item, GlobalPulseParams.GetGlobalPulses(), item.WaveValue, item.PeakSpan, item.Step);
+                SignalPanel.AddItem(item, GlobalPulseParams.GetGlobalPulses(), item.WaveValue, item.PeakSpan, item.IsTriggerCommand);
                 SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, item.PeakName);
             }
         }
@@ -211,7 +211,7 @@ namespace ODMR_Lab.序列编辑器
                 if (ChannelPanel.GetSelectedTag() == null) return;
                 foreach (var seq in (ChannelPanel.GetSelectedTag() as SequenceChannelData).Peaks)
                 {
-                    SignalPanel.AddItem(seq, GlobalPulseParams.GetGlobalPulses(), seq.WaveValue, seq.PeakSpan, seq.Step);
+                    SignalPanel.AddItem(seq, GlobalPulseParams.GetGlobalPulses(), seq.WaveValue, seq.PeakSpan, seq.IsTriggerCommand);
                     SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, seq.PeakName);
                 }
                 RefreshPlot();
@@ -231,7 +231,7 @@ namespace ODMR_Lab.序列编辑器
         {
             if (ChannelPanel.GetSelectedTag() == null) return;
             var channel = ChannelPanel.GetSelectedTag() as SequenceChannelData;
-            channel.Peaks.Add(new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, channel));
+            channel.Peaks.Add(new SequenceWaveSeg("newseg", 0, WaveValues.Zero, channel));
             UpdatePeakData();
         }
         #endregion
@@ -346,9 +346,15 @@ namespace ODMR_Lab.序列编辑器
                 data.PeakName = SignalPanel.GetCellValue(arg1, 0) as string;
                 data.WaveValue = (WaveValues)Enum.Parse(typeof(WaveValues), SignalPanel.GetCellValue(arg1, 1) as string);
                 data.PeakSpan = int.Parse(SignalPanel.GetCellValue(arg1, 2) as string);
-                data.Step = 0;
+                data.IsTriggerCommand = (bool)SignalPanel.GetCellValue(arg1, 3);
                 try
                 {
+                    if (data.IsTriggerCommand == true)
+                    {
+                        SignalPanel.SetCelValue(arg1, 2, 20);
+                        data.PeakSpan = 20;
+                        return;
+                    }
                     int length = GlobalPulseParams.GetGlobalPulseLength(data.PeakName);
                     if (data.PeakName != "Custom")
                     {
@@ -403,14 +409,14 @@ namespace ODMR_Lab.序列编辑器
             if (arg1 == 1)
             {
                 var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Insert(arg2 < 0 ? 0 : arg2, new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, seg.ParentChannel));
+                seg.ParentChannel.Peaks.Insert(arg2 < 0 ? 0 : arg2, new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel));
                 UpdatePeakData();
             }
             //下方插入
             if (arg1 == 2)
             {
                 var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Insert(arg2 + 1, new SequenceWaveSeg("newseg", 0, 0, WaveValues.Zero, seg.ParentChannel));
+                seg.ParentChannel.Peaks.Insert(arg2 + 1, new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel));
                 UpdatePeakData();
             }
         }
@@ -459,6 +465,18 @@ namespace ODMR_Lab.序列编辑器
             catch (Exception)
             {
             }
+        }
+
+        SequenceTestWindow seqWin = new SequenceTestWindow();
+        /// <summary>
+        /// 测试序列
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SeuqenceTest(object sender, RoutedEventArgs e)
+        {
+            if (Sequence == null) return;
+            seqWin.Show(Sequence);
         }
     }
 }

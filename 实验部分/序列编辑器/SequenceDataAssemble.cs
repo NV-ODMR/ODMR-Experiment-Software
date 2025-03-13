@@ -45,13 +45,13 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 var peaknames = obj.ExtractString("ChannelName→" + names[i] + "→" + "PeakNames");
                 var peakvalues = obj.ExtractString("ChannelName→" + names[i] + "→" + "PeakValues");
                 var peakspans = obj.ExtractString("ChannelName→" + names[i] + "→" + "Spans").Select(x => int.Parse(x)).ToList();
-                var peaksteps = obj.ExtractString("ChannelName→" + names[i] + "→" + "Steps").Select(x => int.Parse(x)).ToList();
+                var peaktriggers = obj.ExtractString("ChannelName→" + names[i] + "→" + "IsTrigger").Select(x => bool.Parse(x)).ToList();
 
                 SequenceChannelData channeldata = new SequenceChannelData((SequenceChannel)Enum.Parse(typeof(SequenceChannel), names[i]));
 
                 for (int j = 0; j < peaknames.Count; j++)
                 {
-                    channeldata.Peaks.Add(new SequenceWaveSeg(peaknames[j], peakspans[j], peaksteps[j], (WaveValues)Enum.Parse(typeof(WaveValues), peakvalues[j]), channeldata));
+                    channeldata.Peaks.Add(new SequenceWaveSeg(peaknames[j], peakspans[j], (WaveValues)Enum.Parse(typeof(WaveValues), peakvalues[j]), channeldata, peaktriggers[j]));
                 }
 
                 assem.Channels.Add(channeldata);
@@ -60,11 +60,13 @@ namespace ODMR_Lab.实验部分.序列编辑器
         }
 
         /// <summary>
-        /// 写文件
+        /// 写文件,出错则报错
         /// </summary>
         /// <param name="obj"></param>
         public void WriteToFile()
         {
+            //检查序列文件
+            CheckCommandFormat();
             FileObject obj = new FileObject();
             obj.Descriptions.Add("SequenceAssembleName", Name);
             obj.Descriptions.Add("SequenceAssembleLoopCount", LoopCount.ToString());
@@ -76,12 +78,12 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 string chname = Enum.GetName(item.ChannelInd.GetType(), item.ChannelInd);
                 var peaknames = item.Peaks.Select(x => x.PeakName.ToString()).ToList();
                 var peakvalues = item.Peaks.Select(x => Enum.GetName(typeof(WaveValues), x.WaveValue)).ToList();
-                var peaksteps = item.Peaks.Select(x => x.Step.ToString()).ToList();
+                var ispeaktrigger = item.Peaks.Select(x => x.IsTriggerCommand.ToString()).ToList();
                 var peakspans = item.Peaks.Select(x => x.PeakSpan.ToString()).ToList();
                 obj.WriteStringData("ChannelName→" + chname + "→" + "PeakNames", peaknames);
                 obj.WriteStringData("ChannelName→" + chname + "→" + "PeakValues", peakvalues);
                 obj.WriteStringData("ChannelName→" + chname + "→" + "Spans", peakspans);
-                obj.WriteStringData("ChannelName→" + chname + "→" + "Steps", peaksteps);
+                obj.WriteStringData("ChannelName→" + chname + "→" + "IsTrigger", ispeaktrigger);
             }
 
             //保存到目标文件夹
@@ -124,7 +126,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 int time = 0;
                 foreach (var peak in wave.Peaks)
                 {
-                    if (peak.WaveValue == WaveValues.One)
+                    if (peak.WaveValue == WaveValues.One && peak.PeakSpan != 0)
                     {
                         OneTimes.Add(time);
                         time += peak.PeakSpan;
@@ -167,6 +169,47 @@ namespace ODMR_Lab.实验部分.序列编辑器
         }
 
         /// <summary>
+        /// 检查格式,出错则报错
+        /// </summary>
+        /// <returns></returns>
+        public void CheckCommandFormat()
+        {
+            List<int> starttimes = new List<int>();
+            List<int> endtimes = new List<int>();
+            //Trigger指令必须搭配TriggerWait指令使用
+            foreach (var item in Channels)
+            {
+                var trigs = item.Peaks.Where(x => x.IsTriggerCommand).Select(x => item.Peaks.IndexOf(x) - 1);
+                foreach (var ind in trigs)
+                {
+                    if (ind == -1 || item.Peaks[ind].PeakName != "TriggerWait")
+                    {
+                        throw new Exception("Trigger指令必须搭配TriggerWait指令使用,TriggerWait指令必须加在Trigger指令前");
+                    }
+                }
+            }
+            foreach (var item in Channels)
+            {
+                starttimes.AddRange(item.Peaks.Where(x => x.IsTriggerCommand).Select(x =>
+                {
+                    item.GetSegTime(x, out int start, out int end);
+                    return start;
+                }));
+                endtimes.AddRange(item.Peaks.Where(x => x.IsTriggerCommand).Select(x =>
+                {
+                    item.GetSegTime(x, out int start, out int end);
+                    return end;
+                }));
+            }
+            HashSet<int> sortedstarttimes = new HashSet<int>(starttimes);
+            HashSet<int> sortedendtimes = new HashSet<int>(endtimes);
+            if (sortedendtimes.Count * Channels.Count != starttimes.Count || sortedendtimes.Count * Channels.Count != endtimes.Count)
+            {
+                throw new Exception("Trigger指令在每个通道中必须具有相同的起始时间和终止时间");
+            }
+        }
+
+        /// <summary>
         /// 改变特殊序列名的脉冲长度
         /// </summary>
         public void ChangeWaveSegSpan(string name, int spanvalue)
@@ -178,23 +221,6 @@ namespace ODMR_Lab.实验部分.序列编辑器
                     if (wave.PeakName == name)
                     {
                         wave.PeakSpan = spanvalue;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 改变特殊序列名的脉冲步进长度
-        /// </summary>
-        public void ChangeWaveSegStep(string name, int stepvalue)
-        {
-            foreach (var ch in Channels)
-            {
-                foreach (var wave in ch.Peaks)
-                {
-                    if (wave.PeakName == name)
-                    {
-                        wave.Step = stepvalue;
                     }
                 }
             }

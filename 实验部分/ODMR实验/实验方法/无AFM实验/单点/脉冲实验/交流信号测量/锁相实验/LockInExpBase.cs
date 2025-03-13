@@ -20,7 +20,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实�
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验
 {
-    public abstract class PulseExpBase : ODMRExperimentWithoutAFM
+    public abstract class LockInExpBase : ODMRExperimentWithoutAFM
     {
         public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
@@ -32,7 +32,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <summary>
         /// 脉冲实验的输入参数
         /// </summary>
-        public abstract List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; }
+        public abstract List<KeyValuePair<DeviceTypes, Param<string>>> LockInExpDevices { get; set; }
 
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
@@ -55,15 +55,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// </summary>
         /// <param name="rffrequency">微波频率</param>
         /// <param name="rfpower">微波功率(dbm)</param>
-        /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>>
+        /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>
+        /// <param name="signalFrequency">待测信号频率(MHz)</param>
         /// <returns></returns>
-        protected PulsePhotonPack DoPulseExp(double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
+        protected PulsePhotonPack DoPulseExp(double rffrequency, double rfpower, double signalFrequency, int loopcount, int LaserCountPulses, int timeout)
         {
             //设置微波
             RFSourceInfo Rf = GetDeviceByName("RFSource") as RFSourceInfo;
             Rf.Device.RFFrequency = rffrequency;
             Rf.Device.RFAmplitude = rfpower;
             //设置序列
+            GlobalPulseParams.SetGlobalPulseLength("TriggerWait", 0);
             var sequence = GetExperimentSequence();
             //设置全局参数
             foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
@@ -71,6 +73,47 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 sequence.ChangeWaveSegSpan(item.PulseName, item.PulseLength);
             }
 
+            //获取相邻两次Trigger之间的实验时间
+            var triggers = sequence.Channels[0].Peaks.FindAll(x => x.IsTriggerCommand).Select(x => sequence.Channels[0].Peaks.IndexOf(x)).ToList();
+            if (triggers.Count != 0)
+            {
+                triggers.Add(sequence.Channels[0].Peaks.Count - 1);
+                for (int i = 0; i < triggers.Count - 1; i++)
+                {
+                    int time = sequence.Channels[0].GetExpSegTime(triggers[i], triggers[i + 1]);
+                    if (time == 0) continue;
+                    SequenceWaveSeg wave = sequence.Channels[0].Peaks[triggers[i + 1]];
+                    if (i + 1 == triggers.Count - 1)
+                    {
+                        //如果是序列末尾则设置序列开头的等待时间(循环)
+                        wave = sequence.Channels[0].Peaks[triggers[0]];
+                    }
+                    sequence.Channels[0].GetSegTime(wave, out int triggerstart, out int triggerend);
+                    //根据总实验时间计算等待时间
+                    int periodTime = (int)(1e+3 * signalFrequency);
+                    int timeres = time % periodTime;
+                    //检查最终信号是否在低电平内，如果是则延时到高电平内（等待半个周期）
+                    if (timeres < periodTime / 2)
+                    {
+                        //查找所有相同位置的TriggerWait
+                        List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
+                        foreach (var item in triggerwaits)
+                        {
+                            item.PeakSpan = periodTime / 2;
+                        }
+                    }
+                    //检查最终信号在高点平内则不等待
+                    if (timeres < periodTime / 2)
+                    {
+                        //查找所有相同位置的TriggerWait
+                        List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
+                        foreach (var item in triggerwaits)
+                        {
+                            item.PeakSpan = 0;
+                        }
+                    }
+                }
+            }
             sequence.LoopCount = loopcount;
             //设置pb
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;

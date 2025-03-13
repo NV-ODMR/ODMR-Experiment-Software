@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeHelper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,8 @@ namespace ODMR_Lab.实验部分.序列编辑器
             {
                 FilesPanel.AddItem(item.Value, item.Key);
             }
+            WindowResizeHelper helper = new WindowResizeHelper();
+            helper.RegisterWindow(this, null, null, null, 0, 30);
         }
 
         string selectedfile = "";

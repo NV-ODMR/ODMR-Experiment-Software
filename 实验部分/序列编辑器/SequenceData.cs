@@ -53,6 +53,54 @@ namespace ODMR_Lab.实验部分.序列编辑器
 
             return false;
         }
+
+        public void GetSegTime(SequenceWaveSeg seg, out int timestart, out int timeend)
+        {
+            int time = 0;
+            for (int i = 0; i < Peaks.Count; i++)
+            {
+                if (Peaks[i] == seg)
+                {
+                    timestart = time;
+                    timeend = time + Peaks[i].PeakSpan;
+                    return;
+                }
+                time += Peaks[i].PeakSpan;
+            }
+            timestart = -1;
+            timeend = -1;
+            return;
+        }
+
+        public List<SequenceWaveSeg> GetSegFromTime(int timestart, int timeend)
+        {
+            List<SequenceWaveSeg> res = new List<SequenceWaveSeg>();
+            int time = 0;
+            foreach (var item in Peaks)
+            {
+                int start = time;
+                int end = time + item.PeakSpan;
+                time += item.PeakSpan;
+                if (start >= timestart && end <= timeend) res.Add(item);
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// 获取两个指定波形之间的时间(不含endSegInd)
+        /// </summary>
+        /// <param name="startSeg"></param>
+        /// <param name="endSeg"></param>
+        /// <returns></returns>
+        public int GetExpSegTime(int startSegInd, int endSegInd)
+        {
+            int time = 0;
+            for (int i = startSegInd; i < endSegInd; i++)
+            {
+                time += Peaks[i].PeakSpan;
+            }
+            return time;
+        }
     }
 
     /// <summary>
@@ -72,19 +120,19 @@ namespace ODMR_Lab.实验部分.序列编辑器
         public int PeakSpan { get; set; } = 0;
 
         /// <summary>
-        /// 循环步长
+        /// 是否是Trigger指令
         /// </summary>
-        public int Step { get; set; } = 0;
+        public bool IsTriggerCommand { get; set; } = false;
 
         public WaveValues WaveValue { get; set; } = WaveValues.Zero;
 
-        public SequenceWaveSeg(string peakName, int peakSpan, int step, WaveValues waveValue, SequenceChannelData parentchannel)
+        public SequenceWaveSeg(string peakName, int peakSpan, WaveValues waveValue, SequenceChannelData parentchannel, bool IsTrigger = false)
         {
             PeakName = peakName;
             PeakSpan = peakSpan;
-            Step = step;
             WaveValue = waveValue;
             ParentChannel = parentchannel;
+            IsTriggerCommand = IsTrigger;
         }
     }
 
