@@ -22,14 +22,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
     public partial class SubExpWindow : Window
     {
         WindowResizeHelper h = null;
-        public SubExpWindow(string title)
+        public SubExpWindow(string title, bool ShowClose = false)
         {
             InitializeComponent();
             h = new WindowResizeHelper();
             h.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 6, 30);
-            SubExpContent.Children.Add(new DisplayPage(false));
+            var page = new DisplayPage(false);
+            page.RawControlsStates = new List<KeyValuePair<FrameworkElement, 实验类.RunningBehaviours>>()
+            {
+                new KeyValuePair<FrameworkElement, 实验类.RunningBehaviours>(CloseBtn,实验类.RunningBehaviours.DisableWhenRunning),
+            };
+            SubExpContent.Children.Add(page);
             Title = title;
             TitleWindow.Content = title;
+            if (ShowClose)
+            {
+                CloseColumn.Width = new GridLength(50);
+            }
+            else
+            {
+                CloseColumn.Width = new GridLength(0);
+            }
         }
 
         public void Show(ODMRExpObject subexp)
@@ -43,6 +56,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
         }
 
         public void EndUse()
+        {
+            Hide();
+        }
+
+        private void Close(object sender, RoutedEventArgs e)
         {
             Hide();
         }

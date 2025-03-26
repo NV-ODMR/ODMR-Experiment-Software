@@ -76,12 +76,13 @@ namespace ODMR_Lab.实验部分.序列编辑器
         {
             List<SequenceWaveSeg> res = new List<SequenceWaveSeg>();
             int time = 0;
-            foreach (var item in Peaks)
+            for (int i = 0; i < Peaks.Count; i++)
             {
                 int start = time;
-                int end = time + item.PeakSpan;
-                time += item.PeakSpan;
-                if (start >= timestart && end <= timeend) res.Add(item);
+                int end = time + Peaks[i].PeakSpan;
+                time += Peaks[i].PeakSpan;
+                if (start >= timestart && end <= timeend && Peaks[i].PeakSpan != 0) 
+                    res.Add(Peaks[i]);
             }
             return res;
         }

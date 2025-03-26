@@ -27,7 +27,7 @@ using System.Threading;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
-    class LockInHahnEcho : PulseExpBase
+    class LockInHahnEcho : LockInExpBase
     {
         public override string ODMRExperimentName { get; set; } = "锁相HahnEcho";
 
@@ -35,7 +35,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<int>("待测信号频率(kHz)",20,"SignalFreq"),
+            new Param<double>("待测信号频率(MHz)",1000,"SignalFreq"),
             new Param<int>("测量次数",1000,"LoopCount"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
@@ -45,9 +45,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
         };
-        public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
+        public override List<KeyValuePair<DeviceTypes, Param<string>>> LockInExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.射频源,new Param<string>("待测信号生成源","","SignalSource")),
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
@@ -61,11 +60,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
-        public List<object> FirstScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
-        {
-            return ScanEvent(device, range, locvalue, inputParams);
-        }
-
         public override bool PreConfirmProcedure()
         {
             if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
@@ -76,27 +70,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         }
 
         private int CurrentLoop = 0;
-        public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
-        {
-            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
-
-            double signalcount = pack.GetPhotonsAtIndex(0).Sum();
-            double refcount = pack.GetPhotonsAtIndex(1).Sum();
-
-            int ind = range.GetNearestFormalIndex(locvalue);
-
-            double signalcontrast = 0;
-            try
-            {
-                signalcontrast = (signalcount - refcount) / refcount;
-            }
-            catch (Exception)
-            {
-            }
-
-            UpdatePlotChartFlow(true);
-            return new List<object>();
-        }
 
         double contrast = double.NaN;
         double Sig = double.NaN;
@@ -105,23 +78,40 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override void ODMRExpWithoutAFM()
         {
             contrast = double.NaN;
+            Sig = double.NaN;
+            Ref = double.NaN;
             int Loop = GetInputParamValueByName("LoopCount");
-            double progressstep = 100 / Loop;
+            //设置HahnEchoTime
+            //XPi脉冲时间
+            int xLength = GlobalPulseParams.GetGlobalPulseLength("PiX");
+            double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
+            int echotime = (int)((signaltime - xLength) / 2);
+            GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
             for (int i = 0; i < Loop; i++)
             {
                 CurrentLoop = i;
                 SetExpState("当前轮数:" + CurrentLoop.ToString() + "对比度:" + Math.Round(contrast, 5).ToString());
-                PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+                PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
                      GetInputParamValueByName("TimeOut"));
                 int sig = pack.GetPhotonsAtIndex(0).Sum();
                 int reference = pack.GetPhotonsAtIndex(1).Sum();
+
+                double tempcontrast = 1;
+                try
+                {
+                    tempcontrast = (sig - reference) / (double)reference;
+                }
+                catch (Exception)
+                {
+                }
+
                 if (double.IsNaN(contrast))
                 {
-                    contrast = (sig - reference) / reference;
+                    contrast = tempcontrast;
                 }
                 else
                 {
-                    contrast = (contrast * (CurrentLoop - 1) + (sig - reference) / reference) / CurrentLoop;
+                    contrast = (contrast * (CurrentLoop - 1) + tempcontrast) / CurrentLoop;
                 }
                 if (double.IsNaN(Sig))
                 {
@@ -152,11 +142,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void AfterExpEventWithoutAFM()
         {
-            //设置输出
-
-            RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
-            RF.Device.IsRFOutOpen = false;
-
             //设置输出
             OutputParams.Add(new Param<double>("信号光子计数", Sig, "SignalCount"));
             OutputParams.Add(new Param<double>("参考光子计数", Ref, "ReferenceCount"));

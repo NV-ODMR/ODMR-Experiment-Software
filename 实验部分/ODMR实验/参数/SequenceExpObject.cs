@@ -39,6 +39,8 @@ namespace ODMR_Lab.ODMR实验
 
         public bool IsAutoSave { get; set; } = false;
 
+        public virtual bool IsDisplayAsExp { get; set; } = true;
+
         #region 二维和一维扫描范围
         public D1PointsScanRangeBase D1ScanRange { get; set; } = null;
         public D2ScanRangeBase D2ScanRange { get; set; } = null;
@@ -647,6 +649,57 @@ namespace ODMR_Lab.ODMR实验
                 if (item.PropertyName == "Input_" + name)
                 {
                     return ParamB.GetUnknownParamValue(item);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 根据参数名获取输入参数
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public dynamic SetInputParamValueByName(string name, object value)
+        {
+            foreach (var item in InputParams)
+            {
+                if (item.PropertyName == "Input_" + name)
+                {
+                    ParamB.SetUnknownParamValue(item, value);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 根据参数名获取输入参数
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public dynamic SetInputParamValueByDescription(string description, object value)
+        {
+            foreach (var item in InputParams)
+            {
+                if (item.Description == description)
+                {
+                    ParamB.SetUnknownParamValue(item, value);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 根据参数名获取输入参数
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public dynamic SetDeviceByDescription(string description, object value)
+        {
+            foreach (var item in DeviceList)
+            {
+                if (item.Value.Description == description)
+                {
+                    ParamB.SetUnknownParamValue(item.Value, value);
                 }
             }
             return null;

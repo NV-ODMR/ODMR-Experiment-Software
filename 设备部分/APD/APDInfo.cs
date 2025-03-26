@@ -70,7 +70,7 @@ namespace ODMR_Lab.设备部分.光子探测器
             var cs = Device.GetCounts(1000);
             try
             {
-                return (cs[cs.Count - 1] - cs[cs.Count - 2]) * freq * 2;
+                return (cs[cs.Count - 1] - cs[cs.Count - 2]) * freq;
             }
             catch (Exception ex)
             {

@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验;
+using ODMR_Lab.ODMR实验;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验
 {
@@ -39,7 +40,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         {
             var btns = new List<KeyValuePair<string, Action>>()
             {
-                new KeyValuePair<string, Action>("设置全局脉冲参数",SetGlobalParams)
+                new KeyValuePair<string, Action>("设置全局脉冲参数",SetGlobalParams),
+                new KeyValuePair<string, Action>("Delay时长测试",DelayTest)
             };
             btns.AddRange(AddPulseInteractiveButtons());
             return btns;
@@ -90,7 +92,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                     }
                     sequence.Channels[0].GetSegTime(wave, out int triggerstart, out int triggerend);
                     //根据总实验时间计算等待时间
-                    int periodTime = (int)(1e+3 * signalFrequency);
+                    int periodTime = (int)(1e+3 / signalFrequency);
                     int timeres = time % periodTime;
                     //检查最终信号是否在低电平内，如果是则延时到高电平内（等待半个周期）
                     if (timeres < periodTime / 2)
@@ -103,7 +105,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                         }
                     }
                     //检查最终信号在高点平内则不等待
-                    if (timeres < periodTime / 2)
+                    if (timeres >= periodTime / 2)
                     {
                         //查找所有相同位置的TriggerWait
                         List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
@@ -120,8 +122,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
             //设置板卡指令
             List<CommandBase> Lines = new List<CommandBase>();
-            pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
             apd.StartTriggerSample(sequence.LoopCount * LaserCountPulses); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
+            pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
             Thread.Sleep(20);
             pb.Device.Start();//板卡开始输出
             List<int> ApdResult = apd.GetTriggerSamples(timeout);//apd读取，判断时间
@@ -199,6 +201,34 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                     MessageWindow.ShowTipWindow("设置未完成\n" + ex.Message, Window.GetWindow(ParentPage));
                 });
             }
+        }
+
+
+        SubExpWindow subWindow = null;
+        LockInDelay DelayExp = null;
+        private void DelayTest()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    if (DelayExp == null)
+                    {
+                        DelayExp = new LockInDelay();
+                        var subexp = (LockInExpBase)Activator.CreateInstance(GetType());
+                        DelayExp.AddSubExp(subexp);
+                    }
+                    if (subWindow == null)
+                    {
+                        subWindow = new SubExpWindow("延时时间测试", true);
+                    }
+                    subWindow.Show(DelayExp);
+                }
+                catch (Exception ex)
+                {
+                    MessageWindow.ShowTipWindow("窗口打开失败\n" + ex.Message, Window.GetWindow(this.ParentPage));
+                }
+            });
         }
         #endregion
     }

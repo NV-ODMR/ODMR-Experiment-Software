@@ -79,8 +79,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             List<CommandBase> Lines = new List<CommandBase>();
             pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
             apd.StartTriggerSample(sequence.LoopCount * LaserCountPulses); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
-            Thread.Sleep(20);
-            pb.Device.Start();//板卡开始输出
+            Thread.Sleep(50);
+            pb.Device.Start();
             List<int> ApdResult = apd.GetTriggerSamples(timeout);//apd读取，判断时间
             apd.EndTriggerSample();//停止计数
             pb.Device.End();//关板卡

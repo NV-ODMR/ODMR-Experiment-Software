@@ -116,17 +116,17 @@ namespace ODMR_Lab.实验部分.序列编辑器
         {
             ComandInformation = "";
 
-            InputCommand.Add(new LoopStartCommandLine(LoopCount - 1));
+            InputCommand.Add(new LoopStartCommandLine(LoopCount));
             int loopstartind = InputCommand.Count - 1;
 
-            //找1脉冲的时间点
-            HashSet<int> OneTimes = new HashSet<int>();
+            //找1脉冲以及Trigger指令的时间点
+            HashSet<int> OneTimes = new HashSet<int>() { 0 };
             foreach (var wave in Channels)
             {
                 int time = 0;
                 foreach (var peak in wave.Peaks)
                 {
-                    if (peak.WaveValue == WaveValues.One && peak.PeakSpan != 0)
+                    if (peak.WaveValue == WaveValues.One || peak.IsTriggerCommand)
                     {
                         OneTimes.Add(time);
                         time += peak.PeakSpan;
@@ -143,24 +143,33 @@ namespace ODMR_Lab.实验部分.序列编辑器
             sortedTimes.Sort();
             for (int j = 0; j < sortedTimes.Count - 1; j++)
             {
-                List<int> HighChannelIndexes = new List<int>();
-                foreach (var ch in Channels)
+                if (IsTrigger(sortedTimes[j], sortedTimes[j + 1]))
                 {
-                    if (ch.IsWaveOne(sortedTimes[j], sortedTimes[j + 1]))
+                    TriggerLine trigger = new TriggerLine();
+                    ComandInformation += "Trigger\n";
+                    InputCommand.Add(trigger);
+                }
+                else
+                {
+                    List<int> HighChannelIndexes = new List<int>();
+                    foreach (var ch in Channels)
                     {
-                        HighChannelIndexes.Add((int)ch.ChannelInd);
+                        if (ch.IsWaveOne(sortedTimes[j], sortedTimes[j + 1]))
+                        {
+                            HighChannelIndexes.Add((int)ch.ChannelInd);
+                        }
                     }
+                    CommandLine singlecommand = new CommandLine(HighChannelIndexes, sortedTimes[j + 1] - sortedTimes[j]);
+                    //打印指令结果
+                    ComandInformation += "Channels:";
+                    foreach (var item in HighChannelIndexes)
+                    {
+                        ComandInformation += item.ToString() + "\t";
+                    }
+                    ComandInformation += "\t";
+                    ComandInformation += "TimeSpan:" + (sortedTimes[j + 1] - sortedTimes[j]).ToString() + "\n";
+                    InputCommand.Add(singlecommand);
                 }
-                CommandLine singlecommand = new CommandLine(HighChannelIndexes, sortedTimes[j + 1] - sortedTimes[j]);
-                //打印指令结果
-                ComandInformation += "Channels:";
-                foreach (var item in HighChannelIndexes)
-                {
-                    ComandInformation += item.ToString() + "\t";
-                }
-                ComandInformation += "\t";
-                ComandInformation += "TimeSpan:" + (sortedTimes[j + 1] - sortedTimes[j]).ToString() + "\n";
-                InputCommand.Add(singlecommand);
             }
 
             InputCommand.Add(new LoopEndCommandLine(loopstartind));
@@ -224,6 +233,27 @@ namespace ODMR_Lab.实验部分.序列编辑器
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 指定时间段是否是Trigger指令
+        /// </summary>
+        /// <returns></returns>
+        public bool IsTrigger(int starttime, int endtime)
+        {
+            bool res = false;
+            foreach (var item in Channels)
+            {
+                try
+                {
+                    res |= item.GetSegFromTime(starttime, endtime)[0].IsTriggerCommand;
+                }
+                catch (Exception)
+                {
+                    res |= false;
+                }
+            }
+            return res;
         }
     }
 }

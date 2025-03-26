@@ -64,15 +64,18 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 if (ODMRExpObject.IsNoAFMScanExperiment(item))
                 {
                     ODMRExpObject exp = Activator.CreateInstance(item) as ODMRExpObject;
-                    exp.ParentPage = this;
-                    noafms.Add(exp);
+                    if (exp.IsDisplayAsExp == true)
+                    {
+                        exp.ParentPage = this;
+                        noafms.Add(exp);
+                    }
                 }
             }
             ExpObjects.AddRange(noafms);
             //设置所有AFM点实验类型
             foreach (var item in noafms)
             {
-                if (item.IsAFMSubExperiment == false) continue;
+                if (item.IsAFMSubExperiment == false || item.IsDisplayAsExp == false) continue;
                 AFMScan2DExp afm2d = new AFMScan2DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
                 afm2d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
                 ExpObjects.Add(afm2d);
@@ -91,9 +94,12 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 LoadExps();
         }
 
+        public List<KeyValuePair<FrameworkElement, RunningBehaviours>> RawControlsStates { get; set; } = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
+
         public List<KeyValuePair<FrameworkElement, RunningBehaviours>> GetControlsStates()
         {
             List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlsStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
+            ControlsStates.AddRange(RawControlsStates);
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(InputPanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(DevicePanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
