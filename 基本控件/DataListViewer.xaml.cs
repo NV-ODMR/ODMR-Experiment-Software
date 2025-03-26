@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.基本控件
 {
@@ -24,6 +25,7 @@ namespace ODMR_Lab.基本控件
 
         public ItemsList<ViewerTemplate> HeaderTemplate { get; set; } = new ItemsList<ViewerTemplate>();
 
+        public ContextMenu ContextTemplate { get; set; } = null;
 
         public double MinItemWidth
         {
@@ -86,6 +88,7 @@ namespace ODMR_Lab.基本控件
             datacontentscroll.MultiItemSelected += DataMultiSelected;
             datacontentscroll.MultiItemUnSelected += DataMultiUnSelected;
             datacontentscroll.UpdateHeader();
+            datacontentscroll.ItemContextMenu = ContextTemplate;
         }
 
         private void UpdateHeader(object sender, RoutedEventArgs e)
@@ -255,6 +258,7 @@ namespace ODMR_Lab.基本控件
             datacontentscroll.ItemHeight = ItemHeight;
             datacontentscroll.MinItemWidth = MinItemWidth;
             datacontentscroll.IsMultiSelected = IsMultiSelected;
+            datacontentscroll.ItemContextMenu = ContextTemplate;
             datacontentscroll.UpdateHeader();
         }
     }

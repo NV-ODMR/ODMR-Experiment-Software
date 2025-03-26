@@ -55,7 +55,7 @@
                 <local:DataListViewer.HeaderTemplate>
                     <scroll:ViewerTemplate Descriptions="序号" DataType="String" Editable="False" DataDisplayWidth="40"/>
                     <scroll:ViewerTemplate Descriptions="Y数据名" DataType="String" Editable="False" DataDisplayWidth="2*" />
-                    <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="60" />
+                    <scroll:ViewerTemplate Descriptions="点数" DataType="String" Editable="False" DataDisplayWidth="50" />
                     <scroll:ViewerTemplate Descriptions="选中" DataType="Bool" Editable="True" DataDisplayWidth="35" />
                 </local:DataListViewer.HeaderTemplate>
             </local:DataListViewer>
