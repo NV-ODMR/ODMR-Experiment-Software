@@ -193,23 +193,23 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {
             var btns = new List<KeyValuePair<string, Action>>();
+            btns.Add(new KeyValuePair<string, Action>("偏心参数计算", ShowOffsetWindow));
             btns.Add(new KeyValuePair<string, Action>("磁场预测", ShowPredictWindow));
             btns.Add(new KeyValuePair<string, Action>("磁场强度系数标定", ShowIntensityWindow));
-            btns.Add(new KeyValuePair<string, Action>("垂直磁场计算", ShowVerticalBCalculateWindow));
             return btns;
         }
 
         #region 交互部分
-        VerticalFieldWindow verticaltwin = null;
-        private void ShowVerticalBCalculateWindow()
+        OffsetWindow offsetwin = null;
+        private void ShowOffsetWindow()
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                if (verticaltwin == null)
-                    verticaltwin = new VerticalFieldWindow(this);
-                verticaltwin.Owner = Window.GetWindow(ParentPage);
-                verticaltwin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                verticaltwin.Show();
+                if (offsetwin == null)
+                    offsetwin = new OffsetWindow(this);
+                offsetwin.Owner = Window.GetWindow(ParentPage);
+                offsetwin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                offsetwin.Show();
             });
         }
 

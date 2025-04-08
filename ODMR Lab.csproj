@@ -60,17 +60,21 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeHelper">
-      <HintPath>..\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+    <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls">
-      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
-    <Reference Include="HardWares">
-      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+    <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
-    <Reference Include="MathLib">
-      <HintPath>..\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+    <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -84,8 +88,9 @@
     <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>packages\OpenCvSharp4.Extensions.4.10.0.20241108\lib\netstandard2.0\OpenCvSharp.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="PythonHandler">
-      <HintPath>..\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+    <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -205,11 +210,11 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanAngle.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanXY.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanZ.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml.cs">
-      <DependentUpon>VerticalFieldWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\MIntensityWindow.xaml.cs">
       <DependentUpon>MIntensityWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\OffsetWindow.xaml.cs">
+      <DependentUpon>OffsetWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\PredictData.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\PredictWindow.xaml.cs">
@@ -450,11 +455,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml">
+    <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\MIntensityWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\MIntensityWindow.xaml">
+    <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\OffsetWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
