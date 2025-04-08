@@ -379,9 +379,11 @@ namespace ODMR_Lab.场效应器件测量
                         }
                     });
                     if (dev == null) continue;
+
+                    bool isLimited = dev.Device.IsCurrentLimited();
                     Dispatcher.Invoke(() =>
                     {
-                        if (dev.Device.IsCurrentLimited())
+                        if (isLimited)
                         {
                             LimitState.Background = Brushes.Red;
                         }

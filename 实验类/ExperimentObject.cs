@@ -114,9 +114,11 @@ namespace ODMR_Lab
             return false;
         }
 
-        public bool ReadFromExplorer()
+        public bool ReadFromExplorer(out string filename)
         {
+            filename = "";
             FileObject obj = FileObject.FindFileFromExplorer();
+            filename = obj.FilePath;
             if (obj == null) return false;
             if (!obj.Descriptions.Keys.Contains("实验类型"))
             {
@@ -492,7 +494,7 @@ namespace ODMR_Lab
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
                         item.Key.IsHitTestVisible = true;
-                    if (item.Value == RunningBehaviours.DisableWhenRunning)
+                    if (item.Value == RunningBehaviours.DisableWhenRunning || item.Value == RunningBehaviours.DisableWhenRunningEnableWhenResume)
                         item.Key.IsHitTestVisible = false;
                 }
             });
@@ -520,7 +522,7 @@ namespace ODMR_Lab
                 TrySetState(resumeButton, false);
                 foreach (var item in ControlStates)
                 {
-                    if (item.Value == RunningBehaviours.EnableWhenRunning)
+                    if (item.Value == RunningBehaviours.EnableWhenRunning || item.Value == RunningBehaviours.DisableWhenRunningEnableWhenResume)
                         item.Key.IsHitTestVisible = true;
                     if (item.Value == RunningBehaviours.DisableWhenRunning)
                         item.Key.IsHitTestVisible = false;
@@ -550,7 +552,7 @@ namespace ODMR_Lab
                 {
                     if (item.Value == RunningBehaviours.EnableWhenRunning)
                         item.Key.IsHitTestVisible = false;
-                    if (item.Value == RunningBehaviours.DisableWhenRunning)
+                    if (item.Value == RunningBehaviours.DisableWhenRunning || item.Value == RunningBehaviours.DisableWhenRunningEnableWhenResume)
                         item.Key.IsHitTestVisible = true;
                 }
             });

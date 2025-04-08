@@ -25,6 +25,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 {
     class T1 : PulseExpBase
     {
+        public override bool Is1DScanExp { get; set; } = false;
+        public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "驰豫时间测量(T1)";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
@@ -79,7 +81,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             //设置T1弛豫时间长度
             GlobalPulseParams.SetGlobalPulseLength("T1Step", (int)locvalue);
 
-            PulsePhotonPack photonpack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack photonpack = DoPulseExp("T1", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
 
             double signalcounts = photonpack.GetPhotonsAtIndex(0).Sum();
             double refcounts = photonpack.GetPhotonsAtIndex(1).Sum();
@@ -209,11 +211,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             PlotData.Add(new ParentPlotDataPack("参考光子数", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("参考光子数", "T1荧光数据"), true));
             PlotData.Add(new ParentPlotDataPack("信号光子数", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("信号光子数", "T1荧光数据"), true));
             return PlotData;
-        }
-
-        protected override SequenceDataAssemble GetExperimentSequence()
-        {
-            return SequenceDataAssemble.ReadFromSequenceName("T1");
         }
     }
 }

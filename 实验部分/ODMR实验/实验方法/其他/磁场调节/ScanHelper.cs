@@ -372,6 +372,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
             peakout1 = peak1.Min();
             peakout2 = peak2.Max();
+
+            if (Math.Abs(peakout1 - peakout2) < 0.5)
+            {
+                peakout1 = 0;
+                peakout2 = 0;
+                freqsout = new List<double>();
+                contrastout = new List<double>();
+                return;
+            }
         }
 
         private static int GetNearestDataIndex(List<double> dataarray, double targetvalue)
@@ -419,8 +428,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             List<double> res = m.FindDire(GetOutputParamValueByName("Theta1"), GetOutputParamValueByName("Phi1"), GetOutputParamValueByName("ZDistance"));
 
             double ang = res[0] * GetReverseNum(GetInputParamValueByName("ReverseA"));
-            double dx = res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
-            double dy = res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
+            double dx = -res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
+            double dy = -res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
             ang = GetInputParamValueByName("AngleStart") + ang;
             while (ang > 360)
             {
@@ -432,16 +441,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             }
             if (Math.Abs(ang) > 150)
             {
-                res = m.FindDire(Math.PI - GetOutputParamValueByName("Theta1"), GetOutputParamValueByName("Phi1") - Math.PI, GetOutputParamValueByName("ZDistance"));
+                res = m.FindDire(180 - GetOutputParamValueByName("Theta1"), GetOutputParamValueByName("Phi1") - 180, GetOutputParamValueByName("ZDistance"));
                 ang = res[0] * GetReverseNum(GetInputParamValueByName("ReverseA"));
-                dx = res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
-                dy = res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
+                dx = -res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
+                dy = -res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
                 ang = GetInputParamValueByName("AngleStart") + ang;
                 while (ang > 360)
                 {
                     ang -= 360;
                 }
                 while (ang < -360)
+                {
+                    ang += 360;
+                }
+                if (ang > 150)
+                {
+                    ang -= 360;
+                }
+                if (ang < -150)
                 {
                     ang += 360;
                 }
@@ -456,10 +473,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             #endregion
 
             #region 第二个方向
-            res = m.FindDire(GetOutputParamValueByName("Theta2"), GetOutputParamValueByName("Phi1"), GetOutputParamValueByName("ZDistance"));
+            res = m.FindDire(GetOutputParamValueByName("Theta1"), GetOutputParamValueByName("Phi2"), GetOutputParamValueByName("ZDistance"));
             ang = res[0] * GetReverseNum(GetInputParamValueByName("ReverseA"));
-            dx = res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
-            dy = res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
+            dx = -res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
+            dy = -res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
             ang = GetInputParamValueByName("AngleStart") + ang;
             while (ang > 360)
             {
@@ -471,16 +488,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             }
             if (Math.Abs(ang) > 150)
             {
-                res = m.FindDire(Math.PI - GetOutputParamValueByName("Theta2"), GetOutputParamValueByName("Phi1") - Math.PI, GetOutputParamValueByName("ZDistance"));
+                res = m.FindDire(180 - GetOutputParamValueByName("Theta1"), GetOutputParamValueByName("Phi2") - 180, GetOutputParamValueByName("ZDistance"));
                 ang = res[0] * GetReverseNum(GetInputParamValueByName("ReverseA"));
-                dx = res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
-                dy = res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
+                dx = -res[1] * GetReverseNum(GetInputParamValueByName("ReverseX"));
+                dy = -res[2] * GetReverseNum(GetInputParamValueByName("ReverseY"));
                 ang = GetInputParamValueByName("AngleStart") + ang;
                 while (ang > 360)
                 {
                     ang -= 360;
                 }
                 while (ang < -360)
+                {
+                    ang += 360;
+                }
+                if (ang > 150)
+                {
+                    ang -= 360;
+                }
+                if (ang < -150)
                 {
                     ang += 360;
                 }
@@ -558,10 +583,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
                 Magnet m = new Magnet(GetInputParamValueByName("MRadius"), GetInputParamValueByName("MLength"), 1);
 
-                List<double> res = m.FindDire(the, phi, currentzloc);
+                List<double> res = m.FindDire(the, phi, zdis);
                 double ang = res[0];
-                double dx = res[1];
-                double dy = res[2];
+                double dx = -res[1];
+                double dy = -res[2];
                 double B = res[3];
                 double dz = zdis - PData.ZDistance;
                 dx *= GetReverseNum(GetInputParamValueByName("ReverseX"));
@@ -584,8 +609,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 {
                     res = m.FindDire(180 - the, phi + 180, zdis);
                     ang = res[0];
-                    dx = res[1];
-                    dy = res[2];
+                    dx = -res[1];
+                    dy = -res[2];
                     B = res[3];
                     dz = zdis - PData.ZDistance;
                     dx *= GetReverseNum(GetInputParamValueByName("ReverseX"));

@@ -12,6 +12,7 @@ namespace ODMR_Lab.实验类
     public enum RunningBehaviours
     {
         DisableWhenRunning = 0,
-        EnableWhenRunning = 1
+        EnableWhenRunning = 1,
+        DisableWhenRunningEnableWhenResume = 2,
     }
 }

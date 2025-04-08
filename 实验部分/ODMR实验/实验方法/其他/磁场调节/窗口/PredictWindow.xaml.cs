@@ -24,6 +24,7 @@ using Path = System.IO.Path;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
 using System.Threading;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子实验;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {
@@ -61,8 +62,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                     double.Parse(XLoc.Content.ToString()),
                     double.Parse(YLoc.Content.ToString()),
                     double.Parse(ZLoc.Content.ToString()),
-                    10.9425,
-                    //double.Parse(ZDistance.Content.ToString()),
+                    double.Parse(ZDistance.Content.ToString()),
                     double.Parse(CheckedTheta.Content.ToString()),
                     double.Parse(CheckedPhi.Content.ToString()),
                     double.Parse(PredictTheta.Text),
@@ -128,7 +128,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                         App.Current.Dispatcher.Invoke(() =>
                         {
                             win = new MessageWindow("提示", "正在移动...", MessageBoxButton.OK, false, false);
-                            win.ShowDialog();
+                            win.Show();
                         });
                         NanoStageInfo xdev = exp.GetDeviceByName("MagnetX") as NanoStageInfo;
                         NanoStageInfo ydev = exp.GetDeviceByName("MagnetY") as NanoStageInfo;

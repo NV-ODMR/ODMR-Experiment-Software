@@ -28,6 +28,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
     public class AFMScan2DExp : ODMRExperimentWithAFM
     {
         CustomScan2DSession<NanoStageInfo, NanoStageInfo> PointsScanSession = new CustomScan2DSession<NanoStageInfo, NanoStageInfo>();
+
+        public override bool Is1DScanExp { get; set; } = false;
+        public override bool Is2DScanExp { get; set; } = true;
+
         public override string ODMRExperimentName { get; set; } = "";
         public override string ODMRExperimentGroupName { get; set; } = "AFM面扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()

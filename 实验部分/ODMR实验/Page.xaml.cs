@@ -104,7 +104,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(DevicePanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ButtonsPanel, RunningBehaviours.DisableWhenRunning));
-            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunning));
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunningEnableWhenResume));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ScanRangePanel, RunningBehaviours.DisableWhenRunning));
             return ControlsStates;
         }
@@ -155,7 +155,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
                 CurrentExpObject = ExpObjects[index];
 
-                if (ODMRExpObject.Is2DScanExperiment(CurrentExpObject) || ODMRExpObject.Is1DScanExperiment(CurrentExpObject))
+                if (CurrentExpObject.Is2DScanExp || CurrentExpObject.Is1DScanExp)
                 {
                     ScanRangePanel.Visibility = Visibility.Visible;
                 }
@@ -462,13 +462,13 @@ namespace ODMR_Lab.实验部分.ODMR实验
             }
             else
             {
-                if (ODMRExpObject.Is2DScanExperiment(CurrentExpObject))
+                if (CurrentExpObject.Is2DScanExp)
                 {
                     CurrentExpObject.RangeWindow = new ScanRangeSelectWindow(CurrentExpObject);
                     var result = CurrentExpObject.D2ScanRange;
                     CurrentExpObject.RangeWindow.ShowD2(result);
                 }
-                if (ODMRExpObject.Is1DScanExperiment(CurrentExpObject))
+                if (CurrentExpObject.Is1DScanExp)
                 {
                     CurrentExpObject.RangeWindow = new ScanRangeSelectWindow(CurrentExpObject);
                     var result = CurrentExpObject.D1ScanRange;
