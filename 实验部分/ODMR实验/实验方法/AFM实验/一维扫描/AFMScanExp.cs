@@ -29,6 +29,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
     {
         CustomScan1DLineSession<NanoStageInfo, NanoStageInfo> PointsScanSession = new CustomScan1DLineSession<NanoStageInfo, NanoStageInfo>();
 
+        public override bool Is1DScanExp { get; set; } = true;
+        public override bool Is2DScanExp { get; set; } = false;
+
         public override string ODMRExperimentName { get; set; } = "";
         public override string ODMRExperimentGroupName { get; set; } = "AFM线扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()

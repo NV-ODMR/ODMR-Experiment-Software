@@ -7,6 +7,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {
     public partial class MagnetLoc : ODMRExperimentWithoutAFM
     {
+        public override bool Is1DScanExp { get; set; } = false;
+        public override bool Is2DScanExp { get; set; } = false;
+
         /// <summary>
         /// 角度检查
         /// </summary>
@@ -59,14 +62,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             #region 计算结果
             double v1 = Bp1 / B1;
             double v2 = Bp2 / B2;
-            if (v1 < v2)
+            if (v1 > v2)
             {
                 OutputParams.Add(new Param<double>("NV朝向θ", GetOutputParamValueByName("Theta1"), "CheckedTheta"));
                 OutputParams.Add(new Param<double>("NV朝向φ", GetOutputParamValueByName("Phi1"), "CheckedPhi"));
             }
             else
             {
-                OutputParams.Add(new Param<double>("NV朝向θ", GetOutputParamValueByName("Theta2"), "CheckedTheta"));
+                OutputParams.Add(new Param<double>("NV朝向θ", GetOutputParamValueByName("Theta1"), "CheckedTheta"));
                 OutputParams.Add(new Param<double>("NV朝向φ", GetOutputParamValueByName("Phi2"), "CheckedPhi"));
             }
             #endregion

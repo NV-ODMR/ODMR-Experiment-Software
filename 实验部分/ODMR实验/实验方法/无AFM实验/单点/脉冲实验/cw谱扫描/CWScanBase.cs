@@ -72,7 +72,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 
         private List<object> ScanEvent(RFSourceInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            PulsePhotonPack pack = DoPulseExp(locvalue, GetRFPower(), GetLoopCount(), 4, GetPointTimeout());
+            PulsePhotonPack pack = DoPulseExp("CW", locvalue, GetRFPower(), GetLoopCount(), 4, GetPointTimeout());
 
             double signal = pack.GetPhotonsAtIndex(0).Sum();
             double reference = pack.GetPhotonsAtIndex(1).Sum();
@@ -173,11 +173,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         protected List<double> GetSignalCounts()
         {
             return (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data; ;
-        }
-
-        protected override SequenceDataAssemble GetExperimentSequence()
-        {
-            return SequenceDataAssemble.ReadFromSequenceName("CW");
         }
     }
 }

@@ -35,9 +35,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
     /// </summary>
     public partial class MagnetLoc : ODMRExperimentWithoutAFM
     {
-        public override string ODMRExperimentName { get; set; } = "磁场定位（确定NV朝向）";
+        public override string ODMRExperimentName { get; set; } = "定位程序（确定NV朝向）";
 
-        public override string ODMRExperimentGroupName { get; set; } = "定位操作";
+        public override string ODMRExperimentGroupName { get; set; } = "磁场定位";
         public override bool IsAFMSubExperiment { get; protected set; } = false;
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
@@ -101,10 +101,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             ScanX(0, 20);
             SetExpState("正在扫描Y轴...");
             //旋转台移动到轴向沿X
+            Thread.Sleep(500);
             (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleY(), 60000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //移动X到最大值
-            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("XLoc"), 60000);
+            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("XLoc"), 10000);
             //Y方向扫描
             ScanY(20, 40);
             JudgeThreadEndOrResumeAction?.Invoke();
@@ -115,7 +116,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("YLoc"), 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //Z扫描
-            ScanZ(40, 60);
+            //ScanZ(40, 60);
+            OutputParams.Add(new Param<double>("Z方向参考位置", 21.5, "ZLoc"));
+            OutputParams.Add(new Param<double>("参考位置与NV的距离", 9.25545, "ZDistance"));
             JudgeThreadEndOrResumeAction?.Invoke();
             //角度扫描
             SetExpState("正在扫描角度轴...");

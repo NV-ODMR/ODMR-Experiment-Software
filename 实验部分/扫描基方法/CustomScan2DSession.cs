@@ -94,7 +94,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
                     {
                         if (range.ScanPoints[i].Tag != range.ScanPoints[i - 1].Tag)
                         {
-                            result = StartScanNewLineEvent?.Invoke(ScanSource1, ScanSource2, range, range.ScanPoints[i].LocPoint, ps.ToList());
+                            result = StartScanNewLineEvent?.Invoke(ScanSource1, ScanSource2, range, range.ScanPoints[i].LocPoint, result.ToList());
                             StateJudgeEvent?.Invoke();
                             SetProgress(progress[i]);
                             SetStateMethod?.Invoke(ScanSource1, ScanSource2, range.ScanPoints[i].LocPoint);
@@ -102,13 +102,13 @@ namespace ODMR_Lab.实验部分.扫描基方法
                         }
                         if (i == range.ScanPoints.Count - 1 || range.ScanPoints[i].Tag != range.ScanPoints[i + 1].Tag)
                         {
-                            result = EndScanNewLineEvent?.Invoke(ScanSource1, ScanSource2, range, range.ScanPoints[i].LocPoint, ps.ToList());
+                            result = EndScanNewLineEvent?.Invoke(ScanSource1, ScanSource2, range, range.ScanPoints[i].LocPoint, result.ToList());
                             StateJudgeEvent?.Invoke();
                             SetProgress(progress[i]);
                             SetStateMethod?.Invoke(ScanSource1, ScanSource2, range.ScanPoints[i].LocPoint);
                             continue;
                         }
-                        result = ScanEvent?.Invoke(ScanSource1, ScanSource2, range, range.ScanPoints[i].LocPoint, ps.ToList());
+                        result = ScanEvent?.Invoke(ScanSource1, ScanSource2, range, range.ScanPoints[i].LocPoint, result.ToList());
                         StateJudgeEvent?.Invoke();
                         SetProgress(progress[i]);
                         SetStateMethod?.Invoke(ScanSource1, ScanSource2, range.ScanPoints[i].LocPoint);
