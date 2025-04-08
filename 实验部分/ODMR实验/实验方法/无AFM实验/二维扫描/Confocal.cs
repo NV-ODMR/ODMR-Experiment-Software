@@ -29,9 +29,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描
 {
     public class Confocal : Scan2DExpBase<NanoStageInfo, NanoStageInfo>
     {
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = true;
-
         public override string ODMRExperimentName { get; set; } = "共聚焦扫描";
         public override string ODMRExperimentGroupName { get; set; } = "实空间二维实验";
 

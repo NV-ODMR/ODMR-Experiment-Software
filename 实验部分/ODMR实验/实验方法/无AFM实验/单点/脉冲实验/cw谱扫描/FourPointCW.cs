@@ -11,8 +11,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.CW�
 {
     internal class FourPointCW : CWBase
     {
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "CW四频点";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {

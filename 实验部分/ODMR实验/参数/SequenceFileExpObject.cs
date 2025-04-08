@@ -140,6 +140,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
             #endregion
         }
 
+
         protected override void InnerRead(FileObject fobj)
         {
             #region 导入实验名
@@ -202,57 +203,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
                 }
             }
             #endregion
-        }
-
-        /// <summary>
-        /// 根据参数名获取输入参数
-        /// </summary>
-        /// <param name="description"></param>
-        /// <returns></returns>
-        public dynamic GetInputParamValueByName(string name)
-        {
-            foreach (var item in InputParams)
-            {
-                if (item.PropertyName == "Input_" + name)
-                {
-                    return ParamB.GetUnknownParamValue(item);
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 根据描述获取输入参数
-        /// </summary>
-        /// <param name="description"></param>
-        /// <returns></returns>
-        public dynamic GetOutPutParamValueByDescription(string description)
-        {
-            foreach (var item in OutputParams)
-            {
-                if (item.Description == description)
-                {
-                    return ParamB.GetUnknownParamValue(item);
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 根据参数名获取输入参数
-        /// </summary>
-        /// <param name="description"></param>
-        /// <returns></returns>
-        public dynamic GetOutputParamValueByName(string name)
-        {
-            foreach (var item in OutputParams)
-            {
-                if (item.PropertyName == name || item.PropertyName == "Output_" + name)
-                {
-                    return ParamB.GetUnknownParamValue(item);
-                }
-            }
-            return null;
         }
     }
 }

@@ -29,9 +29,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 {
     class LockInDelay : PulseExpBase
     {
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = false;
-
         public override bool IsDisplayAsExp { get; set; } = false;
 
         /// <summary>
@@ -59,6 +56,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
+
+        protected override SequenceDataAssemble GetExperimentSequence()
+        {
+            return SequenceDataAssemble.ReadFromSequenceName(GetInputParamValueByName("TestSequences"));
+        }
 
         public override bool IsAFMSubExperiment { get; protected set; } = false;
 
