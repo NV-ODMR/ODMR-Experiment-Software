@@ -65,9 +65,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
         };
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = false;
-
         public override bool PreConfirmProcedure()
         {
             if (MessageWindow.ShowMessageBox("提示", "历史数据将被清除,是否要继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
@@ -98,7 +95,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 
         private List<object> ScanEvent(RFSourceInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            PulsePhotonPack pack = DoPulseExp("CW", locvalue, GetInputParamValueByName("RFPower"), GetInputParamValueByName("LoopCount"), 4, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack pack = DoPulseExp(locvalue, GetInputParamValueByName("RFPower"), GetInputParamValueByName("LoopCount"), 4, GetInputParamValueByName("TimeOut"));
 
             double signal = pack.GetPhotonsAtIndex(0).Sum();
             double reference = pack.GetPhotonsAtIndex(1).Sum();
@@ -176,8 +173,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 
             int deducetime = 0;
             deducetime = GetInputParamValueByName("PeakCount");
-            List<double> freqs = Get1DChartDataSource("频率", "CW对比度数据").ToArray().ToList();
-            List<double> contracts = Get1DChartDataSource("对比度", "CW对比度数据").ToArray().ToList();
+            List<double> freqs = Get1DChartDataSource("频率", "CW对比度数据");
+            List<double> contracts = Get1DChartDataSource("对比度", "CW对比度数据");
 
 
             string expression = "-(0.25*a*b*b)/((x-c)*(x-c)+0.25*b*b)";
@@ -187,8 +184,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
                 try
                 {
                     double min = contracts.Min();
-                    if (min < -0.05)
-                        min = min;
                     double peakwidth = GetInputParamValueByName("PeakWidth");
                     double peakloc = freqs[contracts.IndexOf(contracts.Min())];
                     //拟合
@@ -198,12 +193,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
                     double fittedcontrast = contracts[data.IndexOf(data.Min())];
                     double fittedpeakwidth = ps[1];
                     contracts = contracts.Zip(freqs.Select(x => LorentzFunc(x, new double[] { Math.Abs(fittedcontrast), fittedpeakwidth, fittedloc })), new Func<double, double, double>((x, y) => x - y)).ToList();
-                    if (Peaks.Count == 0 || Math.Abs(Peaks.Last() - fittedloc) > 0.1)
-                    {
-                        Peaks.Add(fittedloc);
-                        Contracts.Add(fittedcontrast);
-                        Widths.Add(fittedpeakwidth);
-                    }
+                    Peaks.Add(fittedloc);
+                    Contracts.Add(fittedcontrast);
+                    Widths.Add(fittedpeakwidth);
                 }
                 catch (Exception)
                 {
@@ -328,6 +320,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         protected List<double> GetSignalCounts()
         {
             return (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data; ;
+        }
+
+        protected override SequenceDataAssemble GetExperimentSequence()
+        {
+            return SequenceDataAssemble.ReadFromSequenceName("CW");
         }
 
         public override List<ParentPlotDataPack> GetD1PlotPacks()

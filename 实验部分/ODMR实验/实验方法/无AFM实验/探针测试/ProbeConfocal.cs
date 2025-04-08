@@ -27,9 +27,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
 {
     public class Confocal : Scan2DExpBase<NanoStageInfo, NanoStageInfo>
     {
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = true;
-
         public override string ODMRExperimentName { get; set; } = "阵列探针测试(共聚焦,AutoTrace,CW)";
         public override string ODMRExperimentGroupName { get; set; } = "探针测试";
 

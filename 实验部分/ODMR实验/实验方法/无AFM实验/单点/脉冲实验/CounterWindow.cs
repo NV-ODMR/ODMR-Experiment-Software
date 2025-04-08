@@ -25,9 +25,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 {
     class CounterWindow : PulseExpBase
     {
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = false;
-
         public override string ODMRExperimentName { get; set; } = "光子收集窗口测试";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
@@ -85,7 +82,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             //设置窗口宽度
             GlobalPulseParams.SetGlobalPulseLength("CounterWindowWidth", GetInputParamValueByName("WindowWidth"));
 
-            PulsePhotonPack photonpack = DoPulseExp("CounterWindow", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack photonpack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
 
             double signalcount = photonpack.GetPhotonsAtIndex(0).Sum();
             double refcount = photonpack.GetPhotonsAtIndex(1).Sum();
@@ -165,6 +162,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
             return PlotData;
+        }
+
+        protected override SequenceDataAssemble GetExperimentSequence()
+        {
+            return SequenceDataAssemble.ReadFromSequenceName("CounterWindow");
         }
     }
 }

@@ -47,6 +47,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
 
         protected abstract List<KeyValuePair<string, Action>> AddPulseInteractiveButtons();
 
+
+        protected abstract SequenceDataAssemble GetExperimentSequence();
+
         /// <summary>
         /// 获取脉冲实验的光子计数,返回相邻两个计数脉冲之间的计数,失败则报错
         /// </summary>
@@ -54,14 +57,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="rfpower">微波功率(dbm)</param>
         /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>>
         /// <returns></returns>
-        protected PulsePhotonPack DoPulseExp(string pulsename, double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
+        protected PulsePhotonPack DoPulseExp(double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
         {
             //设置微波
             RFSourceInfo Rf = GetDeviceByName("RFSource") as RFSourceInfo;
             Rf.Device.RFFrequency = rffrequency;
             Rf.Device.RFAmplitude = rfpower;
             //设置序列
-            var sequence = SequenceDataAssemble.ReadFromSequenceName(pulsename);
+            var sequence = GetExperimentSequence();
             //设置全局参数
             foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
             {

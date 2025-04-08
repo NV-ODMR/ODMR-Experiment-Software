@@ -37,14 +37,12 @@ namespace ODMR_Lab.ODMR实验
     {
         public DisplayPage ParentPage = null;
 
-        public bool IsAutoSave { get; set; } = true;
+        public bool IsAutoSave { get; set; } = false;
 
         public virtual bool IsDisplayAsExp { get; set; } = true;
 
         #region 二维和一维扫描范围
-        public abstract bool Is1DScanExp { get; set; }
         public D1PointsScanRangeBase D1ScanRange { get; set; } = null;
-        public abstract bool Is2DScanExp { get; set; }
         public D2ScanRangeBase D2ScanRange { get; set; } = null;
 
         /// <summary>
@@ -86,6 +84,22 @@ namespace ODMR_Lab.ODMR实验
             }
         }
 
+        public static bool Is2DScanExperiment(ODMRExpObject exp)
+        {
+            Type ptype = exp.GetType();
+            while (ptype != null)
+            {
+                string name = ptype.FullName;
+                if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
+                if (name == typeof(AFMScan2DExp).FullName || name == typeof(Scan2DExpBase<,>).FullName)
+                {
+                    return true;
+                }
+                ptype = ptype.BaseType;
+            }
+            return false;
+        }
+
         public static bool IsAFMScanExperiment(ODMRExpObject exp)
         {
             Type ptype = exp.GetType();
@@ -94,6 +108,22 @@ namespace ODMR_Lab.ODMR实验
                 string name = ptype.FullName;
                 if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
                 if (name == typeof(AFMScan1DExp).FullName || name == typeof(AFMScan2DExp).FullName)
+                {
+                    return true;
+                }
+                ptype = ptype.BaseType;
+            }
+            return false;
+        }
+
+        public static bool Is1DScanExperiment(ODMRExpObject exp)
+        {
+            Type ptype = exp.GetType();
+            while (ptype != null)
+            {
+                string name = ptype.FullName;
+                if (ptype.IsGenericType) name = ptype.GetGenericTypeDefinition().FullName;
+                if (name == typeof(AFMScan1DExp).FullName)
                 {
                     return true;
                 }

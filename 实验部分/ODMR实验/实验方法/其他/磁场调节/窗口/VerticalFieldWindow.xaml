@@ -1,0 +1,51 @@
+﻿<Window x:Class="ODMR_Lab.实验部分.ODMR实验.实验方法.其他.VerticalFieldWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Controls="clr-namespace:Controls;assembly=Controls"
+        mc:Ignorable="d"
+            Title="垂直磁场计算" Height="255" Width="568" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="0" Content="垂直磁场计算" x:Name="WindowTitle" IsHitTestVisible="False" Grid.ColumnSpan="3" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
+        <Controls:DecoratedButton Name="CloseBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Close" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <Grid Grid.Row="1" Grid.ColumnSpan="5" Margin="50,30,50,30">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="NV轴方位角θ" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="10"/>
+            <TextBox Grid.Row="0" Margin="3" Grid.Column="1" Grid.ColumnSpan="1" x:Name="NVTheta" IsReadOnly="False" BorderThickness="0" FontSize="15" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+            <Label Content="NV轴方位角φ" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="10"/>
+            <TextBox Grid.Row="0" Margin="2" Grid.Column="3" Grid.ColumnSpan="1" x:Name="NVPhi" IsReadOnly="False" BorderThickness="0" FontSize="15" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+            <Label Content="垂直基准轴方位角θ" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="10"/>
+            <TextBox Grid.Row="1" Margin="3" Grid.Column="1" Grid.ColumnSpan="1" x:Name="VerticalTheta" IsReadOnly="False" BorderThickness="0" FontSize="15" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+            <Label Content="垂直基准轴方位角φ" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="10"/>
+            <TextBox Grid.Row="1" Margin="2" Grid.Column="3" Grid.ColumnSpan="1" x:Name="VerticalPhi" IsReadOnly="False" BorderThickness="0" FontSize="15" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+            <Label Content="目标方位角θ" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="10"/>
+            <TextBox Grid.Row="3" Margin="3"  Grid.Column="1" Grid.ColumnSpan="1" x:Name="targetTheta" IsReadOnly="True" BorderThickness="0" FontSize="15" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+            <Label Content="目标方位角φ" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="10"/>
+            <TextBox Grid.Row="3" Margin="2" Grid.Column="3" Grid.ColumnSpan="1" x:Name="targetPhi" IsReadOnly="True" BorderThickness="0" FontSize="15" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+            <Controls:DecoratedButton Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="4" Margin="5" Click="Calc" Text="计算目标角度" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+            <Label Content="旋转角度" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="10"/>
+            <TextBox Grid.Row="2" Margin="3,3,3,3" Grid.Column="1" Grid.ColumnSpan="1" x:Name="RotateAngle" IsReadOnly="False" BorderThickness="0" FontSize="15" Text="" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF383838" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        </Grid>
+    </Grid>
+</Window>

@@ -28,9 +28,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 {
     class Rabi : PulseExpBase
     {
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = false;
-
         public override string ODMRExperimentName { get; set; } = "拉比频率测量(Rabi)";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
@@ -57,6 +54,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
 
+        protected override SequenceDataAssemble GetExperimentSequence()
+        {
+            return SequenceDataAssemble.ReadFromSequenceName("Rabi");
+        }
+
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
         public List<object> FirstScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
@@ -78,7 +80,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)locvalue);
 
-            PulsePhotonPack pack = DoPulseExp("Rabi", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 8, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 8, GetInputParamValueByName("TimeOut"));
 
             double signalcountX = pack.GetPhotonsAtIndex(0).Sum();
             double refcountX = pack.GetPhotonsAtIndex(1).Sum();

@@ -335,15 +335,11 @@ namespace ODMR_Lab.基本控件
 
         private void Snap(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(ChartObject));
-                TimeWindow window = new TimeWindow();
-                window.Owner = Window.GetWindow(this);
-                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                window.ShowWindow("截图已复制到剪切板");
-            }
-            catch (Exception ex) { }
+            Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(ChartObject));
+            TimeWindow window = new TimeWindow();
+            window.Owner = Window.GetWindow(this);
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.ShowWindow("截图已复制到剪切板");
         }
 
         private void SaveAsExternal(object sender, RoutedEventArgs e)
