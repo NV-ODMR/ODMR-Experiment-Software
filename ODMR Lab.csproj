@@ -200,15 +200,13 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\CheckAngle.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ExpEvent.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\Magnet.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\MagnetAutoScanHelper.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\MagnetLoc.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanAngle.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanHelper.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanXY.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanZ.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\Magnetcc.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml.cs">
-      <DependentUpon>VerticalFieldWindow.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\OffsetCalculator.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\MIntensityWindow.xaml.cs">
       <DependentUpon>MIntensityWindow.xaml</DependentUpon>
     </Compile>
@@ -216,6 +214,11 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\PredictWindow.xaml.cs">
       <DependentUpon>PredictWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml.cs">
+      <DependentUpon>VerticalFieldWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\通用方法\MagnetLocParams.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\通用方法\ScanTool.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ODMRExperimentWithoutAFM.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ParentPlotDataPack.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Scan2DExpBase.cs" />
@@ -451,7 +454,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml">
+    <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\MIntensityWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -461,7 +464,7 @@
     </Page>
     <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="实验部分\ODMR实验\窗口\ExperimentEmptyWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -65,11 +65,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 Vector3D nvaxis = new Vector3D(Math.Cos(nvphi) * Math.Sin(nvtheta), Math.Sin(nvphi) * Math.Sin(nvtheta), Math.Cos(nvtheta));
                 Vector3D verticalaxis = new Vector3D(Math.Cos(verticalphi) * Math.Sin(verticaltheta), Math.Sin(verticalphi) * Math.Sin(verticaltheta), Math.Cos(verticaltheta));
                 var mat = CalculateRotationMatrix(nvaxis, rotateangle);
-                RealMatrix vec = new RealMatrix(new List<List<double>>() { new List<double>() { verticalaxis.X },
+                RealMatrix vec = new RealMatrix(3, 1)
+                {
+                    Content = new List<List<double>>() { new List<double>() { verticalaxis.X },
                     new List<double>() { verticalaxis.Y },
-                    new List<double>() { verticalaxis.Z }});
+                    new List<double>() { verticalaxis.Z }}
+                };
                 var res = mat * vec;
-                Vector3D result = new Vector3D(res.Content[0][0], res.Content[0][1], res.Content[0][2]);
+                Vector3D result = new Vector3D(res.Content[0][0], res.Content[1][0], res.Content[2][0]);
                 result.Normalize();
                 //计算角度
                 double phi = Math.Atan2(result.Y, result.X) * 180 / Math.PI;
@@ -119,9 +122,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double m32 = yz * oneMinusCos + xSin;
             double m33 = cosTheta + zSq * oneMinusCos;
 
-            return new RealMatrix(new List<List<double>> { new List<double> { m11, m12, m13 },
+            var mat = new RealMatrix(3, 3);
+            mat.Content = new List<List<double>> { new List<double> { m11, m12, m13 },
                     new List<double>() { m21, m22, m23 },
-                    new List<double>() { m31, m32, m33 } });
+                    new List<double>() { m31, m32, m33 } };
+
+            return mat;
         }
     }
 }
