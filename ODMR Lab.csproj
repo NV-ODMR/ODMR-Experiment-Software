@@ -216,11 +216,6 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\PredictWindow.xaml.cs">
       <DependentUpon>PredictWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml.cs">
-      <DependentUpon>VerticalFieldWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\通用方法\MagnetLocParams.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\通用方法\ScanTool.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ODMRExperimentWithoutAFM.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ParentPlotDataPack.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Scan2DExpBase.cs" />
