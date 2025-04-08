@@ -25,6 +25,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 {
     class T2 : PulseExpBase
     {
+        public override bool Is1DScanExp { get; set; } = false;
+        public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "退相干时间测量(T2*)";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
@@ -50,11 +52,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
 
-        protected override SequenceDataAssemble GetExperimentSequence()
-        {
-            return SequenceDataAssemble.ReadFromSequenceName("T2Star");
-        }
-
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
         public List<object> FirstScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
@@ -76,7 +73,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             GlobalPulseParams.SetGlobalPulseLength("T2StarStep", (int)locvalue);
 
-            PulsePhotonPack pack = DoPulseExp(GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack pack = DoPulseExp("T2Star", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
 
             double signalcount = pack.GetPhotonsAtIndex(0).Average();
             double refcount = pack.GetPhotonsAtIndex(1).Average();

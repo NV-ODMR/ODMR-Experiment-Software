@@ -33,6 +33,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
     /// </summary>
     class AutoTrace : ODMRExperimentWithoutAFM
     {
+        public override bool Is1DScanExp { get; set; } = false;
+        public override bool Is2DScanExp { get; set; } = false;
+
         public override string ODMRExperimentName { get; set; } = "AutoTrace";
 
         public override string ODMRExperimentGroupName { get; set; } = "定位操作";
@@ -177,7 +180,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double c = locs[counts.IndexOf(counts.Max())];
             //偏移量
             double d = counts.Min();
-            var fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 2000);
+            var fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 5000);
 
             a = fitresult1["a"];
             b = fitresult1["b"];
@@ -229,7 +232,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             c = locs[counts.IndexOf(counts.Max())];
             //偏移量
             d = counts.Min();
-            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 2000);
+            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 5000);
 
             a = fitresult1["a"];
             b = fitresult1["b"];
@@ -281,7 +284,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             c = locs[counts.IndexOf(counts.Max())];
             //偏移量
             d = counts.Min();
-            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 2000);
+            fitresult1 = Fitting.FitCurve(locs, counts, new List<double>() { a, b, c, d }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 5000);
 
             a = fitresult1["a"];
             b = fitresult1["b"];

@@ -60,21 +60,17 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+    <Reference Include="CodeHelper">
+      <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+    <Reference Include="Controls">
+      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
-    <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+    <Reference Include="HardWares">
+      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
-    <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+    <Reference Include="MathLib">
+      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -88,9 +84,8 @@
     <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>packages\OpenCvSharp4.Extensions.4.10.0.20241108\lib\netstandard2.0\OpenCvSharp.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+    <Reference Include="PythonHandler">
+      <HintPath>..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -202,14 +197,17 @@
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOff.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOn.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\ScanCoreBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\AFMTest.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\CheckAngle.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ExpEvent.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\Magnet.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\MagnetAutoScanHelper.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanHelper.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\MagnetLoc.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanAngle.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanXY.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanZ.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\OffsetCalculator.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\MIntensityWindow.xaml.cs">
       <DependentUpon>MIntensityWindow.xaml</DependentUpon>
     </Compile>
@@ -220,6 +218,8 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\PredictWindow.xaml.cs">
       <DependentUpon>PredictWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\通用方法\MagnetLocParams.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\通用方法\ScanTool.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ODMRExperimentWithoutAFM.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\ParentPlotDataPack.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Scan2DExpBase.cs" />
