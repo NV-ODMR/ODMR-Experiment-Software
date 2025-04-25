@@ -42,28 +42,28 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.通�
             SequenceFileExpObject fobj = new SequenceFileExpObject();
             if (fobj.ReadFromExplorer(out filepath))
             {
-                if (fobj.ODMRExperimentName != "定位程序(确定NV朝向)" || fobj.ODMRExperimentGroupName != "磁场定位")
+                if (fobj.ODMRExperimentName != "定位程序（确定NV朝向）" || fobj.ODMRExperimentGroupName != "磁场定位")
                 {
                     throw new Exception();
                 }
                 //查找参数
                 MagnetLocParams Ps = new MagnetLocParams();
-                Ps.XLoc = fobj.GetOutputParamValueByName("XLoc");
-                Ps.YLoc = fobj.GetOutputParamValueByName("YLoc");
-                Ps.ZLoc = fobj.GetOutputParamValueByName("ZLoc");
-                Ps.ZDistance = fobj.GetOutputParamValueByName("ZDistance");
-                Ps.CheckedTheta = fobj.GetOutputParamValueByName("CheckedTheta");
-                Ps.D = fobj.GetInputParamValueByName("D");
-                Ps.CheckedPhi = fobj.GetOutputParamValueByName("CheckedPhi");
-                Ps.XReverse = fobj.GetInputParamValueByName("XReverse");
-                Ps.YReverse = fobj.GetInputParamValueByName("YReverse");
-                Ps.ZReverse = fobj.GetInputParamValueByName("ZReverse");
-                Ps.AReverse = fobj.GetInputParamValueByName("AReverse");
-                Ps.AngleStart = fobj.GetInputParamValueByName("AngleStart");
-                Ps.MRadius = fobj.GetInputParamValueByName("MRadius");
-                Ps.MLength = fobj.GetInputParamValueByName("MLength");
-                Ps.OffsetX = fobj.GetInputParamValueByName("OffsetX");
-                Ps.OffsetY = fobj.GetInputParamValueByName("OffsetY");
+                Ps.XLoc = double.Parse(fobj.GetOutputParamValueByName("XLoc"));
+                Ps.YLoc = double.Parse(fobj.GetOutputParamValueByName("YLoc"));
+                Ps.ZLoc = double.Parse(fobj.GetOutputParamValueByName("ZLoc"));
+                Ps.ZDistance = double.Parse(fobj.GetOutputParamValueByName("ZDistance"));
+                Ps.CheckedTheta = double.Parse(fobj.GetOutputParamValueByName("CheckedTheta"));
+                Ps.D = double.Parse(fobj.GetInputParamValueByName("D"));
+                Ps.CheckedPhi = double.Parse(fobj.GetOutputParamValueByName("CheckedPhi"));
+                Ps.XReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseX"));
+                Ps.YReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseY"));
+                Ps.ZReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseZ"));
+                Ps.AReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseA"));
+                Ps.AngleStart = double.Parse(fobj.GetInputParamValueByName("AngleStart"));
+                Ps.MRadius = double.Parse(fobj.GetInputParamValueByName("MRadius"));
+                Ps.MLength = double.Parse(fobj.GetInputParamValueByName("MLength"));
+                Ps.OffsetX = double.Parse(fobj.GetInputParamValueByName("OffsetX"));
+                Ps.OffsetY = double.Parse(fobj.GetInputParamValueByName("OffsetY"));
                 return Ps;
             }
             return null;
@@ -78,28 +78,28 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.通�
             SequenceFileExpObject fobj = new SequenceFileExpObject();
             if (fobj.ReadFromFile(filepath))
             {
-                if (fobj.ODMRExperimentName != "定位程序(确定NV朝向)" || fobj.ODMRExperimentGroupName != "磁场定位")
+                if (fobj.ODMRExperimentName != "定位程序（确定NV朝向）" || fobj.ODMRExperimentGroupName != "磁场定位")
                 {
                     throw new Exception();
                 }
                 //查找参数
                 MagnetLocParams Ps = new MagnetLocParams();
-                Ps.XLoc = fobj.GetOutputParamValueByName("XLoc");
-                Ps.YLoc = fobj.GetOutputParamValueByName("YLoc");
-                Ps.ZLoc = fobj.GetOutputParamValueByName("ZLoc");
-                Ps.ZDistance = fobj.GetOutputParamValueByName("ZDistance");
-                Ps.CheckedTheta = fobj.GetOutputParamValueByName("CheckedTheta");
-                Ps.D = fobj.GetInputParamValueByName("D");
-                Ps.CheckedPhi = fobj.GetOutputParamValueByName("CheckedPhi");
-                Ps.XReverse = fobj.GetInputParamValueByName("XReverse");
-                Ps.YReverse = fobj.GetInputParamValueByName("YReverse");
-                Ps.ZReverse = fobj.GetInputParamValueByName("ZReverse");
-                Ps.AReverse = fobj.GetInputParamValueByName("AReverse");
-                Ps.AngleStart = fobj.GetInputParamValueByName("AngleStart");
-                Ps.MRadius = fobj.GetInputParamValueByName("MRadius");
-                Ps.MLength = fobj.GetInputParamValueByName("MLength");
-                Ps.OffsetX = fobj.GetInputParamValueByName("OffsetX");
-                Ps.OffsetY = fobj.GetInputParamValueByName("OffsetY");
+                Ps.XLoc = double.Parse(fobj.GetOutputParamValueByName("XLoc"));
+                Ps.YLoc = double.Parse(fobj.GetOutputParamValueByName("YLoc"));
+                Ps.ZLoc = double.Parse(fobj.GetOutputParamValueByName("ZLoc"));
+                Ps.ZDistance = double.Parse(fobj.GetOutputParamValueByName("ZDistance"));
+                Ps.CheckedTheta = double.Parse(fobj.GetOutputParamValueByName("CheckedTheta"));
+                Ps.D = double.Parse(fobj.GetInputParamValueByName("D"));
+                Ps.CheckedPhi = double.Parse(fobj.GetOutputParamValueByName("CheckedPhi"));
+                Ps.XReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseX"));
+                Ps.YReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseY"));
+                Ps.ZReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseZ"));
+                Ps.AReverse = bool.Parse(fobj.GetInputParamValueByName("ReverseA"));
+                Ps.AngleStart = double.Parse(fobj.GetInputParamValueByName("AngleStart"));
+                Ps.MRadius = double.Parse(fobj.GetInputParamValueByName("MRadius"));
+                Ps.MLength = double.Parse(fobj.GetInputParamValueByName("MLength"));
+                Ps.OffsetX = double.Parse(fobj.GetInputParamValueByName("OffsetX"));
+                Ps.OffsetY = double.Parse(fobj.GetInputParamValueByName("OffsetY"));
                 return Ps;
             }
             return null;

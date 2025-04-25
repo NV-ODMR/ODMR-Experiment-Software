@@ -147,6 +147,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             int Loop = GetInputParamValueByName("LoopCount");//外部循环
             double progressstep = 100 / Loop;//进度条
+            RFSourceInfo info = GetDeviceByName("RFSource") as RFSourceInfo;
+            info.Device.IsRFOutOpen = true;
             for (int i = 0; i < Loop; i++)
             {
                 CurrentLoop = i;
@@ -206,9 +208,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void AfterExpEventWithoutAFM()
         {
-            RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
-            RF.Device.IsRFOutOpen = false;
-
             #region 计算通道X Rabi脉冲周期
             var xs = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
             var ys_x = Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
@@ -234,7 +233,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
             }
 
-            double[] ps_x = CurveFitting.FitCurveWithFunc(xs, ys_x, new List<double>() { a_x, tau, b_x, c_x, d_x }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 5000);
+            double[] ps_x = CurveFitting.FitCurveWithFunc(xs, ys_x, new List<double>() { a_x, tau, b_x, c_x, d_x }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
 
             //设置拟合曲线
             var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;
@@ -277,7 +276,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
             }
 
-            double[] ps_y = CurveFitting.FitCurveWithFunc(xs, ys_y, new List<double>() { a_y, tau, b_y, c_y, d_y }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 5000);
+            double[] ps_y = CurveFitting.FitCurveWithFunc(xs, ys_y, new List<double>() { a_y, tau, b_y, c_y, d_y }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
 
             //设置拟合曲线
             //var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;

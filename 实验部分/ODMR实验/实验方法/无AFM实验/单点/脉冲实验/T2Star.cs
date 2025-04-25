@@ -75,8 +75,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             PulsePhotonPack pack = DoPulseExp("T2Star", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
 
-            double signalcount = pack.GetPhotonsAtIndex(0).Average();
-            double refcount = pack.GetPhotonsAtIndex(1).Average();
+            double signalcount = pack.GetPhotonsAtIndex(0).Sum();
+            double refcount = pack.GetPhotonsAtIndex(1).Sum();
 
             var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2*对比度数据");
             var signal = Get1DChartDataSource("退相干信号对比度[(sig-ref)/ref]", "T2*对比度数据");

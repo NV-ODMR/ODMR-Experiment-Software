@@ -280,6 +280,16 @@ namespace ODMR_Lab.ODMR实验
             InterativeButtons = AddInteractiveButtons();
         }
 
+        protected void AddDevicesToList(List<KeyValuePair<DeviceTypes, Param<string>>> vs)
+        {
+            foreach (var item in vs)
+            {
+                item.Value.PropertyName = "Device_" + item.Value.PropertyName;
+                item.Value.GroupName = ODMRExperimentGroupName;
+                DeviceList.Add(item);
+            }
+        }
+
         /// <summary>
         /// 添加交互按钮
         /// </summary>

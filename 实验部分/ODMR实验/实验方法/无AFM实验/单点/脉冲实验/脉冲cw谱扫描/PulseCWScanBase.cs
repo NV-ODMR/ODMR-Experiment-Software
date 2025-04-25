@@ -25,9 +25,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲CW谱扫描
 {
-    public abstract class CWBase : PulseExpBase
+    public abstract class PulseCWBase : PulseExpBase
     {
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
@@ -56,40 +56,47 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 
         private List<object> FirstScanEvent(RFSourceInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            //新建数据集
-            D1ChartDatas = new List<ChartData1D>()
-            {
-                new NumricChartData1D("频率","CW对比度数据",ChartDataType.X),
-                new NumricChartData1D("对比度","CW对比度数据",ChartDataType.Y),
-                new NumricChartData1D("频率","CW荧光计数",ChartDataType.X),
-                new NumricChartData1D("信号总计数","CW荧光计数",ChartDataType.Y),
-                new NumricChartData1D("参考信号总计数","CW荧光计数",ChartDataType.Y),
-            };
-            UpdatePlotChart();
-            Show1DChartData("CW对比度数据", "频率", "对比度");
             return ScanEvent(device, range, locvalue, inputParams);
         }
 
         private List<object> ScanEvent(RFSourceInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
-            PulsePhotonPack pack = DoPulseExp("CW", locvalue, GetRFPower(), GetLoopCount(), 4, GetPointTimeout());
-
-            double signal = pack.GetPhotonsAtIndex(0).Sum();
-            double reference = pack.GetPhotonsAtIndex(1).Sum();
+            SetExpState("当前扫描轮数:" + loopcount.ToString() + " 当前频率:" + locvalue.ToString());
+            PulsePhotonPack pack = DoPulseExp("PulseCW", locvalue, GetRFPower(), GetPulseLoopCount(), 4, GetPointTimeout());
+            double signalc = pack.GetPhotonsAtIndex(0).Sum();
+            double referencec = pack.GetPhotonsAtIndex(1).Sum();
             double contrast = 0;
             try
             {
-                contrast = (signal - reference) / reference;
+                contrast = (signalc - referencec) / referencec;
             }
             catch (Exception)
             {
             }
 
-            (Get1DChartData("频率", "CW对比度数据") as NumricChartData1D).Data.Add(locvalue);
-            (Get1DChartData("对比度", "CW对比度数据") as NumricChartData1D).Data.Add(contrast);
-            (Get1DChartData("频率", "CW荧光计数") as NumricChartData1D).Data.Add(locvalue);
-            (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(signal);
-            (Get1DChartData("参考信号总计数", "CW荧光计数") as NumricChartData1D).Data.Add(reference);
+            int ind = range.GetNearestFormalIndex(locvalue);
+            var contrfreq = Get1DChartDataSource("频率", "CW对比度数据");
+            var signal = Get1DChartDataSource("对比度", "CW对比度数据");
+
+            var florfreq = Get1DChartDataSource("频率", "CW荧光计数");
+            var count = Get1DChartDataSource("信号总计数", "CW荧光计数");
+            var sigcount = Get1DChartDataSource("参考信号总计数", "CW荧光计数");
+
+            if (ind >= contrfreq.Count)
+            {
+                contrfreq.Add(locvalue);
+                florfreq.Add(locvalue);
+                signal.Add(contrast);
+                count.Add(signalc);
+                sigcount.Add(referencec);
+            }
+            else
+            {
+                signal[ind] = (signal[ind] * loopcount + contrast) / (loopcount + 1);
+                count[ind] = (count[ind] * loopcount + signalc) / (loopcount + 1);
+                sigcount[ind] = (sigcount[ind] * loopcount + referencec) / (loopcount + 1);
+            }
+
             UpdatePlotChartFlow(true);
             return new List<object>();
         }
@@ -106,6 +113,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 
         public override void PreExpEventWithoutAFM()
         {
+            //新建数据集
+            D1ChartDatas = new List<ChartData1D>()
+            {
+                new NumricChartData1D("频率","CW对比度数据",ChartDataType.X),
+                new NumricChartData1D("对比度","CW对比度数据",ChartDataType.Y),
+                new NumricChartData1D("频率","CW荧光计数",ChartDataType.X),
+                new NumricChartData1D("信号总计数","CW荧光计数",ChartDataType.Y),
+                new NumricChartData1D("参考信号总计数","CW荧光计数",ChartDataType.Y),
+            };
+            UpdatePlotChart();
+            Show1DChartData("CW对比度数据", "频率", "对比度");
         }
 
         public override void AfterExpEventWithoutAFM()
@@ -118,6 +136,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         /// </summary>
         /// <returns></returns>
         protected abstract int GetLoopCount();
+
+        /// <summary>
+        /// 获取循环次数
+        /// </summary>
+        /// <returns></returns>
+        protected abstract int GetPulseLoopCount();
 
         /// <summary>
         /// 获取单点超时时间
@@ -136,24 +160,31 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         /// </summary>
         protected abstract void SetOutput();
 
+
+        private int loopcount = 0;
         public override void ODMRExpWithoutAFM()
         {
-            Scan1DSession<RFSourceInfo> session = new Scan1DSession<RFSourceInfo>();
-            session.FirstScanEvent = FirstScanEvent;
-            session.ScanEvent = ScanEvent;
-            var dev = GetDeviceByName("RFSource") as RFSourceInfo;
-            dev.Device.IsRFOutOpen = true;
-            session.ScanSource = dev;
-            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-            session.ProgressBarMethod = new Action<RFSourceInfo, double>((sour, v) =>
+            RFSourceInfo inf = GetDeviceByName("RFSource") as RFSourceInfo;
+            inf.Device.IsRFOutOpen = true;
+            for (int i = 0; i < GetLoopCount(); i++)
             {
-                SetProgress(v);
-            });
-            session.SetStateMethod = new Action<RFSourceInfo, double>((sour, v) =>
-            {
-                SetExpState("CW谱扫描,当前频率:" + Math.Round(v, 5).ToString());
-            });
-            session.BeginScan(new D1NumricListScanRange(GetScanFrequences()), 0, 100);
+                loopcount = i;
+                Scan1DSession<RFSourceInfo> session = new Scan1DSession<RFSourceInfo>();
+                session.FirstScanEvent = FirstScanEvent;
+                session.ScanEvent = ScanEvent;
+                var dev = GetDeviceByName("RFSource") as RFSourceInfo;
+                session.ScanSource = dev;
+                session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+                session.ProgressBarMethod = new Action<RFSourceInfo, double>((sour, v) =>
+                {
+                    SetProgress(v);
+                });
+                session.SetStateMethod = new Action<RFSourceInfo, double>((sour, v) =>
+                {
+                    SetExpState("CW谱扫描,当前频率:" + Math.Round(v, 5).ToString());
+                });
+                session.BeginScan(new D1NumricListScanRange(GetScanFrequences()), 0, 100);
+            }
         }
 
         protected List<double> GetFrequences()

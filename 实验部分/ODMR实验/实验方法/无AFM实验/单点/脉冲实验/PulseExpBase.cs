@@ -34,6 +34,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// </summary>
         public abstract List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; }
 
+        public PulseExpBase()
+        {
+            AddDevicesToList(PulseExpDevices);
+        }
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {

@@ -89,6 +89,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             #endregion
             PointsScanSession.FirstScanEvent = ScanEvent;
             PointsScanSession.ScanEvent = ScanEvent;
+            PointsScanSession.StartScanNewLineEvent = ScanEvent;
+            PointsScanSession.EndScanNewLineEvent = ScanEvent;
             PointsScanSession.ScanSource1 = dev1;
             PointsScanSession.ScanSource2 = dev2;
             PointsScanSession.ProgressBarMethod = new Action<NanoStageInfo, NanoStageInfo, double>((devi1, devi2, val) =>

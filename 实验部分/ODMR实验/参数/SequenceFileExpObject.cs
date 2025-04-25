@@ -69,12 +69,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
             }
             foreach (var item in OutputParams)
             {
-                var names = item.PropertyName.Split('_');
-                if (names.First() == "Output")
-                    source.Params.Add("输出参数:" + item.Description, ParamB.GetUnknownParamValue(item));
-                else
+                try
                 {
-                    source.Params.Add("输出参数:" + names[0] + ":" + names[1] + ":" + item.Description, ParamB.GetUnknownParamValue(item));
+                    var names = item.PropertyName.Split('_');
+                    if (names.First() == "Output")
+                        source.Params.Add("输出参数:" + item.Description, ParamB.GetUnknownParamValue(item));
+                    else
+                    {
+                        source.Params.Add("输出参数:" + names[0] + ":" + names[1] + ":" + item.Description, ParamB.GetUnknownParamValue(item));
+                    }
+                }
+                catch (Exception)
+                {
                 }
             }
             #endregion

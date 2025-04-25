@@ -54,6 +54,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             Get1DChartDataSource("沿轴磁场(G)", GroupName).Clear();
             Get1DChartDataSource("垂直轴磁场(G)", GroupName).Clear();
             Get1DChartDataSource("总磁场(G)", GroupName).Clear();
+            Get1DChartDataSource("位置", GroupName).Clear();
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
         }
@@ -400,12 +401,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         {
             Freq1.AddRange(Freq2);
             Contract1.AddRange(Contract2);
-            SortedList<double, double> l = new SortedList<double, double>();
+            SortedList<int, double> l = new SortedList<int, double>();
             for (int i = 0; i < Freq1.Count; i++)
             {
-                l.Add(Freq1[i], Contract1[i]);
+                l.Add(i, Contract1[i]);
             }
-            MergedFreq = l.Keys.ToList();
+            MergedFreq = l.Keys.Select(x => Freq1[x]).ToList();
             MergedContrast = l.Values.ToList();
         }
 

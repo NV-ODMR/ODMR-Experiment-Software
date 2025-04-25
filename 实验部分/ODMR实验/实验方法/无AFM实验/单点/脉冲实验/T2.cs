@@ -78,24 +78,29 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             GlobalPulseParams.SetGlobalPulseLength("T2Step", (int)locvalue);
 
-            PulsePhotonPack pack = DoPulseExp("T2", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack pack = DoPulseExp("T2", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"));
 
-            double signalcount = pack.GetPhotonsAtIndex(0).Average();
-            double refcount = pack.GetPhotonsAtIndex(1).Average();
+            double signalcount0 = pack.GetPhotonsAtIndex(0).Sum();
+            double signalcount1 = pack.GetPhotonsAtIndex(1).Sum();
+            double refcount = pack.GetPhotonsAtIndex(2).Sum();
 
             var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2对比度数据");
-            var signal = Get1DChartDataSource("退相干信号对比度[(sig-ref)/ref]", "T2对比度数据");
+            var signal0 = Get1DChartDataSource("0态退相干信号对比度[(sig-ref)/ref]", "T2对比度数据");
+            var signal1 = Get1DChartDataSource("1态退相干信号对比度[(sig-ref)/ref]", "T2对比度数据");
 
             var florfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据");
             var count = Get1DChartDataSource("平均光子数", "T2荧光数据");
-            var sigcount = Get1DChartDataSource("信号光子数", "T2荧光数据");
+            var sigcount0 = Get1DChartDataSource("0态信号光子数", "T2荧光数据");
+            var sigcount1 = Get1DChartDataSource("1态信号光子数", "T2荧光数据");
 
             int ind = range.GetNearestFormalIndex(locvalue);
 
-            double signalcontrast = 0;
+            double signalcontrast0 = 0;
+            double signalcontrast1 = 0;
             try
             {
-                signalcontrast = (signalcount - refcount) / refcount;
+                signalcontrast0 = (signalcount0 - refcount) / refcount;
+                signalcontrast1 = (signalcount1 - refcount) / refcount;
             }
             catch (Exception)
             {
@@ -105,15 +110,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
                 contrfreq.Add(locvalue);
                 florfreq.Add(locvalue);
-                signal.Add(signalcontrast);
+                signal0.Add(signalcontrast0);
+                signal1.Add(signalcontrast1);
                 count.Add(refcount);
-                sigcount.Add(signalcount);
+                sigcount0.Add(signalcount0);
+                sigcount1.Add(signalcount1);
             }
             else
             {
-                signal[ind] = (signal[ind] * CurrentLoop + signalcontrast) / (CurrentLoop + 1);
+                signal0[ind] = (signal0[ind] * CurrentLoop + signalcontrast0) / (CurrentLoop + 1);
+                signal1[ind] = (signal1[ind] * CurrentLoop + signalcontrast1) / (CurrentLoop + 1);
                 count[ind] = (count[ind] * CurrentLoop + refcount) / (CurrentLoop + 1);
-                sigcount[ind] = (sigcount[ind] * CurrentLoop + signalcount) / (CurrentLoop + 1);
+                sigcount0[ind] = (sigcount0[ind] * CurrentLoop + signalcount0) / (CurrentLoop + 1);
+                sigcount1[ind] = (sigcount1[ind] * CurrentLoop + signalcount1) / (CurrentLoop + 1);
             }
 
             UpdatePlotChartFlow(true);
@@ -156,11 +165,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             D1ChartDatas = new List<ChartData1D>()
             {
                 new NumricChartData1D("驰豫时间长度(ns)","T2对比度数据",ChartDataType.X),
-                new NumricChartData1D("退相干信号对比度[(sig-ref)/ref]","T2对比度数据",ChartDataType.Y),
+                new NumricChartData1D("0态退相干信号对比度[(sig-ref)/ref]","T2对比度数据",ChartDataType.Y),
+                new NumricChartData1D("1态退相干信号对比度[(sig-ref)/ref]","T2对比度数据",ChartDataType.Y),
 
                 new NumricChartData1D("驰豫时间长度(ns)","T2荧光数据",ChartDataType.X),
                 new NumricChartData1D("平均光子数","T2荧光数据",ChartDataType.Y),
-                new NumricChartData1D("信号光子数","T2荧光数据",ChartDataType.Y),
+                new NumricChartData1D("0态信号光子数","T2荧光数据",ChartDataType.Y),
+                new NumricChartData1D("1态信号光子数","T2荧光数据",ChartDataType.Y),
             };
             UpdatePlotChart();
 

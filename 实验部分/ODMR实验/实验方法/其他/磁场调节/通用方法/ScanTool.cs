@@ -217,7 +217,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         // 扫描出CW谱的准确峰位置
         // 先粗扫后细扫(步长先设置为2MHz,确定峰位置之后按步长0.2MHz扫描)
         // 范围限制,扫描范围在2400Mhz到3400Mhz之间
-        private static void ScanCW(ODMRExpObject parentexp, int CWExpIndex, out List<double> peaks, out List<double> fitcontrasts, out List<double> freqvalues, out List<double> contractvalues, double peakapprox, int EndPointCount, double scanWidth = 30, bool isReverse = false)
+        public static void ScanCW(ODMRExpObject parentexp, int CWExpIndex, out List<double> peaks, out List<double> fitcontrasts, out List<double> freqvalues, out List<double> contractvalues, double peakapprox, int EndPointCount, double scanWidth = 30, bool isReverse = false)
         {
             if (peakapprox < 2100 || peakapprox > 3500)
             {
@@ -317,6 +317,21 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             offsety = r * Math.Sin(angle * Math.PI / 180);
         }
 
+        public static List<double> GetTargetOffset(double targetAngle, double offsetx, double offsety, bool reverseX, bool reverseY, bool reverseA, double angleStart)
+        {
+
+            // 计算随体坐标系下的极坐标
+            double r = Math.Sqrt(offsetx * offsetx + offsety * offsety);
+            double the = Math.Atan2(offsety, offsetx) * 180 / Math.PI;
+
+            double the1 = the + GetReverseNum(reverseA) * (targetAngle - angleStart);
+
+            double dx = GetReverseNum(reverseX) * r * (Math.Cos(the / 180 * Math.PI) - Math.Cos(the1 / 180 * Math.PI));
+            double dy = GetReverseNum(reverseY) * r * (Math.Sin(the / 180 * Math.PI) - Math.Sin(the1 / 180 * Math.PI));
+
+            return new List<double>() { dx, dy };
+        }
+
 
         /// <summary>
         /// 扫两频点的CW谱
@@ -327,8 +342,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double p1 = Math.Min(peakapprox1, peakapprox2);
             double p2 = Math.Max(peakapprox1, peakapprox2);
 
-            ScanCW(parentexp, CWExpIndex, out List<double> peak1, out List<double> fcs1, out List<double> freqsout1, out List<double> contrastout1, p1, EndPointCount, scanWidth, isReverse: false);
-            ScanCW(parentexp, CWExpIndex, out List<double> peak2, out List<double> fcs2, out List<double> freqsout2, out List<double> contrastout2, p2, EndPointCount, scanWidth, isReverse: true);
+            ScanCW(parentexp, CWExpIndex, out List<double> peak1, out List<double> fcs1, out List<double> freqsout1, out List<double> contrastout1, p1, 10, scanWidth, isReverse: false);
+            ScanCW(parentexp, CWExpIndex, out List<double> peak2, out List<double> fcs2, out List<double> freqsout2, out List<double> contrastout2, p2, 10, scanWidth, isReverse: true);
 
             if (peak1.Count == 0 || peak2.Count == 0)
             {
@@ -377,12 +392,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         {
             Freq1.AddRange(Freq2);
             Contract1.AddRange(Contract2);
-            SortedList<double, double> l = new SortedList<double, double>();
+            SortedList<int, double> l = new SortedList<int, double>();
             for (int i = 0; i < Freq1.Count; i++)
             {
-                l.Add(Freq1[i], Contract1[i]);
+                l.Add(i, Contract1[i]);
             }
-            MergedFreq = l.Keys.ToList();
+            MergedFreq = l.Keys.Select(x => Freq1[x]).ToList();
             MergedContrast = l.Values.ToList();
         }
 
@@ -397,61 +412,72 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         /// <param name="e"></param>
         public static void CalculatepPredictLoc(MagnetLocParams Ps, double zloc, double theta, double phi, out double x, out double y, out double z, out double angle)
         {
-            double zdis = GetReverseNum(Ps.ZReverse) * (zloc - Ps.ZLoc) + Ps.ZDistance;
-
-            Magnet m = new Magnet(Ps.MRadius, Ps.MLength, 1);
-
-            List<double> res = m.FindDire(theta, phi, zdis);
-            double ang = res[0];
-            double dx = res[1];
-            double dy = res[2];
-            double B = res[3];
-            double dz = zdis - Ps.ZDistance;
-            dx *= GetReverseNum(Ps.XReverse);
-            dy *= GetReverseNum(Ps.YReverse);
-            dz *= GetReverseNum(Ps.ZReverse);
-            ang *= GetReverseNum(Ps.AReverse);
-            double ang1 = Ps.AngleStart + ang;
-
-            List<double> doffs = GetTargetOffset(Ps, ang1);
-            double doffx = doffs[0];
-            double doffy = doffs[1];
-
-            if (ang1 > 150)
-                ang1 -= 360;
-            if (ang1 < -150)
-                ang1 += 360;
-
-            //角度超量程,取等效位置
-            if (Math.Abs(ang1) > 150)
+            try
             {
-                res = m.FindDire(180 - theta, phi + 180, zdis);
-                ang = res[0];
-                dx = res[1];
-                dy = res[2];
-                B = res[3];
-                dz = zdis - Ps.ZDistance;
+                double zdis = GetReverseNum(Ps.ZReverse) * (zloc - Ps.ZLoc) + Ps.ZDistance;
+
+                Magnet m = new Magnet(Ps.MRadius, Ps.MLength, 1);
+
+                List<double> res = m.FindDire(theta, phi, zdis);
+                double ang = res[0];
+                double dx = -res[1];
+                double dy = -res[2];
+                double B = res[3];
+                double dz = zdis - Ps.ZDistance;
                 dx *= GetReverseNum(Ps.XReverse);
                 dy *= GetReverseNum(Ps.YReverse);
                 dz *= GetReverseNum(Ps.ZReverse);
                 ang *= GetReverseNum(Ps.AReverse);
-                ang1 = Ps.AngleStart + ang;
+                double ang1 = Ps.AngleStart + ang;
+
+                List<double> doffs = GetTargetOffset(Ps, ang1);
+                double doffx = doffs[0];
+                double doffy = doffs[1];
 
                 if (ang1 > 150)
                     ang1 -= 360;
                 if (ang1 < -150)
                     ang1 += 360;
 
-                //根据需要移动的角度进行偏心修正
-                doffs = GetTargetOffset(Ps, ang1);
-                doffx = doffs[0];
-                doffy = doffs[1];
-            }
+                //角度超量程,取等效位置
+                if (Math.Abs(ang1) > 150)
+                {
+                    res = m.FindDire(180 - theta, phi + 180, zdis);
+                    ang = res[0];
+                    dx = -res[1];
+                    dy = -res[2];
+                    B = res[3];
+                    dz = zdis - Ps.ZDistance;
+                    dx *= GetReverseNum(Ps.XReverse);
+                    dy *= GetReverseNum(Ps.YReverse);
+                    dz *= GetReverseNum(Ps.ZReverse);
+                    ang *= GetReverseNum(Ps.AReverse);
+                    ang1 = Ps.AngleStart + ang;
 
-            x = Ps.XLoc + dx + doffx;
-            y = Ps.YLoc + dy + doffy;
-            z = zloc;
-            angle = ang1;
+                    if (ang1 > 150)
+                        ang1 -= 360;
+                    if (ang1 < -150)
+                        ang1 += 360;
+
+                    //根据需要移动的角度进行偏心修正
+                    doffs = GetTargetOffset(Ps, ang1);
+                    doffx = doffs[0];
+                    doffy = doffs[1];
+                }
+
+                x = Ps.XLoc + dx + doffx;
+                y = Ps.YLoc + dy + doffy;
+                z = zloc;
+                angle = ang1;
+            }
+            catch (Exception ex)
+            {
+                x = double.NaN;
+                y = double.NaN;
+                z = double.NaN;
+                angle = double.NaN;
+                return;
+            }
         }
     }
 }

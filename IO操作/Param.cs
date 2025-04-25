@@ -166,6 +166,18 @@ namespace ODMR_Lab.IO操作
         /// </summary>
         public string PropertyName { get; set; } = "";
 
+        public static string GetValidName(string name)
+        {
+            name = name.Replace("(", "");
+            name = name.Replace(")", "");
+            name = name.Replace("[", "");
+            name = name.Replace("]", "");
+            name = name.Replace("{", "");
+            name = name.Replace("}", "");
+            name = name.Replace(" ", "");
+            return name;
+        }
+
         #region 从页面中读取和写入页面
         /// <summary>
         /// 从页面读取值
@@ -179,7 +191,7 @@ namespace ODMR_Lab.IO操作
             {
                 foreach (var ele in eles)
                 {
-                    var res = ele.FindName(PropertyName);
+                    var res = ele.FindName(GetValidName(PropertyName));
                     if (res == null) continue;
                     try
                     {
@@ -239,7 +251,7 @@ namespace ODMR_Lab.IO操作
             {
                 foreach (var ele in eles)
                 {
-                    var res = ele.FindName(PropertyName);
+                    var res = ele.FindName(GetValidName(PropertyName));
                     if (res == null) continue;
                     ParamB value = this;
                     if (res is TextBox)

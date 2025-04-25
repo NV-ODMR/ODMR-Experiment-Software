@@ -128,8 +128,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                         App.Current.Dispatcher.Invoke(() =>
                         {
                             win = new MessageWindow("提示", "正在移动...", MessageBoxButton.OK, false, false);
+                            win.Owner = this;
+                            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                             win.Show();
                         });
+                        exp.GetDevices();
                         NanoStageInfo xdev = exp.GetDeviceByName("MagnetX") as NanoStageInfo;
                         NanoStageInfo ydev = exp.GetDeviceByName("MagnetY") as NanoStageInfo;
                         NanoStageInfo zdev = exp.GetDeviceByName("MagnetZ") as NanoStageInfo;

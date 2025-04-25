@@ -116,9 +116,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("YLoc"), 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
             //Z扫描
-            //ScanZ(40, 60);
-            OutputParams.Add(new Param<double>("Z方向参考位置", 21.5, "ZLoc"));
-            OutputParams.Add(new Param<double>("参考位置与NV的距离", 9.25545, "ZDistance"));
+            ScanZ(40, 60);
             JudgeThreadEndOrResumeAction?.Invoke();
             //角度扫描
             SetExpState("正在扫描角度轴...");
@@ -199,6 +197,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             btns.Add(new KeyValuePair<string, Action>("磁场预测", ShowPredictWindow));
             btns.Add(new KeyValuePair<string, Action>("磁场强度系数标定", ShowIntensityWindow));
             btns.Add(new KeyValuePair<string, Action>("垂直磁场计算", ShowVerticalBCalculateWindow));
+            btns.Add(new KeyValuePair<string, Action>("移动位移台", ShowMoveMoverWindow));
             return btns;
         }
 
@@ -239,6 +238,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 intensitywin.Owner = Window.GetWindow(ParentPage);
                 intensitywin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 intensitywin.Show();
+            });
+        }
+
+        MoveWindow movewin = null;
+        private void ShowMoveMoverWindow()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (movewin == null)
+                    movewin = new MoveWindow(this);
+                movewin.Owner = Window.GetWindow(ParentPage);
+                movewin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                movewin.Show();
             });
         }
         #endregion

@@ -14,7 +14,9 @@ using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.通用方法;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
@@ -26,7 +28,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
     /// <summary>
     /// 磁场扫描
     /// </summary>
-    class MagnetFieldScanner : ODMRExperimentWithoutAFM
+    class MagnetFieldScanner_T2 : PulseExpBase
     {
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = true;
@@ -35,11 +37,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
 
         public override bool IsDisplayAsExp { get; set; } = true;
 
-        public override string ODMRExperimentName { get; set; } = "磁场方向遍历扫描";
+        public override string ODMRExperimentName { get; set; } = "磁场方向遍历扫描(T2)";
         public override string ODMRExperimentGroupName { get; set; } = "磁场定位";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<string>("定位结果文件名","","LocFileName"),
+            new Param<int>("CW/Rabi重新采样间隔",5,"CWGap"),
+            new Param<int>("微波频率初始值(MHz)",2870,"CWInit"),
+            new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<int>("T2采样时间",1000,"T2SampleTime"),
+            new Param<int>("测量次数",1000,"LoopCount"),
+            new Param<int>("序列循环次数",1000,"SeqLoopCount"),
+            new Param<int>("单点超时时间",10000,"TimeOut"),
         };
 
         MagnetLocParams Ps = null;
@@ -47,7 +56,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
         };
-        public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
+        public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.磁铁位移台,new Param<string>("磁铁X轴","","MagnetX")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.磁铁位移台,new Param<string>("磁铁Y轴","","MagnetY")),
@@ -57,8 +66,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
 
         public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
         {
+            new AutoTrace(),
             new AdjustedCW(),
-            new AutoTrace()
+            new Rabi()
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>() { };
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>() { };
@@ -73,19 +83,28 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             return new List<ParentPlotDataPack>();
         }
 
+        int tempCWCount = 0;
         public override void ODMRExpWithoutAFM()
         {
+            tempCWCount = GetInputParamValueByName("CWGap");
             CustomScan2DSession<object, object> PointsScanSession = new CustomScan2DSession<object, object>();
             PointsScanSession.ProgressBarMethod = new Action<object, object, double>((d1, d2, v) => { SetProgress(v); });
-            PointsScanSession.FirstScanEvent = FirstScanEvent;
+            PointsScanSession.FirstScanEvent = StartScanEvent;
             PointsScanSession.ScanEvent = ScanEvent;
-            PointsScanSession.StartScanNewLineEvent = ScanEvent;
+            PointsScanSession.StartScanNewLineEvent = StartScanEvent;
             PointsScanSession.EndScanNewLineEvent = ScanEvent;
             PointsScanSession.StateJudgeEvent = JudgeThreadEndOrResumeAction;
             PointsScanSession.SetStateMethod = new Action<object, object, Point>((d1, d2, p) =>
             {
                 SetExpState("当前磁场角度  θ:" + Math.Round(p.X, 5).ToString() + "  ψ:" + Math.Round(p.Y, 5).ToString());
             });
+            PointsScanSession.BeginScan(D2ScanRange, 0, 100, (double)GetInputParamValueByName("CWInit"));
+        }
+
+        private List<object> StartScanEvent(object arg1, object arg2, D2ScanRangeBase arg3, Point arg4, List<object> arg5)
+        {
+            RunSubExperimentBlock(0, true);
+            return ScanEvent(arg1, arg2, arg3, arg4, arg5);
         }
 
         public override bool PreConfirmProcedure()
@@ -114,13 +133,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             double yhi = D2ScanRange.YHi;
             int xcount = D2ScanRange.XCount;
             int ycount = D2ScanRange.YCount;
-            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "CW谱位置1" }) { GroupName = "扫描数据" });
-            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "CW谱位置2" }) { GroupName = "扫描数据" });
-            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "CW谱对比度1" }) { GroupName = "扫描数据" });
-            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "CW谱对比度2" }) { GroupName = "扫描数据" });
-            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "垂直轴磁场(Gauss)" }) { GroupName = "扫描数据" });
-            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "沿轴磁场(Gauss)" }) { GroupName = "扫描数据" });
-            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "磁场与NV轴夹角(度)" }) { GroupName = "扫描数据" });
+            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "0态对比度" }) { GroupName = "T2数据" });
+            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "1态对比度" }) { GroupName = "T2数据" });
+            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "0态计数" }) { GroupName = "T2数据" });
+            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "1态计数" }) { GroupName = "T2数据" });
+            D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(xcount, xlo, xhi, ycount, ylo, yhi) { XName = "方位角θ", YName = "方位角ψ", ZName = "参考计数" }) { GroupName = "T2数据" });
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
         }
@@ -133,65 +150,74 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y, 10000);
             (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z, 10000);
             (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(angle, 60000);
-            RunSubExperimentBlock(1, true);
-            MagnetScanTool.ScanCW2(this, 0, out var peakout1, out var peakout2, out var contrastout1, out var contrastout2, out var freqs, out var contrasts, (double)arg5[0], (double)arg5[1], 10);
-            if (peakout1 == 0 || peakout2 == 0)
+            ++tempCWCount;
+            if (tempCWCount >= GetInputParamValueByName("CWGap"))
             {
-                bool result = MagnetScanTool.TotalCWPeaks2(this, 0, out var peaks, out var fitcs, out freqs, out contrasts);
-                if (result == false)
+                tempCWCount = 0;
+                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 10, 30, false);
+                if (peaks.Count == 0)
                 {
-                    peaks = new List<double>() { double.NaN, double.NaN };
-                    contrasts = new List<double>() { double.NaN, double.NaN };
+
                 }
-                UpdateCWPlot(arg4, peaks, fitcs, freqs, contrasts);
-                if (result == true)
-                    return new List<object>() { peaks.Min(), peaks.Max() };
                 else
-                    return arg5;
+                {
+                    arg5 = new List<object>() { peaks[0] };
+                }
+                RunSubExperimentBlock(2, true, new List<ParamB>() { new Param<double>("微波频率(MHz)", (double)arg5[0], "RFFrequency") });
             }
-            UpdateCWPlot(arg4, new List<double>() { peakout1, peakout2 }, new List<double>() { contrastout1, contrastout2 }, freqs, contrasts);
-            return new List<object>() { Math.Min(peakout1, peakout2), Math.Max(peakout1, peakout2) };
+            var result = GetT2Data((double)arg5[0]);
+            T2Plot(result, arg3.GetNearestXIndex(arg4.X), arg3.GetNearestYIndex(arg4.Y));
+            return arg5;
         }
 
-        private List<object> FirstScanEvent(object arg1, object arg2, D2ScanRangeBase arg3, Point arg4, List<object> arg5)
+
+        private List<double> GetT2Data(double frequency)
         {
-            //移动位移台
-            MagnetScanTool.CalculatepPredictLoc(Ps, Ps.ZLoc, arg4.X, arg4.Y, out var x, out var y, out var z, out var angle);
-            (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(x, 10000);
-            (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y, 10000);
-            (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z, 10000);
-            (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(angle, 60000);
-            RunSubExperimentBlock(1, true);
-            bool result = MagnetScanTool.TotalCWPeaks2(this, 0, out var peaks, out var fitcs, out var freqs, out var contrasts);
-            if (result == false) throw new Exception("未扫描到完整的谱峰");
-            //刷新绘图
-            UpdateCWPlot(arg4, peaks, fitcs, freqs, contrasts);
-            return new List<object>() { peaks.Min(), peaks.Max() };
+            GlobalPulseParams.SetGlobalPulseLength("T2Step", GetInputParamValueByName("T2SampleTime"));
+
+            PulsePhotonPack pack = DoPulseExp("T2", frequency, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"));
+
+            double signalcount0 = 0;
+            double signalcount1 = 0;
+            double refcount = 0;
+
+            for (int i = 0; i < GetInputParamValueByName("LoopCount"); i++)
+            {
+                signalcount0 += pack.GetPhotonsAtIndex(0).Sum();
+                signalcount1 += pack.GetPhotonsAtIndex(1).Sum();
+                refcount += pack.GetPhotonsAtIndex(2).Sum();
+                JudgeThreadEndOrResumeAction?.Invoke();
+            }
+
+            double signalcontrast0 = 0;
+            double signalcontrast1 = 0;
+            try
+            {
+                signalcontrast0 = (signalcount0 - refcount) / refcount;
+                signalcontrast1 = (signalcount1 - refcount) / refcount;
+            }
+            catch (Exception)
+            {
+            }
+
+            return new List<double>() { signalcount0, signalcount1, refcount, signalcontrast0, signalcontrast1 };
         }
 
-        private void UpdateCWPlot(Point p, List<double> peaks, List<double> fitcs, List<double> freqs, List<double> contrasts)
+        private void T2Plot(List<double> data, int rowx, int rowy)
         {
-            D1ChartDatas.Add(new NumricChartData1D("θ: " + Math.Round(p.X, 5).ToString() + "  ψ: " + Math.Round(p.Y, 5).ToString() + "频率" + p.X, "CW谱数据", ChartDataType.X) { Data = freqs });
-            D1ChartDatas.Add(new NumricChartData1D("θ: " + Math.Round(p.X, 5).ToString() + "  ψ: " + Math.Round(p.Y, 5).ToString() + "对比度" + p.X, "CW谱数据", ChartDataType.Y) { Data = contrasts });
-            int indx = D2ScanRange.GetNearestXIndex(p.X);
-            int indy = D2ScanRange.GetNearestYIndex(p.Y);
-            Get2DChartData("CW谱位置1", "扫描数据").Data.SetValue(indx, indy, peaks.Min());
-            Get2DChartData("CW谱位置2", "扫描数据").Data.SetValue(indx, indy, peaks.Max());
-            Get2DChartData("CW谱对比度1", "扫描数据").Data.SetValue(indx, indy, fitcs[peaks.FindIndex(x => x == peaks.Min())]);
-            Get2DChartData("CW谱对比度2", "扫描数据").Data.SetValue(indx, indy, fitcs[peaks.FindIndex(x => x == peaks.Max())]);
-            MagnetScanTool.CalculateB(Ps.D, peaks[0], peaks[1], out var bp, out var bv, out var b);
-            Get2DChartData("垂直轴磁场(Gauss)", "扫描数据").Data.SetValue(indx, indy, bv);
-            Get2DChartData("沿轴磁场(Gauss)", "扫描数据").Data.SetValue(indx, indy, bp);
-            Get2DChartData("磁场与NV轴夹角(度)", "扫描数据").Data.SetValue(indx, indy, Math.Atan2(bv, bp));
-            UpdatePlotChart();
+            var c0 = Get2DChartData("0态对比度", "T2数据").Data;
+            var c1 = Get2DChartData("1态对比度", "T2数据").Data;
+            var coun0 = Get2DChartData("0态计数", "T2数据").Data;
+            var coun1 = Get2DChartData("1态计数", "T2数据").Data;
+            var refc = Get2DChartData("参考计数", "T2数据").Data;
+            c0.SetValue(rowx, rowy, data[3]);
+            c1.SetValue(rowx, rowy, data[4]);
+            coun0.SetValue(rowx, rowy, data[0]);
+            coun1.SetValue(rowx, rowy, data[1]);
+            refc.SetValue(rowx, rowy, data[2]);
             UpdatePlotChartFlow(true);
         }
 
-        protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
-        {
-            return new List<KeyValuePair<string, Action>>()
-            {new KeyValuePair<string, Action>("导入定位文件",LoadFile) };
-        }
 
         private void LoadFile()
         {
@@ -202,12 +228,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
                     var ps = MagnetLocParams.ReadFromExplorer(out string filepath);
 
                     MessageWindow.ShowTipWindow("导入完成", Window.GetWindow(ParentPage));
+                    SetInputParamValueByName("LocFileName", filepath);
                 }
                 catch (Exception)
                 {
                     MessageWindow.ShowTipWindow("要打开的文件不是支持的类型", Window.GetWindow(ParentPage));
                 }
             });
+        }
+
+        protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()
+        {
+            return new List<KeyValuePair<string, Action>>()
+            {new KeyValuePair<string, Action>("导入定位文件",LoadFile) };
         }
     }
 }
