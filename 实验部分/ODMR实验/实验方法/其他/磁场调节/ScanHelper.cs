@@ -282,8 +282,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             }
             if (peaks.Count == 1)
             {
-                peaks = new List<double>() { peaks[0], peaks[0] };
-                return;
+                //没有扫到峰，报错
+                throw new Exception("未扫描到完整的谱峰");
+            }
+            if (peaks.Count == 2 && Math.Abs(peaks[1] - peaks[0]) < 1)
+            {
+                //没有扫到峰，报错
+                throw new Exception("未扫描到完整的谱峰");
             }
         }
 
