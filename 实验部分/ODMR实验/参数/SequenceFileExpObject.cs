@@ -135,7 +135,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
                     DataPoint po = new DataPoint();
                     for (int j = 0; j < item.Data.XCounts; j++)
                     {
-                        po.Data.Add(item.Data.GetValue(i, j));
+                        po.Data.Add(item.Data.GetValue(j, i));
                     }
                     p.Add(po);
                 }
