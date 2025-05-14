@@ -77,6 +77,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         double LowContrast = double.NaN;
         double HiContrast = double.NaN;
         double NormalizedContrast = double.NaN;
+        double sigma = double.NaN;
+        List<double> HistData = new List<double>();
 
         public override void ODMRExpWithoutAFM()
         {
@@ -86,6 +88,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             LowContrast = double.NaN;
             HiContrast = double.NaN;
             NormalizedContrast = double.NaN;
+            sigma = double.NaN;
+            HistData.Clear();
             int Loop = GetInputParamValueByName("LoopCount");
             //设置HahnEchoTime
             //XPi脉冲时间
@@ -119,6 +123,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 {
                     contrast = (contrast * (CurrentLoop - 1) + tempcontrast) / CurrentLoop;
                 }
+                HistData.Add(contrast);
+                //方差
+                sigma = Math.Sqrt(HistData.Select(x => Math.Pow(x - HistData.Average(), 2)).Sum() / (CurrentLoop + 1));
                 if (double.IsNaN(Sig))
                 {
                     Sig = sig;
@@ -168,13 +175,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     {
                         HiContrast = (HiContrast * (CurrentLoop - 1) + hicontrast) / CurrentLoop;
                     }
-                    if (contrast < LowContrast)
+                    if (contrast > LowContrast)
                     {
                         NormalizedContrast = 0;
                         JudgeThreadEndOrResumeAction?.Invoke();
                         continue;
                     }
-                    if (contrast > HiContrast)
+                    if (contrast < HiContrast)
                     {
                         NormalizedContrast = 1;
                         JudgeThreadEndOrResumeAction?.Invoke();
@@ -198,6 +205,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             OutputParams.Add(new Param<double>("信号光子计数", Sig, "SignalCount"));
             OutputParams.Add(new Param<double>("参考光子计数", Ref, "ReferenceCount"));
             OutputParams.Add(new Param<double>("对比度", contrast, "Contrast"));
+            OutputParams.Add(new Param<double>("对比度标准差", sigma, "Error"));
             if (GetInputParamValueByName("SingleContrast"))
             {
                 OutputParams.Add(new Param<double>("参考对比度最小值", LowContrast, "RefLowContrast"));

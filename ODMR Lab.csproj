@@ -211,6 +211,8 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanXY.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanZ.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner_Theta_CW.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner_Theta_T2.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\OffsetCalculator.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner_T2.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\MIntensityWindow.xaml.cs">

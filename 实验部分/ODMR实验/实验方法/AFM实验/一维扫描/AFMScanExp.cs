@@ -82,8 +82,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
-            infox.Device.MoveToAndWait(D1ScanRange.StartPoint.X, 120000);
-            infoy.Device.MoveToAndWait(D1ScanRange.StartPoint.Y, 120000);
+            infox.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].X, 120000);
+            infoy.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].Y, 120000);
         }
 
         private int ScanPointCount = 0;
