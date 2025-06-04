@@ -98,7 +98,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                         List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
                         foreach (var item in triggerwaits)
                         {
-                            item.PeakSpan = periodTime / 2;
+                            item.PeakSpan = (periodTime / 2 - timeres) + periodTime / 4;
                         }
                     }
                     //检查最终信号在高点平内则不等待
@@ -108,7 +108,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                         List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
                         foreach (var item in triggerwaits)
                         {
-                            item.PeakSpan = 0;
+                            if (timeres < periodTime / 2 + periodTime / 8)
+                                item.PeakSpan = periodTime / 2 + periodTime / 8 - timeres;
+                            else
+                                item.PeakSpan = 0;
                         }
                     }
                 }

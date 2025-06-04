@@ -23,27 +23,36 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         private void ScanZ(double progresslo, double progresshi)
         {
             //扫第一个点
-            (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
-            Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
-            session.ProgressBarMethod = new Action<NanoStageInfo, double>((dev, v) =>
-            {
-                SetProgress(v);
-            });
-            session.FirstScanEvent = ScanEvent;
-            session.ScanEvent = ScanEvent;
-            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-            session.ScanSource = GetDeviceByName("MagnetZ") as NanoStageInfo;
-
-            //扫第一个点
             double height = GetInputParamValueByName("ZPlane");
-            session.BeginScan(new D1NumricLinearScanRange(height, height, 1),
-                progresslo,
-                progresslo + 1 / 4 * (progresshi - progresslo), this, 0.0, 0.0);
-            //扫第二个点
-            height = GetInputParamValueByName("ZPlane") + GetReverseNum(GetInputParamValueByName("ReverseZ"));
-            session.BeginScan(new D1NumricLinearScanRange(height, height, 1),
-                progresslo + 1 / 4 * (progresshi - progresslo),
-                progresslo + 1 / 2 * (progresshi - progresslo), this, 0.0, 0.0);
+            Scan1DSession<NanoStageInfo> session = new Scan1DSession<NanoStageInfo>();
+            bool isExcept = false;
+
+            try
+            {
+                //扫第一个点
+                (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
+                session.ProgressBarMethod = new Action<NanoStageInfo, double>((dev, v) =>
+                {
+                    SetProgress(v);
+                });
+                session.FirstScanEvent = ScanEvent;
+                session.ScanEvent = ScanEvent;
+                session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+                session.ScanSource = GetDeviceByName("MagnetZ") as NanoStageInfo;
+
+                session.BeginScan(new D1NumricLinearScanRange(height, height, 1),
+                    progresslo,
+                    progresslo + 1 / 4 * (progresshi - progresslo), this, 0.0, 0.0);
+                //扫第二个点
+                height = GetInputParamValueByName("ZPlane") + GetReverseNum(GetInputParamValueByName("ReverseZ"));
+                session.BeginScan(new D1NumricLinearScanRange(height, height, 1),
+                    progresslo + 1 / 4 * (progresshi - progresslo),
+                    progresslo + 1 / 2 * (progresshi - progresslo), this, 0.0, 0.0);
+            }
+            catch (Exception)
+            {
+                isExcept = true;
+            }
 
             var bps = Get1DChartDataSource("沿轴磁场(G)", "Z方向磁场信息");
             var bs = Get1DChartDataSource("总磁场(G)", "Z方向磁场信息");
@@ -51,9 +60,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             var locs = Get1DChartDataSource("位置", "Z方向磁场信息");
 
             #region 如果NV磁场分量太小则转90度再测
-            if (bvs[0] != 0 && bvs[1] != 0)
+            if (isExcept || (bvs[0] != 0 && bvs[1] != 0))
             {
-                if (bps[0] / bvs[0] < 0.1 || bps[1] / bvs[1] < 0.1)
+                if (isExcept || bps[0] / bvs[0] < 0.1 || bps[1] / bvs[1] < 0.1)
                 {
                     (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleY(), 60000);
                     ClearMagnetDataFromChart("Z方向磁场信息");

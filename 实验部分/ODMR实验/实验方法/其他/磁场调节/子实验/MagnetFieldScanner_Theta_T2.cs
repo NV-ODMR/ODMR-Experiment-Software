@@ -45,6 +45,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             new Param<int>("CW/Rabi重新采样间隔",5,"CWGap"),
             new Param<int>("微波频率初始值(MHz)",2870,"CWInit"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<bool>("方位角Phi不变",true,"PhiUnChange"),
             new Param<double>("方位角Phi位置",0,"PhiLoc"),
             new Param<int>("测量次数",1000,"LoopCount"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
@@ -154,7 +155,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             if (tempCWCount >= GetInputParamValueByName("CWGap"))
             {
                 tempCWCount = 0;
-                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 10, 30, false);
+                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 5, 30, null);
                 if (peaks.Count == 0)
                 {
 

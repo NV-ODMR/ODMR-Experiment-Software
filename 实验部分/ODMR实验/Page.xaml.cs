@@ -71,6 +71,9 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     }
                 }
             }
+            //添加下针测试实验
+            ExpObjects.Add(new AFMScanTestExp() { ParentPage = this });
+
             ExpObjects.AddRange(noafms);
             //设置所有AFM点实验类型
             foreach (var item in noafms)

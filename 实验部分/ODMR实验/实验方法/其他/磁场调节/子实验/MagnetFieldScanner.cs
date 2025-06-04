@@ -86,6 +86,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             {
                 SetExpState("当前磁场角度  θ:" + Math.Round(p.X, 5).ToString() + "  ψ:" + Math.Round(p.Y, 5).ToString());
             });
+            PointsScanSession.BeginScan(D2ScanRange, 0, 100);
         }
 
         public override bool PreConfirmProcedure()
@@ -133,7 +134,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y, 10000);
             (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z, 10000);
             (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(angle, 60000);
-            RunSubExperimentBlock(1, true);
             MagnetScanTool.ScanCW2(this, 0, out var peakout1, out var peakout2, out var contrastout1, out var contrastout2, out var freqs, out var contrasts, (double)arg5[0], (double)arg5[1], 10);
             if (peakout1 == 0 || peakout2 == 0)
             {
@@ -182,7 +182,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             MagnetScanTool.CalculateB(Ps.D, peaks[0], peaks[1], out var bp, out var bv, out var b);
             Get2DChartData("垂直轴磁场(Gauss)", "扫描数据").Data.SetValue(indx, indy, bv);
             Get2DChartData("沿轴磁场(Gauss)", "扫描数据").Data.SetValue(indx, indy, bp);
-            Get2DChartData("磁场与NV轴夹角(度)", "扫描数据").Data.SetValue(indx, indy, Math.Atan2(bv, bp));
+            Get2DChartData("磁场与NV轴夹角(度)", "扫描数据").Data.SetValue(indx, indy, Math.Atan2(bv, bp) * 180 / Math.PI);
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
         }
@@ -200,7 +200,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
                 try
                 {
                     var ps = MagnetLocParams.ReadFromExplorer(out string filepath);
-
+                    SetInputParamValueByName("LocFileName", filepath);
                     MessageWindow.ShowTipWindow("导入完成", Window.GetWindow(ParentPage));
                 }
                 catch (Exception)

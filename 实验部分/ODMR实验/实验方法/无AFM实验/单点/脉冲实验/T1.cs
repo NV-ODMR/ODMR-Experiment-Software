@@ -197,6 +197,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             UpdatePlotChartFlow(true);
             Show1DFittedData("拟合曲线");
             OutputParams.Add(new Param<double>("T1拟合值(ns)", ps[1], "T1FitData"));
+            OutputParams.Add(new Param<double>("T1值1", y1.First(), "T11"));
+            OutputParams.Add(new Param<double>("T1值2", y1[(int)(y1.Count / 2)], "T12"));
+            OutputParams.Add(new Param<double>("T1值3", y1.Last(), "T13"));
             //计算平均光子计数
             OutputParams.Add(new Param<double>("平均光子计数", Get1DChartDataSource("参考光子数", "T1荧光数据").Average(), "AverageCount"));
         }
@@ -205,7 +208,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
             PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T1对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T1对比度数据"), false));
-            PlotData.Add(new ParentPlotDataPack("对比度[(ref-sig)/ref]", "T1对比度数据", ChartDataType.Y, Get1DChartDataSource("驰豫信号对比度[sig]", "T1对比度数据"), true));
+            PlotData.Add(new ParentPlotDataPack("对比度[(ref-sig)/ref]", "T1对比度数据", ChartDataType.Y, Get1DChartDataSource("对比度[(ref-sig)/ref]", "T1对比度数据"), true));
 
             PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T1荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据"), false));
             PlotData.Add(new ParentPlotDataPack("参考光子数", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("参考光子数", "T1荧光数据"), true));

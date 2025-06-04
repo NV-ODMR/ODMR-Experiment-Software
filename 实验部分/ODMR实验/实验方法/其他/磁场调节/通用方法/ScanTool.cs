@@ -125,7 +125,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         }
 
         Random r = new Random();
-        private static void CW(ODMRExpObject parentexp, int CWExpIndex, out List<double> Frequences, out List<double> Contracts, out List<double> fitpeaks, out List<double> fitcontracts, double startFreq, double endFreq, double step, int averagetime, int peakcount, int EndPointCount = 5, bool isReverse = false)
+        private static void CW(ODMRExpObject parentexp, int CWExpIndex, out List<double> Frequences, out List<double> Contracts, out List<double> fitpeaks, out List<double> fitcontracts, double startFreq, double endFreq, double step, int averagetime, int peakcount, int EndPointCount = 5, bool? isReverse = null)
         {
             fitpeaks = new List<double>();
             fitcontracts = new List<double>();
@@ -152,8 +152,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 new Param<int>("扫描峰个数",peakcount,"PeakCount"),
                 new Param<int>("循环次数",averagetime,"LoopCount"),
                 new Param<int>("结束前扫描点数", EndPointCount, "BeforeEndScanRange"),
-                new Param<bool>("反向扫描", isReverse, "Reverse"),
             };
+            if (isReverse != null)
+            {
+                InputParams.Add(new Param<bool>("反向扫描", (bool)isReverse, "Reverse"));
+            }
             var exp = parentexp.RunSubExperimentBlock(CWExpIndex, true, InputParams);
 
             //限定对比度范围
@@ -217,7 +220,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         // 扫描出CW谱的准确峰位置
         // 先粗扫后细扫(步长先设置为2MHz,确定峰位置之后按步长0.2MHz扫描)
         // 范围限制,扫描范围在2400Mhz到3400Mhz之间
-        public static void ScanCW(ODMRExpObject parentexp, int CWExpIndex, out List<double> peaks, out List<double> fitcontrasts, out List<double> freqvalues, out List<double> contractvalues, double peakapprox, int EndPointCount, double scanWidth = 30, bool isReverse = false)
+        public static void ScanCW(ODMRExpObject parentexp, int CWExpIndex, out List<double> peaks, out List<double> fitcontrasts, out List<double> freqvalues, out List<double> contractvalues, double peakapprox, int EndPointCount, double scanWidth = 30, bool? isReverse = null)
         {
             if (peakapprox < 2100 || peakapprox > 3500)
             {
@@ -235,18 +238,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             if (freqs.Count != 0)
             {
                 f1 = freqs[0];
-                if (freqs.Count == 2)
-                {
-                    f1 = isReverse ? Math.Max(freqs[0], freqs[1]) : Math.Min(freqs[0], freqs[1]);
-                }
                 //如果扫到的峰在范围边缘则扩大范围扫描
                 if (Math.Abs(f1 - peakapprox + scanWidth) < 3)
                 {
-                    CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox - scanWidth - 20, endFreq: peakapprox - scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
+                    CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox - scanWidth - 20, endFreq: peakapprox - scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, EndPointCount: 10, isReverse: isReverse);
                     if (freqs.Count != 0)
                     {
                         //细扫
-                        CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
+                        CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: 10, isReverse: isReverse);
                         if (f1s.Count != 0)
                         {
                             peaks.Add(f1s[0]);
@@ -256,10 +255,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 }
                 if (Math.Abs(f1 - peakapprox - scanWidth) < 3)
                 {
-                    CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox + scanWidth - 20, endFreq: peakapprox + scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
+                    CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out freqs, out fitcontracts, startFreq: peakapprox + scanWidth - 20, endFreq: peakapprox + scanWidth + 20, step: 2, averagetime: 500, peakcount: 1, EndPointCount: 10, isReverse: isReverse);
                     if (freqs.Count != 0)
                     {
-                        CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
+                        CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: freqs[0] - 5, endFreq: freqs[0] + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: 10, isReverse: isReverse);
                         if (f1s.Count != 0)
                         {
                             peaks.Add(f1s[0]);
@@ -269,7 +268,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 }
                 if (Math.Abs(f1 - peakapprox + scanWidth) >= 3 && Math.Abs(f1 - peakapprox - scanWidth) >= 3)
                 {
-                    CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: f1 - 5, endFreq: f1 + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: EndPointCount, isReverse: isReverse);
+                    CW(parentexp, CWExpIndex, out freqvalues, out contractvalues, out List<double> f1s, out fitcontracts, startFreq: f1 - 5, endFreq: f1 + 5, step: 1, averagetime: 2000, peakcount: 1, EndPointCount: 10, isReverse: isReverse);
                     if (f1s.Count != 0)
                     {
                         peaks.Add(f1s[0]);

@@ -196,6 +196,7 @@
       <DependentUpon>ScanRangeSelectWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\一维扫描\AFMScanExp.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\下针测试\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMStopDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMDrop.cs" />
