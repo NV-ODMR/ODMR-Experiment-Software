@@ -127,9 +127,9 @@ namespace ODMR_Lab.设备部分
             },
 
              //射频源
-            new DeviceDispatcherInfo<RFSourceInfo>(DeviceTypes.射频源,MainWindow.Dev_RFSource_LockInPage,MainWindow.Dev_RFSource_LockInPage.RFSources)
+            new DeviceDispatcherInfo<SignalGeneratorInfo>(DeviceTypes.射频源,MainWindow.Dev_RFSource_LockInPage,MainWindow.Dev_RFSource_LockInPage.RFSources)
             {
-                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.RFSources.AddRange(x.Select(v=>v as RFSourceInfo).ToList())),
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_RFSource_LockInPage.RFSources.AddRange(x.Select(v=>v as SignalGeneratorInfo).ToList())),
                 GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_RFSource_LockInPage.RFSources.Select(x=>x as InfoBase).ToList(); })
             },
 

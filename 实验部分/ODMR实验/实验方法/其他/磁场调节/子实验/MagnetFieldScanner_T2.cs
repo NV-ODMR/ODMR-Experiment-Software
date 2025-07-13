@@ -154,7 +154,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             {
                 tempCWCount = 0;
                 RunSubExperimentBlock(0, true);
-                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 10, 15, false);
+                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 5, 15, true);
                 if (peaks.Count == 0)
                 {
 
@@ -174,7 +174,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
         private List<double> GetT2Data(double frequency)
         {
             GlobalPulseParams.SetGlobalPulseLength("T2Step", GetInputParamValueByName("T2SampleTime"));
-
+            GlobalPulseParams.SetGlobalPulseLength("T2Res", (int)0);
             PulsePhotonPack pack = DoPulseExp("T2", frequency, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"));
 
             double signalcount0 = 0;

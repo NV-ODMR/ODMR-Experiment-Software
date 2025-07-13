@@ -147,7 +147,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             int Loop = GetInputParamValueByName("LoopCount");//外部循环
             double progressstep = 100 / Loop;//进度条
-            RFSourceInfo info = GetDeviceByName("RFSource") as RFSourceInfo;
+            SignalGeneratorInfo info = GetDeviceByName("RFSource") as SignalGeneratorInfo;
             info.Device.IsRFOutOpen = true;
             for (int i = 0; i < Loop; i++)
             {
@@ -175,7 +175,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override void PreExpEventWithoutAFM()
         {
             //打开微波
-            RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
+            SignalGeneratorInfo RF = GetDeviceByName("RFSource") as SignalGeneratorInfo;
             RF.Device.IsRFOutOpen = true;
 
             D1ChartDatas = new List<ChartData1D>()

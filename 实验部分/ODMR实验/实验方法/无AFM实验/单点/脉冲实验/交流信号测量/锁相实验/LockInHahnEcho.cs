@@ -85,8 +85,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             contrast = double.NaN;
             Sig = double.NaN;
             Ref = double.NaN;
-            LowContrast = double.NaN;
             HiContrast = double.NaN;
+            LowContrast = double.NaN;
             NormalizedContrast = double.NaN;
             sigma = double.NaN;
             HistData.Clear();
@@ -143,30 +143,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     Ref = (Ref * (CurrentLoop - 1) + reference) / CurrentLoop;
                 }
                 JudgeThreadEndOrResumeAction?.Invoke();
-                double lowcontrast = double.NaN;
                 double hicontrast = double.NaN;
+                double lowcontrast = double.NaN;
                 if (GetInputParamValueByName("SingleContrast"))
                 {
                     //测量Rabi得到对比度
-                    GlobalPulseParams.SetGlobalPulseLength("RabiTime", GlobalPulseParams.GetGlobalPulseLength("PiX"));
-                    PulsePhotonPack rabipack = DoPulseExp("Rabi", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("ContrastRabiLoopCount"), 8, GetInputParamValueByName("TimeOut"));
-                    GlobalPulseParams.SetGlobalPulseLength("RabiTime", GlobalPulseParams.GetGlobalPulseLength("2PiX"));
-                    PulsePhotonPack rabipack2 = DoPulseExp("Rabi", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("ContrastRabiLoopCount"), 8, GetInputParamValueByName("TimeOut"));
-                    double signalcountX = rabipack.GetPhotonsAtIndex(0).Sum();
-                    double refcountX = rabipack.GetPhotonsAtIndex(1).Sum();
-                    hicontrast = (signalcountX - refcountX) / refcountX;
-                    signalcountX = rabipack2.GetPhotonsAtIndex(0).Sum();
-                    refcountX = rabipack2.GetPhotonsAtIndex(1).Sum();
-                    lowcontrast = (signalcountX - refcountX) / refcountX;
+                    GlobalPulseParams.SetGlobalPulseLength("T2Step", GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime"));
+                    PulsePhotonPack rabipack = DoPulseExp("T2", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("ContrastRabiLoopCount"), 6, GetInputParamValueByName("TimeOut"));
+                    double signalcount1 = rabipack.GetPhotonsAtIndex(0).Sum();
+                    double signalcount0 = rabipack.GetPhotonsAtIndex(1).Sum();
+                    double refcount = rabipack.GetPhotonsAtIndex(2).Sum();
+                    lowcontrast = (signalcount1 - refcount) / refcount;
+                    hicontrast = (signalcount0 - refcount) / refcount;
 
-                    if (double.IsNaN(LowContrast))
-                    {
-                        LowContrast = lowcontrast;
-                    }
-                    else
-                    {
-                        LowContrast = (LowContrast * (CurrentLoop - 1) + lowcontrast) / CurrentLoop;
-                    }
                     if (double.IsNaN(HiContrast))
                     {
                         HiContrast = hicontrast;
@@ -174,6 +163,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     else
                     {
                         HiContrast = (HiContrast * (CurrentLoop - 1) + hicontrast) / CurrentLoop;
+                    }
+                    if (double.IsNaN(LowContrast))
+                    {
+                        LowContrast = lowcontrast;
+                    }
+                    else
+                    {
+                        LowContrast = (LowContrast * (CurrentLoop - 1) + lowcontrast) / CurrentLoop;
                     }
                     if (contrast > LowContrast)
                     {
@@ -195,7 +192,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override void PreExpEventWithoutAFM()
         {
             //打开微波
-            RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
+            SignalGeneratorInfo RF = GetDeviceByName("RFSource") as SignalGeneratorInfo;
             RF.Device.IsRFOutOpen = true;
         }
 

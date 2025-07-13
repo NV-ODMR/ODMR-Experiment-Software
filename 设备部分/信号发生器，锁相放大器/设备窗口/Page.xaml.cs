@@ -42,7 +42,7 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
     public partial class DevicePage : DevicePageBase
     {
         public override string PageName { get; set; } = "射频源/锁相放大器";
-        public List<RFSourceInfo> RFSources { get; set; } = new List<RFSourceInfo>();
+        public List<SignalGeneratorInfo> RFSources { get; set; } = new List<SignalGeneratorInfo>();
         public List<LockinInfo> LockIns { get; set; } = new List<LockinInfo>();
 
 
@@ -69,7 +69,7 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
             bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                RFSourceInfo rfsource = new RFSourceInfo() { Device = window.ConnectedDevice as RFSourceBase, ConnectInfo = window.ConnectInfo };
+                SignalGeneratorInfo rfsource = new SignalGeneratorInfo() { Device = window.ConnectedDevice as RFSourceBase, ConnectInfo = window.ConnectInfo };
                 rfsource.CreateDeviceInfoBehaviour();
 
                 RFSources.Add(rfsource);
@@ -122,7 +122,7 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
         /// <param name="arg3"></param>
         private void RFContextMenuEvent(int arg1, int arg2, object arg3)
         {
-            RFSourceInfo inf = arg3 as RFSourceInfo;
+            SignalGeneratorInfo inf = arg3 as SignalGeneratorInfo;
             #region 关闭设备
             if (arg1 == 0)
             {

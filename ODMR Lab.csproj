@@ -238,6 +238,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\AutoTrace.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PhotonSample.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\ElectricFieldCalculator.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\脉冲cw谱扫描\AdjustedCWScan.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\脉冲cw谱扫描\PulseCWScanBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\脉冲cw谱扫描\FourPointCW.cs" />
@@ -379,9 +380,10 @@
     <Compile Include="基本窗口\TimeWindow.xaml.cs">
       <DependentUpon>TimeWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\射频源，锁相放大器\RFSourceInfo.cs" />
-    <Compile Include="设备部分\射频源，锁相放大器\LockInInfo.cs" />
-    <Compile Include="设备部分\射频源，锁相放大器\设备窗口\Page.xaml.cs">
+    <Compile Include="设备部分\信号发生器，锁相放大器\SignalGeneratorChannelInfo.cs" />
+    <Compile Include="设备部分\信号发生器，锁相放大器\SignalGeneratorInfo.cs" />
+    <Compile Include="设备部分\信号发生器，锁相放大器\LockInInfo.cs" />
+    <Compile Include="设备部分\信号发生器，锁相放大器\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="设备部分\温度监测部分\ChannelInfo.cs" />
@@ -591,7 +593,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="设备部分\射频源，锁相放大器\设备窗口\Page.xaml">
+    <Page Include="设备部分\信号发生器，锁相放大器\设备窗口\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

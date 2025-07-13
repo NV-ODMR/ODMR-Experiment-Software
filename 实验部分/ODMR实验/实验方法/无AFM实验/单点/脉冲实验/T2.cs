@@ -77,6 +77,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
             GlobalPulseParams.SetGlobalPulseLength("T2Step", (int)locvalue);
+            GlobalPulseParams.SetGlobalPulseLength("T2Res", (int)(0));
 
             PulsePhotonPack pack = DoPulseExp("T2", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"));
 
@@ -129,6 +130,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             return new List<object>();
         }
 
+        private double t2total = 0;
+
         public override void ODMRExpWithoutAFM()
         {
             int Loop = GetInputParamValueByName("LoopCount");
@@ -150,7 +153,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 });
 
                 D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("T2min"), GetInputParamValueByName("T2max"), GetInputParamValueByName("T2points"));
-
+                t2total = GetInputParamValueByName("T2max") * 2;
                 Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
                 Session.BeginScan(range, progressstep * i, progressstep * (i + 1));
             }
@@ -159,7 +162,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override void PreExpEventWithoutAFM()
         {
             //打开微波
-            RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
+            SignalGeneratorInfo RF = GetDeviceByName("RFSource") as SignalGeneratorInfo;
             RF.Device.IsRFOutOpen = true;
 
             D1ChartDatas = new List<ChartData1D>()
@@ -189,7 +192,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void AfterExpEventWithoutAFM()
         {
-            RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
+            SignalGeneratorInfo RF = GetDeviceByName("RFSource") as SignalGeneratorInfo;
             RF.Device.IsRFOutOpen = false;
             //计算T2
             var xs = Get1DChartDataSource("驰豫时间长度(ns)", "T2荧光数据");

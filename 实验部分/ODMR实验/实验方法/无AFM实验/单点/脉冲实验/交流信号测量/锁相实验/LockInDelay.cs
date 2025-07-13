@@ -122,7 +122,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override void PreExpEventWithoutAFM()
         {
             //打开微波
-            RFSourceInfo RF = GetDeviceByName("RFSource") as RFSourceInfo;
+            SignalGeneratorInfo RF = GetDeviceByName("RFSource") as SignalGeneratorInfo;
             RF.Device.IsRFOutOpen = true;
             //新建数据集
             D1ChartDatas = new List<ChartData1D>()

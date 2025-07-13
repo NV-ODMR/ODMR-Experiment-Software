@@ -61,7 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         protected PulsePhotonPack DoPulseExp(string pulsename, double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
         {
             //设置微波
-            RFSourceInfo Rf = GetDeviceByName("RFSource") as RFSourceInfo;
+            SignalGeneratorInfo Rf = GetDeviceByName("RFSource") as SignalGeneratorInfo;
             Rf.Device.RFFrequency = rffrequency;
             Rf.Device.RFAmplitude = rfpower;
             //设置序列
