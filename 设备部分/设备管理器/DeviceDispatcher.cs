@@ -7,6 +7,7 @@ using HardWares.纳米位移台;
 using ODMR_Lab.温度监测部分;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
+using ODMR_Lab.设备部分.射频源_锁相放大器;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +76,7 @@ namespace ODMR_Lab.设备部分
         /// 开始使用多个设备，如果其中有一个设备被占用则释放所有其他已被占用的设备，同时报错
         /// </summary>
         public static void UseDevices(params InfoBase[] devs)
-        { 
+        {
             UseDevices(devs.ToList());
         }
 
@@ -132,7 +133,18 @@ namespace ODMR_Lab.设备部分
                     type = DeviceTypes.位移台;
                 if (item.deviceType == type)
                 {
-                    infos = item.GetDevEvent();
+                    if (type == DeviceTypes.信号发生器通道)
+                    {
+                        var temp = item.GetDevEvent();
+                        foreach (var dev in temp)
+                        {
+                            infos.AddRange((dev as SignalGeneratorInfo).Channels);
+                        }
+                    }
+                    else
+                    {
+                        infos = item.GetDevEvent();
+                    }
                     PartTypes part = PartTypes.None;
                     if (origitype == DeviceTypes.微波位移台)
                         part = PartTypes.Microwave;

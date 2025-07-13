@@ -27,7 +27,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             /// 设备:板卡，光子计数器,微波源
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.射频源,new Param<string>("射频源","","RFSource")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("射频信号通道","","RFSource")),
         };
         /// <summary>
         /// 脉冲实验的输入参数
@@ -61,9 +61,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         protected PulsePhotonPack DoPulseExp(string pulsename, double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
         {
             //设置微波
-            SignalGeneratorInfo Rf = GetDeviceByName("RFSource") as SignalGeneratorInfo;
-            Rf.Device.RFFrequency = rffrequency;
-            Rf.Device.RFAmplitude = rfpower;
+            SignalGeneratorChannelInfo Rf = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
+            Rf.Device.Frequency = rffrequency;
+            Rf.Device.Amplitude = rfpower;
             //设置序列
             var sequence = SequenceDataAssemble.ReadFromSequenceName(pulsename);
             //设置全局参数

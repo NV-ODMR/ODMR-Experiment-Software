@@ -54,7 +54,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             return false;
         }
 
-        private List<object> FirstScanEvent(SignalGeneratorInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
+        private List<object> FirstScanEvent(SignalGeneratorChannelInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
             //新建数据集
             D1ChartDatas = new List<ChartData1D>()
@@ -70,7 +70,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
             return ScanEvent(device, range, locvalue, inputParams);
         }
 
-        private List<object> ScanEvent(SignalGeneratorInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
+        private List<object> ScanEvent(SignalGeneratorChannelInfo device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
         {
             PulsePhotonPack pack = DoPulseExp("CW", locvalue, GetRFPower(), GetLoopCount(), 4, GetPointTimeout());
 
@@ -138,18 +138,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
 
         public override void ODMRExpWithoutAFM()
         {
-            Scan1DSession<SignalGeneratorInfo> session = new Scan1DSession<SignalGeneratorInfo>();
+            Scan1DSession<SignalGeneratorChannelInfo> session = new Scan1DSession<SignalGeneratorChannelInfo>();
             session.FirstScanEvent = FirstScanEvent;
             session.ScanEvent = ScanEvent;
-            var dev = GetDeviceByName("RFSource") as SignalGeneratorInfo;
-            dev.Device.IsRFOutOpen = true;
+            var dev = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
+            dev.Device.IsOutOpen = true;
             session.ScanSource = dev;
             session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-            session.ProgressBarMethod = new Action<SignalGeneratorInfo, double>((sour, v) =>
+            session.ProgressBarMethod = new Action<SignalGeneratorChannelInfo, double>((sour, v) =>
             {
                 SetProgress(v);
             });
-            session.SetStateMethod = new Action<SignalGeneratorInfo, double>((sour, v) =>
+            session.SetStateMethod = new Action<SignalGeneratorChannelInfo, double>((sour, v) =>
             {
                 SetExpState("CW谱扫描,当前频率:" + Math.Round(v, 5).ToString());
             });

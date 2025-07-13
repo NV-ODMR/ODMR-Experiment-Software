@@ -164,8 +164,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
         private int loopcount = 0;
         public override void ODMRExpWithoutAFM()
         {
-            SignalGeneratorInfo inf = GetDeviceByName("RFSource") as SignalGeneratorInfo;
-            inf.Device.IsRFOutOpen = true;
+            SignalGeneratorChannelInfo inf = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
+            inf.Device.IsOutOpen = true;
             for (int i = 0; i < GetLoopCount(); i++)
             {
                 loopcount = i;

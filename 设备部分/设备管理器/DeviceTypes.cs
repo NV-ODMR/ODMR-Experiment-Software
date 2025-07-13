@@ -56,9 +56,9 @@ namespace ODMR_Lab.设备部分
         /// </summary>
         温控 = 10,
         /// <summary>
-        /// 射频源
+        /// 信号发生器通道
         /// </summary>
-        射频源 = 11,
+        信号发生器通道 = 11,
         /// <summary>
         /// 锁相放大器
         /// </summary>

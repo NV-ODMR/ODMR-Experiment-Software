@@ -11,16 +11,25 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab.设备部分.射频源_锁相放大器
 {
-    public class SignalGeneratorChannelInfo
+    public class SignalGeneratorChannelInfo : InfoBase
     {
         public SignalGeneratorInfo ParentInfo { get; set; } = null;
 
-        public SignalChannelBase Channel { get; set; } = null;
+        public SignalChannelBase Device { get; set; } = null;
 
         public SignalGeneratorChannelInfo(SignalGeneratorInfo parentInfo, SignalChannelBase channel)
         {
             ParentInfo = parentInfo;
-            Channel = channel;
+            Device = channel;
+        }
+
+        public override void CreateDeviceInfoBehaviour()
+        {
+        }
+
+        public override string GetDeviceDescription()
+        {
+            return ParentInfo.Device.ProductName + " " + Device.ChannelName;
         }
     }
 }

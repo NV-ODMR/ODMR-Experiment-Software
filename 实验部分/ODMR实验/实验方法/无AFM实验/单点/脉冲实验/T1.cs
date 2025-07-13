@@ -167,8 +167,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override void PreExpEventWithoutAFM()
         {
             //打开微波
-            SignalGeneratorInfo RF = GetDeviceByName("RFSource") as SignalGeneratorInfo;
-            RF.Device.IsRFOutOpen = true;
+            SignalGeneratorChannelInfo RF = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
+            RF.Device.IsOutOpen = true;
 
             D1ChartDatas = new List<ChartData1D>()
             {
@@ -197,8 +197,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void AfterExpEventWithoutAFM()
         {
-            SignalGeneratorInfo RF = GetDeviceByName("RFSource") as SignalGeneratorInfo;
-            RF.Device.IsRFOutOpen = false;
+            SignalGeneratorChannelInfo RF = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
+            RF.Device.IsOutOpen = false;
             //计算T1
             var xs = Get1DChartDataSource("驰豫时间长度(ns)", "T1对比度数据");
             var y1 = Get1DChartDataSource("1态对比度[(ref-sig)/ref]", "T1对比度数据");

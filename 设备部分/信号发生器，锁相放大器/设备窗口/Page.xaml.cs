@@ -41,8 +41,8 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
     /// </summary>
     public partial class DevicePage : DevicePageBase
     {
-        public override string PageName { get; set; } = "射频源/锁相放大器";
-        public List<SignalGeneratorInfo> RFSources { get; set; } = new List<SignalGeneratorInfo>();
+        public override string PageName { get; set; } = "信号发生器/锁相放大器";
+        public List<SignalGeneratorInfo> SignalGenerators { get; set; } = new List<SignalGeneratorInfo>();
         public List<LockinInfo> LockIns { get; set; } = new List<LockinInfo>();
 
 
@@ -65,14 +65,14 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
 
         private void NewRFSourceConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(RFSourceBase));
+            ConnectWindow window = new ConnectWindow(typeof(SignalGeneratorBase));
             bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                SignalGeneratorInfo rfsource = new SignalGeneratorInfo() { Device = window.ConnectedDevice as RFSourceBase, ConnectInfo = window.ConnectInfo };
+                SignalGeneratorInfo rfsource = new SignalGeneratorInfo() { Device = window.ConnectedDevice as SignalGeneratorBase, ConnectInfo = window.ConnectInfo };
                 rfsource.CreateDeviceInfoBehaviour();
 
-                RFSources.Add(rfsource);
+                SignalGenerators.Add(rfsource);
                 RefreshPanels();
             }
             else
@@ -100,12 +100,12 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
 
         public override void RefreshPanels()
         {
-            RFSourceList.ClearItems();
+            SignalGeneratorList.ClearItems();
             LockInList.ClearItems();
 
-            foreach (var item in RFSources)
+            foreach (var item in SignalGenerators)
             {
-                RFSourceList.AddItem(item, item.Device.ProductName);
+                SignalGeneratorList.AddItem(item, item.Device.ProductName);
             }
 
             foreach (var item in LockIns)
@@ -120,7 +120,7 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
         /// <param name="arg1"></param>
         /// <param name="arg2"></param>
         /// <param name="arg3"></param>
-        private void RFContextMenuEvent(int arg1, int arg2, object arg3)
+        private void SignalGeneratorContextMenuEvent(int arg1, int arg2, object arg3)
         {
             SignalGeneratorInfo inf = arg3 as SignalGeneratorInfo;
             #region 关闭设备
@@ -130,7 +130,8 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
                 {
                     inf.CloseDeviceInfoAndSaveParams(out bool result);
                     if (result == false) return;
-                    RFSources.Remove(inf);
+                    SignalGenerators.Remove(inf);
+                    ChannelList.ClearItems();
                     RefreshPanels();
                 }
             }
@@ -164,6 +165,29 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
 
             #region 参数设置
             if (arg1 == 1)
+            {
+                ParameterWindow window = new ParameterWindow(inf.Device, Window.GetWindow(this));
+                window.ShowDialog();
+            }
+            #endregion
+        }
+
+        private void SignalGeneratorSelectEvent(int arg1, object arg2)
+        {
+            //选中对应发生器时刷新通道列表
+            ChannelList.ClearItems();
+            SignalGeneratorInfo inf = arg2 as SignalGeneratorInfo;
+            foreach (var item in inf.Channels)
+            {
+                ChannelList.AddItem(item, inf.Device.ProductName + " " + item.Device.ChannelName, item.Device.IsOutOpen);
+            }
+        }
+
+        private void ChannelContextMenuEvent(int arg1, int arg2, object arg3)
+        {
+            SignalGeneratorChannelInfo inf = arg3 as SignalGeneratorChannelInfo;
+            #region 参数设置
+            if (arg1 == 0)
             {
                 ParameterWindow window = new ParameterWindow(inf.Device, Window.GetWindow(this));
                 window.ShowDialog();
