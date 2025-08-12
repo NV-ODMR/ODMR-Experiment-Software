@@ -24,15 +24,16 @@ using Window = System.Windows.Window;
 using Controls.Charts;
 using System.Windows.Media;
 using System.Threading;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
-    class LockInDelay : PulseExpBase
+    class LockInDelay : LockInExpBase
     {
-        public override bool Is1DScanExp { get; set; } = false;
-        public override bool Is2DScanExp { get; set; } = false;
+        public override bool Is1DScanExp { get; set; } = true;
+        public override bool Is2DScanExp { get; set; } = true;
 
-        public override bool IsDisplayAsExp { get; set; } = false;
+        public override bool IsDisplayAsExp { get; set; } = true;
 
         /// <summary>
         /// 所属锁相实验
@@ -46,21 +47,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("起点时间(ns)",20,"StartTime"),
-            new Param<int>("Delay点数",1000,"DelayCount"),
+            new Param<int>("Delay点数",20,"DelayCount"),
             new Param<double>("终点时间(ns)",1000,"EndTime"),
+            new Param<int>("测量轮数",1,"LoopCount"),
+            new Param<double>("待测信号频率(MHz)",1,"Frequency"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
         };
-        public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
+        public override List<KeyValuePair<DeviceTypes, Param<string>>> LockInExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
+        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+        {
+            new LockInHahnEcho()
+        };
 
-        public override bool IsAFMSubExperiment { get; protected set; } = false;
+        public override bool IsAFMSubExperiment { get; protected set; } = true;
 
         public override bool PreConfirmProcedure()
         {
@@ -79,23 +86,40 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void ODMRExpWithoutAFM()
         {
-            Scan1DSession<object> ScanDelayTime = new Scan1DSession<object>();
-            ScanDelayTime.ProgressBarMethod = new Action<object, double>((device, v) => { SetProgress(v); });
-            ScanDelayTime.ScanEvent = ExpScanEvent;
-            ScanDelayTime.FirstScanEvent = ExpScanEvent;
-            ScanDelayTime.ScanSource = new object();
-            ScanDelayTime.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-            ScanDelayTime.SetStateMethod = new Action<object, double>((device, v) => { SetExpState("当前扫描时间:" + Math.Round(v, 5).ToString()); });
-            ScanDelayTime.BeginScan(new D1NumricLinearScanRange(GetInputParamValueByName("StartTime"), GetInputParamValueByName("EndTime"), GetInputParamValueByName("DelayCount")),
-                0, 100);
+            int Loop = GetInputParamValueByName("LoopCount");
+            double progress = 0;
+            for (int i = 0; i < Loop; i++)
+            {
+                CurrentLoop = i;
+                Scan1DSession<object> Session = new Scan1DSession<object>();
+                Session.FirstScanEvent = ExpScanEvent;
+                Session.ScanEvent = ExpScanEvent;
+                Session.ScanSource = null;
+                Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+                Session.ProgressBarMethod = new Action<object, double>((obj, v) =>
+                {
+                    SetProgress(v);
+                });
+                Session.SetStateMethod = new Action<object, double>((obj, v) =>
+                {
+                    SetExpState("当前扫描轮数:" + i.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
+                });
+
+                Session.BeginScan(new D1NumricLinearScanRange(GetInputParamValueByName("StartTime"), GetInputParamValueByName("EndTime"), GetInputParamValueByName("DelayCount")),
+                i * 100.0 / Loop, Math.Min((i + 1) * 100.0 / Loop, 100));
+            }
         }
 
         private List<object> ExpScanEvent(object arg1, D1NumricScanRangeBase arg2, double arg3, List<object> arg4)
         {
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)arg3);
             var exp = RunSubExperimentBlock(0, false);
+            JudgeThreadEndOrResumeAction();
             var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");
             time.Add(arg3);
+
+            int ind = arg2.GetNearestFormalIndex(arg3);
+
             foreach (var item in exp.OutputParams)
             {
                 List<double> source = Get1DChartDataSource(item.Description, "Delay测试数据");
@@ -105,15 +129,39 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     D1ChartDatas.Add(data);
                     source = data.Data;
                 }
-                try
+
+                if (ind >= source.Count)
                 {
-                    source.Add((double)item.RawValue);
+                    try
+                    {
+                        source.Add((double)item.RawValue);
+                    }
+                    catch (Exception e)
+                    {
+                        source.Add(double.NaN);
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    source.Add(double.NaN);
+                    if (!double.IsNaN((double)item.RawValue))
+                    {
+                        source[ind] = (source[ind] * CurrentLoop + (double)item.RawValue) / (CurrentLoop + 1);
+                    }
                 }
             }
+
+            //修改对比度
+            try
+            {
+                var count = Get1DChartDataSource("对比度", "Delay测试数据");
+                var sig = Get1DChartDataSource("信号光子计数", "Delay测试数据");
+                var refe = Get1DChartDataSource("参考光子计数", "Delay测试数据");
+                count = sig.Zip(refe, (v1, v2) => { return (v1 - v2) / v2; }).ToList();
+            }
+            catch (Exception)
+            {
+            }
+
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
             return new List<object>();
@@ -130,17 +178,55 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 new NumricChartData1D("时间(ns)","Delay测试数据",ChartDataType.X),
             };
             UpdatePlotChart();
-            Show1DChartData("对比度数据", "时间(ns)", "对比度");
+            Show1DChartData("Delay测试数据", "时间(ns)", "对比度");
             return;
         }
 
         public override void AfterExpEventWithoutAFM()
         {
+            //用正弦函数拟合得到的曲线
+            var count = Get1DChartDataSource("对比度", "Delay测试数据");
+            var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");
+            double d_x = count.Average();
+            double a_x = Math.Abs(count.Min() - count.Max()) / 2;
+            double c_x = 10;
+            //Pi脉冲时间
+            double b_x = GetInputParamValueByName("Frequency") * 1000;
+            double[] ps_x = CurveFitting.FitCurveWithFunc(time, count, new List<double>() { a_x, b_x, c_x, d_x }, new List<double>() { 10, 10, 10, 10 }, DelayFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
+
+            //设置拟合曲线
+            var ftxs = new D1NumricLinearScanRange(time.Min(), time.Max(), 500).ScanPoints;
+            var fitys_x = ftxs.Select(x => DelayFitFunc(x, ps_x)).ToList();
+            D1FitDatas.Add(new FittedData1D("a*cos(2*pi/b*(x-c))+d", "x", new List<string>() { "a", "b", "c", "d" }, ps_x.ToList(), "时间(ns)", "Delay测试数据", new NumricDataSeries("拟合曲线", ftxs, fitys_x) { LineColor = Colors.LightSkyBlue }));
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
+            Show1DFittedData("拟合曲线");
+            Thread.Sleep(1000);
+
+
+            OutputParams.Add(new Param<double>("Delay测试对比度", ps_x[3] - Math.Abs(ps_x[0]), "Contrast"));
+            OutputParams.Add(new Param<double>("基准值", ps_x[3], "Average"));
+            double phase = ps_x[2] + ps_x[1] / 2;
+            if (ps_x[0] < 0) phase = ps_x[2] + ps_x[1];
+            OutputParams.Add(new Param<double>("Delay相位(ns)", phase, "Phase"));
+        }
+
+
+        private double DelayFitFunc(double x, double[] ps)
+        {
+            double a = ps[0];
+            double b = ps[1];
+            double c = ps[2];
+            double d = ps[3];
+            return a * Math.Cos(2 * Math.PI / b * (x - c)) + d;
         }
 
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
-            return new List<ParentPlotDataPack>();
+            return new List<ParentPlotDataPack>() {
+                new ParentPlotDataPack("时间(ns)", "单点Delay曲线", ChartDataType.X, Get1DChartDataSource("时间(ns)", "Delay测试数据"), false),
+                new ParentPlotDataPack("对比度曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("对比度", "Delay测试数据"), true)
+            };
         }
 
         protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()

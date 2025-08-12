@@ -6,6 +6,7 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.扫描基方法;
@@ -44,6 +45,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<int>("最大尝试下针次数",5,"DropCount"),
             new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
+            new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
+            new Param<double>("悬浮测量距离(V)",0.1,"FloatHeight"),
+            new Param<double>("最大限制电压(V)",10,"UpperLimit"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -66,6 +70,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             List<KeyValuePair<string, Action>> btns = new List<KeyValuePair<string, Action>>();
             btns.Add(new KeyValuePair<string, Action>("移动扫描台到指定位置", MoveScanner));
+            foreach (var item in SubExperiments)
+            {
+                btns.AddRange(item.InterativeButtons);
+            }
             return btns;
         }
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
@@ -83,7 +91,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
             infox.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].X, 120000);
+            JudgeThreadEndOrResumeAction();
             infoy.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].Y, 120000);
+            JudgeThreadEndOrResumeAction();
         }
 
         private int ScanPointCount = 0;
@@ -127,7 +137,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             SetExpState("正在移动到目标位置 X: " + Math.Round(currentloc.X, 5).ToString() + " Y: " + Math.Round(currentloc.Y, 5));
             scannerx.Device.MoveToAndWait(currentloc.X, 120000);
+            JudgeThreadEndOrResumeAction();
             scannery.Device.MoveToAndWait(currentloc.Y, 120000);
+            JudgeThreadEndOrResumeAction();
+
+            //如果是悬浮测量则执行对应程序
+            if (GetInputParamValueByName("IsFloatScan") == true)
+            {
+                AFMFloatDrop drop = new AFMFloatDrop();
+                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") }, GetDeviceByName("LockIn"));
+            }
 
             SetExpState("正在进行实验...");
 
@@ -204,7 +223,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void AfterExpEventWithAFM()
         {
-
+            //设置Lock In PID上限
+            if (GetInputParamValueByName("IsFloatScan") == true)
+            {
+                (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
+            }
         }
 
         public override void PreExpEventWithAFM()

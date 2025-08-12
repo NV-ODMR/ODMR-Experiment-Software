@@ -29,6 +29,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.PulseBlaster,new Param<string>("板卡","","PB")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.光子计数器,new Param<string>("APD","","APD")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("射频信号通道","","RFSource")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("信号源通道","","SignalChannel")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("触发信号通道","","TriggerChannel")),
         };
         /// <summary>
         /// 脉冲实验的输入参数
@@ -56,6 +58,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="rfpower">微波功率(dbm)</param>
         /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>
         /// <param name="signalFrequency">待测信号频率(MHz)</param>
+        /// <param name="signalFrequency">待测信号幅度(V)</param>
+        /// <param name="signalFrequency">待测信号偏置(V)</param>
         /// <returns></returns>
         protected PulsePhotonPack DoLockInPulseExp(string sequencename, double rffrequency, double rfpower, double signalFrequency, int loopcount, int LaserCountPulses, int timeout)
         {
@@ -63,6 +67,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             SignalGeneratorChannelInfo channel = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
             channel.Device.Frequency = rffrequency;
             channel.Device.Amplitude = rfpower;
+
             //设置序列
             GlobalPulseParams.SetGlobalPulseLength("TriggerWait", 0);
             var sequence = SequenceDataAssemble.ReadFromSequenceName(sequencename);
@@ -72,50 +77,50 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 sequence.ChangeWaveSegSpan(item.PulseName, item.PulseLength);
             }
 
-            //获取相邻两次Trigger之间的实验时间
-            var triggers = sequence.Channels[0].Peaks.FindAll(x => x.IsTriggerCommand).Select(x => sequence.Channels[0].Peaks.IndexOf(x)).ToList();
-            if (triggers.Count != 0)
-            {
-                triggers.Add(sequence.Channels[0].Peaks.Count - 1);
-                for (int i = 0; i < triggers.Count - 1; i++)
-                {
-                    int time = sequence.Channels[0].GetExpSegTime(triggers[i], triggers[i + 1]);
-                    if (time == 0) continue;
-                    SequenceWaveSeg wave = sequence.Channels[0].Peaks[triggers[i + 1]];
-                    if (i + 1 == triggers.Count - 1)
-                    {
-                        //如果是序列末尾则设置序列开头的等待时间(循环)
-                        wave = sequence.Channels[0].Peaks[triggers[0]];
-                    }
-                    sequence.Channels[0].GetSegTime(wave, out int triggerstart, out int triggerend);
-                    //根据总实验时间计算等待时间
-                    int periodTime = (int)(1e+3 / signalFrequency);
-                    int timeres = time % periodTime;
-                    //检查最终信号是否在低电平内，如果是则延时到高电平内（等待半个周期）
-                    if (timeres < periodTime / 2)
-                    {
-                        //查找所有相同位置的TriggerWait
-                        List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
-                        foreach (var item in triggerwaits)
-                        {
-                            item.PeakSpan = (periodTime / 2 - timeres) + periodTime / 4;
-                        }
-                    }
-                    //检查最终信号在高点平内则不等待
-                    if (timeres >= periodTime / 2)
-                    {
-                        //查找所有相同位置的TriggerWait
-                        List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
-                        foreach (var item in triggerwaits)
-                        {
-                            if (timeres < periodTime / 2 + periodTime / 8)
-                                item.PeakSpan = periodTime / 2 + periodTime / 8 - timeres;
-                            else
-                                item.PeakSpan = 0;
-                        }
-                    }
-                }
-            }
+            ////获取相邻两次Trigger之间的实验时间
+            //var triggers = sequence.Channels[0].Peaks.FindAll(x => x.IsTriggerCommand).Select(x => sequence.Channels[0].Peaks.IndexOf(x)).ToList();
+            //if (triggers.Count != 0)
+            //{
+            //    triggers.Add(sequence.Channels[0].Peaks.Count - 1);
+            //    for (int i = 0; i < triggers.Count - 1; i++)
+            //    {
+            //        int time = sequence.Channels[0].GetExpSegTime(triggers[i], triggers[i + 1]);
+            //        if (time == 0) continue;
+            //        SequenceWaveSeg wave = sequence.Channels[0].Peaks[triggers[i + 1]];
+            //        if (i + 1 == triggers.Count - 1)
+            //        {
+            //            //如果是序列末尾则设置序列开头的等待时间(循环)
+            //            wave = sequence.Channels[0].Peaks[triggers[0]];
+            //        }
+            //        sequence.Channels[0].GetSegTime(wave, out int triggerstart, out int triggerend);
+            //        //根据总实验时间计算等待时间
+            //        int periodTime = (int)(1e+3 / signalFrequency);
+            //        int timeres = time % periodTime;
+            //        //检查最终信号是否在低电平内，如果是则延时到高电平内（等待半个周期）
+            //        if (timeres < periodTime / 2)
+            //        {
+            //            //查找所有相同位置的TriggerWait
+            //            List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
+            //            foreach (var item in triggerwaits)
+            //            {
+            //                item.PeakSpan = (periodTime / 2 - timeres) + periodTime / 4;
+            //            }
+            //        }
+            //        //检查最终信号在高点平内则不等待
+            //        if (timeres >= periodTime / 2)
+            //        {
+            //            //查找所有相同位置的TriggerWait
+            //            List<SequenceWaveSeg> triggerwaits = sequence.Channels.Select(x => x.Peaks[x.Peaks.IndexOf(x.GetSegFromTime(triggerstart, triggerend)[0]) - 1]).ToList();
+            //            foreach (var item in triggerwaits)
+            //            {
+            //                if (timeres < periodTime / 2 + periodTime / 8)
+            //                    item.PeakSpan = periodTime / 2 + periodTime / 8 - timeres;
+            //                else
+            //                    item.PeakSpan = 0;
+            //            }
+            //        }
+            //    }
+            //}
             sequence.LoopCount = loopcount;
             //设置pb
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
@@ -161,6 +166,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             }
         }
 
+        protected InfoBase GetSignalSource()
+        {
+            return GetDeviceByName("SignalChannel");
+        }
 
         /// <summary>
         /// 获取脉冲实验的光子计数,返回相邻两个计数脉冲之间的计数,失败则报错

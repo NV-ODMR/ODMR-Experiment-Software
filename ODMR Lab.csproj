@@ -69,11 +69,11 @@
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -196,6 +196,7 @@
     </Compile>
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\一维扫描\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\下针测试\AFMScanExp.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMFloatDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMStopDrop.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\AFMDrop.cs" />

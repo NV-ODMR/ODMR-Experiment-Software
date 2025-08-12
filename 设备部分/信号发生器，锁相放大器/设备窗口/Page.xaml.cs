@@ -194,5 +194,11 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
             }
             #endregion
         }
+
+        private void ChannelStateChanged(int arg1, int arg2, object arg3)
+        {
+            var dev = ChannelList.GetTag(arg1) as SignalGeneratorChannelInfo;
+            dev.Device.IsOutOpen = (bool)arg3;
+        }
     }
 }

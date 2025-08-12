@@ -38,7 +38,7 @@
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
     </control:ListViewer>
-    <control:ListViewer Name="ChannelList" Grid.Column="1" Margin="10" Grid.RowSpan="2" ItemContextMenuSelected="ChannelContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+    <control:ListViewer Name="ChannelList" Grid.Column="1" Margin="10" Grid.RowSpan="2" ItemContextMenuSelected="ChannelContextMenuEvent" ItemValueChanged="ChannelStateChanged" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
             <control:ContextMenu>
                 <control:ContextMenu.Items>

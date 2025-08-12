@@ -24,6 +24,7 @@ using Window = System.Windows.Window;
 using Controls.Charts;
 using System.Windows.Media;
 using System.Threading;
+using ODMR_Lab.基本窗口;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -38,7 +39,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("待测信号频率(MHz)",1000,"SignalFreq"),
+            new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"),
             new Param<int>("测量次数",1000,"LoopCount"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
@@ -46,6 +47,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("单点超时时间",10000,"TimeOut"),
             new Param<bool>("测量单点对比度",false,"SingleContrast"),
             new Param<int>("对比度Rabi测量循环次数",10000,"ContrastRabiLoopCount"),
+            new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -62,7 +64,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override bool PreConfirmProcedure()
         {
-            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
+            if (MessageWindow.ShowMessageBox("提示", "此操作将改变锁相信号强度,这可能会使音叉共振幅度发生改变,同时会清除原先的实验数据,是否要继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
             {
                 return true;
             }
@@ -189,11 +191,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             }
         }
 
+        double OriginSignalAmplitude { get; set; } = 0;
+
         public override void PreExpEventWithoutAFM()
         {
             //打开微波
             SignalGeneratorChannelInfo RF = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
             RF.Device.IsOutOpen = true;
+            if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
+            {
+                //修改信号源强度
+                (GetSignalSource() as SignalGeneratorChannelInfo).Device.IsOutOpen = true;
+                Thread.Sleep(2000);
+            }
         }
 
         public override void AfterExpEventWithoutAFM()
@@ -209,6 +219,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 OutputParams.Add(new Param<double>("参考对比度最大值", HiContrast, "RefHiContrast"));
                 OutputParams.Add(new Param<double>("归一化对比度", NormalizedContrast, "NormalizedContrast"));
             }
+            if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
+            {
+                //修改信号源强度
+                (GetSignalSource() as SignalGeneratorChannelInfo).Device.IsOutOpen = false;
+            }
         }
 
         public override List<ParentPlotDataPack> GetD1PlotPacks()
@@ -218,7 +233,64 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()
         {
-            return new List<KeyValuePair<string, Action>>();
+            var res = new List<KeyValuePair<string, Action>>();
+            res.Add(new KeyValuePair<string, Action>("触发信号参数设置", SetTrigger));
+            return res;
+        }
+
+        private void SetTrigger()
+        {
+            var dic = new Dictionary<string, string>();
+            dic.Add("幅度(V)", "");
+            dic.Add("偏置(V)", "");
+            dic.Add("频率(MHz)", "");
+            MessageWindow win = null;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ParamInputWindow pwin = new ParamInputWindow("触发信号参数设置");
+                pwin.Owner = Window.GetWindow(ParentPage);
+                pwin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                dic = pwin.ShowDialog(dic);
+                win = new MessageWindow("参数设置", "正在设置参数...", MessageBoxButton.OK, false, false);
+                win.Owner = Window.GetWindow(ParentPage);
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                win.Show();
+            });
+            try
+            {
+                if (dic.Count != 0)
+                {
+                    GetDevices();
+                    //设置待锁相信号频率,幅度,偏置
+                    SignalGeneratorChannelInfo signal = GetDeviceByName("SignalChannel") as SignalGeneratorChannelInfo;
+                    SignalGeneratorChannelInfo trigger = GetDeviceByName("TriggerChannel") as SignalGeneratorChannelInfo;
+                    signal.BeginUse();
+                    trigger.BeginUse();
+
+                    double signalFrequency = double.Parse(dic["频率(MHz)"]);
+                    double signalAmplitude = double.Parse(dic["偏置(V)"]);
+                    double signalOffset = double.Parse(dic["频率(MHz)"]);
+                    signal.Device.Frequency = signalFrequency * 1e+6;
+                    signal.Device.Amplitude = signalAmplitude;
+                    signal.Device.Offset = signalOffset;
+                    trigger.Device.Frequency = signalFrequency * 1e+6;
+                    signal.EndUse();
+                    trigger.EndUse();
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    win.Close();
+                    MessageWindow.ShowTipWindow("设置失败\n" + ex.Message, Window.GetWindow(ParentPage));
+                });
+                return;
+            }
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                win.Close();
+            });
         }
     }
 }

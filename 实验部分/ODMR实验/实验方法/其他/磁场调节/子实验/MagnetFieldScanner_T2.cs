@@ -43,6 +43,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
         {
             new Param<string>("定位结果文件名","","LocFileName"),
             new Param<int>("CW/Rabi重新采样间隔",5,"CWGap"),
+            new Param<double>("磁铁高度(mm)",13,"MagnetHeight"),
             new Param<int>("微波频率初始值(MHz)",2870,"CWInit"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
             new Param<int>("T2采样时间",1000,"T2SampleTime"),
@@ -144,7 +145,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
         private List<object> ScanEvent(object arg1, object arg2, D2ScanRangeBase arg3, Point arg4, List<object> arg5)
         {
             //移动位移台
-            MagnetScanTool.CalculatepPredictLoc(Ps, Ps.ZLoc, arg4.X, arg4.Y, out var x, out var y, out var z, out var angle);
+            MagnetScanTool.CalculatepPredictLoc(Ps, GetInputParamValueByName("MagnetHeight"), arg4.X, arg4.Y, out double x, out double y, out double z, out double angle);
             (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(x, 10000);
             (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(y, 10000);
             (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(z, 10000);
@@ -154,7 +155,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             {
                 tempCWCount = 0;
                 RunSubExperimentBlock(0, true);
-                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 5, 15, true);
+                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 5, 15, false);
                 if (peaks.Count == 0)
                 {
 

@@ -44,6 +44,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 }
             }
             //开始下针
+            lockin.Device.SetPoint = setpoint;
             lockin.Device.PIDOutput = true;
             double pidout1 = lockin.Device.PIDValue;
             Thread.Sleep(500);

@@ -6,6 +6,7 @@ using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.扫描基方法;
@@ -34,14 +35,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         public override string ODMRExperimentGroupName { get; set; } = "AFM下针测试";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<bool>("显示子实验窗口",true,"ShowSubMenu"),
-            new Param<bool>("存储单点实验数据",true,"SaveSingleExpData"),
-            new Param<bool>("自动Trace",false,"UseAutoTrace"),
-            new Param<int>("Trace间隔",10,"TraceGap"),
             new Param<bool>("尝试多次下针",true,"MultiAFMDrop"),
             new Param<int>("最大尝试下针次数",5,"DropCount"),
             new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
+            new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
+            new Param<double>("悬浮测量距离(V)",0.1,"FloatHeight"),
+            new Param<double>("最大限制电压(V)",10,"UpperLimit"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -73,12 +73,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
         }
 
-        private int ScanPointCount = 0;
-        private int ScanPointGap = 0;
-        private bool AllowAutoTrace = false;
-
         public override void ODMRExpWithAFM()
         {
+            //悬浮测量
+            if (GetInputParamValueByName("IsFloatScan"))
+            {
+                AFMFloatDrop drop = new AFMFloatDrop();
+                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") }, GetDeviceByName("LockIn"));
+                if ((bool)result[0] == false)
+                {
+                    throw new Exception("下针失败，实验已结束");
+                }
+            }
             //等待实验结束
             SetExpState("下针完成,等待手动结束并撤针...");
             while (true)
@@ -89,7 +95,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void AfterExpEventWithAFM()
         {
-
+            if (GetInputParamValueByName("IsFloatScan"))
+            {
+                (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
+            }
         }
 
         public override void PreExpEventWithAFM()

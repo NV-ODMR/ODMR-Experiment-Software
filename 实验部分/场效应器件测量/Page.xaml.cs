@@ -263,7 +263,10 @@ namespace ODMR_Lab.场效应器件测量
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("设备正在使用", Window.GetWindow(this));
+                    Dispatcher.Invoke(() =>
+                    {
+                        MessageWindow.ShowTipWindow("设备正在使用", Window.GetWindow(this));
+                    });
                     return;
                 }
 
