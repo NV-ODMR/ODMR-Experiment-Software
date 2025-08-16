@@ -139,11 +139,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         private List<object> ExpScanEvent(object arg1, D1NumricScanRangeBase arg2, double arg3, List<object> arg4)
         {
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)arg3);
-            var exp = RunSubExperimentBlock(0, false);
             JudgeThreadEndOrResumeAction();
-            var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");
-            time.Add(arg3);
-
+            HahnEchoExp(out double contrast, out double sig, out double reference);
             int ind = arg2.GetNearestFormalIndex(arg3);
 
             var contrastlist = Get1DChartDataSource("对比度", "Delay测试数据");
