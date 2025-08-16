@@ -299,7 +299,7 @@ namespace ODMR_Lab
                 CurrentPage = Dev_MoversPage;
                 AddPageToView(Dev_MoversPage);
             }
-            if (btn.Text == "相机/翻转镜")
+            if (btn.Text == "相机/翻转镜/开关")
             {
                 CurrentPage = Dev_CameraPage;
                 AddPageToView(Dev_CameraPage);
