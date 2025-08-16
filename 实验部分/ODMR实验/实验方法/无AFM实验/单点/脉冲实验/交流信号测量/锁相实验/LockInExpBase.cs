@@ -61,7 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="signalFrequency">待测信号幅度(V)</param>
         /// <param name="signalFrequency">待测信号偏置(V)</param>
         /// <returns></returns>
-        protected PulsePhotonPack DoLockInPulseExp(string sequencename, double rffrequency, double rfpower, double signalFrequency, int loopcount, int LaserCountPulses, int timeout)
+        protected PulsePhotonPack DoLockInPulseExp(string sequencename, double rffrequency, double rfpower, double signalFrequency, int sequenceLoopCount, int LaserCount, int timeout)
         {
             //设置微波
             SignalGeneratorChannelInfo channel = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
@@ -121,20 +121,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             //        }
             //    }
             //}
-            sequence.LoopCount = loopcount;
+            sequence.LoopCount = sequenceLoopCount;
             //设置pb
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
+            apd.StartTriggerSample(sequenceLoopCount * LaserCount);
             //设置板卡指令
             List<CommandBase> Lines = new List<CommandBase>();
-            apd.StartTriggerSample(sequence.LoopCount * LaserCountPulses); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
             pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
-            Thread.Sleep(20);
+            Thread.Sleep(1000);
             pb.Device.Start();//板卡开始输出
             List<int> ApdResult = apd.GetTriggerSamples(timeout);//apd读取，判断时间
-            apd.EndTriggerSample();//停止计数
+            apd.EndTriggerSample();
             pb.Device.End();//关板卡
-
             try
             {
                 //抽取相邻两个的数组
@@ -145,16 +144,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 //按脉冲实验次数分割
                 PulsePhotonPack pack = new PulsePhotonPack();
                 int index = 0;
-                SinglePulsePhotonPack single = new SinglePulsePhotonPack();
+                var single = new List<int>();
                 for (int j = 0; j < det.Count; j++)
                 {
-
-                    single.Photons.Add(det[j]);
+                    single.Add(det[j]);
                     ++index;
-                    if (index >= LaserCountPulses / 2)
+                    if (index >= LaserCount / 2)
                     {
                         pack.PulsesPhotons.Add(single);
-                        single = new SinglePulsePhotonPack();
+                        single = new List<int>();
                         index = 0;
                     }
                 }
@@ -171,6 +169,35 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             return GetDeviceByName("SignalChannel");
         }
 
+        public override void PreExpEventWithoutAFM()
+        {
+            //APDInfo apd = GetDeviceByName("APD") as APDInfo;
+            //apd.StartTriggerSample(GetMaxSeqLoopCount() * GetMaxLaserCountPulses()); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
+            PreLockInExpEventWithoutAFM();
+        }
+
+        public override void AfterExpEventWithoutAFM()
+        {
+            AfterLockInExpEventWithoutAFM();
+            //APDInfo apd = GetDeviceByName("APD") as APDInfo;
+            //apd.EndTriggerSample();//停止计数
+        }
+
+        /// <summary>
+        /// 在进行锁相试验之前进行的操作
+        /// </summary>
+        public abstract void PreLockInExpEventWithoutAFM();
+
+        /// <summary>
+        /// 在进行锁相试验之后进行的操作
+        /// </summary>
+        public abstract void AfterLockInExpEventWithoutAFM();
+
+
+        public abstract int GetMaxSeqLoopCount();
+
+        public abstract int GetMaxLaserCountPulses();
+
         /// <summary>
         /// 获取脉冲实验的光子计数,返回相邻两个计数脉冲之间的计数,失败则报错
         /// </summary>
@@ -178,7 +205,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="rfpower">微波功率(dbm)</param>
         /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>>
         /// <returns></returns>
-        protected PulsePhotonPack DoPulseExp(string pulsename, double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
+        protected PulsePhotonPack DoPulseExp(string pulsename, double rffrequency, double rfpower, int sequenceLoopCount, int LaserCount, int timeout)
         {
             //设置微波
             SignalGeneratorChannelInfo Rf = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
@@ -192,20 +219,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 sequence.ChangeWaveSegSpan(item.PulseName, item.PulseLength);
             }
 
-            sequence.LoopCount = loopcount;
+            sequence.LoopCount = sequenceLoopCount;
             //设置pb
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;
             APDInfo apd = GetDeviceByName("APD") as APDInfo;
+            apd.StartTriggerSample(sequenceLoopCount * LaserCount);
             //设置板卡指令
             List<CommandBase> Lines = new List<CommandBase>();
             pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
-            apd.StartTriggerSample(sequence.LoopCount * LaserCountPulses); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
             Thread.Sleep(50);
             pb.Device.Start();
             List<int> ApdResult = apd.GetTriggerSamples(timeout);//apd读取，判断时间
-            apd.EndTriggerSample();//停止计数
+            apd.EndTriggerSample();
             pb.Device.End();//关板卡
-
             try
             {
                 //抽取相邻两个的数组
@@ -216,16 +242,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 //按脉冲实验次数分割
                 PulsePhotonPack pack = new PulsePhotonPack();
                 int index = 0;
-                SinglePulsePhotonPack single = new SinglePulsePhotonPack();
+                var single = new List<int>();
                 for (int j = 0; j < det.Count; j++)
                 {
-
-                    single.Photons.Add(det[j]);
+                    single.Add(det[j]);
                     ++index;
-                    if (index >= LaserCountPulses / 2)
+                    if (index >= LaserCount / 2)
                     {
                         pack.PulsesPhotons.Add(single);
-                        single = new SinglePulsePhotonPack();
+                        single = new List<int>();
                         index = 0;
                     }
                 }

@@ -193,7 +193,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         double OriginSignalAmplitude { get; set; } = 0;
 
-        public override void PreExpEventWithoutAFM()
+        public override void PreLockInExpEventWithoutAFM()
         {
             //打开微波
             SignalGeneratorChannelInfo RF = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
@@ -206,7 +206,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             }
         }
 
-        public override void AfterExpEventWithoutAFM()
+        public override void AfterLockInExpEventWithoutAFM()
         {
             //设置输出
             OutputParams.Add(new Param<double>("信号光子计数", Sig, "SignalCount"));
@@ -291,6 +291,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
                 win.Close();
             });
+        }
+
+        public override int GetMaxSeqLoopCount()
+        {
+            return Math.Max(GetInputParamValueByName("ContrastRabiLoopCount"), GetInputParamValueByName("SeqLoopCount"));
+        }
+
+        public override int GetMaxLaserCountPulses()
+        {
+            return Math.Max(4, 8);
         }
     }
 }

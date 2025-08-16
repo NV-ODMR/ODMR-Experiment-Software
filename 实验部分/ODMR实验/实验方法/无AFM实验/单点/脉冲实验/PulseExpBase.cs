@@ -96,16 +96,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 //按脉冲实验次数分割
                 PulsePhotonPack pack = new PulsePhotonPack();
                 int index = 0;
-                SinglePulsePhotonPack single = new SinglePulsePhotonPack();
+                var single = new List<int>();
                 for (int j = 0; j < det.Count; j++)
                 {
-
-                    single.Photons.Add(det[j]);
+                    single.Add(det[j]);
                     ++index;
                     if (index >= LaserCountPulses / 2)
                     {
                         pack.PulsesPhotons.Add(single);
-                        single = new SinglePulsePhotonPack();
+                        single = new List<int>();
                         index = 0;
                     }
                 }

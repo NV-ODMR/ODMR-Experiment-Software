@@ -115,10 +115,42 @@ namespace ODMR_Lab.实验部分.序列编辑器
         public List<CommandBase> AddToCommandLine(List<CommandBase> InputCommand, out string ComandInformation)
         {
             ComandInformation = "";
+            //判断循环次数,如果次数大于1000000则嵌套
+            bool multiloop = false;
+            int multiloopind = 0;
+            int outerloop = LoopCount / 1000000;
+            if (LoopCount >= 1000000)
+            {
+                multiloop = true;
+                InputCommand.Add(new LoopStartCommandLine(outerloop));
+                multiloopind = InputCommand.Count - 1;
+            }
+            if (multiloop == true)
+            {
+                InputCommand.Add(new LoopStartCommandLine(1000000));
+                int loopstartind = InputCommand.Count - 1;
 
-            InputCommand.Add(new LoopStartCommandLine(LoopCount));
-            int loopstartind = InputCommand.Count - 1;
+                InputCommand = AddSubCommandLine(InputCommand, out ComandInformation);
 
+                InputCommand.Add(new LoopEndCommandLine(loopstartind));
+                InputCommand.Add(new LoopEndCommandLine(multiloopind));
+            }
+            if (LoopCount % 1000000 != 0)
+            {
+                InputCommand.Add(new LoopStartCommandLine(LoopCount % 1000000));
+                int loopind = InputCommand.Count - 1;
+
+                InputCommand = AddSubCommandLine(InputCommand, out ComandInformation);
+
+                InputCommand.Add(new LoopEndCommandLine(loopind));
+            }
+
+            return InputCommand;
+        }
+
+        private List<CommandBase> AddSubCommandLine(List<CommandBase> InputCommand, out string ComandInformation)
+        {
+            ComandInformation = "";
             //找1脉冲以及Trigger指令的时间点
             HashSet<int> OneTimes = new HashSet<int>() { 0 };
             foreach (var wave in Channels)
@@ -171,9 +203,6 @@ namespace ODMR_Lab.实验部分.序列编辑器
                     InputCommand.Add(singlecommand);
                 }
             }
-
-            InputCommand.Add(new LoopEndCommandLine(loopstartind));
-
             return InputCommand;
         }
 

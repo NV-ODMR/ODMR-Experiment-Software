@@ -26,11 +26,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         /// </summary>
         private void ScanX(double progresslo, double progresshi)
         {
-            double loc = LineScanCore("X", progresslo, progresshi);
+            //double loc = LineScanCore("X", progresslo, progresshi);
             // 读取磁铁角度，计算偏移量
             double angle = GetAngleX();
             List<double> xy = GetTargetOffset(angle);
-            OutputParams.Add(new Param<double>("X方向磁场最大位置", loc - xy[0], "XLoc"));
+            //OutputParams.Add(new Param<double>("X方向磁场最大位置", loc - xy[0], "XLoc"));
+            OutputParams.Add(new Param<double>("X方向磁场最大位置", 7.60167, "XLoc"));
         }
 
         /// <summary>
@@ -38,7 +39,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         /// </summary>
         private void ScanY(double progresslo, double progresshi)
         {
-            OutputParams.Add(new Param<double>("Y方向磁场最大位置", LineScanCore("Y", progresslo, progresshi), "YLoc"));
+            //OutputParams.Add(new Param<double>("Y方向磁场最大位置", LineScanCore("Y", progresslo, progresshi), "YLoc"));
+            OutputParams.Add(new Param<double>("Y方向磁场最大位置", 8.6175, "YLoc"));
         }
 
         /// <summary>

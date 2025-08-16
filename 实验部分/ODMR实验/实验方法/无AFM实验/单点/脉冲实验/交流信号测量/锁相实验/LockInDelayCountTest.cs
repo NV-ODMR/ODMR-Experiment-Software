@@ -28,10 +28,10 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
-    class LockInDelay : LockInExpBase
+    class LockInDelayCountTest : LockInExpBase
     {
-        public override bool Is1DScanExp { get; set; } = true;
-        public override bool Is2DScanExp { get; set; } = true;
+        public override bool Is1DScanExp { get; set; } = false;
+        public override bool Is2DScanExp { get; set; } = false;
 
         public override bool IsDisplayAsExp { get; set; } = true;
 
@@ -40,7 +40,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         /// </summary>
         private LockInExpBase ParentLockInExp { get; set; } = null;
 
-        public override string ODMRExperimentName { get; set; } = "锁相Delay测试";
+        public override string ODMRExperimentName { get; set; } = "锁相Delay光子数测量";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
@@ -50,12 +50,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("Delay点数",20,"DelayCount"),
             new Param<double>("终点时间(ns)",1000,"EndTime"),
             new Param<int>("测量轮数",1,"LoopCount"),
-            new Param<int>("序列循环次数",1,"SeqLoopCount"),
+            new Param<int>("序列循环次数",100000,"SeqLoopCount"),
+            new Param<int>("单点循环次数",1,"SingleLoopCount"),
             new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"),
-            new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
-            new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<int>("光子数采样时间(ns)",50,"CountSampleTime"),
             new Param<int>("单点超时时间",10000,"TimeOut"),
-            new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -113,70 +112,52 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             }
         }
 
-        private void HahnEchoExp(out double contrast, out double Sig, out double Ref)
+        private void CountExp(out double Count)
         {
-            //设置HahnEchoTime
-            //XPi脉冲时间
-            int xLength = GlobalPulseParams.GetGlobalPulseLength("PiX");
-            double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
-            int echotime = (int)((signaltime - xLength) / 2);
-            GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
-            PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
-                GetInputParamValueByName("TimeOut"));
-            Sig = pack.GetPhotonsAtIndex(0).Sum();
-            Ref = pack.GetPhotonsAtIndex(1).Sum();
-            contrast = 1;
-            try
+            int Loop = GetInputParamValueByName("SingleLoopCount");
+            Count = 0;
+            for (int i = 0; i < Loop; i++)
             {
-                contrast = (Sig - Ref) / (double)Ref;
+                PulsePhotonPack pack = DoLockInPulseExp("DelayCountTest", 2870, -20, GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 2,
+                 GetInputParamValueByName("TimeOut"));
+                Count += pack.GetPhotonsAtIndex(0).Sum();
+                pack = null;
+                GC.Collect();
+                JudgeThreadEndOrResumeAction?.Invoke();
             }
-            catch (Exception)
-            {
-            }
-            JudgeThreadEndOrResumeAction?.Invoke();
+            if (Count == 0) Count = double.NaN;
         }
 
         private List<object> ExpScanEvent(object arg1, D1NumricScanRangeBase arg2, double arg3, List<object> arg4)
         {
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)arg3);
             JudgeThreadEndOrResumeAction();
-            HahnEchoExp(out double contrast, out double sig, out double reference);
+            CountExp(out double count);
             int ind = arg2.GetNearestFormalIndex(arg3);
 
-            var contrastlist = Get1DChartDataSource("对比度", "Delay测试数据");
-            var siglist = Get1DChartDataSource("信号光子数", "Delay测试数据");
-            var reflist = Get1DChartDataSource("参考光子数", "Delay测试数据");
+            var countlist = Get1DChartDataSource("光子数", "Delay测试数据");
 
             var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");
-            if (ind >= contrastlist.Count)
+            if (ind >= countlist.Count)
             {
                 time.Add(arg3);
                 try
                 {
-                    contrastlist.Add(contrast);
-                    siglist.Add(sig);
-                    reflist.Add(reference);
+                    countlist.Add(count);
                 }
                 catch (Exception e)
                 {
-                    siglist.Add(0);
-                    reflist.Add(0);
-                    contrastlist.Add(1);
+                    countlist.Add(1);
                 }
             }
             else
             {
-                if (!double.IsNaN(contrast))
+                if (!double.IsNaN(count))
                 {
-                    contrastlist[ind] = (contrastlist[ind] * CurrentLoop + (double)contrast) / (CurrentLoop + 1);
-                }
-                if (!double.IsNaN(sig))
-                {
-                    siglist[ind] = (siglist[ind] * CurrentLoop + (double)sig) / (CurrentLoop + 1);
-                }
-                if (!double.IsNaN(reference))
-                {
-                    reflist[ind] = (reflist[ind] * CurrentLoop + (double)reference) / (CurrentLoop + 1);
+                    if (!double.IsNaN(countlist[ind]))
+                        countlist[ind] = (countlist[ind] * CurrentLoop + (double)count) / (CurrentLoop + 1);
+                    else
+                        countlist[ind] = count;
                 }
             }
 
@@ -194,24 +175,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             D1ChartDatas = new List<ChartData1D>()
             {
                 new NumricChartData1D("时间(ns)","Delay测试数据",ChartDataType.X),
-                new NumricChartData1D("对比度","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("信号光子数","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("参考光子数","Delay测试数据",ChartDataType.Y)
+                new NumricChartData1D("光子数","Delay测试数据",ChartDataType.Y)
             };
             UpdatePlotChart();
-            Show1DChartData("Delay测试数据", "时间(ns)", "对比度");
-            if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
-            {
-                var dev = GetSignalSource() as SignalGeneratorChannelInfo;
-                dev.Device.IsOutOpen = true;
-            }
+            Show1DChartData("Delay测试数据", "时间(ns)", "光子数");
             return;
         }
 
         public override void AfterLockInExpEventWithoutAFM()
         {
             //用正弦函数拟合得到的曲线
-            var count = Get1DChartDataSource("对比度", "Delay测试数据");
+            var count = Get1DChartDataSource("光子数", "Delay测试数据");
             var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");
             double d_x = count.Average();
             double a_x = Math.Abs(count.Min() - count.Max()) / 2;
@@ -230,18 +204,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             Thread.Sleep(1000);
 
 
-            OutputParams.Add(new Param<double>("Delay测试对比度", ps_x[3] - Math.Abs(ps_x[0]), "Contrast"));
-            OutputParams.Add(new Param<double>("基准值", ps_x[3], "Average"));
+            OutputParams.Add(new Param<double>("Delay测试光子数", ps_x[3] - Math.Abs(ps_x[0]), "Contrast"));
+            OutputParams.Add(new Param<double>("平均光子数", ps_x[3], "Average"));
             double phase = ps_x[2] + ps_x[1] / 2;
             if (ps_x[0] < 0) phase = ps_x[2] + ps_x[1];
             OutputParams.Add(new Param<double>("Delay相位(ns)", phase, "Phase"));
-            OutputParams.Add(new Param<double>("平均参考光子数", Get1DChartDataSource("参考光子数", "Delay测试数据").Average(), "AveCount"));
 
-            if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
-            {
-                var dev = GetSignalSource() as SignalGeneratorChannelInfo;
-                dev.Device.IsOutOpen = false;
-            }
         }
 
 
@@ -258,7 +226,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             return new List<ParentPlotDataPack>() {
                 new ParentPlotDataPack("时间(ns)", "单点Delay曲线", ChartDataType.X, Get1DChartDataSource("时间(ns)", "Delay测试数据"), false),
-                new ParentPlotDataPack("对比度曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("对比度", "Delay测试数据"), true)
+                new ParentPlotDataPack("光子数曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("光子数", "Delay测试数据"), true)
             };
         }
 
@@ -274,7 +242,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override int GetMaxLaserCountPulses()
         {
-            return 4;
+            return 2;
         }
     }
 }
