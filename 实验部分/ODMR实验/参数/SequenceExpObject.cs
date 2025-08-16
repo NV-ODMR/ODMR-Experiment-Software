@@ -394,11 +394,10 @@ namespace ODMR_Lab.ODMR实验
                 if (ParentPage != null)
                     if (ParentPage.CurrentExpObject == this && !ParentPage.CurrentExpObject.IsSubExperiment)
                     {
-                        ExpParamWindow win = new ExpParamWindow(ParentPage.CurrentExpObject, ParentPage, false, false, false);
                         foreach (var item in OutputParams)
                         {
                             item.PropertyName = "Output_" + item.PropertyName;
-                            Grid g = win.GenerateControlBar(item, ParentPage, false);
+                            Grid g = ExpParamWindow.GenerateControlBar(item, ParentPage, false);
                             ParentPage.OutputPanel.Children.Add(g);
                             item.LoadToPage(new FrameworkElement[] { ParentPage }, false);
                         }

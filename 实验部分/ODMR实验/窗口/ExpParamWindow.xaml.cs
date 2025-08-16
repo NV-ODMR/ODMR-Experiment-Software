@@ -17,10 +17,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 using ComboBox = Controls.ComboBox;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
+
     /// <summary>
     /// ExpParamWindow.xaml 的交互逻辑
     /// </summary>
@@ -29,6 +31,42 @@ namespace ODMR_Lab.实验部分.ODMR实验
         ODMRExpObject ParentExp = null;
 
         DisplayPage ParentPage = null;
+
+        private static Label LabelTemplate = new Label() { Name = "LabelTemplate", HorizontalContentAlignment = HorizontalAlignment.Center, Foreground = Brushes.White, VerticalContentAlignment = VerticalAlignment.Center };
+
+        private static TextBlock TextBlockTemplate = new TextBlock() { Foreground = Brushes.White, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap, FontSize = 12 };
+
+        private static ComboBox ComboBoxTemplate = new ComboBox()
+        {
+            Name = "ComboBoxTemplate",
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF4D4D4D")),
+            FontSize = 12,
+            TextAreaRatio = 0.9,
+            ImagePlace = ImagePlace.Right,
+            IconMargin = new Thickness(3),
+            Foreground = Brushes.White,
+            PressedForeground = Brushes.White,
+            MoveInForeground = Brushes.White,
+            MoveInColor = Brushes.Gray,
+            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1B6BDD")),
+            IconSource = new BitmapImage(new Uri("/图片资源/downArrow.png", UriKind.Relative))
+        };
+
+        private static TextBox TextBoxTemplate = new TextBox()
+        {
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF4D4D4D")),
+            Foreground = Brushes.White,
+            BorderThickness = new Thickness(0),
+            FontSize = 12,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
+            BorderBrush = null,
+            CaretBrush = Brushes.White
+        };
 
         bool Isinput = false;
 
@@ -158,7 +196,9 @@ namespace ODMR_Lab.实验部分.ODMR实验
             Close();
         }
 
-        public Grid GenerateControlBar(ParamB param, FrameworkElement parent, bool IsInput)
+
+
+        public static Grid GenerateControlBar(ParamB param, FrameworkElement parent, bool IsInput)
         {
             Grid g = new Grid();
             g.Margin = new Thickness(5);
@@ -170,6 +210,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
             TextBlock tb = new TextBlock() { Text = param.Description, ToolTip = param.Description };
             tb.Margin = new Thickness(5);
+            tb.MinWidth = 80;
             UIUpdater.CloneStyle(TextBlockTemplate, tb);
             g.Children.Add(tb);
             Grid.SetColumn(tb, 0);
@@ -191,6 +232,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             {
                 TextBox t = new TextBox();
                 UIUpdater.CloneStyle(TextBoxTemplate, t);
+                t.MinWidth = 80;
                 ui = t;
                 if (!IsInput)
                     t.IsReadOnly = true;
@@ -204,6 +246,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 c.IconSource = ComboBoxTemplate.IconSource;
                 c.IconStretch = ComboBoxTemplate.IconStretch;
                 c.ImagePlace = ComboBoxTemplate.ImagePlace;
+                c.MinWidth = 80;
 
                 c.Margin = new Thickness(5);
                 foreach (var item in Enum.GetNames(param.ValueType))

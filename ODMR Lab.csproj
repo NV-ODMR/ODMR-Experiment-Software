@@ -60,20 +60,21 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CodeHelper">
+    <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -332,6 +333,10 @@
     <Compile Include="实验部分\扫描基方法\扫描范围\二维\D2ShapeScanRange.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\二维\D2ScanRangeBase.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\二维\D2LinearScanRange.cs" />
+    <Compile Include="实验部分\自定义算法\AngorithmBase.cs" />
+    <Compile Include="实验部分\自定义算法\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="实验部分\样品定位\CorrelatePoint.cs" />
     <Compile Include="实验部分\样品定位\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -350,6 +355,9 @@
     <Compile Include="实验部分\激光控制\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\自定义算法\算法列表\AlgorithmTools.cs" />
+    <Compile Include="实验部分\自定义算法\算法列表\CWCalculate.cs" />
+    <Compile Include="实验部分\自定义算法\算法列表\VerticalMagnetField.cs" />
     <Compile Include="扩展部分\Python管理器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -543,6 +551,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\序列编辑器\SequenceTestWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\自定义算法\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -759,6 +771,7 @@
     <Resource Include="图片资源\magnet.png" />
     <Resource Include="图片资源\laser.png" />
     <Resource Include="图片资源\editimage.png" />
+    <Resource Include="图片资源\algorithm.png" />
     <Content Include="图片资源\Setup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

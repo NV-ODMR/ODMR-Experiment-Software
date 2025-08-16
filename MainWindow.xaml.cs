@@ -57,6 +57,11 @@ namespace ODMR_Lab
         public static 场效应器件测量.DisplayPage Exp_SourcePage = new 场效应器件测量.DisplayPage();
 
         /// <summary>
+        /// 自定义算法
+        /// </summary>
+        public static 自定义算法.DisplayPage Exp_AlgorithmPage = new 自定义算法.DisplayPage();
+
+        /// <summary>
         /// 位移台控制
         /// </summary>
         public static 位移台界面.DisplayPage Exp_StagePage = new 位移台界面.DisplayPage();
@@ -365,6 +370,13 @@ namespace ODMR_Lab
                 CurrentPage = Exp_SourcePage;
                 AddPageToView(Exp_SourcePage);
             }
+
+            if (btn.Text == "自定义算法")
+            {
+                CurrentPage = Exp_AlgorithmPage;
+                AddPageToView(Exp_AlgorithmPage);
+            }
+
         }
 
         private void ShowExternalContent(object sender, RoutedEventArgs e)

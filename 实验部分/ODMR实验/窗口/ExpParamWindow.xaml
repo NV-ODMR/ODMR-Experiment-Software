@@ -21,11 +21,8 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <Label Grid.Row="0"  Name="WinTitle" Foreground="White" VerticalContentAlignment="Center"/>
-            <Label Grid.Row="1" Name="LabelTemplate" HorizontalContentAlignment="Center" Content="参数列表" Foreground="White" VerticalContentAlignment="Center"/>
+            <Label Grid.Row="1" HorizontalContentAlignment="Center" Content="参数列表" Foreground="White" VerticalContentAlignment="Center"/>
             <control:DecoratedButton Click="Apply" Grid.Row="4" Grid.ColumnSpan="2" TextAreaRatio="1" Text="确定" FontSize="12" Margin="6" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
-            <TextBlock Name="TextBlockTemplate" Visibility="Hidden" Foreground="White" Text="1111" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="12"/>
-            <control:ComboBox Name="ComboBoxTemplate" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="Hidden" Background="#FF4D4D4D" FontSize="12" TextAreaRatio="0.9" ImagePlace="Right" IconMargin="3" Foreground="White" PressedForeground="White" MoveInForeground="White" MoveInColor="Gray" PressedColor="#FF1B6BDD" IconSource="/图片资源/downArrow.png"/>
-            <TextBox Name="TextBoxTemplate" Visibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF4D4D4D" Foreground="White" BorderThickness="0" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" BorderBrush="{x:Null}" CaretBrush="White"/>
             <control:AutoScrollViewer Grid.Row="2" Name="scroll" Margin="10" Background="#FF2E2E2E">
                 <control:AutoScrollViewer.Content>
                     <Grid Name="ParamPannel" Width="{Binding ElementName=scroll,Path=ActualWidth}">

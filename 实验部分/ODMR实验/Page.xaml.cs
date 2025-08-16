@@ -232,7 +232,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                         var ps = CurrentExpObject.InputParams.Where(x => x.GroupName == item);
                         foreach (var p in ps)
                         {
-                            Grid g = win.GenerateControlBar(p, this, true);
+                            Grid g = ExpParamWindow.GenerateControlBar(p, this, true);
                             InputPanel.Children.Add(g);
                             p.LoadToPage(new FrameworkElement[] { this }, false);
                         }
@@ -247,7 +247,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                         var ps = CurrentExpObject.OutputParams.Where(x => x.GroupName == item);
                         foreach (var p in ps)
                         {
-                            Grid g = win.GenerateControlBar(p, this, true);
+                            Grid g = ExpParamWindow.GenerateControlBar(p, this, true);
                             OutputPanel.Children.Add(g);
                             p.LoadToPage(new FrameworkElement[] { this }, false);
                         }
