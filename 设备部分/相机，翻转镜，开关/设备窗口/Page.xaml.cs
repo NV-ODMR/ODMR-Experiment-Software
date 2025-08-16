@@ -11,6 +11,7 @@ using HardWares.端口基类;
 using HardWares.端口基类部分;
 using HardWares.纳米位移台;
 using HardWares.纳米位移台.PI;
+using HardWares.继电器模块;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.设备部分;
@@ -43,6 +44,8 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
         public List<CameraInfo> Cameras { get; set; } = new List<CameraInfo>();
         public List<FlipMotorInfo> Flips { get; set; } = new List<FlipMotorInfo>();
+
+        public List<SwitchInfo> Switches { get; set; } = new List<SwitchInfo>();
 
 
         public DevicePage()
@@ -85,6 +88,24 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                 flips.CreateDeviceInfoBehaviour();
 
                 Flips.Add(flips);
+                RefreshPanels();
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void NewSwitchConnect(object sender, RoutedEventArgs e)
+        {
+            ConnectWindow window = new ConnectWindow(typeof(SwitchBase));
+            bool res = window.ShowDialog(Window.GetWindow(this));
+            if (res == true)
+            {
+                SwitchInfo sw = new SwitchInfo() { Device = window.ConnectedDevice as SwitchBase, ConnectInfo = window.ConnectInfo };
+                sw.CreateDeviceInfoBehaviour();
+
+                Switches.Add(sw);
                 RefreshPanels();
             }
             else
@@ -214,6 +235,56 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                     inf.CloseDeviceInfoAndSaveParams(out bool result);
                     if (result == false) return;
                     Flips.Remove(inf);
+                    RefreshPanels();
+                }
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 开关修改值
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="arg3"></param>
+        private void SwitchList_ItemValueChanged(int arg1, int arg2, object arg3)
+        {
+            Task t = new Task(() =>
+            {
+                try
+                {
+                    SwitchInfo info = null;
+                    Dispatcher.Invoke(() =>
+                    {
+                        FlipList.IsEnabled = false;
+                        info = SwitchList.GetTag(arg1) as SwitchInfo;
+                    });
+                    info.Device.IsOpen = (bool)arg3;
+                }
+                catch (Exception) { }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        SwitchList.IsEnabled = true;
+                    });
+                }
+            });
+            t.Start();
+        }
+
+
+        private void SwitchContextMenuEvent(int arg1, int arg2, object arg3)
+        {
+            SwitchInfo inf = arg3 as SwitchInfo;
+            #region 关闭设备
+            if (arg1 == 0)
+            {
+                if (MessageWindow.ShowMessageBox("提示", "确定要关闭此设备吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
+                {
+                    inf.CloseDeviceInfoAndSaveParams(out bool result);
+                    if (result == false) return;
+                    Switches.Remove(inf);
                     RefreshPanels();
                 }
             }

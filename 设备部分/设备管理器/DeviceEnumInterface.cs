@@ -147,6 +147,13 @@ namespace ODMR_Lab.设备部分
                 GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_CameraPage.Flips.Select(x=>x as InfoBase).ToList(); })
             },
 
+             //开关
+            new DeviceDispatcherInfo<SwitchInfo>(DeviceTypes.开关,MainWindow.Dev_CameraPage,MainWindow.Dev_CameraPage.Switches)
+            {
+                SetDevEvent=new Action<List<InfoBase>>(x=>MainWindow.Dev_CameraPage.Switches.AddRange(x.Select(v=>v as SwitchInfo).ToList())),
+                GetDevEvent=new DeviceDispatcherInfoBase.GetDevHandler(()=>{return MainWindow.Dev_CameraPage.Switches.Select(x=>x as InfoBase).ToList(); })
+            },
+
             //源表
             new DeviceDispatcherInfo<PowerMeterInfo>(DeviceTypes.源表,MainWindow.Dev_PowerMeterPage,MainWindow.Dev_PowerMeterPage.PowerMeterList)
             {

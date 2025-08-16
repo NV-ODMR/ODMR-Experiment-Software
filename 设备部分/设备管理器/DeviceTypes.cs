@@ -70,6 +70,10 @@ namespace ODMR_Lab.设备部分
         /// <summary>
         /// PulseBlaster
         /// </summary>
-        PulseBlaster = 14
+        PulseBlaster = 14,
+        /// <summary>
+        /// 开关
+        /// </summary>
+        开关 = 15,
     }
 }
