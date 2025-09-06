@@ -22,7 +22,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         Thread AFMFloatListener = null;
 
         /// <summary>
-        /// AFM悬浮下针操作：输入参数：最大限制电压(V),下到针之后抬高的距离(V)
+        /// AFM悬浮下针操作：输入参数：最大限制电压(V),下到针之后抬高的距离(V),参数I
         /// 设备:LockIn
         /// 返回参数:下针结果(Bool,成功为True)
         /// </summary>
@@ -44,11 +44,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             lockin.Device.SetPoint = setpoint;
             lockin.Device.PIDOutput = true;
             lockin.Device.PIDOutputUpperLimit = (double)InputParams[0];
+            lockin.Device.I = (double)InputParams[2];
             double pidout1 = lockin.Device.PIDValue;
             Thread.Sleep(50);
             double pidout2 = lockin.Device.PIDValue;
             //如果达到上限或者PID输出出现下降(下到针)则结束下针
-            while (pidout2 < lockin.Device.PIDOutputUpperLimit && pidout2 >= pidout1)
+            while (pidout2 < lockin.Device.PIDOutputUpperLimit && Math.Abs(pidout2 - lockin.Device.PIDOutputUpperLimit) > 1e-3 && pidout2 >= pidout1)
             {
                 pidout1 = lockin.Device.PIDValue;
                 Thread.Sleep(50);
@@ -65,6 +66,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             //如果下到则撤针一定距离以悬浮测量
             else
             {
+                Thread.Sleep(1000);
                 double initheight = lockin.Device.PIDValue;
                 double dropheight = (double)InputParams[1];
                 double currentvalue = lockin.Device.PIDValue;
@@ -97,7 +99,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 {
                     return new List<object>() { false };
                 }
-
                 //持续监控,发现下降则自动降低高度
                 return new List<object>() { true };
             }

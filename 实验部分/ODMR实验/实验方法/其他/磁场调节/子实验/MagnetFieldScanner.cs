@@ -55,11 +55,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.磁铁位移台,new Param<string>("磁铁角度轴","","MagnetAngle")),
         };
 
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+        protected override List<ODMRExpObject> GetSubExperiments()
         {
-            new AdjustedCW(),
-            new AutoTrace()
-        };
+            return new List<ODMRExpObject>()
+            {               
+                new AdjustedCW(),
+                new AutoTrace(),
+            };
+        }
+
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>() { };
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>() { };
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>() { };

@@ -127,6 +127,12 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
             {
                 FlipList.AddItem(item, item.Device.ProductName, item.Device.Switch);
             }
+
+            SwitchList.ClearItems();
+            foreach (var item in Switches)
+            {
+                SwitchList.AddItem(item, item.Device.ProductName, item.Device.IsOpen);
+            }
         }
 
         /// <summary>
@@ -256,7 +262,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                     SwitchInfo info = null;
                     Dispatcher.Invoke(() =>
                     {
-                        FlipList.IsEnabled = false;
+                        SwitchList.IsEnabled = false;
                         info = SwitchList.GetTag(arg1) as SwitchInfo;
                     });
                     info.Device.IsOpen = (bool)arg3;

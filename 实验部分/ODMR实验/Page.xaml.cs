@@ -79,12 +79,45 @@ namespace ODMR_Lab.实验部分.ODMR实验
             foreach (var item in noafms)
             {
                 if (item.IsAFMSubExperiment == false || item.IsDisplayAsExp == false) continue;
+                #region 创建所有AFM面扫描实验
                 AFMScan2DExp afm2d = new AFMScan2DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
-                afm2d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                //获取所有子实验以及子实验的子实验
+                var subexp = Activator.CreateInstance(item.GetType()) as ODMRExpObject;
+                subexp.IsSubExperiment = true;
+                subexp.ParentExp = afm2d;
+                subexp.ValidateParameters();
+                var subexps = AFMScan2DExp.AppendSubExp(subexp, new List<ODMRExpObject>() { subexp });
+
+                //添加子实验参数
+                foreach (var it in subexps)
+                {
+                    var exp = it.ParentExp;
+                    afm2d.AddSubExp(it);
+                    it.TopExp = afm2d;
+                    it.ParentExp = exp;
+                }
                 ExpObjects.Add(afm2d);
+                #endregion
+
+                #region 创建所有AFM线扫描实验
                 AFMScan1DExp afm1d = new AFMScan1DExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
-                afm1d.AddSubExp(Activator.CreateInstance(item.GetType()) as ODMRExpObject);
+                //获取所有子实验以及子实验的子实验
+                subexp = Activator.CreateInstance(item.GetType()) as ODMRExpObject;
+                subexp.IsSubExperiment = true;
+                subexp.ParentExp = afm1d;
+                subexp.ValidateParameters();
+                subexps = AFMScan2DExp.AppendSubExp(subexp, new List<ODMRExpObject>() { subexp });
+
+                //添加子实验参数
+                foreach (var it in subexps)
+                {
+                    var exp = it.ParentExp;
+                    afm1d.AddSubExp(it);
+                    it.TopExp = afm1d;
+                    it.ParentExp = exp;
+                }
                 ExpObjects.Add(afm1d);
+                #endregion
             }
 
             ExpObjects.Sort((e1, e2) => e1.ODMRExperimentName.CompareTo(e2.ODMRExperimentName));

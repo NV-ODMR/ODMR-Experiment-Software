@@ -31,6 +31,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("射频信号通道","","RFSource")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("信号源通道","","SignalChannel")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("触发信号通道","","TriggerChannel")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.开关,new Param<string>("信号源开关","","SignalSwitch")),
         };
         /// <summary>
         /// 脉冲实验的输入参数
@@ -164,9 +165,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             }
         }
 
-        protected InfoBase GetSignalSource()
+        protected InfoBase GetSignalSwitch()
         {
-            return GetDeviceByName("SignalChannel");
+            return GetDeviceByName("SignalSwitch");
         }
 
         public override void PreExpEventWithoutAFM()
@@ -181,6 +182,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             AfterLockInExpEventWithoutAFM();
             //APDInfo apd = GetDeviceByName("APD") as APDInfo;
             //apd.EndTriggerSample();//停止计数
+        }
+
+        protected InfoBase GetRFSource()
+        {
+            return GetDeviceByName("RFSource");
         }
 
         /// <summary>

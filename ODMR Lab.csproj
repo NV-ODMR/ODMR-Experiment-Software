@@ -62,19 +62,19 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>

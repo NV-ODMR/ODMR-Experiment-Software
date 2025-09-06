@@ -253,6 +253,11 @@ namespace ODMR_Lab.ODMR实验
         public ODMRExpObject ParentExp = null;
 
         /// <summary>
+        /// 最顶层的实验
+        /// </summary>
+        public ODMRExpObject TopExp = null;
+
+        /// <summary>
         /// 初始化并且刷新参数
         /// </summary>
         public ODMRExpObject()
@@ -268,16 +273,108 @@ namespace ODMR_Lab.ODMR实验
                 item.Value.GroupName = ODMRExperimentGroupName;
             }
 
-            var ll = SubExperiments;
-            SubExperiments = new List<ODMRExpObject>();
+            ValidateParameters();
+        }
 
-            //添加子实验参数
-            foreach (var item in ll)
+        public void ValidateParameters()
+        {
+            //清除所有子实验参数
+            var subinput = InputParams.Where((x) => x.PropertyName.IndexOf("Input_") != 0).ToList();
+            var subdev = DeviceList.Where((x) => x.Value.PropertyName.IndexOf("Device_") != 0).ToList();
+            foreach (var item in subinput)
             {
-                AddSubExp(item);
+                InputParams.Remove(item);
+            }
+            foreach (var item in subdev)
+            {
+                DeviceList.Remove(item);
             }
 
+            var ll = GetSubExperiments();
+            foreach (var item in ll)
+            {
+                item.IsSubExperiment = true;
+                item.ParentExp = this;
+                item.TopExp = this;
+            }
+
+            if (IsSubExperiment == false)
+            {
+                //获取所有子实验以及子实验的子实验
+                var subexps = AppendSubExp(this, new List<ODMRExpObject>());
+
+                //添加子实验参数
+                foreach (var item in subexps)
+                {
+                    var exp = item.ParentExp;
+                    AddSubExp(item, false);
+                    item.TopExp = this;
+                    item.ParentExp = exp;
+                }
+            }
+            SubExperiments = ll;
+
             InterativeButtons = AddInteractiveButtons();
+        }
+
+        public ODMRExpObject(bool isSubExperiment)
+        {
+            IsSubExperiment = isSubExperiment;
+
+            foreach (var item in InputParams)
+            {
+                item.PropertyName = "Input_" + item.PropertyName;
+                item.GroupName = ODMRExperimentGroupName + ":" + ODMRExperimentName;
+            }
+            foreach (var item in DeviceList)
+            {
+                item.Value.PropertyName = "Device_" + item.Value.PropertyName;
+                item.Value.GroupName = ODMRExperimentGroupName;
+            }
+
+            var ll = GetSubExperiments();
+            foreach (var item in ll)
+            {
+                item.IsSubExperiment = true;
+                item.ParentExp = this;
+                item.TopExp = this;
+            }
+
+            if (IsSubExperiment == false)
+            {
+                //获取所有子实验以及子实验的子实验
+                var subexps = AppendSubExp(this, new List<ODMRExpObject>());
+
+                //添加子实验参数
+                foreach (var item in subexps)
+                {
+                    var exp = item.ParentExp;
+                    AddSubExp(item, false);
+                    item.TopExp = this;
+                    item.ParentExp = exp;
+                }
+            }
+            SubExperiments = ll;
+
+            InterativeButtons = AddInteractiveButtons();
+
+        }
+
+        /// <summary>
+        /// 列出所有用到的子实验列表(序号从0开始,作为调用RunSubexpBlock的序号)
+        /// </summary>
+        /// <returns></returns>
+        protected abstract List<ODMRExpObject> GetSubExperiments();
+
+        //添加子实验
+        public static List<ODMRExpObject> AppendSubExp(ODMRExpObject exp, List<ODMRExpObject> originlist)
+        {
+            foreach (var item in exp.GetSubExperiments())
+            {
+                originlist.Add(item);
+                originlist = AppendSubExp(item, originlist);
+            }
+            return originlist;
         }
 
         protected void AddDevicesToList(List<KeyValuePair<DeviceTypes, Param<string>>> vs)
@@ -297,9 +394,12 @@ namespace ODMR_Lab.ODMR实验
         protected abstract List<KeyValuePair<string, Action>> AddInteractiveButtons();
 
         [Obsolete]
-        public void AddSubExp(ODMRExpObject exp)
+        public void AddSubExp(ODMRExpObject exp, bool addtoList = true)
         {
-            SubExperiments.Add(exp);
+            if (addtoList)
+                SubExperiments.Add(exp);
+            exp.IsSubExperiment = true;
+            exp.ParentExp = this;
             List<ParamB> Inparams = new List<ParamB>();
             List<ParamB> Outparams = new List<ParamB>();
             List<KeyValuePair<DeviceTypes, Param<string>>> Devices = new List<KeyValuePair<DeviceTypes, Param<string>>>();
@@ -318,7 +418,6 @@ namespace ODMR_Lab.ODMR实验
                 Devices.Add(new KeyValuePair<DeviceTypes, Param<string>>(p.Key, (Param<string>)pnew));
             }
             InputParams.AddRange(Inparams);
-            OutputParams.AddRange(Outparams);
             DeviceList.AddRange(Devices);
         }
 
@@ -385,11 +484,11 @@ namespace ODMR_Lab.ODMR实验
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                //生成子实验输出参数
-                foreach (var item in SubExperiments)
-                {
-                    AddSubexpOutputParams(item);
-                }
+                ////生成子实验输出参数
+                //foreach (var item in SubExperiments)
+                //{
+                //    AddSubexpOutputParams(item);
+                //}
                 //更新到窗口
                 if (ParentPage != null)
                     if (ParentPage.CurrentExpObject == this && !ParentPage.CurrentExpObject.IsSubExperiment)
@@ -981,7 +1080,13 @@ namespace ODMR_Lab.ODMR实验
             ODMRExpObject subExp = SubExperiments[index];
 
             //设置子实验参数值
-            var inputs = InputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            IEnumerable<ParamB> inputs;
+            if (IsSubExperiment == false)
+                inputs = InputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            else
+            {
+                inputs = TopExp.InputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            }
             foreach (var item in inputs)
             {
                 var par = subExp.InputParams.Where(x => x.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
@@ -1002,7 +1107,13 @@ namespace ODMR_Lab.ODMR实验
             }
 
             //设置子实验设备
-            var devs = DeviceList.Where((x) => x.Value.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            IEnumerable<KeyValuePair<DeviceTypes, Param<string>>> devs;
+            if (IsSubExperiment == false)
+                devs = DeviceList.Where((x) => x.Value.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            else
+            {
+                devs = TopExp.DeviceList.Where((x) => x.Value.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            }
             foreach (var item in devs)
             {
                 var par = subExp.DeviceList.Where(x => x.Value.PropertyName == item.Value.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));

@@ -25,6 +25,7 @@ using Controls.Charts;
 using System.Windows.Media;
 using System.Threading;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
+using ODMR_Lab.设备部分.相机_翻转镜;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -66,9 +67,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+        protected override List<ODMRExpObject> GetSubExperiments()
         {
-        };
+            return new List<ODMRExpObject>()
+            {
+
+            };
+        }
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
@@ -202,8 +207,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             Show1DChartData("Delay测试数据", "时间(ns)", "对比度");
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
-                var dev = GetSignalSource() as SignalGeneratorChannelInfo;
-                dev.Device.IsOutOpen = true;
+                var dev = GetSignalSwitch() as SwitchInfo;
+                dev.Device.IsOpen = true;
+                Thread.Sleep(2000);
             }
             return;
         }
@@ -231,6 +237,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
 
             OutputParams.Add(new Param<double>("Delay测试对比度", ps_x[3] - Math.Abs(ps_x[0]), "Contrast"));
+            OutputParams.Add(new Param<double>("Delay测试振幅", Math.Abs(ps_x[0]), "Amp"));
             OutputParams.Add(new Param<double>("基准值", ps_x[3], "Average"));
             double phase = ps_x[2] + ps_x[1] / 2;
             if (ps_x[0] < 0) phase = ps_x[2] + ps_x[1];
@@ -239,8 +246,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
-                var dev = GetSignalSource() as SignalGeneratorChannelInfo;
-                dev.Device.IsOutOpen = false;
+                var dev = GetSignalSwitch() as SwitchInfo;
+                dev.Device.IsOpen = false;
             }
         }
 

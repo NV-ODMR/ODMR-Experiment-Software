@@ -53,9 +53,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.样品位移台,new Param<string>("样品Z轴","","SampleZ")),
         };
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+
+        protected override List<ODMRExpObject> GetSubExperiments()
         {
-        };
+            return new List<ODMRExpObject>()
+            {
+            };
+        }
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {
@@ -78,8 +82,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             //悬浮测量
             if (GetInputParamValueByName("IsFloatScan"))
             {
+                double I = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
                 AFMFloatDrop drop = new AFMFloatDrop();
-                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") }, GetDeviceByName("LockIn"));
+                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight"), I }, GetDeviceByName("LockIn"));
                 if ((bool)result[0] == false)
                 {
                     throw new Exception("下针失败，实验已结束");

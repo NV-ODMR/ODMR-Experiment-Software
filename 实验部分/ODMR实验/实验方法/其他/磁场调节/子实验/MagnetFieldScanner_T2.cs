@@ -45,6 +45,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             new Param<int>("CW/Rabi重新采样间隔",5,"CWGap"),
             new Param<double>("磁铁高度(mm)",13,"MagnetHeight"),
             new Param<int>("微波频率初始值(MHz)",2870,"CWInit"),
+            new Param<bool>("CW谱扫描反向",false,"CWRev"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
             new Param<int>("T2采样时间",1000,"T2SampleTime"),
             new Param<int>("测量次数",1000,"LoopCount"),
@@ -65,12 +66,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.磁铁位移台,new Param<string>("磁铁角度轴","","MagnetAngle")),
         };
 
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+        protected override List<ODMRExpObject> GetSubExperiments()
         {
-            new AutoTrace(),
-            new AdjustedCW(),
-            new Rabi()
-        };
+            return new List<ODMRExpObject>()
+            {
+                new AutoTrace(),
+                new AdjustedCW(),
+                new Rabi()
+            };
+        }
+
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>() { };
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>() { };
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>() { };
@@ -155,7 +160,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             {
                 tempCWCount = 0;
                 RunSubExperimentBlock(0, true);
-                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 5, 15, false);
+                MagnetScanTool.ScanCW(this, 1, out List<double> peaks, out List<double> cs, out List<double> fvs, out List<double> cvs, (double)arg5[0], 5, 10, GetInputParamValueByName("CWRev"));
                 if (peaks.Count == 0)
                 {
 

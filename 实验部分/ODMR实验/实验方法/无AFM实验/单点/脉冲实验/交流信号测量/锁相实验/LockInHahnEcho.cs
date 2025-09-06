@@ -25,6 +25,8 @@ using Controls.Charts;
 using System.Windows.Media;
 using System.Threading;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分.相机_翻转镜;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -48,6 +50,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<bool>("测量单点对比度",false,"SingleContrast"),
             new Param<int>("对比度Rabi测量循环次数",10000,"ContrastRabiLoopCount"),
             new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"),
+            new Param<bool>("每点重新确定微波频率",false,"ConfirmCW"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -58,7 +61,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
+
+        protected override List<ODMRExpObject> GetSubExperiments()
+        {
+            return new List<ODMRExpObject>()
+            {
+                new AdjustedCW()
+            };
+        }
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
@@ -76,26 +86,40 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         double contrast = double.NaN;
         double Sig = double.NaN;
         double Ref = double.NaN;
+        double contrast2 = double.NaN;
+        double Sig2 = double.NaN;
+        double Ref2 = double.NaN;
         double LowContrast = double.NaN;
         double HiContrast = double.NaN;
         double NormalizedContrast = double.NaN;
+        double NormalizedContrast1 = double.NaN;
+        double NormalizedContrast2 = double.NaN;
         double sigma = double.NaN;
+        double sigma2 = double.NaN;
         List<double> HistData = new List<double>();
+        List<double> HistData2 = new List<double>();
 
         public override void ODMRExpWithoutAFM()
         {
             contrast = double.NaN;
             Sig = double.NaN;
             Ref = double.NaN;
+            contrast2 = double.NaN;
+            Sig2 = double.NaN;
+            Ref2 = double.NaN;
             HiContrast = double.NaN;
             LowContrast = double.NaN;
-            NormalizedContrast = double.NaN;
+            NormalizedContrast1 = double.NaN;
+            NormalizedContrast2 = double.NaN;
             sigma = double.NaN;
+            sigma2 = double.NaN;
             HistData.Clear();
+            HistData2 = new List<double>();
             int Loop = GetInputParamValueByName("LoopCount");
             //设置HahnEchoTime
             //XPi脉冲时间
             int xLength = GlobalPulseParams.GetGlobalPulseLength("PiX");
+            int delay = GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay");
             double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
             int echotime = (int)((signaltime - xLength) / 2);
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
@@ -103,7 +127,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
                 CurrentLoop = i;
                 SetExpState("当前轮数:" + CurrentLoop.ToString() + "对比度:" + Math.Round(contrast, 5).ToString());
-                PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+                #region 点1
+                GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay);
+                PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
                     GetInputParamValueByName("TimeOut"));
                 int sig = pack.GetPhotonsAtIndex(0).Sum();
                 int reference = pack.GetPhotonsAtIndex(1).Sum();
@@ -144,64 +170,141 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 {
                     Ref = (Ref * (CurrentLoop - 1) + reference) / CurrentLoop;
                 }
+                #endregion
+                #region 点2
+                GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay + (int)(1.0 / GetInputParamValueByName("SignalFreq") * 500));
+                pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+                    GetInputParamValueByName("TimeOut"));
+                sig = pack.GetPhotonsAtIndex(0).Sum();
+                reference = pack.GetPhotonsAtIndex(1).Sum();
+
+                tempcontrast = 1;
+                try
+                {
+                    tempcontrast = (sig - reference) / (double)reference;
+                }
+                catch (Exception)
+                {
+                }
+
+                if (double.IsNaN(contrast2))
+                {
+                    contrast2 = tempcontrast;
+                }
+                else
+                {
+                    contrast2 = (contrast2 * (CurrentLoop - 1) + tempcontrast) / CurrentLoop;
+                }
+                HistData2.Add(contrast2);
+                //方差
+                sigma2 = Math.Sqrt(HistData2.Select(x => Math.Pow(x - HistData2.Average(), 2)).Sum() / (CurrentLoop + 1));
+                if (double.IsNaN(Sig2))
+                {
+                    Sig2 = sig;
+                }
+                else
+                {
+                    Sig2 = (Sig2 * (CurrentLoop - 1) + sig) / CurrentLoop;
+                }
+                if (double.IsNaN(Ref2))
+                {
+                    Ref2 = reference;
+                }
+                else
+                {
+                    Ref2 = (Ref2 * (CurrentLoop - 1) + reference) / CurrentLoop;
+                }
+                #endregion
+
+                GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay);
+
                 JudgeThreadEndOrResumeAction?.Invoke();
-                double hicontrast = double.NaN;
-                double lowcontrast = double.NaN;
+                double rabicontrast = double.NaN;
                 if (GetInputParamValueByName("SingleContrast"))
                 {
                     //测量Rabi得到对比度
-                    GlobalPulseParams.SetGlobalPulseLength("T2Step", GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime"));
-                    PulsePhotonPack rabipack = DoPulseExp("T2", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("ContrastRabiLoopCount"), 6, GetInputParamValueByName("TimeOut"));
+                    GlobalPulseParams.SetGlobalPulseLength("RabiTime", GlobalPulseParams.GetGlobalPulseLength("PiX"));
+                    PulsePhotonPack rabipack = DoPulseExp("Rabi", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("ContrastRabiLoopCount"), 8, GetInputParamValueByName("TimeOut"));
                     double signalcount1 = rabipack.GetPhotonsAtIndex(0).Sum();
-                    double signalcount0 = rabipack.GetPhotonsAtIndex(1).Sum();
-                    double refcount = rabipack.GetPhotonsAtIndex(2).Sum();
-                    lowcontrast = (signalcount1 - refcount) / refcount;
-                    hicontrast = (signalcount0 - refcount) / refcount;
+                    double refcount = rabipack.GetPhotonsAtIndex(1).Sum();
+                    //double refcount = rabipack.GetPhotonsAtIndex(2).Sum();
+                    LowContrast = (signalcount1 - refcount) / refcount;
+                    //hicontrast = (signalcount0 - refcount) / refcount;
 
-                    if (double.IsNaN(HiContrast))
+                    //if (double.IsNaN(HiContrast))
+                    //{
+                    //    HiContrast = hicontrast;
+                    //}
+                    //else
+                    //{
+                    //    HiContrast = (HiContrast * (CurrentLoop - 1) + hicontrast) / CurrentLoop;
+                    //}
+                    //if (double.IsNaN(LowContrast))
+                    //{
+                    //    LowContrast = lowcontrast;
+                    //}
+                    //else
+                    //{
+                    //    LowContrast = (LowContrast * (CurrentLoop - 1) + lowcontrast) / CurrentLoop;
+                    //}
+                    if (contrast < LowContrast)
                     {
-                        HiContrast = hicontrast;
+                        NormalizedContrast1 = 0;
+                        JudgeThreadEndOrResumeAction?.Invoke();
                     }
                     else
                     {
-                        HiContrast = (HiContrast * (CurrentLoop - 1) + hicontrast) / CurrentLoop;
+                        NormalizedContrast1 = (contrast - LowContrast) / Math.Abs(LowContrast);
+                        JudgeThreadEndOrResumeAction?.Invoke();
                     }
-                    if (double.IsNaN(LowContrast))
+                    if (contrast2 < LowContrast)
                     {
-                        LowContrast = lowcontrast;
+                        NormalizedContrast2 = 0;
+                        JudgeThreadEndOrResumeAction?.Invoke();
                     }
                     else
                     {
-                        LowContrast = (LowContrast * (CurrentLoop - 1) + lowcontrast) / CurrentLoop;
-                    }
-                    if (contrast > LowContrast)
-                    {
-                        NormalizedContrast = 0;
+                        NormalizedContrast2 = (contrast2 - LowContrast) / Math.Abs(LowContrast);
                         JudgeThreadEndOrResumeAction?.Invoke();
-                        continue;
                     }
-                    if (contrast < HiContrast)
-                    {
-                        NormalizedContrast = 1;
-                        JudgeThreadEndOrResumeAction?.Invoke();
-                        continue;
-                    }
-                    NormalizedContrast = (contrast - LowContrast) / (HiContrast - LowContrast);
+                    //if (contrast < HiContrast)
+                    //{
+                    //    NormalizedContrast = 1;
+                    //    JudgeThreadEndOrResumeAction?.Invoke();
+                    //    continue;
+                    //}
+                    //NormalizedContrast = (contrast - LowContrast) / (HiContrast - LowContrast);
                 }
             }
         }
 
         double OriginSignalAmplitude { get; set; } = 0;
-
+        double cwpeak = double.NaN;
         public override void PreLockInExpEventWithoutAFM()
         {
             //打开微波
             SignalGeneratorChannelInfo RF = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
             RF.Device.IsOutOpen = true;
+
+            cwpeak = double.NaN;
+            //如果要重新确定CW谱
+            if (GetInputParamValueByName("ConfirmCW") == true)
+            {
+                var exp = RunSubExperimentBlock(0, true);
+                double peak = exp.GetOutPutParamValueByDescription("谱峰位置1");
+                if (peak > 2500 && peak < 3100)
+                {
+                    var dev = GetRFSource();
+                    (dev as SignalGeneratorChannelInfo).Device.Frequency = peak;
+                    cwpeak = peak;
+                }
+                OutputParams.Add(new Param<double>("谱峰位置", peak, "CWPeakLoc"));
+            }
+
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
                 //修改信号源强度
-                (GetSignalSource() as SignalGeneratorChannelInfo).Device.IsOutOpen = true;
+                (GetSignalSwitch() as SwitchInfo).Device.IsOpen = true;
                 Thread.Sleep(2000);
             }
         }
@@ -213,16 +316,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             OutputParams.Add(new Param<double>("参考光子计数", Ref, "ReferenceCount"));
             OutputParams.Add(new Param<double>("对比度", contrast, "Contrast"));
             OutputParams.Add(new Param<double>("对比度标准差", sigma, "Error"));
+            OutputParams.Add(new Param<double>("信号光子计数2", Sig2, "SignalCount2"));
+            OutputParams.Add(new Param<double>("参考光子计数2", Ref2, "ReferenceCount2"));
+            OutputParams.Add(new Param<double>("对比度2", contrast2, "Contrast2"));
+            OutputParams.Add(new Param<double>("对比度标准差2", sigma2, "Error2"));
+            OutputParams.Add(new Param<double>("对比度差值", contrast2 - contrast, "Det"));
             if (GetInputParamValueByName("SingleContrast"))
             {
-                OutputParams.Add(new Param<double>("参考对比度最小值", LowContrast, "RefLowContrast"));
-                OutputParams.Add(new Param<double>("参考对比度最大值", HiContrast, "RefHiContrast"));
-                OutputParams.Add(new Param<double>("归一化对比度", NormalizedContrast, "NormalizedContrast"));
+                OutputParams.Add(new Param<double>("Rabi对比度", LowContrast, "RabiContrast"));
+                OutputParams.Add(new Param<double>("归一化对比度1", NormalizedContrast1, "NomContrast1"));
+                OutputParams.Add(new Param<double>("归一化对比度2", NormalizedContrast2, "NomContrast2"));
+                OutputParams.Add(new Param<double>("归一化对比度差值", NormalizedContrast1 - NormalizedContrast2, "NomContrastDet"));
             }
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
                 //修改信号源强度
-                (GetSignalSource() as SignalGeneratorChannelInfo).Device.IsOutOpen = false;
+                (GetSignalSwitch() as SwitchInfo).Device.IsOpen = false;
             }
         }
 

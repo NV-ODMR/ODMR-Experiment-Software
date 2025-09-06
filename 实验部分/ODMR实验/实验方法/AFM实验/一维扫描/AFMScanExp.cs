@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -46,7 +47,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
             new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
+            new Param<double>("悬浮下针参数I",-3,"FloatI"),
             new Param<double>("悬浮测量距离(V)",0.1,"FloatHeight"),
+            new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
+            new Param<int>("重新下针间隔",1,"ReDropGap"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
@@ -61,10 +65,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.样品位移台,new Param<string>("样品Z轴","","SampleZ")),
         };
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+
+        protected override List<ODMRExpObject> GetSubExperiments()
         {
-            new AutoTrace()
-        };
+            return new List<ODMRExpObject>()
+            {
+                new AutoTrace()
+            };
+        }
 
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {
@@ -99,9 +107,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         private int ScanPointCount = 0;
         private int ScanPointGap = 0;
         private bool AllowAutoTrace = false;
+        private bool IsFirstDrop = true;
+        private double devI = double.NaN;
+        private int dropgap = 0;
 
         public override void ODMRExpWithAFM()
         {
+            dropgap = 0;
+            IsFirstDrop = true;
+            devI = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
             NanoStageInfo dev1 = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo dev2 = GetDeviceByName("ScannerY") as NanoStageInfo;
             #region 自动Trace参数
@@ -144,8 +158,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             //如果是悬浮测量则执行对应程序
             if (GetInputParamValueByName("IsFloatScan") == true)
             {
-                AFMFloatDrop drop = new AFMFloatDrop();
-                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") }, GetDeviceByName("LockIn"));
+                if (dropgap == GetInputParamValueByName("ReDropGap"))
+                {
+                    dropgap = 0;
+                }
+                ++dropgap;
+                if (dropgap == 1)
+                {
+                    if (IsFirstDrop == true)
+                    {
+                        AFMFloatDrop drop = new AFMFloatDrop();
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight"), (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
+                        IsFirstDrop = false;
+                    }
+                    else
+                    {
+                        AFMFloatDrop drop = new AFMFloatDrop();
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                        IsFirstDrop = false;
+                    }
+                }
+                Thread.Sleep(GetInputParamValueByName("TimeWaitAfterDrop"));
             }
 
             SetExpState("正在进行实验...");
@@ -227,6 +260,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             if (GetInputParamValueByName("IsFloatScan") == true)
             {
                 (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
+                (GetDeviceByName("LockIn") as LockinInfo).Device.I = devI;
             }
         }
 

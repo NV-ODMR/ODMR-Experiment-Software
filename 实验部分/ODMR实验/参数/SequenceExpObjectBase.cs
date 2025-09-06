@@ -50,7 +50,7 @@ namespace ODMR_Lab.ODMR实验
         /// <summary>
         /// 子实验列表
         /// </summary>
-        public abstract List<ODMRExpObject> SubExperiments { get; set; }
+        protected List<ODMRExpObject> SubExperiments { get; set; }
 
         /// <summary>
         /// 交互按钮列表

@@ -72,11 +72,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.磁铁位移台,new Param<string>("磁铁Z轴","","MagnetZ")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.磁铁位移台,new Param<string>("磁铁角度轴","","MagnetAngle")),
         };
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>()
+
+        protected override List<ODMRExpObject> GetSubExperiments()
         {
-            new AutoTrace(),
-            new AdjustedCW()
-        };
+            var list = new List<ODMRExpObject>()
+            {
+                new AutoTrace(),
+                new AdjustedCW(),
+            };
+            return list;
+        }
 
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
@@ -103,7 +108,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 //旋转台移动到轴向沿Y
                 (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
                 //X方向扫描
-                ScanX(0, 20);
+                //ScanX(0, 20);
+                OutputParams.Add(new Param<double>("X方向磁场最大位置", 7.787, "XLoc"));
                 SetExpState("正在扫描Y轴...");
                 //旋转台移动到轴向沿X
                 Thread.Sleep(500);
@@ -132,18 +138,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             JudgeThreadEndOrResumeAction?.Invoke();
             //Z扫描
             ScanZ(40, 60);
-            //OutputParams.Add(new Param<double>("Z方向参考位置", 14, "ZLoc"));
-            //OutputParams.Add(new Param<double>("参考位置与NV的距离", 13.4183, "ZDistance"));
             JudgeThreadEndOrResumeAction?.Invoke();
             //角度扫描
             SetExpState("正在扫描角度轴...");
             (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("ZLoc"), 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //ScanAngle(60, 80);
-            OutputParams.Add(new Param<double>("θ值1", 47.631, "Theta1"));
-            OutputParams.Add(new Param<double>("θ值2", 132.368, "Theta2"));
-            OutputParams.Add(new Param<double>("φ值1", 270.109, "Phi1"));
-            OutputParams.Add(new Param<double>("φ值2", 90.109, "Phi2"));
+            ScanAngle(60, 80);
+            //OutputParams.Add(new Param<double>("θ值1", 57.0121, "Theta1"));
+            //OutputParams.Add(new Param<double>("θ值2", 122.9878, "Theta2"));
+            //OutputParams.Add(new Param<double>("φ值1", 270.9360, "Phi1"));
+            //OutputParams.Add(new Param<double>("φ值2", 90.9360, "Phi2"));
             JudgeThreadEndOrResumeAction?.Invoke();
             //角度检查
             CheckAngle(80, 100);
