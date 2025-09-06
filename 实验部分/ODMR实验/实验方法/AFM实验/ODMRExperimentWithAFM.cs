@@ -41,25 +41,28 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEvent()
         {
-            LockinInfo info = GetLockIn();
-            //下针信息确认
-            bool iscontinue = true;
-            App.Current.Dispatcher.Invoke(() =>
+            if (!IsSubExperiment)
             {
-                if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + info.Device.DemodR.ToString() + "\n" + "设定点:" + info.Device.SetPoint.ToString() + "\n"
-                    + "P:" + info.Device.P.ToString() + "\n" + "I:" + info.Device.I.ToString() + "\n" + "D:" + info.Device.D.ToString() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+                LockinInfo info = GetLockIn();
+                //下针信息确认
+                bool iscontinue = true;
+                App.Current.Dispatcher.Invoke(() =>
                 {
-                    iscontinue = false;
-                }
-            });
-            if (!iscontinue) throw new Exception("实验已停止");
+                    if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + info.Device.DemodR.ToString() + "\n" + "设定点:" + info.Device.SetPoint.ToString() + "\n"
+                        + "P:" + info.Device.P.ToString() + "\n" + "I:" + info.Device.I.ToString() + "\n" + "D:" + info.Device.D.ToString() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+                    {
+                        iscontinue = false;
+                    }
+                });
+                if (!iscontinue) throw new Exception("实验已停止");
 
-            //添加下针参数到输出参数栏
-            OutputParams.Add(new Param<double>("下针参数P", info.Device.P, "DropP"));
-            OutputParams.Add(new Param<double>("下针参数I", info.Device.I, "DropI"));
-            OutputParams.Add(new Param<double>("下针参数D", info.Device.D, "DropD"));
-            OutputParams.Add(new Param<double>("下针参数Signal", info.Device.DemodR, "DropSignal"));
-            OutputParams.Add(new Param<double>("下针参数SetPoint", info.Device.SetPoint, "DropSetPoint"));
+                //添加下针参数到输出参数栏
+                OutputParams.Add(new Param<double>("下针参数P", info.Device.P, "DropP"));
+                OutputParams.Add(new Param<double>("下针参数I", info.Device.I, "DropI"));
+                OutputParams.Add(new Param<double>("下针参数D", info.Device.D, "DropD"));
+                OutputParams.Add(new Param<double>("下针参数Signal", info.Device.DemodR, "DropSignal"));
+                OutputParams.Add(new Param<double>("下针参数SetPoint", info.Device.SetPoint, "DropSetPoint"));
+            }
 
             PreExpEventBeforeDropWithAFM();
             if (GetAllowMultiDrop())

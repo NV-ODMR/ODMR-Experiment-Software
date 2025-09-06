@@ -48,7 +48,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
             new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
             new Param<double>("悬浮下针参数I",-3,"FloatI"),
-            new Param<double>("悬浮测量距离(V)",0.1,"FloatHeight"),
+            new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
+            new Param<double>("电压/位移系数(V/μm)",1.1416,"Voltage_Displacement_Ratio"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
@@ -168,13 +169,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     if (IsFirstDrop == true)
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight"), (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
                         IsFirstDrop = false;
                     }
                     else
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
                         IsFirstDrop = false;
                     }
                 }

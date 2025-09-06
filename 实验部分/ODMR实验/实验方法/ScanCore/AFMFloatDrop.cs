@@ -31,6 +31,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         /// <returns></returns>
         public override List<object> CoreMethod(List<object> InputParams, params InfoBase[] devices)
         {
+            if ((double)InputParams[1] < 0)
+            {
+                return new List<object>() { false };
+            }
             //下针
             LockinInfo lockin = devices[0] as LockinInfo;
             //读取SetPoint

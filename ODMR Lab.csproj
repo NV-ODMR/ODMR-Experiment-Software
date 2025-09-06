@@ -204,6 +204,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOff.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\LaserOn.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\ScanCore\ScanCoreBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\AFMTest.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\CheckAngle.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ExpEvent.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\Magnet.cs" />
@@ -264,6 +265,15 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\自定义序列实验\CustomSequenceExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\探针测试\ProbeConfocal.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\Distance_Fluorescence_Measure.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\Source_1DLockInHahnEcho.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\Drive_1DLockInHahnEcho.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\Source_2DLockInHahnEcho.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\Drive_2DLockInHahnEcho.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\Drive_Vibration_Relation.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\LockIn1DScan.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\LockIn2DScan.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\VibrationExpBase.cs" />
     <Compile Include="实验部分\ODMR实验\窗口\ExperimentEmptyWindow.xaml.cs">
       <DependentUpon>ExperimentEmptyWindow.xaml</DependentUpon>
     </Compile>
@@ -781,9 +791,7 @@
     <Resource Include="图片资源\stop.png" />
     <Resource Include="图片资源\ok.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="实验部分\ODMR实验\实验方法\无AFM实验\线扫描\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
   </Target>

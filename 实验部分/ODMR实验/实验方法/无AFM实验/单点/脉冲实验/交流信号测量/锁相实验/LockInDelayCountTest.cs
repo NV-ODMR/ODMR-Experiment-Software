@@ -208,8 +208,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             Thread.Sleep(1000);
 
 
-            OutputParams.Add(new Param<double>("Delay测试光子数", ps_x[3] - Math.Abs(ps_x[0]), "Contrast"));
-            OutputParams.Add(new Param<double>("平均光子数", ps_x[3], "Average"));
+            OutputParams.Add(new Param<double>("光子数振幅", Math.Abs(ps_x[0]), "Amplitude"));
+            OutputParams.Add(new Param<double>("光子数平均值", ps_x[3], "Average"));
             double phase = ps_x[2] + ps_x[1] / 2;
             if (ps_x[0] < 0) phase = ps_x[2] + ps_x[1];
             OutputParams.Add(new Param<double>("Delay相位(ns)", phase, "Phase"));
