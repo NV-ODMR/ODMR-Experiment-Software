@@ -44,6 +44,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             new Param<int>("测量点数",20,"PointCount"),
             new Param<double>("电压/位移系数(V/μm)",1.14,"Voltage_Displacement_Ratio"),
             new Param<int>("序列循环次数",10000,"SeqLoopCount"),
+            new Param<int>("测量轮数",5,"LoopCount"),
             new Param<int>("超时时间(ms)",1000,"TimeOut"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>();
@@ -56,24 +57,28 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>() { };
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>() { };
 
-
+        int CurrentLoop = 0;
         public override void ODMRExpWithoutAFM()
         {
-            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("StartDistance"), GetInputParamValueByName("EndDistance"), GetInputParamValueByName("PointCount"));
-            Scan1DSession<object> session = new Scan1DSession<object>();
-            session.SetStateMethod = new Action<object, double>((obj, val) =>
+            for (int i = 0; i < GetInputParamValueByName("LoopCount"); i++)
             {
-                SetExpState("当前样品-探针距离(V):" + val.ToString());
-            });
-            session.ScanSource = new object();
-            session.ProgressBarMethod = new Action<object, double>((obj, val) =>
-            {
-                SetProgress(val);
-            });
-            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-            session.FirstScanEvent = ScanEvent;
-            session.ScanEvent = ScanEvent;
-            session.BeginScan(range, 0, 100);
+                CurrentLoop = i;
+                D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("StartDistance"), GetInputParamValueByName("EndDistance"), GetInputParamValueByName("PointCount"));
+                Scan1DSession<object> session = new Scan1DSession<object>();
+                session.SetStateMethod = new Action<object, double>((obj, val) =>
+                {
+                    SetExpState("当前样品-探针距离(V):" + val.ToString());
+                });
+                session.ScanSource = new object();
+                session.ProgressBarMethod = new Action<object, double>((obj, val) =>
+                {
+                    SetProgress(val);
+                });
+                session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+                session.FirstScanEvent = ScanEvent;
+                session.ScanEvent = ScanEvent;
+                session.BeginScan(range, 0, 100);
+            }
         }
 
         public override void PreExpEventWithoutAFM()
@@ -94,11 +99,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             AFMStopDrop drop = new AFMStopDrop();
             drop.CoreMethod(new List<object>(), GetDeviceByName("LockIn"));
             SetExpState("");
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             //用线性拟合计算荧光-距离关系
             var xs = Get1DChartDataSource("距离(nm)", "样品-探针距离测试");
             var ys_x = Get1DChartDataSource("荧光光子数", "样品-探针距离测试");
-            double a = 0;
-            double b = 0;
+            double a = (ys_x.Last() - ys_x.First()) / (xs.Last() - xs.First());
+            double b = ys_x.Average() - a * xs.Average();
             double[] ps_x = CurveFitting.FitCurveWithFunc(xs, ys_x, new List<double>() { a, b }, new List<double>() { 10, 10 }, LinearFunc, AlgorithmType.LevenbergMarquardt, 20000);
             var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;
             var fitys_x = ftxs.Select(x => LinearFunc(x, ps_x)).ToList();
@@ -133,16 +139,35 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             var result = floadrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), arg3 * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I") }, GetDeviceByName("LockIn"));
             if (((bool)result[0]) == false) throw new Exception();
             //测量光子计数
-            PulsePhotonPack photonpack = DoPulseExp("DelayCountTest", 2870, -20, GetInputParamValueByName("SeqLoopCount"), 2, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack photonpack = DoPulseExp("FluorenscenceSample", 2870, -20, GetInputParamValueByName("SeqLoopCount"), 2, GetInputParamValueByName("TimeOut"));
             double photoncount = photonpack.GetPhotonsAtIndex(0).Sum();
+            if (photoncount == 0) photoncount = double.NaN;
             //获取当前高度
             var disvolt = Get1DChartDataSource("距离(V)", "样品-探针距离测试");
             var disnm = Get1DChartDataSource("距离(nm)", "样品-探针距离测试");
             var count = Get1DChartDataSource("荧光光子数", "样品-探针距离测试");
             double heightvolt = (GetDeviceByName("LockIn") as LockinInfo).Device.PIDValue;
-            disvolt.Add(heightvolt);
-            disnm.Add(arg3);
-            count.Add(photoncount);
+
+            int ind = range.GetNearestFormalIndex(arg3);
+
+            if (ind >= disnm.Count)
+            {
+                disvolt.Add(heightvolt);
+                disnm.Add(arg3);
+                count.Add(photoncount);
+            }
+            else
+            {
+                if (!double.IsNaN(heightvolt))
+                    disvolt[ind] = (disvolt[ind] * CurrentLoop + heightvolt) / (CurrentLoop + 1);
+                if (!double.IsNaN(count[ind]))
+                    count[ind] = (count[ind] * CurrentLoop + (double)photoncount) / (CurrentLoop + 1);
+                else
+                    count[ind] = photoncount;
+            }
+
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
             return new List<object>();
         }
 
@@ -152,7 +177,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             {
                 throw new Exception("样品-探针距离不能为负值");
             }
-
+            GetDevices();
             if (!DropConfirm(GetDeviceByName("LockIn") as LockinInfo)) return false;
             return true;
         }

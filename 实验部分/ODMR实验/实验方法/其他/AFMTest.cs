@@ -62,7 +62,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>()
             ;
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
-        public override List<ODMRExpObject> SubExperiments { get; set; } = new List<ODMRExpObject>();
         protected override List<KeyValuePair<string, Action>> AddInteractiveButtons()
         {
             return new List<KeyValuePair<string, Action>>();
@@ -164,6 +163,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
             return new List<ParentPlotDataPack>();
+        }
+
+        protected override List<ODMRExpObject> GetSubExperiments()
+        {
+            return new List<ODMRExpObject>();
         }
     }
 }

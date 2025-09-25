@@ -92,6 +92,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void ODMRExpWithoutAFM()
         {
+            bool rever = false;
             int Loop = GetInputParamValueByName("LoopCount");
             double progress = 0;
             for (int i = 0; i < Loop; i++)
@@ -111,8 +112,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     SetExpState("当前扫描轮数:" + i.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
                 });
 
-                Session.BeginScan(new D1NumricLinearScanRange(GetInputParamValueByName("StartTime"), GetInputParamValueByName("EndTime"), GetInputParamValueByName("DelayCount")),
+                Session.BeginScan(new D1NumricLinearScanRange(GetInputParamValueByName("StartTime"), GetInputParamValueByName("EndTime"), GetInputParamValueByName("DelayCount"), rever),
                 i * 100.0 / Loop, Math.Min((i + 1) * 100.0 / Loop, 100));
+                rever = !rever;
+                LoopEndMethod?.Invoke();
             }
         }
 

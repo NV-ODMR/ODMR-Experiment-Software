@@ -390,8 +390,8 @@ namespace ODMR_Lab.序列编辑器
             //删除
             if (arg1 == 0)
             {
-                var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Remove(seg);
+                var seg = arg3 as SequenceChannelData;
+                Sequence.Channels.Remove(seg);
                 UpdateSequenceData();
             }
         }

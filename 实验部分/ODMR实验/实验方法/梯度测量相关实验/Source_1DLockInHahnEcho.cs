@@ -93,6 +93,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
         public override bool PreConfirmProcedure()
         {
+            GetDevices();
             if (DropConfirm(GetDeviceByName("LockIn") as LockinInfo) == false) return false;
             return true;
         }

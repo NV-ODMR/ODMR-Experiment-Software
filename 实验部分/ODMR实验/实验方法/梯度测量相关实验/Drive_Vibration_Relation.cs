@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using ODMR_Lab.设备部分.相机_翻转镜;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
+using System.Threading;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 {
@@ -54,6 +56,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             new Param<double>("驱动电压起始点(V)",0,"VoltStart"),
             new Param<double>("驱动电压终止点(V)",5,"VoltEnd"),
             new Param<int>("驱动电压扫描点数",5,"VoltScanPoint"),
+
+            new Param<bool>("子实验每轮扫描结束后重新下针",true,"RedropAfterLoop"),
         };
 
         private string FluorescenceFilePath = "";
@@ -73,6 +77,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             AFMStopDrop drop = new AFMStopDrop();
             drop.CoreMethod(new List<object>(), GetDeviceByName("LockIn"));
             SetExpState("");
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
         }
 
         public override List<ParentPlotDataPack> GetD1PlotPacks()
@@ -82,7 +87,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
         public override void ODMRExpWithoutAFM()
         {
-            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("StartDistance"), GetInputParamValueByName("EndDistance"), GetInputParamValueByName("PointCount"));
+            if (GetInputParamValueByName("RedropAfterLoop"))
+            {
+                (SubExperiments[0] as LockInDelayCountTest).LoopEndMethod = new Action(() =>
+                 {
+                     SwitchInfo sw = GetDeviceByName("LockInSignalSwitch") as SwitchInfo;
+                     sw.Device.IsOpen = false;
+                     //重新下针
+                     AFMFloatDrop floatdrop = new AFMFloatDrop();
+                     var result = floatdrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
+                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I") }, GetDeviceByName("LockIn"));
+                     if ((bool)result[0] == false) throw new Exception();
+                     sw.Device.IsOpen = true;
+                     RunSubExperimentBlock(1);
+                     Thread.Sleep(20000);
+                 });
+            }
+            else
+            {
+                (SubExperiments[0] as LockInDelayCountTest).LoopEndMethod = null;
+            }
+            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("VoltStart"), GetInputParamValueByName("VoltEnd"), GetInputParamValueByName("VoltScanPoint"));
             Scan1DSession<object> session = new Scan1DSession<object>();
             session.SetStateMethod = new Action<object, double>((obj, val) =>
             {
@@ -102,14 +127,23 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         private List<object> ScanEvent(object arg1, D1NumricScanRangeBase range, double arg3, List<object> list)
         {
             //关闭信号
-            (GetDeviceByName("LockInSignalSwitch") as SwitchInfo).Device.IsOpen = false;
+            //(GetDeviceByName("LockInSignalSwitch") as SwitchInfo).Device.IsOpen = false;
             //设置驱动电压
             (GetDeviceByName("LockInSignalChannel") as SignalGeneratorChannelInfo).Device.Amplitude = arg3;
+
+            //AutoTrace
+            RunSubExperimentBlock(1, true);
+
             //重新下针
             AFMFloatDrop floatdrop = new AFMFloatDrop();
             var result = floatdrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
                 GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I") }, GetDeviceByName("LockIn"));
             if ((bool)result[0] == false) throw new Exception();
+
+            //打开信号
+            (GetDeviceByName("LockInSignalSwitch") as SwitchInfo).Device.IsOpen = true;
+            Thread.Sleep(3000);
+
             //测量荧光振动曲线
             var exp = RunSubExperimentBlock(0, true);
             var photons = exp.Get1DChartDataSource("光子数", "Delay测试数据").ToArray().ToList();
@@ -128,7 +162,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
             //根据测到的荧光距离曲线计算实际距离
             double dist = (average - FluorescenceBias) / FluorescenceSlope;
-            double disamp = amplitude / FluorescenceSlope;
+            double disamp = Math.Abs(amplitude / FluorescenceSlope);
 
             volts.Add(arg3);
             amps.Add(amplitude);
@@ -150,10 +184,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
             if (FluorescenceFilePath == "" || double.IsNaN(FluorescenceSlope) || double.IsNaN(FluorescenceBias))
             {
-                throw new Exception("请先导入");
+                throw new Exception("请先导入曲线文件");
             }
 
-            LockinInfo info = GetDeviceByName("LockIn") as LockinInfo;
+            GetDevices();
             //下针信息确认
             if (!DropConfirm(GetDeviceByName("LockIn") as LockinInfo)) return false;
             if (MessageWindow.ShowMessageBox("提示", "此操作将改变锁相信号强度,这可能会使音叉共振幅度发生改变,同时会清除原先的实验数据,是否要继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
@@ -186,34 +220,39 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
         private void ImportCurveFile()
         {
-            SequenceFileExpObject fobj = new SequenceFileExpObject();
-            if (fobj.ReadFromExplorer(out string path))
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                if (fobj.ODMRExperimentName != "距离-荧光曲线测量" || fobj.ODMRExperimentGroupName != "梯度测量相关实验")
+                SequenceFileExpObject fobj = new SequenceFileExpObject();
+                if (fobj.ReadFromExplorer(out string path))
                 {
-                    throw new Exception("导入文件类型不符");
+                    if (fobj.ODMRExperimentName != "距离-荧光曲线测量" || fobj.ODMRExperimentGroupName != "梯度测量相关实验")
+                    {
+                        MessageWindow.ShowTipWindow("导入文件类型不符", Window.GetWindow(ParentPage));
+                    }
+                    FluorescenceFilePath = path;
+                    SetInputParamValueByName("FluorescenceFileName", Path.GetFileName(path));
+                    try
+                    {
+                        FluorescenceSlope = double.Parse(fobj.GetOutputParamValueByName("Slope"));
+                        FluorescenceBias = double.Parse(fobj.GetOutputParamValueByName("Bias"));
+                        MessageWindow.ShowTipWindow("文件导入成功\n" + "曲线斜率:" + FluorescenceSlope + "\n" + "曲线截距:" + FluorescenceBias, Window.GetWindow(ParentPage));
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageWindow.ShowTipWindow("导入文件失败\n" + ex.Message, Window.GetWindow(ParentPage));
+                    }
                 }
-                FluorescenceFilePath = path;
-                SetInputParamValueByName("FluorescenceFileName", Path.GetFileName(path));
-                try
-                {
-                    FluorescenceSlope = fobj.GetOutputParamValueByName("Slope");
-                    FluorescenceBias = fobj.GetOutputParamValueByName("Bias");
-                    MessageWindow.ShowTipWindow("文件导入成功\n" + "曲线斜率:" + FluorescenceSlope + "\n" + "曲线截距:" + FluorescenceBias, Window.GetWindow(ParentPage));
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("导入文件失败\n" + ex.Message);
-                }
-            }
-            throw new Exception("导入文件失败，文件格式不支持");
+                MessageWindow.ShowTipWindow("导入文件失败，文件格式不支持", Window.GetWindow(ParentPage));
+            });
         }
 
         protected override List<ODMRExpObject> GetSubExperiments()
         {
             return new List<ODMRExpObject>()
             {
-                new LockInDelayCountTest()
+                new LockInDelayCountTest(),
+                new AutoTrace()
             };
         }
     }

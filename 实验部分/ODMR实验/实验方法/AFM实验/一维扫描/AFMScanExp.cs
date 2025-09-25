@@ -166,17 +166,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 ++dropgap;
                 if (dropgap == 1)
                 {
+                    bool re = true;
                     if (IsFirstDrop == true)
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
                         var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
+                        re = (bool)res[0];
                         IsFirstDrop = false;
                     }
                     else
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
                         var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                        re = (bool)res[0];
                         IsFirstDrop = false;
+                    }
+                    if (re == false)
+                    {
+                        throw new Exception("下针失败");
                     }
                 }
                 Thread.Sleep(GetInputParamValueByName("TimeWaitAfterDrop"));

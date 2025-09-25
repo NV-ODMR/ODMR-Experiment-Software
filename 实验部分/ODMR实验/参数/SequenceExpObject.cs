@@ -68,6 +68,11 @@ namespace ODMR_Lab.ODMR实验
         /// </summary>
         public abstract bool IsAFMSubExperiment { get; protected set; }
 
+        /// <summary>
+        /// 如果实验有循环轮数,那么每轮循环完成后可能要进行一些操作,此时可以调用此委托以在主实验和子实验之间通信
+        /// </summary>
+        public Action LoopEndMethod { get; set; } = null;
+
         private string savedFileName = null;
         public string SavedFileName
         {

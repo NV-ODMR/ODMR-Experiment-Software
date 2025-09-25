@@ -90,6 +90,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
         public override bool PreConfirmProcedure()
         {
+            GetDevices();
             if (DropConfirm(GetDeviceByName("LockIn") as LockinInfo) == false) return false;
             if (MessageWindow.ShowMessageBox("提示", "此操作将改变锁相信号强度,这可能会使音叉共振幅度发生改变,同时会清除原先的实验数据,是否要继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
             {
@@ -106,7 +107,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
         protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()
         {
-            throw new NotImplementedException();
+            return new List<KeyValuePair<string, Action>>();
         }
 
         protected override List<ODMRExpObject> GetSubExperiments()

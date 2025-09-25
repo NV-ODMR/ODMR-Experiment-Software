@@ -602,7 +602,17 @@ namespace ODMR_Lab
             App.Current.Dispatcher.Invoke(() =>
             {
                 if (!IsSubExperiment)
-                    IsContinue = PreConfirmProcedure();
+                {
+                    try
+                    {
+                        IsContinue = PreConfirmProcedure();
+                    }
+                    catch (Exception ex)
+                    {
+                        IsContinue = false;
+                        MessageWindow.ShowTipWindow("实验未成功进行:\n" + ex.Message, MainWindow.Handle);
+                    }
+                }
             });
             if (!IsContinue)
             {
