@@ -118,6 +118,26 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 }
                 ExpObjects.Add(afm1d);
                 #endregion
+
+                #region 创建所有AFM变距离扫描实验
+                AFMScanDistanceExp afmdistance = new AFMScanDistanceExp() { ODMRExperimentName = item.ODMRExperimentName, ParentPage = this };
+                //获取所有子实验以及子实验的子实验
+                subexp = Activator.CreateInstance(item.GetType()) as ODMRExpObject;
+                subexp.IsSubExperiment = true;
+                subexp.ParentExp = afmdistance;
+                subexp.ValidateParameters();
+                subexps = AFMScan2DExp.AppendSubExp(subexp, new List<ODMRExpObject>() { subexp });
+
+                //添加子实验参数
+                foreach (var it in subexps)
+                {
+                    var exp = it.ParentExp;
+                    afm1d.AddSubExp(it);
+                    it.TopExp = afmdistance;
+                    it.ParentExp = exp;
+                }
+                ExpObjects.Add(afmdistance);
+                #endregion
             }
 
             ExpObjects.Sort((e1, e2) => e1.ODMRExperimentName.CompareTo(e2.ODMRExperimentName));

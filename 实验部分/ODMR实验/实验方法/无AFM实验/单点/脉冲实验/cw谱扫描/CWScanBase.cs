@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls.Charts;
 using Controls.Windows;
+using MathLib.NormalMath.Decimal;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
@@ -17,13 +18,16 @@ using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.光子探测器;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
 using ODMR_Lab.设备部分.板卡;
+using OpenCvSharp.XFeatures2D;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描
 {
@@ -180,6 +184,88 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         protected List<double> GetSignalCounts()
         {
             return (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data; ;
+        }
+
+        /// <summary>
+        /// 洛伦兹拟合函数
+        /// </summary>
+        /// <returns></returns>
+        private double LorentzFunc(double x, double[] ps)
+        {
+            double a = ps[0];
+            double b = ps[1];
+            double c = ps[2];
+            return -(0.25 * a * b * b) / ((x - c) * (x - c) + 0.25 * b * b);
+        }
+
+        protected void FitCWPeaks(int peakcounts, List<double> freqs, List<double> contracts)
+        {
+            var FittedData = new List<List<double>>();
+            var RawFitData = new List<List<double>>();
+            var ParamNames = new List<string>();
+
+
+            string expression = "-(0.25*a*b*b)/((x-c)*(x-c)+0.25*b*b)";
+            string origin = "";
+
+            for (int i = 0; i < peakcounts; i++)
+            {
+                try
+                {
+                    double min = contracts.Min();
+                    double peakwidth = GetInputParamValueByName("PeakWidth");
+                    double peakloc = freqs[contracts.IndexOf(contracts.Min())];
+                    //拟合
+                    var ps = CurveFitting.FitCurveWithFunc(freqs, contracts, new List<double>() { Math.Abs(min), peakwidth, peakloc }, new List<double>() { 10, 10, 100 }, LorentzFunc, AlgorithmType.LevenbergMarquardt, 2000);
+                    double fittedloc = ps[2];
+                    var data = contracts.Select(x => Math.Abs(x + ps[0])).ToList();
+                    double fittedcontrast = contracts[data.IndexOf(data.Min())];
+                    double fittedpeakwidth = ps[1];
+                    contracts = contracts.Zip(freqs.Select(x => LorentzFunc(x, new double[] { Math.Abs(fittedcontrast), fittedpeakwidth, fittedloc })), new Func<double, double, double>((x, y) => x - y)).ToList();
+                    FittedData.Add(new List<double>() { fittedloc, fittedcontrast, fittedpeakwidth });
+                    RawFitData.Add(ps.ToList());
+                }
+                catch (Exception)
+                {
+                    RawFitData.Add(new List<double>() { 0, 0, 0 });
+                    FittedData.Add(new List<double>() { 0, 0, 0 });
+                }
+                ParamNames.AddRange(new List<string>() { "a" + i.ToString(), "b" + i.ToString(), "c" + i.ToString() });
+                origin += expression.Replace("a", "a" + i.ToString()).Replace("b", "b" + i.ToString()).Replace("c", "c" + i.ToString());
+            }
+
+            //添加拟合曲线
+            List<double> fitdata = new List<double>();
+            foreach (var item in FittedData)
+            {
+                fitdata.AddRange(item);
+            }
+            List<double> xs = new D1NumricLinearScanRange(freqs.Min(), freqs.Max(), 500).ScanPoints;
+            List<double> ys = null;
+            foreach (var item in RawFitData)
+            {
+                if (ys == null)
+                {
+                    ys = xs.Select(x => LorentzFunc(x, item.ToArray())).ToList();
+                }
+                else
+                {
+                    ys = ys.Zip(xs.Select(x => LorentzFunc(x, item.ToArray())), new Func<double, double, double>((x, y) => x + y)).ToList();
+                }
+            }
+            D1FitDatas.Add(new FittedData1D(origin, "x", ParamNames, fitdata, "频率", "CW对比度数据", new NumricDataSeries("拟合数据", xs, ys) { LineColor = Colors.LightSkyBlue }));
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
+            Show1DFittedData("拟合数据");
+
+            //将结果按频率从低到高排列
+            FittedData.Sort((d1, d2) => { return d1[0].CompareTo(d2[0]); });
+            for (int i = 0; i < FittedData.Count; i++)
+            {
+                OutputParams.Add(new Param<double>("谱峰位置" + (i + 1).ToString(), FittedData[i][0], "PeakLoc" + (i + 1).ToString()));
+                OutputParams.Add(new Param<double>("谱峰对比度" + (i + 1).ToString(), FittedData[i][1], "PeakContrast" + (i + 1).ToString()));
+                OutputParams.Add(new Param<double>("谱峰峰宽" + (i + 1).ToString(), FittedData[i][2], "PeakWidth" + (i + 1).ToString()));
+            }
         }
     }
 }

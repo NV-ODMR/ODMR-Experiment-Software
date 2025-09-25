@@ -53,6 +53,23 @@ namespace ODMR_Lab.实验部分.自定义算法
         }
 
         /// <summary>
+        /// 根据参数名获取输出参数
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public dynamic GetOutputParamValueByName(string name)
+        {
+            foreach (var item in OutputParams)
+            {
+                if (item.PropertyName == name)
+                {
+                    return ParamB.GetUnknownParamValue(item);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
         /// 根据参数名获取输入参数
         /// </summary>
         /// <param name="description"></param>

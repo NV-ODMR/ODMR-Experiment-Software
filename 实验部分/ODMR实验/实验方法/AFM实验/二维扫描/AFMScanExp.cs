@@ -50,7 +50,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("悬浮下针参数I",-3,"FloatI"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
-            new Param<double>("电压/位移系数(V/μm)",1.1416,"Voltage_Displacement_Ratio"),
+            new Param<double>("Z扫描台电压/位移系数(μm/V)",0.876,"Z_Voltage_Displacement_Ratio"),
+            new Param<double>("X扫描台电压/位移系数(μm/V)",2.034,"X_Voltage_Displacement_Ratio"),
+            new Param<double>("Y扫描台电压/位移系数(μm/V)",2.031,"Y_Voltage_Displacement_Ratio"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
         };
@@ -138,12 +140,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// <returns></returns>
         public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, D2ScanRangeBase scanPoints, Point currentPoint, List<object> inputParams)
         {
-            SetExpState("正在移动到目标位置 X: " + Math.Round(currentPoint.X, 5).ToString() + " Y: " + Math.Round(currentPoint.Y, 5));
+            SetExpState("正在移动到目标位置(μm) X: " + Math.Round(currentPoint.X, 5).ToString() + " Y: " + Math.Round(currentPoint.Y, 5));
             //移动位移台
-            scannerx.Device.MoveToAndWait(currentPoint.X, 120000);
+            scannerx.Device.MoveToAndWait(currentPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
             JudgeThreadEndOrResumeAction();
             //移动位移台
-            scannery.Device.MoveToAndWait(currentPoint.Y, 120000);
+            scannery.Device.MoveToAndWait(currentPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
             JudgeThreadEndOrResumeAction();
 
             //如果是悬浮测量则执行对应程序
@@ -160,14 +162,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     if (IsFirstDrop == true)
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
                         re = (bool)res[0];
                         IsFirstDrop = false;
                     }
                     else
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
                         re = (bool)res[0];
                         IsFirstDrop = false;
                     }
@@ -242,7 +244,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     }
                     else
                     {
-                        D1ChartDatas.Add(new NumricChartData1D("X:" + Math.Round(currentPoint.X, 5).ToString() + "Y:" + Math.Round(currentPoint.Y, 5).ToString() + " " + plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
+                        D1ChartDatas.Add(new NumricChartData1D("X(μm):" + Math.Round(currentPoint.X, 5).ToString() + "Y(μm):" + Math.Round(currentPoint.Y, 5).ToString() + " " + plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
                     }
                 }
             }
@@ -270,9 +272,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
-            infox.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.X, 120000);
+            infox.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
             JudgeThreadEndOrResumeAction();
-            infoy.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.Y, 120000);
+            infoy.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
             JudgeThreadEndOrResumeAction();
         }
 

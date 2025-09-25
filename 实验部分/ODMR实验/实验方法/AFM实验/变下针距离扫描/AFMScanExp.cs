@@ -27,11 +27,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
     /// <summary>
     /// 一维扫描实验
     /// </summary>
-    public class AFMScan1DExp : ODMRExperimentWithAFM
+    public class AFMScanDistanceExp : ODMRExperimentWithAFM
     {
-        CustomScan1DLineSession<NanoStageInfo, NanoStageInfo> PointsScanSession = new CustomScan1DLineSession<NanoStageInfo, NanoStageInfo>();
-
-        public override bool Is1DScanExp { get; set; } = true;
+        public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
 
         public override string ODMRExperimentName { get; set; } = "";
@@ -46,12 +44,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<int>("最大尝试下针次数",5,"DropCount"),
             new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
-            new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
             new Param<double>("悬浮下针参数I",-3,"FloatI"),
-            new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
-            new Param<double>("Z扫描台电压/位移系数(μm/V)",0.876,"Z_Voltage_Displacement_Ratio"),
-            new Param<double>("X扫描台电压/位移系数(μm/V)",2.034,"X_Voltage_Displacement_Ratio"),
-            new Param<double>("Y扫描台电压/位移系数(μm/V)",2.031,"Y_Voltage_Displacement_Ratio"),
+            new Param<double>("变距离测量起始点(nm)",20,"FloatHeightStart"),
+            new Param<double>("变距离测量终止点(nm)",100,"FloatHeightEnd"),
+            new Param<double>("变距离测量点数",5,"FloatHeightCount"),
+            new Param<double>("电压/位移系数(V/μm)",1.1416,"Voltage_Displacement_Ratio"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
@@ -63,8 +60,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override List<KeyValuePair<DeviceTypes, Param<string>>> DeviceList { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.AFM扫描台,new Param<string>("扫描台X","","ScannerX")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.AFM扫描台,new Param<string>("扫描台Y","","ScannerY")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.样品位移台,new Param<string>("样品Z轴","","SampleZ")),
         };
@@ -101,9 +96,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
-            infox.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
+            infox.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].X, 120000);
             JudgeThreadEndOrResumeAction();
-            infoy.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
+            infoy.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].Y, 120000);
             JudgeThreadEndOrResumeAction();
         }
 
@@ -119,28 +114,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             dropgap = 0;
             IsFirstDrop = true;
             devI = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
-            NanoStageInfo dev1 = GetDeviceByName("ScannerX") as NanoStageInfo;
-            NanoStageInfo dev2 = GetDeviceByName("ScannerY") as NanoStageInfo;
             #region 自动Trace参数
             ScanPointGap = GetInputParamValueByName("TraceGap");
             ScanPointCount = ScanPointGap;
             AllowAutoTrace = GetInputParamValueByName("UseAutoTrace");
             #endregion
 
+            Scan1DSession<LockinInfo> PointsScanSession = new Scan1DSession<LockinInfo>();
+
             PointsScanSession.FirstScanEvent = ScanEvent;
             PointsScanSession.ScanEvent = ScanEvent;
-            PointsScanSession.ScanSource1 = dev1;
-            PointsScanSession.ScanSource2 = dev2;
-            PointsScanSession.ProgressBarMethod = new Action<NanoStageInfo, NanoStageInfo, double>((devx, devy, val) =>
+            PointsScanSession.ScanSource = GetDeviceByName("LockIn") as LockinInfo;
+            PointsScanSession.ProgressBarMethod = new Action<object, double>((dev, val) =>
              {
                  SetProgress(val);
              });
-            PointsScanSession.SetStateMethod = new Action<NanoStageInfo, NanoStageInfo, Point>((devx, devy, v) =>
+            PointsScanSession.SetStateMethod = new Action<object, double>((dev, v) =>
              {
-                 SetExpState("当前扫描位置: X:" + Math.Round(v.X, 5).ToString() + " Y: " + Math.Round(v.Y, 5).ToString());
+                 SetExpState("当前下针距离(nm): " + Math.Round(v, 5).ToString());
              });
             PointsScanSession.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-            PointsScanSession.BeginScan(D1ScanRange, 0, 100);
+            PointsScanSession.BeginScan(new D1NumricLinearScanRange(GetInputParamValueByName("FloatHeightStart"), GetInputParamValueByName("FloatHeightEnd"), GetInputParamValueByName("FloatHeightCount")), 0, 100);
         }
 
         /// <summary>
@@ -150,48 +144,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// <param name="locvalue"></param>
         /// <param name="inputParams"></param>
         /// <returns></returns>
-        public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, D1PointsScanRangeBase scanPoints, Point currentloc, List<object> inputParams)
+        public List<object> ScanEvent(LockinInfo scanner, D1NumricScanRangeBase scanPoints, double currentvalue, List<object> inputParams)
         {
-            SetExpState("正在移动到目标位置(μm) X: " + Math.Round(currentloc.X, 5).ToString() + " Y: " + Math.Round(currentloc.Y, 5));
-            scannerx.Device.MoveToAndWait(currentloc.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
+            SetExpState("下针...距离: " + Math.Round(currentvalue, 5).ToString() + "nm");
+            AFMFloatDrop drop = new AFMFloatDrop();
+            drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), currentvalue / 1000 * GetInputParamValueByName("Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), }, scanner);
             JudgeThreadEndOrResumeAction();
-            scannery.Device.MoveToAndWait(currentloc.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
-            JudgeThreadEndOrResumeAction();
-
-            //如果是悬浮测量则执行对应程序
-            if (GetInputParamValueByName("IsFloatScan") == true)
-            {
-                if (dropgap == GetInputParamValueByName("ReDropGap"))
-                {
-                    dropgap = 0;
-                }
-                ++dropgap;
-                if (dropgap == 1)
-                {
-                    bool re = true;
-                    if (IsFirstDrop == true)
-                    {
-                        AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
-                        re = (bool)res[0];
-                        IsFirstDrop = false;
-                    }
-                    else
-                    {
-                        AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
-                        re = (bool)res[0];
-                        IsFirstDrop = false;
-                    }
-                    if (re == false)
-                    {
-                        throw new Exception("下针失败");
-                    }
-                }
-                Thread.Sleep(GetInputParamValueByName("TimeWaitAfterDrop"));
-            }
-
-            SetExpState("正在进行实验...");
 
             if (ScanPointCount >= ScanPointGap && AllowAutoTrace)
             {
@@ -205,7 +163,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             JudgeThreadEndOrResumeAction?.Invoke();
             //获取输出参数
             double value = 0;
-            Get1DChartDataSource("扫描点序号", "一维扫描数据").Add(scanPoints.GetNearestIndex(currentloc));
+            Get1DChartDataSource("扫描点序号", "一维扫描数据").Add(scanPoints.GetNearestIndex(currentvalue));
             foreach (var item in exp.OutputParams)
             {
                 if (item.RawValue is bool)
@@ -224,17 +182,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 {
                     value = (float)item.RawValue;
                 }
-                var data = Get1DChartData(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "一维扫描数据");
+                var data = Get1DChartData(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "变下针距离扫描数据");
                 if (data == null)
                 {
-                    data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "一维扫描数据", ChartDataType.Y);
+                    data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "变下针距离扫描数据", ChartDataType.Y);
                     D1ChartDatas.Add(data);
                     UpdatePlotChart();
                 }
                 (data as NumricChartData1D).Data.Add(value);
             }
             //刷新形貌数据
-            var afm = Get1DChartDataSource("AFM形貌数据(PID输出)", "一维扫描数据");
+            var afm = Get1DChartDataSource("AFM形貌数据(PID输出)", "变下针距离扫描数据");
             afm.Add((GetDeviceByName("LockIn") as LockinInfo).Device.PIDValue);
 
             //设置一维图表
@@ -252,7 +210,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     }
                     else
                     {
-                        D1ChartDatas.Add(new NumricChartData1D("X(μm):" + Math.Round(currentloc.X, 5).ToString() + "Y(μm):" + Math.Round(currentloc.Y, 5).ToString() + " " + plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
+                        D1ChartDatas.Add(new NumricChartData1D("下针距离:" + Math.Round(currentvalue, 5).ToString() + " " + plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
                     }
                 }
             }
@@ -277,8 +235,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         public override void PreExpEventWithAFM()
         {
             D1ChartDatas.Clear();
-            D1ChartDatas.Add(new NumricChartData1D("扫描点序号", "一维扫描数据", ChartDataType.X));
-            D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据(PID输出)", "一维扫描数据", ChartDataType.Y));
+            D1ChartDatas.Add(new NumricChartData1D("扫描点序号", "变下针距离扫描数据", ChartDataType.X));
+            D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据(PID输出)", "变下针距离扫描数据", ChartDataType.Y));
             UpdatePlotChart();
         }
 
@@ -289,23 +247,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override bool PreConfirmProcedure()
         {
-            if (D1ScanRange == null)
-            {
-                MessageWindow.ShowTipWindow("扫描范围未设置", Window.GetWindow(ParentPage));
-                return false;
-            }
-
             if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据,并且将执行下针操作", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
             {
                 return false;
             }
-
-            //扫描范围信息
-            if (MessageWindow.ShowMessageBox("扫描范围确认", "扫描范围类型:" + D1ScanRange.ScanName + "\n" + D1ScanRange.GetDescription() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
-            {
-                return false;
-            }
-
             return true;
         }
 
