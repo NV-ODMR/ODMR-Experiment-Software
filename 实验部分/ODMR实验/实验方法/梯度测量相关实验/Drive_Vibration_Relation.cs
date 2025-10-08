@@ -92,7 +92,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                 (SubExperiments[0] as LockInDelayCountTest).LoopEndMethod = new Action(() =>
                  {
                      SwitchInfo sw = GetDeviceByName("LockInSignalSwitch") as SwitchInfo;
-                     sw.Device.IsOpen = false;
+                     //sw.Device.IsOpen = false;
                      //重新下针
                      AFMFloatDrop floatdrop = new AFMFloatDrop();
                      var result = floatdrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
@@ -100,7 +100,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                      if ((bool)result[0] == false) throw new Exception();
                      sw.Device.IsOpen = true;
                      RunSubExperimentBlock(1);
-                     Thread.Sleep(20000);
+                     //Thread.Sleep(20000);
                  });
             }
             else

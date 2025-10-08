@@ -108,8 +108,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                 //旋转台移动到轴向沿Y
                 (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
                 //X方向扫描
-                //ScanX(0, 20);
-                OutputParams.Add(new Param<double>("X方向磁场最大位置", 7.787, "XLoc"));
+                ScanX(0, 20);
+                //OutputParams.Add(new Param<double>("X方向磁场最大位置", 7.787, "XLoc"));
                 SetExpState("正在扫描Y轴...");
                 //旋转台移动到轴向沿X
                 Thread.Sleep(500);

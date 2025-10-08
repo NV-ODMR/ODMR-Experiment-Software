@@ -132,7 +132,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 foreach (var it in subexps)
                 {
                     var exp = it.ParentExp;
-                    afm1d.AddSubExp(it);
+                    afmdistance.AddSubExp(it);
                     it.TopExp = afmdistance;
                     it.ParentExp = exp;
                 }

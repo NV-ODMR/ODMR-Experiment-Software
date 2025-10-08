@@ -33,7 +33,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         public override bool Is2DScanExp { get; set; } = false;
 
         public override string ODMRExperimentName { get; set; } = "";
-        public override string ODMRExperimentGroupName { get; set; } = "AFM线扫描";
+        public override string ODMRExperimentGroupName { get; set; } = "AFM变距离扫描";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<bool>("显示子实验窗口",true,"ShowSubMenu"),
@@ -47,7 +47,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("悬浮下针参数I",-3,"FloatI"),
             new Param<double>("变距离测量起始点(nm)",20,"FloatHeightStart"),
             new Param<double>("变距离测量终止点(nm)",100,"FloatHeightEnd"),
-            new Param<double>("变距离测量点数",5,"FloatHeightCount"),
+            new Param<int>("变距离测量点数",5,"FloatHeightCount"),
             new Param<double>("电压/位移系数(V/μm)",1.1416,"Voltage_Displacement_Ratio"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
@@ -90,16 +90,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventBeforeDropWithAFM()
         {
-            //添加范围参数
-            OutputParams.Add(new Param<string>("扫描范围信息", D1ScanRange.ScanName + "\n" + D1ScanRange.GetDescription(), "ScanRangeInform"));
-            //将位移台复位
-            SetExpState("正在将位移台复位到零点...");
-            NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
-            NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
-            infox.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].X, 120000);
-            JudgeThreadEndOrResumeAction();
-            infoy.Device.MoveToAndWait(D1ScanRange.ScanPoints[0].Y, 120000);
-            JudgeThreadEndOrResumeAction();
         }
 
         private int ScanPointCount = 0;
@@ -163,7 +153,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             JudgeThreadEndOrResumeAction?.Invoke();
             //获取输出参数
             double value = 0;
-            Get1DChartDataSource("扫描点序号", "一维扫描数据").Add(scanPoints.GetNearestIndex(currentvalue));
+            Get1DChartDataSource("距离(nm)", "变下针距离扫描数据").Add(currentvalue);
             foreach (var item in exp.OutputParams)
             {
                 if (item.RawValue is bool)
@@ -225,17 +215,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         public override void AfterExpEventWithAFM()
         {
             //设置Lock In PID上限
-            if (GetInputParamValueByName("IsFloatScan") == true)
-            {
-                (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
-                (GetDeviceByName("LockIn") as LockinInfo).Device.I = devI;
-            }
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
+            (GetDeviceByName("LockIn") as LockinInfo).Device.I = devI;
         }
 
         public override void PreExpEventWithAFM()
         {
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             D1ChartDatas.Clear();
-            D1ChartDatas.Add(new NumricChartData1D("扫描点序号", "变下针距离扫描数据", ChartDataType.X));
+            D1ChartDatas.Add(new NumricChartData1D("距离(nm)", "变下针距离扫描数据", ChartDataType.X));
             D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据(PID输出)", "变下针距离扫描数据", ChartDataType.Y));
             UpdatePlotChart();
         }
@@ -276,6 +264,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected override NanoStageInfo GetSampleZ()
         {
             return GetDeviceByName("SampleZ") as NanoStageInfo;
+        }
+
+        protected override double GetScannerXRatio()
+        {
+            return 1;
+        }
+
+        protected override double GetScannerYRatio()
+        {
+            return 1;
         }
     }
 }

@@ -169,7 +169,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     else
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
                         re = (bool)res[0];
                         IsFirstDrop = false;
                     }
@@ -280,6 +280,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventWithAFM()
         {
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             D2ChartDatas.Clear();
             D1ChartDatas.Clear();
             D2ChartDatas.Add(new ChartData2D(new FormattedDataSeries2D(D2ScanRange.XCount, D2ScanRange.XLo, D2ScanRange.XHi, D2ScanRange.YCount, D2ScanRange.YLo, D2ScanRange.YHi)
@@ -337,6 +338,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected override NanoStageInfo GetSampleZ()
         {
             return GetDeviceByName("SampleZ") as NanoStageInfo;
+        }
+
+        protected override double GetScannerXRatio()
+        {
+            return GetInputParamValueByName("X_Voltage_Displacement_Ratio");
+        }
+
+        protected override double GetScannerYRatio()
+        {
+            return GetInputParamValueByName("Y_Voltage_Displacement_Ratio");
         }
     }
 }

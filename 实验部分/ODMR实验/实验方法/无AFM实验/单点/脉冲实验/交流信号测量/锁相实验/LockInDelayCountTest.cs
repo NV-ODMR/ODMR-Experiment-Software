@@ -94,6 +94,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             bool rever = false;
             int Loop = GetInputParamValueByName("LoopCount");
+            GlobalPulseParams.SetGlobalPulseLength("DelayCountSampleTime", GetInputParamValueByName("CountSampleTime"));
             double progress = 0;
             for (int i = 0; i < Loop; i++)
             {

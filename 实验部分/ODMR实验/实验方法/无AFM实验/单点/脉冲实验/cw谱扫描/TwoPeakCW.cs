@@ -22,6 +22,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.CW�
             new Param<double>("谱峰位置2(MHz)",2890,"Frequency2"),
             new Param<double>("扫描峰宽(MHz)",100,"ScanSpan"),
             new Param<double>("扫描步长(MHz)",100,"ScanStep"),
+            new Param<double>("预计峰宽(MHz)",3.5,"PeakWidth"),
             new Param<double>("微波功率(dBm)",-20,"RFPower"),
             new Param<int>("循环次数",1000,"LoopCount"),
             new Param<int>("单点扫描时间上限(ms)",0,"TimeOut"),
@@ -74,6 +75,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.CW�
             CWCalculate cal = new CWCalculate();
             cal.SetInputParamValueByName("CW1", GetOutputParamValueByName("PeakLoc1"));
             cal.SetInputParamValueByName("CW2", GetOutputParamValueByName("PeakLoc2"));
+            cal.SetInputParamValueByName("ZeroCW", 2870.0);
+            cal.CalculateFunc();
             //总磁场分量
             OutputParams.Add(new Param<double>("沿轴磁场(Gauss)", cal.GetOutputParamValueByName("Bp"), "BPara"));
             OutputParams.Add(new Param<double>("垂直轴磁场(Gauss)", cal.GetOutputParamValueByName("Bv"), "BVert"));

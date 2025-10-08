@@ -276,6 +276,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventWithAFM()
         {
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             D1ChartDatas.Clear();
             D1ChartDatas.Add(new NumricChartData1D("扫描点序号", "一维扫描数据", ChartDataType.X));
             D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据(PID输出)", "一维扫描数据", ChartDataType.Y));
@@ -331,6 +332,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected override NanoStageInfo GetSampleZ()
         {
             return GetDeviceByName("SampleZ") as NanoStageInfo;
+        }
+
+        protected override double GetScannerXRatio()
+        {
+            return GetInputParamValueByName("X_Voltage_Displacement_Ratio");
+        }
+
+        protected override double GetScannerYRatio()
+        {
+            return GetInputParamValueByName("Y_Voltage_Displacement_Ratio");
         }
     }
 }

@@ -39,6 +39,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// </summary>
         public abstract void AfterExpEventWithAFM();
 
+        protected abstract double GetScannerXRatio();
+
+        protected abstract double GetScannerYRatio();
+
         public override void PreExpEvent()
         {
             if (!IsSubExperiment)
@@ -161,8 +165,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 double xloc = double.Parse(dic["X目标位置"]);
                 double yloc = double.Parse(dic["Y目标位置"]);
                 DeviceDispatcher.UseDevices(infx, infy);
-                infx.Device.MoveToAndWait(xloc, 120000);
-                infy.Device.MoveToAndWait(yloc, 120000);
+                infx.Device.MoveToAndWait(xloc / GetScannerXRatio(), 120000);
+                infy.Device.MoveToAndWait(yloc / GetScannerYRatio(), 120000);
                 SetExpState("扫描台位置 X: " + Math.Round(xloc, 5).ToString() + " Y: " + Math.Round(yloc, 5).ToString());
                 DeviceDispatcher.EndUseDevices(infx, infy);
             }

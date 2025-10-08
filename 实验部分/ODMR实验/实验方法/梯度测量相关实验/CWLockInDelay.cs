@@ -26,10 +26,11 @@ using System.Windows.Media;
 using System.Threading;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.设备部分.相机_翻转镜;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.CW谱扫描;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
-    class LockInDelay : LockInExpBase
+    class CWLockInDelay : LockInExpBase
     {
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
@@ -41,7 +42,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         /// </summary>
         private LockInExpBase ParentLockInExp { get; set; } = null;
 
-        public override string ODMRExperimentName { get; set; } = "锁相Delay测试";
+        public override string ODMRExperimentName { get; set; } = "锁相Delay测试(预先测CW谱)";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
@@ -53,10 +54,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("测量轮数",1,"LoopCount"),
             new Param<int>("序列循环次数",1,"SeqLoopCount"),
             new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"),
-            new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
             new Param<int>("单点超时时间",10000,"TimeOut"),
             new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"),
+            new Param<bool>("左峰作为微波频率",true,"IsLeftPeak"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -71,7 +72,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             return new List<ODMRExpObject>()
             {
-
+                new TwoPeakCW()
             };
         }
 
@@ -126,7 +127,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
             int echotime = (int)((signaltime - xLength) / 2);
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
-            PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+            PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
                 GetInputParamValueByName("TimeOut"));
             Sig = pack.GetPhotonsAtIndex(0).Sum();
             Ref = pack.GetPhotonsAtIndex(1).Sum();
@@ -190,6 +191,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             return new List<object>();
         }
 
+        double cwpeak = double.NaN;
+
         public override void PreLockInExpEventWithoutAFM()
         {
             //打开微波
@@ -205,6 +208,41 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             };
             UpdatePlotChart();
             Show1DChartData("Delay测试数据", "时间(ns)", "对比度");
+
+
+            cwpeak = double.NaN;
+            //如果要重新确定CW谱
+            var exp = RunSubExperimentBlock(0, true);
+            double peak1 = exp.GetOutPutParamValueByDescription("谱峰位置1");
+            double peak2 = exp.GetOutPutParamValueByDescription("谱峰位置2");
+            if (GetInputParamValueByName("IsLeftPeak"))
+            {
+                double peak = Math.Min(peak1, peak2);
+                cwpeak = 2870;
+                if (peak > 2500 && peak < 3100)
+                {
+                    var dev = GetRFSource();
+                    (dev as SignalGeneratorChannelInfo).Device.Frequency = peak;
+                    cwpeak = peak;
+                }
+            }
+            else
+            {
+                double peak = Math.Max(peak1, peak2);
+                cwpeak = 2870;
+                if (peak > 2500 && peak < 3100)
+                {
+                    var dev = GetRFSource();
+                    (dev as SignalGeneratorChannelInfo).Device.Frequency = peak;
+                    cwpeak = peak;
+                }
+            }
+            OutputParams.Add(new Param<double>("谱峰位置1", peak1, "CWPeakLoc1"));
+            OutputParams.Add(new Param<double>("谱峰位置2", peak2, "CWPeakLoc2"));
+            OutputParams.Add(new Param<double>("垂直轴场(G)", exp.GetOutputParamValueByName("BVert"), "BVert"));
+            OutputParams.Add(new Param<double>("沿轴场(G)", exp.GetOutputParamValueByName("BPara"), "BPara"));
+            OutputParams.Add(new Param<double>("总场(G)", exp.GetOutputParamValueByName("B"), "B"));
+
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
                 var dev = GetSignalSwitch() as SwitchInfo;
