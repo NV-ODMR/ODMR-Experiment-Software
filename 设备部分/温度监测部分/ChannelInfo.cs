@@ -16,7 +16,7 @@ using ODMR_Lab.基本控件;
 
 namespace ODMR_Lab.设备部分.温控
 {
-    public abstract class ChannelInfo
+    public abstract class ChannelInfo : InfoBase
     {
         public TemperatureControllerInfo ParentInfo { get; protected set; } = null;
 
@@ -52,6 +52,14 @@ namespace ODMR_Lab.设备部分.温控
             ParentInfo = parentinfo;
         }
 
+        public override void CreateDeviceInfoBehaviour()
+        {
+        }
+
+        public override string GetDeviceDescription()
+        {
+            return ParentInfo.Device.ProductName + " " + Channel.Name;
+        }
     }
 
     public class OutputChannelInfo : ChannelInfo
@@ -68,6 +76,15 @@ namespace ODMR_Lab.设备部分.温控
             Value.Name = name + "输出数据(" + channel.Unit + ")";
             Value.GroupName = "温度监测数据";
             ParentInfo = parentinfo;
+        }
+
+        public override void CreateDeviceInfoBehaviour()
+        {
+        }
+
+        public override string GetDeviceDescription()
+        {
+            return ParentInfo.Device.ProductName + " " + Channel.Name;
         }
     }
 

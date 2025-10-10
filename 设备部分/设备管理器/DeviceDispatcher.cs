@@ -8,6 +8,7 @@ using ODMR_Lab.温度监测部分;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
+using ODMR_Lab.设备部分.温控;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -133,12 +134,22 @@ namespace ODMR_Lab.设备部分
                     type = DeviceTypes.位移台;
                 if (item.deviceType == type)
                 {
-                    if (type == DeviceTypes.信号发生器通道)
+                    if (type == DeviceTypes.信号发生器通道 || type == DeviceTypes.温控)
                     {
                         var temp = item.GetDevEvent();
-                        foreach (var dev in temp)
+                        if (type == DeviceTypes.信号发生器通道)
                         {
-                            infos.AddRange((dev as SignalGeneratorInfo).Channels);
+                            foreach (var dev in temp)
+                            {
+                                infos.AddRange((dev as SignalGeneratorInfo).Channels);
+                            }
+                        }
+                        if (type == DeviceTypes.温控)
+                        {
+                            foreach (var dev in temp)
+                            {
+                                infos.AddRange((dev as TemperatureControllerInfo).SensorsInfo);
+                            }
                         }
                     }
                     else
