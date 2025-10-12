@@ -23,6 +23,8 @@ using MathNet.Numerics.IntegralTransforms;
 using Window = System.Windows.Window;
 using Controls.Charts;
 using System.Windows.Media;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -42,6 +44,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("时间最大值(ns)",100,"Rabimax"),
             new Param<int>("时间点数(ns)",20,"Rabipoints"),
             new Param<int>("测量次数",1000,"LoopCount"),        //外部的循环
+            new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),   //板卡内的
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
@@ -64,11 +67,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override bool IsAFMSubExperiment { get; protected set; } = true;
 
-        public List<object> FirstScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
-        {
-            return ScanEvent(device, range, locvalue, inputParams);
-        }
-
         public override bool PreConfirmProcedure()
         {
             if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
@@ -79,29 +77,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         }
 
         private int CurrentLoop = 0;
-        public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
+        public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> inputParams)
         {
             GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)locvalue);
 
             PulsePhotonPack pack = DoPulseExp("Rabi", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 8, GetInputParamValueByName("TimeOut"));
 
+            //光子数
             double signalcountX = pack.GetPhotonsAtIndex(0).Sum();
             double refcountX = pack.GetPhotonsAtIndex(1).Sum();
             double signalcountY = pack.GetPhotonsAtIndex(2).Sum();
             double refcountY = pack.GetPhotonsAtIndex(3).Sum();
 
-            var contrfreq = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
-            var signalX = Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
-            var signalY = Get1DChartDataSource("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
-
-            var florfreq = Get1DChartDataSource("微波驱动时间(ns)", "Rabi荧光数据");
-            var countX = Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据");
-            var sigcountX = Get1DChartDataSource("通道X 信号光子数", "Rabi荧光数据");
-            var countY = Get1DChartDataSource("通道Y 平均光子数", "Rabi荧光数据");
-            var sigcountY = Get1DChartDataSource("通道Y 信号光子数", "Rabi荧光数据");
-
-            int ind = range.GetNearestFormalIndex(locvalue);
-
+            //计算对比度
             double signalcontrastX = 1;
             double signalcontrastY = 1;
             try
@@ -121,60 +109,62 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
             }
 
-            if (ind >= contrfreq.Count)
-            {
-                contrfreq.Add(locvalue);
-                florfreq.Add(locvalue);
-                signalX.Add(signalcontrastX);
-                countX.Add(refcountX);
-                sigcountX.Add(signalcountX);
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("微波驱动时间(ns)", "Rabi对比度数据", locvalue, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据", signalcontrastX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据", signalcontrastY, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("微波驱动时间(ns)", "Rabi荧光数据", locvalue, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道X 平均光子数", "Rabi荧光数据", refcountX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道X 信号光子数", "Rabi荧光数据", signalcountX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道Y 平均光子数", "Rabi荧光数据", signalcountY, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道Y 信号光子数", "Rabi荧光数据", refcountY, new StandardDataProcess()));
 
-                signalY.Add(signalcontrastY);
-                countY.Add(refcountY);
-                sigcountY.Add(signalcountY);
-            }
-            else
-            {
-                signalX[ind] = (signalX[ind] * CurrentLoop + signalcontrastX) / (CurrentLoop + 1);
-                countX[ind] = (countX[ind] * CurrentLoop + refcountX) / (CurrentLoop + 1);
-                sigcountX[ind] = (sigcountX[ind] * CurrentLoop + signalcountX) / (CurrentLoop + 1);
-
-                signalY[ind] = (signalY[ind] * CurrentLoop + signalcontrastY) / (CurrentLoop + 1);
-                countY[ind] = (countY[ind] * CurrentLoop + refcountY) / (CurrentLoop + 1);
-                sigcountY[ind] = (sigcountY[ind] * CurrentLoop + signalcountY) / (CurrentLoop + 1);
-            }
-
-            UpdatePlotChartFlow(true);
             return new List<object>();
         }
 
         public override void ODMRExpWithoutAFM()
         {
-            int Loop = GetInputParamValueByName("LoopCount");//外部循环
-            double progressstep = 100 / Loop;//进度条
-            SignalGeneratorChannelInfo info = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
-            info.Device.IsOutOpen = true;
-            for (int i = 0; i < Loop; i++)
+            MultiScan1DSession<object> Session = new MultiScan1DSession<object>();
+            Session.FirstScanEvent = ScanEvent;
+            Session.ScanEvent = ScanEvent;
+            Session.ScanSource = null;
+            Session.PlotEvent = PlotEvent;
+            Session.ProgressBarMethod = new Action<object, double>((obj, v) =>
             {
-                CurrentLoop = i;
-                Scan1DSession<object> Session = new Scan1DSession<object>();
-                Session.FirstScanEvent = FirstScanEvent;
-                Session.ScanEvent = ScanEvent;
-                Session.ScanSource = null;
-                Session.ProgressBarMethod = new Action<object, double>((obj, v) =>
-                {
-                    SetProgress(v);
-                });
-                Session.SetStateMethod = new Action<object, double>((obj, v) =>
-                {
-                    SetExpState("当前扫描轮数:" + i.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
-                });
+                SetProgress(v);
+            });
+            Session.SetStateMethod = new Action<object, int, double>((obj, loop, v) =>
+            {
+                SetExpState("当前扫描轮数:" + loop.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
+            });
+            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("Rabimin"), GetInputParamValueByName("Rabimax"), GetInputParamValueByName("Rabipoints"));
 
-                D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("Rabimin"), GetInputParamValueByName("Rabimax"), GetInputParamValueByName("Rabipoints"));
+            Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+            Session.BeginScan(GetInputParamValueByName("LoopCount"), GetInputParamValueByName("ScanType"), range, 0, 100);
+        }
 
-                Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-                Session.BeginScan(range, progressstep * i, progressstep * (i + 1));
-            }
+        private void PlotEvent(List<MultiLoopScanData> list)
+        {
+            (Get1DChartData("微波驱动时间(ns)", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi对比度数据");
+            (Get1DChartData("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+            (Get1DChartData("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+            
+            (Get1DChartData("微波驱动时间(ns)", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi荧光数据");
+            (Get1DChartData("通道X 平均光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X 平均光子数", "Rabi荧光数据");
+            (Get1DChartData("通道X 信号光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X 信号光子数", "Rabi荧光数据");
+            (Get1DChartData("通道Y 平均光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道Y 平均光子数", "Rabi荧光数据");
+            (Get1DChartData("通道Y 信号光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道Y 信号光子数", "Rabi荧光数据");
+
+            (Get1DChartData("微波驱动时间(ns)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi对比度数据");
+            (Get1DChartData("通道X 平均光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道X 平均光子数", "Rabi荧光数据");
+            (Get1DChartData("通道X 信号光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道X 信号光子数", "Rabi荧光数据");
+            (Get1DChartData("通道Y 平均光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道Y 平均光子数", "Rabi荧光数据");
+            (Get1DChartData("通道Y 信号光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道Y 信号光子数", "Rabi荧光数据");
+            (Get1DChartData("通道X Rabi信号对比度[(sig-ref)/ref]", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+            (Get1DChartData("通道Y Rabi信号对比度[(sig-ref)/ref]", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+
+
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
         }
 
         public override void PreExpEventWithoutAFM()
@@ -194,9 +184,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 new NumricChartData1D("通道X 信号光子数","Rabi荧光数据",ChartDataType.Y),
                 new NumricChartData1D("通道Y 平均光子数","Rabi荧光数据",ChartDataType.Y),
                 new NumricChartData1D("通道Y 信号光子数","Rabi荧光数据",ChartDataType.Y),
+
+                new NumricChartData1D("微波驱动时间(ns)","方差",ChartDataType.X),
+                new NumricChartData1D("通道X 平均光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("通道X 信号光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("通道Y 平均光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("通道Y 信号光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("通道X Rabi信号对比度[(sig-ref)/ref]","方差",ChartDataType.Y),
+                new NumricChartData1D("通道Y Rabi信号对比度[(sig-ref)/ref]","方差",ChartDataType.Y),
             };
             UpdatePlotChart();
-
             Show1DChartData("Rabi对比度数据", "微波驱动时间(ns)", "通道X Rabi信号对比度[(sig-ref)/ref]", "通道Y Rabi信号对比度[(sig-ref)/ref]");//实验前展示的数据
         }
 

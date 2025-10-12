@@ -8,7 +8,7 @@ using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 
 namespace ODMR_Lab.实验部分.扫描基方法
 {
-    public class CustomScan1DLineSession<T1, T2> : ScanHelper
+    public class CustomScan1DLineSession<T1, T2> : ScanSessionBase
     {
         /// <summary>
         /// 目标源1

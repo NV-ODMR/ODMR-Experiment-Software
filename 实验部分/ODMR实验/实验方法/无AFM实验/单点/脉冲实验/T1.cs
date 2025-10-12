@@ -17,6 +17,8 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;
@@ -37,6 +39,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("T1最大值(ns)",100,"T1max"),
             new Param<int>("T1点数(ns)",20,"T1points"),
             new Param<int>("测量次数",1000,"LoopCount"),
+            new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
@@ -66,11 +69,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             return new List<KeyValuePair<string, Action>>();
         }
 
-        public List<object> FirstScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
-        {
-            return ScanEvent(device, range, locvalue, inputParams);
-        }
-
         public override bool PreConfirmProcedure()
         {
             if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
@@ -81,7 +79,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         }
 
         private int CurrentLoop = 0;
-        public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, List<object> inputParams)
+        public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> inputParams)
         {
             //设置T1弛豫时间长度
             GlobalPulseParams.SetGlobalPulseLength("T1Step", (int)locvalue);
@@ -91,17 +89,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double signalcounts1 = photonpack.GetPhotonsAtIndex(0).Sum();
             double signalcounts0 = photonpack.GetPhotonsAtIndex(1).Sum();
             double refcounts = photonpack.GetPhotonsAtIndex(2).Sum();
-
-            int ind = range.GetNearestFormalIndex(locvalue);
-
-            var contrfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T1对比度数据");
-            var signal0 = Get1DChartDataSource("0态对比度[(ref-sig)/ref]", "T1对比度数据");
-            var signal1 = Get1DChartDataSource("1态对比度[(ref-sig)/ref]", "T1对比度数据");
-
-            var florfreq = Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据");
-            var count = Get1DChartDataSource("参考光子数", "T1荧光数据");
-            var sigcount0 = Get1DChartDataSource("0态信号光子数", "T1荧光数据");
-            var sigcount1 = Get1DChartDataSource("1态信号光子数", "T1荧光数据");
 
             double signalcontrast0 = 0;
             double signalcontrast1 = 0;
@@ -120,53 +107,60 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
             }
 
-            if (ind >= contrfreq.Count)
-            {
-                contrfreq.Add(locvalue);
-                florfreq.Add(locvalue);
-                signal0.Add(signalcontrast0);
-                signal1.Add(signalcontrast1);
-                count.Add(refcounts);
-                sigcount0.Add(signalcounts0);
-                sigcount1.Add(signalcounts1);
-            }
-            else
-            {
-                signal0[ind] = (signal0[ind] * CurrentLoop + signalcontrast0) / (CurrentLoop + 1);
-                signal1[ind] = (signal1[ind] * CurrentLoop + signalcontrast1) / (CurrentLoop + 1);
-                count[ind] = (count[ind] * CurrentLoop + refcounts) / (CurrentLoop + 1);
-                sigcount0[ind] = (sigcount0[ind] * CurrentLoop + signalcounts0) / (CurrentLoop + 1);
-                sigcount1[ind] = (sigcount1[ind] * CurrentLoop + signalcounts1) / (CurrentLoop + 1);
-            }
-            UpdatePlotChartFlow(true);
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("驰豫时间长度(ns)", "T1对比度数据", locvalue, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("0态对比度[(ref-sig)/ref]", "T1对比度数据", signalcontrast0, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("1态对比度[(ref-sig)/ref]", "T1对比度数据", signalcontrast1, new StandardDataProcess()));
+            
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("驰豫时间长度(ns)", "T1荧光数据", locvalue, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("参考光子数", "T1荧光数据", refcounts, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("0态信号光子数", "T1荧光数据", signalcounts0, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("1态信号光子数", "T1荧光数据", signalcounts1, new StandardDataProcess()));
+
             return new List<object>();
         }
 
         public override void ODMRExpWithoutAFM()
         {
-            int Loop = GetInputParamValueByName("LoopCount");
-            double progressstep = 100 / Loop;
-            for (int i = 0; i < Loop; i++)
+            MultiScan1DSession<object> Session = new MultiScan1DSession<object>();
+            Session.FirstScanEvent = ScanEvent;
+            Session.ScanEvent = ScanEvent;
+            Session.ScanSource = null;
+            Session.PlotEvent = PlotEvent;
+            Session.ProgressBarMethod = new Action<object, double>((obj, v) =>
             {
-                CurrentLoop = i;
-                Scan1DSession<object> Session = new Scan1DSession<object>();
-                Session.FirstScanEvent = FirstScanEvent;
-                Session.ScanEvent = ScanEvent;
-                Session.ScanSource = null;
-                Session.ProgressBarMethod = new Action<object, double>((obj, v) =>
-                {
-                    SetProgress(v);
-                });
-                Session.SetStateMethod = new Action<object, double>((obj, v) =>
-                {
-                    SetExpState("当前扫描轮数:" + i.ToString() + ",弛豫时间长度: " + Math.Round(v, 5).ToString());
-                });
+                SetProgress(v);
+            });
+            Session.SetStateMethod = new Action<object, int, double>((obj, loop, v) =>
+            {
+                SetExpState("当前扫描轮数:" + loop.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
+            });
+            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("T1min"), GetInputParamValueByName("T1max"), GetInputParamValueByName("T1points"));
 
-                D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("T1min"), GetInputParamValueByName("T1max"), GetInputParamValueByName("T1points"));
+            Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+            Session.BeginScan(GetInputParamValueByName("LoopCount"), GetInputParamValueByName("ScanType"), range, 0, 100);
+        }
 
-                Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-                Session.BeginScan(range, progressstep * i, progressstep * (i + 1));
-            }
+        private void PlotEvent(List<MultiLoopScanData> list)
+        {
+            (Get1DChartData("驰豫时间长度(ns)", "T1对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "驰豫时间长度(ns)", "T1对比度数据");
+            (Get1DChartData("0态对比度[(ref-sig)/ref]", "T1对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "0态对比度[(ref-sig)/ref]", "T1对比度数据");
+            (Get1DChartData("1态对比度[(ref-sig)/ref]", "T1对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "1态对比度[(ref-sig)/ref]", "T1对比度数据");
+
+            (Get1DChartData("驰豫时间长度(ns)", "T1荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "驰豫时间长度(ns)", "T1荧光数据");
+            (Get1DChartData("参考光子数", "T1荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "参考光子数", "T1荧光数据");
+            (Get1DChartData("0态信号光子数", "T1荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "0态信号光子数", "T1荧光数据");
+            (Get1DChartData("1态信号光子数", "T1荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "1态信号光子数", "T1荧光数据");
+
+            (Get1DChartData("驰豫时间长度(ns)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "驰豫时间长度(ns)", "T1对比度数据");
+            (Get1DChartData("0态对比度[(ref-sig)/ref]", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "0态对比度[(ref-sig)/ref]", "T1对比度数据");
+            (Get1DChartData("1态对比度[(ref-sig)/ref]", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "1态对比度[(ref-sig)/ref]", "T1对比度数据");
+
+            (Get1DChartData("参考光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "参考光子数", "T1荧光数据");
+            (Get1DChartData("0态信号光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "0态信号光子数", "T1荧光数据");
+            (Get1DChartData("1态信号光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "1态信号光子数", "T1荧光数据");
+
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
         }
 
         public override void PreExpEventWithoutAFM()
@@ -185,6 +179,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 new NumricChartData1D("参考光子数","T1荧光数据",ChartDataType.Y),
                 new NumricChartData1D("0态信号光子数","T1荧光数据",ChartDataType.Y),
                 new NumricChartData1D("1态信号光子数","T1荧光数据",ChartDataType.Y),
+
+                new NumricChartData1D("驰豫时间长度(ns)","方差",ChartDataType.X),
+                new NumricChartData1D("0态对比度[(ref-sig)/ref]","方差",ChartDataType.Y),
+                new NumricChartData1D("1态对比度[(ref-sig)/ref]","方差",ChartDataType.Y),
+
+                new NumricChartData1D("参考光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("0态信号光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("1态信号光子数","方差",ChartDataType.Y),
             };
             UpdatePlotChart();
 
@@ -240,6 +242,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "T1荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "T1荧光数据"), false));
             PlotData.Add(new ParentPlotDataPack("参考光子数", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("参考光子数", "T1荧光数据"), true));
             PlotData.Add(new ParentPlotDataPack("信号光子数", "T1荧光数据", ChartDataType.Y, Get1DChartDataSource("信号光子数", "T1荧光数据"), true));
+
+            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "方差", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "方差"), false));
+            PlotData.Add(new ParentPlotDataPack("0态对比度", "方差", ChartDataType.Y, Get1DChartDataSource("0态对比度[(ref-sig)/ref]", "方差"), true));
+            PlotData.Add(new ParentPlotDataPack("1态对比度", "方差", ChartDataType.Y, Get1DChartDataSource("1态对比度[(ref-sig)/ref]", "方差"), true));
             return PlotData;
         }
     }

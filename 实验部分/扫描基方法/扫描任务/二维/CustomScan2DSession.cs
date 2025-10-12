@@ -11,7 +11,7 @@ namespace ODMR_Lab.实验部分.扫描基方法
     /// <summary>
     /// 自定义点列表二维扫描方法
     /// </summary>
-    internal class CustomScan2DSession<T1, T2> : ScanHelper
+    internal class CustomScan2DSession<T1, T2> : ScanSessionBase
     {
         /// <summary>
         /// 目标源1

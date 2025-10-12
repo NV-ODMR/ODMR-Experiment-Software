@@ -8,7 +8,7 @@ using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 
 namespace ODMR_Lab.实验部分.扫描基方法
 {
-    internal class Scan2DSession<T1, T2> : ScanHelper
+    internal class Scan2DSession<T1, T2> : ScanSessionBase
     {
         /// <summary>
         /// 目标源1

@@ -12,7 +12,7 @@ using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 
 namespace ODMR_Lab.实验部分.扫描基方法
 {
-    internal class Scan1DSession<T> : ScanHelper
+    internal class Scan1DSession<T> : ScanSessionBase
     {
         /// <summary>
         /// 目标位移台

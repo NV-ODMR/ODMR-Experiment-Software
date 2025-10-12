@@ -66,7 +66,7 @@
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -280,6 +280,9 @@
     <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\LockIn1DScan.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\LockIn2DScan.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\VibrationExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\控件\TabViewer.xaml.cs">
+      <DependentUpon>TabViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="实验部分\ODMR实验\窗口\ExperimentEmptyWindow.xaml.cs">
       <DependentUpon>ExperimentEmptyWindow.xaml</DependentUpon>
     </Compile>
@@ -333,11 +336,16 @@
     <Compile Include="实验部分\序列编辑器\SequenceTestWindow.xaml.cs">
       <DependentUpon>SequenceTestWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\扫描基方法\CustomScan2DSession.cs" />
-    <Compile Include="实验部分\扫描基方法\CustomScan1DLineSession.cs" />
-    <Compile Include="实验部分\扫描基方法\Scan1DSession.cs" />
-    <Compile Include="实验部分\扫描基方法\Scan2DSession.cs" />
-    <Compile Include="实验部分\扫描基方法\ScanHelper.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\二维\CustomScan2DSession.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\一维\CustomScan1DLineSession.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\一维\Scan1DSession.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\二维\Scan2DSession.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\ScanSessionBase.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\多轮一维扫描\MultiLoopScanData.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\多轮一维扫描\MultiScanType.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\多轮一维扫描\MultiScan1DSession.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\多轮一维扫描\数据处理方法\StandardDataProcess.cs" />
+    <Compile Include="实验部分\扫描基方法\扫描任务\多轮一维扫描\数据处理方法\MultiLoopDataProcessBase.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\ScanRangeBase.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1NumricLinearScanRange.cs" />
     <Compile Include="实验部分\扫描基方法\扫描范围\一维\D1NumricScanRangeBase.cs" />
@@ -514,6 +522,10 @@
     <Page Include="实验部分\ODMR实验\实验方法\其他\磁场调节\窗口\VerticalFieldWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="实验部分\ODMR实验\控件\TabViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\ODMR实验\窗口\ExperimentEmptyWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -789,6 +801,8 @@
     <Resource Include="图片资源\laser.png" />
     <Resource Include="图片资源\editimage.png" />
     <Resource Include="图片资源\algorithm.png" />
+    <Resource Include="图片资源\list.png" />
+    <Resource Include="图片资源\search.png" />
     <Content Include="图片资源\Setup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

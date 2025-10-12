@@ -10,6 +10,8 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实�
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
@@ -45,6 +47,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             new Param<double>("电压/位移系数(V/μm)",1.14,"Voltage_Displacement_Ratio"),
             new Param<int>("序列循环次数",10000,"SeqLoopCount"),
             new Param<int>("测量轮数",5,"LoopCount"),
+            new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"),
             new Param<int>("超时时间(ms)",1000,"TimeOut"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>();
@@ -60,25 +63,37 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         int CurrentLoop = 0;
         public override void ODMRExpWithoutAFM()
         {
-            for (int i = 0; i < GetInputParamValueByName("LoopCount"); i++)
+            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("StartDistance"), GetInputParamValueByName("EndDistance"), GetInputParamValueByName("PointCount"));
+            MultiScan1DSession<object> session = new MultiScan1DSession<object>();
+            session.SetStateMethod = new Action<object, int, double>((obj, loop, val) =>
             {
-                CurrentLoop = i;
-                D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("StartDistance"), GetInputParamValueByName("EndDistance"), GetInputParamValueByName("PointCount"));
-                Scan1DSession<object> session = new Scan1DSession<object>();
-                session.SetStateMethod = new Action<object, double>((obj, val) =>
-                {
-                    SetExpState("当前样品-探针距离(V):" + val.ToString());
-                });
-                session.ScanSource = new object();
-                session.ProgressBarMethod = new Action<object, double>((obj, val) =>
-                {
-                    SetProgress(val);
-                });
-                session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
-                session.FirstScanEvent = ScanEvent;
-                session.ScanEvent = ScanEvent;
-                session.BeginScan(range, 0, 100);
-            }
+                SetExpState("当前轮数:" + loop.ToString() + "样品-探针距离(V):" + val.ToString());
+            });
+            session.ScanSource = new object();
+            session.ProgressBarMethod = new Action<object, double>((obj, val) =>
+            {
+                SetProgress(val);
+            });
+            session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+            session.FirstScanEvent = ScanEvent;
+            session.ScanEvent = ScanEvent;
+            session.PlotEvent = PlotEvent;
+            session.BeginScan(GetInputParamValueByName("LoopCount"), GetInputParamValueByName("ScanType"), range, 0, 100);
+        }
+
+        private void PlotEvent(List<MultiLoopScanData> list)
+        {
+
+            (Get1DChartData("距离(nm)", "样品-探针距离测试") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "距离(nm)", "样品-探针距离测试");
+            (Get1DChartData("距离(V)", "样品-探针距离测试") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "距离(V)", "样品-探针距离测试");
+            (Get1DChartData("荧光光子数", "样品-探针距离测试") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "荧光光子数", "样品-探针距离测试");
+
+            (Get1DChartData("距离(nm)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "距离(nm)", "样品-探针距离测试");
+            (Get1DChartData("距离(V)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "距离(V)", "样品-探针距离测试");
+            (Get1DChartData("荧光光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "荧光光子数", "样品-探针距离测试");
+
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
         }
 
         public override void PreExpEventWithoutAFM()
@@ -88,7 +103,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             {
                new NumricChartData1D("距离(nm)","样品-探针距离测试",ChartDataType.X),
                new NumricChartData1D("距离(V)","样品-探针距离测试",ChartDataType.X),
-               new NumricChartData1D("荧光光子数","样品-探针距离测试",ChartDataType.Y)
+               new NumricChartData1D("荧光光子数","样品-探针距离测试",ChartDataType.Y),
+
+               new NumricChartData1D("距离(nm)","方差",ChartDataType.X),
+               new NumricChartData1D("距离(V)","方差",ChartDataType.X),
+               new NumricChartData1D("荧光光子数","方差",ChartDataType.Y)
             };
         }
 
@@ -132,7 +151,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         }
 
 
-        private List<object> ScanEvent(object arg1, D1NumricScanRangeBase range, double arg3, List<object> list)
+        private List<object> ScanEvent(object arg1, D1NumricScanRangeBase range, double arg3, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> list)
         {
             //下针到指定距离
             AFMFloatDrop floadrop = new AFMFloatDrop();
@@ -148,26 +167,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             var count = Get1DChartDataSource("荧光光子数", "样品-探针距离测试");
             double heightvolt = (GetDeviceByName("LockIn") as LockinInfo).Device.PIDValue;
 
-            int ind = range.GetNearestFormalIndex(arg3);
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("距离(V)", "样品-探针距离测试", heightvolt, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("距离(nm)", "样品-探针距离测试", arg3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("荧光光子数", "样品-探针距离测试", photoncount, new StandardDataProcess()));
 
-            if (ind >= disnm.Count)
-            {
-                disvolt.Add(heightvolt);
-                disnm.Add(arg3);
-                count.Add(photoncount);
-            }
-            else
-            {
-                if (!double.IsNaN(heightvolt))
-                    disvolt[ind] = (disvolt[ind] * CurrentLoop + heightvolt) / (CurrentLoop + 1);
-                if (!double.IsNaN(count[ind]))
-                    count[ind] = (count[ind] * CurrentLoop + (double)photoncount) / (CurrentLoop + 1);
-                else
-                    count[ind] = photoncount;
-            }
-
-            UpdatePlotChart();
-            UpdatePlotChartFlow(true);
             return new List<object>();
         }
 

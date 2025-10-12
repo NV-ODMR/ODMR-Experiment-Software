@@ -142,11 +142,16 @@ namespace ODMR_Lab.实验部分.ODMR实验
             }
 
             ExpObjects.Sort((e1, e2) => e1.ODMRExperimentName.CompareTo(e2.ODMRExperimentName));
+            foreach (var item in ExpObjects)
+            {
+                ExpSearchBar.SearchList.Add(new KeyValuePair<string, object>(item.ODMRExperimentName + " " + item.ODMRExperimentGroupName, item));
+            }
         }
 
         public DisplayPage(bool isLoadExps)
         {
             InitializeComponent();
+            OpenedExpList.ParentPage = this;
             if (isLoadExps)
                 LoadExps();
         }
@@ -324,7 +329,12 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     }
                     IsAutoSave.IsSelected = CurrentExpObject.IsAutoSave;
                 }
+
+                //设置选项卡
+                OpenedExpList.AddExp(CurrentExpObject);
+
                 return;
+
             }
             catch (Exception ex)
             {
@@ -555,6 +565,15 @@ namespace ODMR_Lab.实验部分.ODMR实验
             CurrentExpObject.NewDisplayWindow.Show();
             ExpPanel.Visibility = Visibility.Hidden;
             ShowInwindowPanel.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// 搜索栏选中的操作
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ExpSearchBar_ResultSelected(KeyValuePair<string, object> obj)
+        {
+            SelectExp(ExpObjects.IndexOf(obj.Value as ODMRExpObject));
         }
     }
 }
