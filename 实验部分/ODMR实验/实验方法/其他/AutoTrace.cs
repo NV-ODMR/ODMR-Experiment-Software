@@ -40,6 +40,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
         public override string ODMRExperimentGroupName { get; set; } = "定位操作";
 
+        public override string Description { get; set; } = "通过移动镜头进行空间扫描来确定NV的位置";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             //0.Pi脉冲长度(整数),1.T1间隔长度(整数),2.采样循环次数(整数)，3.超时时间（整数）4.微波频率（小数）5.微波功率（小数）

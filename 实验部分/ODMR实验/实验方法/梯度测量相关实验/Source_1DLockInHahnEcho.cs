@@ -31,6 +31,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         public override bool Is1DScanExp { get; set; } = true;
         public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "变样品电压一维扫描";
+
+        public override string Description { get; set; } = "";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("源表电压起始值（V）",0,"SignalStart"),
@@ -38,10 +40,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             new Param<int>("变压扫描点数",10,"SignalCount"),
             new Param<double>("源表电压变压步长（V）",1e-4,"SignalRampGap"),
         };
-        public override List<ParamB> OutputParams { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override List<ChartData1D> D1ChartDatas { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override List<FittedData1D> D1FitDatas { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override List<ChartData2D> D2ChartDatas { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override List<ParamB> OutputParams { get; set; } = new List<ParamB>();
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
+        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
 
         public override void AfterExpEventWithoutAFM()
         {

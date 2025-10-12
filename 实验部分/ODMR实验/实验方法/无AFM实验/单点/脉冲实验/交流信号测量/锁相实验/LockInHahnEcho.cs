@@ -39,18 +39,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
+        public override string Description { get; set; } = "锁相信号触发板卡的序列进行输出,在此基础上进行的HahnEcho自旋回波实验.用到的序列文件名:LockInHahnEcho";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"),
-            new Param<int>("测量次数",1000,"LoopCount"),
-            new Param<int>("序列循环次数",1000,"SeqLoopCount"),
+            new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"){ Helper="输出锁相信号通道的频率,仅用于确定信号的积累时间,不参与仪器参数的设置"},
+            new Param<int>("测量次数",1000,"LoopCount"){Helper="重复测量次数" },
+            new Param<int>("序列循环次数",1000,"SeqLoopCount"){Helper="扫描每个点时板卡序列的内部循环次数" },
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
-            new Param<int>("单点超时时间",10000,"TimeOut"),
-            new Param<bool>("测量单点对比度",false,"SingleContrast"),
-            new Param<int>("对比度Rabi测量循环次数",10000,"ContrastRabiLoopCount"),
-            new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"),
-            new Param<bool>("每点重新确定微波频率",false,"ConfirmCW"),
+            new Param<int>("单点超时时间",10000,"TimeOut"){ Helper="每个时间点扫描的时间上限,超时则跳过此点" },
+            new Param<bool>("测量单点对比度",false,"SingleContrast"){Helper="如果勾选此选项,则在HahnEcho实验完成后会进行一个施加Pi脉冲的Rabi实验,利用得到的对比度对HahnEcho信号归一化" },
+            new Param<int>("对比度Rabi测量循环次数",10000,"ContrastRabiLoopCount"){ Helper= "进行Rabi实验时板卡序列的内部循环次数"},
+            new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"){ Helper = "当选择此选项时,在进行此实验之前会使控制锁相信号的继电器打开,实验结束后则会关闭" },
+            new Param<bool>("每点重新确定微波频率",false,"ConfirmCW"){ Helper = "当选择此选项时,在进行HahnEcho实验之前会先扫描CW谱来确定共振频率,具体的扫描参数由子实验确定" },
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -125,7 +127,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 SetExpState("当前轮数:" + CurrentLoop.ToString() + "对比度:" + Math.Round(contrast, 5).ToString());
                 #region 点1
                 GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay);
-                PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+                PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
                     GetInputParamValueByName("TimeOut"));
                 int sig = pack.GetPhotonsAtIndex(0).Sum();
                 int reference = pack.GetPhotonsAtIndex(1).Sum();
@@ -169,7 +171,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 #endregion
                 #region 点2
                 GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay + (int)(1.0 / GetInputParamValueByName("SignalFreq") * 500));
-                pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+                pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
                     GetInputParamValueByName("TimeOut"));
                 sig = pack.GetPhotonsAtIndex(0).Sum();
                 reference = pack.GetPhotonsAtIndex(1).Sum();

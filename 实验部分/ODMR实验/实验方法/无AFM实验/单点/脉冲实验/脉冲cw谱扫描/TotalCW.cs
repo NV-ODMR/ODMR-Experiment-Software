@@ -42,6 +42,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
 
         public override string ODMRExperimentName { get; set; } = "脉冲CW全谱";
 
+        public override string Description { get; set; } = "";
         protected override int GetLoopCount()
         {
             return GetInputParamValueByName("LoopCount");

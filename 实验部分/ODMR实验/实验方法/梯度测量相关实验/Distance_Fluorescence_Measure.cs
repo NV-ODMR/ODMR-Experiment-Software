@@ -31,6 +31,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "距离-荧光曲线测量";
+
+        public override string Description { get; set; } = "改变下针距离,在不同距离上测量NV的荧光强度,从而得到距离-荧光曲线,可以用于样品振幅的标定";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<bool>("自动Trace",false,"UseAutoTrace"),

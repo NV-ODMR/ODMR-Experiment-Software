@@ -14,15 +14,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.CW�
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "CW四频点";
+
+        public override string Description { get; set; } = "连续波谱实验:取4个频率点分别测量对应的连续波对比度.";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("频率点1",2850,"Frequency1"),
-            new Param<double>("频率点2",2890,"Frequency2"),
-            new Param<double>("频率点3",2850,"Frequency3"),
-            new Param<double>("频率点4",2890,"Frequency4"),
-            new Param<double>("微波功率(dBm)",-20,"RFPower"),
-            new Param<int>("循环次数",1000,"LoopCount"),
-            new Param<int>("单点扫描时间上限(ms)",0,"TimeOut"),
+            new Param<double>("频率点1",2850,"Frequency1"){ Helper="" },
+            new Param<double>("频率点2",2890,"Frequency2"){ Helper="" },
+            new Param<double>("频率点3",2850,"Frequency3"){ Helper="" },
+            new Param<double>("频率点4",2890,"Frequency4"){ Helper="" },
+            new Param<double>("微波功率(dBm)",-20,"RFPower"){ Helper="" },
+            new Param<int>("循环次数",1000,"LoopCount"){ Helper="扫描每个频点时板卡序列的内部循环次数" },
+            new Param<int>("单点扫描时间上限(ms)",0,"TimeOut"){ Helper="每个频点扫描的时间上限,超时则跳过此点" },
         };
 
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>();

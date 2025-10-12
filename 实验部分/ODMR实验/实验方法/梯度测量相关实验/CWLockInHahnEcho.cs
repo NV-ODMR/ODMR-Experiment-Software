@@ -37,9 +37,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
 
-        public override string ODMRExperimentName { get; set; } = "锁相HahnEcho(预先测CW谱)";
+        public override string ODMRExperimentName { get; set; } = "锁相HahnEcho(预先测双峰CW谱)";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
+
+        public override string Description { get; set; } = "";
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
@@ -126,7 +128,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                 SetExpState("当前轮数:" + CurrentLoop.ToString() + "对比度:" + Math.Round(contrast, 5).ToString());
                 #region 点1
                 GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay);
-                PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+                PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
                     GetInputParamValueByName("TimeOut"));
                 int sig = pack.GetPhotonsAtIndex(0).Sum();
                 int reference = pack.GetPhotonsAtIndex(1).Sum();
@@ -170,7 +172,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                 #endregion
                 #region 点2
                 GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay + (int)(1.0 / GetInputParamValueByName("SignalFreq") * 500));
-                pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+                pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
                     GetInputParamValueByName("TimeOut"));
                 sig = pack.GetPhotonsAtIndex(0).Sum();
                 reference = pack.GetPhotonsAtIndex(1).Sum();

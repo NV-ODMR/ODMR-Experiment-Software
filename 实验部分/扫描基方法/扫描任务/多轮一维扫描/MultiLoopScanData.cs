@@ -29,7 +29,7 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描
         public MultiLoopDataProcessBase DataProcessMethod = null;
 
         /// <summary>
-        /// 数据集，内层列表表示不同循环的数据，外层列表表示同一循环内的多个数据点
+        /// 数据集，外列表表示不同循环的数据，内层列表表示同一循环内的多个数据点
         /// </summary>
         public List<List<double>> DataAssemble { get; set; } = new List<List<double>>();
 
@@ -44,22 +44,19 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描
             MultiLoopScanData selecteddataassemble = null;
             if (result.Count() == 0)
             {
-                var data = new MultiLoopScanData() { DataName = DataName, DataGroupName = DataGroupName };
+                var data = new MultiLoopScanData() { DataName = DataName, DataGroupName = DataGroupName, DataProcessMethod = dataprocessmethod };
                 Datas.Add(data);
                 selecteddataassemble = data;
+                for (int i = 0; i < datatotalCount; i++)
+                {
+                    data.DataAssemble.Add(new List<double>());
+                }
             }
             else
             {
                 selecteddataassemble = result.ElementAt(0);
             }
-            if (selecteddataassemble.DataAssemble.Count - 1 < loopindex)
-            {
-                for (int i = selecteddataassemble.DataAssemble.Count - 1; i < loopindex; i++)
-                {
-                    selecteddataassemble.DataAssemble.Add(Enumerable.Repeat(double.NaN, datatotalCount).ToList());
-                }
-            }
-            selecteddataassemble.DataAssemble[loopindex][dataindex] = datavalue;
+            selecteddataassemble.DataAssemble[dataindex].Add(datavalue);
         }
 
         public static List<double> GetSigmaData(List<MultiLoopScanData> Datas, string DataName, string DataGroupName)

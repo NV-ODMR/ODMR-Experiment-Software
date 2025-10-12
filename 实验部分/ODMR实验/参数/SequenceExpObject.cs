@@ -41,6 +41,11 @@ namespace ODMR_Lab.ODMR实验
 
         public virtual bool IsDisplayAsExp { get; set; } = true;
 
+        /// <summary>
+        /// 实验描述
+        /// </summary>
+        public abstract string Description { get; set; }
+
         #region 二维和一维扫描范围
         public abstract bool Is1DScanExp { get; set; }
         public D1PointsScanRangeBase D1ScanRange { get; set; } = null;

@@ -47,19 +47,21 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
+        public override string Description { get; set; } = "锁相信号触发板卡的序列进行输出,在此基础上进行的HahnEcho自旋回波实验,通过改变触发的延迟时间来得到对应的信号变化曲线.用到的序列文件名:LockInHahnEcho";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("起点时间(ns)",20,"StartTime"),
             new Param<int>("Delay点数",20,"DelayCount"),
             new Param<double>("终点时间(ns)",1000,"EndTime"),
-            new Param<int>("测量轮数",1,"LoopCount"),
-            new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"),
-            new Param<int>("序列循环次数",1,"SeqLoopCount"),
-            new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"),
+            new Param<int>("测量轮数",1,"LoopCount"){ Helper="每个时间点的重复测量次数" },
+            new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"){ Helper="重复测量每个时间点的方式" },
+            new Param<int>("序列循环次数",1,"SeqLoopCount"){ Helper="扫描每个频点时板卡序列的内部循环次数" },
+            new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"){ Helper="输出锁相信号通道的频率,仅用于确定信号的积累时间,不参与仪器参数的设置" },
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
-            new Param<int>("单点超时时间",10000,"TimeOut"),
-            new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"),
+            new Param<int>("单点超时时间",10000,"TimeOut"){ Helper="每个时间点扫描的时间上限,超时则跳过此点" },
+            new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp") { Helper = "当选择此选项时,在进行此实验之前会使控制锁相信号的继电器打开,实验结束后则会关闭" },
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -140,7 +142,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
             int echotime = (int)((signaltime - xLength) / 2);
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
-            PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+            PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
                 GetInputParamValueByName("TimeOut"));
             Sig = pack.GetPhotonsAtIndex(0).Sum();
             Ref = pack.GetPhotonsAtIndex(1).Sum();

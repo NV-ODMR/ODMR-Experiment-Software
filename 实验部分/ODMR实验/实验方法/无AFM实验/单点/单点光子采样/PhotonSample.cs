@@ -30,6 +30,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
+        public override string Description { get; set; } = "";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<int>("采样率(Hz)",20,"SampleRate"),

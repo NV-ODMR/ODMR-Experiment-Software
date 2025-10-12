@@ -35,6 +35,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         public override string ODMRExperimentName { get; set; } = "自适应CW谱";
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
+        public override string Description { get; set; } = "连续波谱实验:在扫描完每一个点之后进行拟合,如果拟合得到的谱峰达到指定的数量则结束实验.";
+
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
         public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
@@ -56,17 +58,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
         public override bool IsAFMSubExperiment { get; protected set; } = true;
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("频率起始点(MHz)",2830,"RFFreqLo"),
-            new Param<double>("频率中止点(MHz)",2890,"RFFreqHi"),
-            new Param<double>("扫描步长(MHz)",1,"RFStep"),
-            new Param<double>("微波功率(dBm)",-20,"RFPower"),
-            new Param<bool>("反向扫描",false,"Reverse"),
-            new Param<int>("扫描峰个数",1,"PeakCount"),
-            new Param<double>("对比度判别阈值",-0.05,"Threshold"),
-            new Param<int>("结束前扫描点数",5,"BeforeEndScanRange"),
-            new Param<int>("循环次数",1000,"LoopCount"),
-            new Param<int>("单点扫描时间上限(ms)",10000,"TimeOut"),
-            new Param<double>("预计峰宽",5,"PeakWidth"),
+            new Param<double>("频率起始点(MHz)",2830,"RFFreqLo"){ Helper="" },
+            new Param<double>("频率中止点(MHz)",2890,"RFFreqHi"){ Helper="" },
+            new Param<double>("扫描步长(MHz)",1,"RFStep"){ Helper="" },
+            new Param<double>("微波功率(dBm)",-20,"RFPower"){ Helper="" },
+            new Param<bool>("反向扫描",false,"Reverse"){ Helper="" },
+            new Param<int>("扫描峰个数",1,"PeakCount"){ Helper="当拟合发现谱峰数量达到此值时停止实验" },
+            new Param<double>("对比度判别阈值",-0.05,"Threshold"){ Helper="使用此值对拟合峰的峰高进行筛选,得到满足条件的谱峰个数" },
+            new Param<int>("结束前扫描点数",5,"BeforeEndScanRange"){ Helper="结束实验之前继续扫描的点数" },
+            new Param<int>("循环次数",1000,"LoopCount"){ Helper = "扫描每个频点时板卡序列的内部循环次数" },
+            new Param<int>("单点扫描时间上限(ms)",10000,"TimeOut"){ Helper = "每个频点扫描的时间上限,超时则跳过此点" },
+            new Param<double>("预计峰宽",5,"PeakWidth"){ Helper = "谱线拟合时峰宽参数的初始值"},
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {

@@ -23,17 +23,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱�
     {
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
+
+        public override string Description { get; set; } = "连续波谱实验:在指定频率范围内以指定步长逐点测量连续波信号.";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("频率起始点(MHz)",2830,"RFFreqLo"),
-            new Param<double>("频率中止点(MHz)",2890,"RFFreqHi"),
-            new Param<double>("扫描步长(MHz)",1,"RFStep"),
-            new Param<double>("微波功率(dBm)",-20,"RFPower"),
-            new Param<bool>("反向扫描",false,"Reverse"),
-            new Param<int>("循环次数",1000,"LoopCount"),
-            new Param<int>("单点扫描时间上限(ms)",0,"TimeOut"),
-            new Param<CWFitModes>("谱峰拟合类型",CWFitModes.单峰洛伦兹拟合,"FitType"),
-            new Param<double>("预计峰宽",2.5,"PeakWidth"),
+            new Param<double>("频率起始点(MHz)",2830,"RFFreqLo"){ Helper="" },
+            new Param<double>("频率中止点(MHz)",2890,"RFFreqHi"){ Helper="" },
+            new Param<double>("扫描步长(MHz)",1,"RFStep"){ Helper="" },
+            new Param<double>("微波功率(dBm)",-20,"RFPower"){ Helper="" },
+            new Param<bool>("反向扫描",false,"Reverse"){ Helper="" },
+            new Param<int>("循环次数",1000,"LoopCount"){ Helper="扫描每个频点时板卡序列的内部循环次数" },
+            new Param<int>("单点扫描时间上限(ms)",0,"TimeOut"){ Helper="每个频点扫描的时间上限,超时则跳过此点" },
+            new Param<CWFitModes>("谱峰拟合类型",CWFitModes.单峰洛伦兹拟合,"FitType"){ Helper="根据预计的谱峰数量选择对应的拟合曲线" },
+            new Param<double>("预计峰宽",2.5,"PeakWidth"){ Helper="谱线拟合时峰宽参数的初始值" },
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {

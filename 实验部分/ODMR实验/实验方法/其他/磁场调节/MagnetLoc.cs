@@ -38,6 +38,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         public override string ODMRExperimentName { get; set; } = "定位程序（确定NV朝向）";
 
         public override string ODMRExperimentGroupName { get; set; } = "磁场定位";
+
+        public override string Description { get; set; } = "";
+
         public override bool IsAFMSubExperiment { get; protected set; } = false;
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {

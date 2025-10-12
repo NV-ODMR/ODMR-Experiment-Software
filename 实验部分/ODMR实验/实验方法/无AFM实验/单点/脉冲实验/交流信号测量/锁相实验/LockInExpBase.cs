@@ -62,7 +62,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="signalFrequency">待测信号幅度(V)</param>
         /// <param name="signalFrequency">待测信号偏置(V)</param>
         /// <returns></returns>
-        protected PulsePhotonPack DoLockInPulseExp(string sequencename, double rffrequency, double rfpower, double signalFrequency, int sequenceLoopCount, int LaserCount, int timeout)
+        protected PulsePhotonPack DoLockInPulseExp(string sequencename, double rffrequency, double rfpower, int sequenceLoopCount, int LaserCount, int timeout)
         {
             //设置微波
             SignalGeneratorChannelInfo channel = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;

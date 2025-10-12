@@ -40,6 +40,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
         public override string ODMRExperimentGroupName { get; set; } = "自定义操作";
 
+        public override string Description { get; set; } = "下针并等待";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<bool>("尝试多次下针",true,"MultiAFMDrop"),

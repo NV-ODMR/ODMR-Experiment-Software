@@ -42,9 +42,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         /// </summary>
         private LockInExpBase ParentLockInExp { get; set; } = null;
 
-        public override string ODMRExperimentName { get; set; } = "锁相Delay测试(预先测CW谱)";
+        public override string ODMRExperimentName { get; set; } = "锁相Delay测试(预先测双峰CW谱)";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
+
+        public override string Description { get; set; } = "";
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
@@ -127,7 +129,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
             int echotime = (int)((signaltime - xLength) / 2);
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
-            PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SignalFreq"), GetInputParamValueByName("SeqLoopCount"), 4,
+            PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
                 GetInputParamValueByName("TimeOut"));
             Sig = pack.GetPhotonsAtIndex(0).Sum();
             Ref = pack.GetPhotonsAtIndex(1).Sum();

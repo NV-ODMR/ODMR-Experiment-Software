@@ -31,6 +31,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         public override bool Is2DScanExp { get; set; } = true;
 
         public override string ODMRExperimentName { get; set; } = "变驱动二维扫描";
+
+        public override string Description { get; set; } = "";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("锁相信号振幅起始值（V）",0,"SignalAmpStart"),

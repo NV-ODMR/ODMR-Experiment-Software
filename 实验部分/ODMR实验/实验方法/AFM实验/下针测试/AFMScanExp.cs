@@ -33,6 +33,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override string ODMRExperimentName { get; set; } = "AFM下针测试";
         public override string ODMRExperimentGroupName { get; set; } = "AFM下针测试";
+
+        public override string Description { get; set; } = "";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<bool>("尝试多次下针",true,"MultiAFMDrop"),

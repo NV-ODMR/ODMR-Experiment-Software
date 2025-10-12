@@ -16,16 +16,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.CW�
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "双峰CW谱";
+
+        public override string Description { get; set; } = "连续波谱实验:在两个中心频率(一般是谱峰位置附近)两侧以指定的宽度和步长扫描连续波信号,之后用双峰函数进行拟合";
+
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("谱峰位置1(MHz)",2850,"Frequency1"),
-            new Param<double>("谱峰位置2(MHz)",2890,"Frequency2"),
-            new Param<double>("扫描峰宽(MHz)",100,"ScanSpan"),
-            new Param<double>("扫描步长(MHz)",100,"ScanStep"),
-            new Param<double>("预计峰宽(MHz)",3.5,"PeakWidth"),
-            new Param<double>("微波功率(dBm)",-20,"RFPower"),
-            new Param<int>("循环次数",1000,"LoopCount"),
-            new Param<int>("单点扫描时间上限(ms)",0,"TimeOut"),
+            new Param<double>("谱峰位置1(MHz)",2850,"Frequency1"){ Helper="扫描的第1个中心频率" },
+            new Param<double>("谱峰位置2(MHz)",2890,"Frequency2"){ Helper="扫描的第2个中心频率" },
+            new Param<double>("扫描峰宽(MHz)",100,"ScanSpan"){ Helper="" },
+            new Param<double>("扫描步长(MHz)",100,"ScanStep"){ Helper="" },
+            new Param<double>("预计峰宽(MHz)",3.5,"PeakWidth"){ Helper="" },
+            new Param<double>("微波功率(dBm)",-20,"RFPower"){ Helper="" },
+            new Param<int>("循环次数",1000,"LoopCount"){ Helper="扫描每个频点时板卡序列的内部循环次数" },
+            new Param<int>("单点扫描时间上限(ms)",10000,"TimeOut"){ Helper="每个频点扫描的时间上限,超时则跳过此点" },
         };
 
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>();

@@ -39,6 +39,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
         public override string ODMRExperimentName { get; set; } = "变驱动电压测量样品振幅";
+
+        public override string Description { get; set; } = "";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<string>("距离-荧光曲线文件名","","FluorescenceFileName"),
