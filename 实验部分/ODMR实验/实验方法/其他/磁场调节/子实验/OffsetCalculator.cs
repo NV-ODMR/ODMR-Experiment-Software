@@ -36,6 +36,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
 
         public override string ODMRExperimentName { get; set; } = "偏心参数测量";
         public override string ODMRExperimentGroupName { get; set; } = "磁场定位";
+
+        public override string Description { get; set; } = "";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<double>("起始位置X",double.NaN,"StartLocX"),

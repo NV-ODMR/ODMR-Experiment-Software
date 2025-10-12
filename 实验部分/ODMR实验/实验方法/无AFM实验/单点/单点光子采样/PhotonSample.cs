@@ -30,7 +30,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
-        public override string Description { get; set; } = "";
+        public override string Description { get; set; } = "使用一个输出固定频率（频率较低）的通道触发计数器来对NV的光子数进行采样";
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {

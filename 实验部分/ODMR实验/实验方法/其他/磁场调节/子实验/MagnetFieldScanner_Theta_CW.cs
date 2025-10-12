@@ -39,6 +39,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
 
         public override string ODMRExperimentName { get; set; } = "磁场方向遍历扫描(CW,扫描变量Theta-CW)";
         public override string ODMRExperimentGroupName { get; set; } = "磁场定位";
+
+        public override string Description { get; set; } = "";
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
             new Param<string>("定位结果文件名","","LocFileName"),

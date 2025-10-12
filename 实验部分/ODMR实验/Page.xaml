@@ -59,6 +59,7 @@
                         <TextBlock Name="ExpGroupName" Margin="20,0,0,0"  Foreground="White" VerticalAlignment="Center"/>
                         <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" FontSize="11" Foreground="White" Content="实验名" Margin="20,0,0,0" Background="{x:Null}"/>
                         <TextBlock Name="ExpName" Margin="20,0,0,0"  Foreground="White" VerticalAlignment="Center"/>
+                        <control:DecoratedButton Click="ShowDescription" TextAreaRatio="1" Text="描述" FontSize="12" Margin="30,5,5,5" Width="50" IconMargin="7" FontWeight="Thin" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                         <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="实验自动存储根目录" Margin="20,0,0,0"/>
                         <Label Foreground="White" Name="SavePath" Width="200" HorizontalContentAlignment="Center" Margin="5" VerticalContentAlignment="Center" Content="" Background="#FF2E2E2E"/>
                         <control:DecoratedButton Click="SelectFolder" TextAreaRatio="0" Margin="5" Width="70" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/directory.png"/>
@@ -100,7 +101,7 @@
                         <control:DecoratedButton Name="ResumeBtn" TextAreaRatio="0" Margin="5" IconMargin="0" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF009DF7" PressedColor="#FF0084E0" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/pause.png" Grid.Column="1"/>
                     </Grid>
                     <ProgressBar Name="Progress" BorderThickness="0" Grid.Row="13" Margin="5" Background="#FF2E2E2E"/>
-                    <Grid Grid.Row="13" Grid.Column="0">
+                    <Grid Grid.Row="14" Grid.Column="0">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -126,7 +127,7 @@
                         <StackPanel Name="ScanRangePanel" Grid.Row="0" Visibility="Visible" Orientation="Horizontal">
                             <Label Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描范围类型：" Margin="20,0,0,0"/>
                             <TextBlock x:Name="ScanRangeName" Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1"/>
-                            <control:DecoratedButton Click="OpenRangeWindow" Width="100" TextAreaRatio="1" Text="设置扫描类型" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                            <control:DecoratedButton Name="SetScanBtn" Click="OpenRangeWindow" Width="100" TextAreaRatio="1" Text="设置扫描类型" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                             <control:DecoratedButton Click="ShowRangeInformation" Width="100" TextAreaRatio="1" Text="扫描范围信息" Margin="5" IconMargin="7" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                         </StackPanel>
                         <StackPanel Name="AutoSavePanel" Orientation="Horizontal" Grid.Row="1">

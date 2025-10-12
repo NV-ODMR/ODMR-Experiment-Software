@@ -167,7 +167,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(OutputPanel, RunningBehaviours.EnableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ButtonsPanel, RunningBehaviours.DisableWhenRunning));
             ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(AutoSavePanel, RunningBehaviours.DisableWhenRunningEnableWhenResume));
-            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(ScanRangePanel, RunningBehaviours.DisableWhenRunning));
+            ControlsStates.Add(new KeyValuePair<FrameworkElement, RunningBehaviours>(SetScanBtn, RunningBehaviours.DisableWhenRunning));
             return ControlsStates;
         }
 
@@ -179,6 +179,8 @@ namespace ODMR_Lab.实验部分.ODMR实验
             try
             {
                 if (index > ExpObjects.Count - 1 || index < 0) return;
+
+                CurrentExpObject?.DisConnectOuterControl();
 
                 //存储上一个实验的参数
                 if (CurrentExpObject != null && !CurrentExpObject.IsSubExperiment)
@@ -212,8 +214,6 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     }
                     CurrentExpObject.IsAutoSave = IsAutoSave.IsSelected;
                 }
-
-                CurrentExpObject?.DisConnectOuterControl();
 
                 CurrentExpObject = ExpObjects[index];
 
@@ -574,6 +574,16 @@ namespace ODMR_Lab.实验部分.ODMR实验
         private void ExpSearchBar_ResultSelected(KeyValuePair<string, object> obj)
         {
             SelectExp(ExpObjects.IndexOf(obj.Value as ODMRExpObject));
+        }
+
+        /// <summary>
+        /// 显示实验描述
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowDescription(object sender, RoutedEventArgs e)
+        {
+            MessageWindow.ShowTipWindow(CurrentExpObject.Description, Window.GetWindow(this));
         }
     }
 }
