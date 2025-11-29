@@ -52,5 +52,23 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
 
             return mat;
         }
+
+        public static Vector3D GetDirectionVector(double theta, double phi)
+        {
+            return new Vector3D(Math.Cos(phi) * Math.Sin(theta), Math.Sin(phi) * Math.Sin(theta), Math.Cos(theta));
+        }
+        /// <summary>
+        /// 获取向量的球坐标(度)
+        /// </summary>
+        /// <param name="theta"></param>
+        /// <param name="phi"></param>
+        public static void GetAngles(Vector3D vec, out double theta, out double phi)
+        {
+            vec.Normalize();
+            theta = Math.Acos(vec.Z) / Math.PI * 180;
+            phi = Math.Atan2(vec.Y, vec.X);
+            return;
+        }
+
     }
 }

@@ -119,6 +119,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void ODMRExpWithAFM()
         {
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             dropgap = 0;
             IsFirstDrop = true;
             devI = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
@@ -155,11 +156,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// <returns></returns>
         public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, D1PointsScanRangeBase scanPoints, Point currentloc, List<object> inputParams)
         {
+            //如果不是悬浮扫,则先撤针一段距离,位移台移动之后再下针
+            if (GetInputParamValueByName("IsFloatScan") == false)
+            {
+                AFMFloatDrop drop = new AFMFloatDrop();
+                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+            }
             SetExpState("正在移动到目标位置(μm) X: " + Math.Round(currentloc.X, 5).ToString() + " Y: " + Math.Round(currentloc.Y, 5));
             scannerx.Device.MoveToAndWait(currentloc.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
             JudgeThreadEndOrResumeAction();
             scannery.Device.MoveToAndWait(currentloc.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
             JudgeThreadEndOrResumeAction();
+
+            //如果不是悬浮扫,则先撤针一段距离,位移台移动之后再下针
+            if (GetInputParamValueByName("IsFloatScan") == false)
+            {
+                AFMFloatDrop drop = new AFMFloatDrop();
+                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), -1 / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+            }
 
             //如果是悬浮测量则执行对应程序
             if (GetInputParamValueByName("IsFloatScan") == true)
@@ -269,6 +283,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void AfterExpEventWithAFM()
         {
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
+            (GetDeviceByName("LockIn") as LockinInfo).Device.I = devI;
             //设置Lock In PID上限
             if (GetInputParamValueByName("IsFloatScan") == true)
             {

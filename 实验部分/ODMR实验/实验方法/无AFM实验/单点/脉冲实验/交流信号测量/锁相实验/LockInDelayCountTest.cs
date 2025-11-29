@@ -27,6 +27,7 @@ using System.Threading;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
+using ODMR_Lab.设备部分.相机_翻转镜;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -58,12 +59,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("序列循环次数",100000,"SeqLoopCount"){ Helper="扫描每个频点时板卡序列的内部循环次数" },
             new Param<int>("光子数采样时间(ns)",50,"CountSampleTime"),
             new Param<int>("单点超时时间",10000,"TimeOut"){ Helper="每个时间点扫描的时间上限,超时则跳过此点" },
+            new Param<bool>("实验时打开信号",false,"OpenSignal"){ Helper="" },
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
         };
         public override List<KeyValuePair<DeviceTypes, Param<string>>> LockInExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
+
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
@@ -95,6 +98,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void ODMRExpWithoutAFM()
         {
+            if (GetInputParamValueByName("OpenSignal"))
+            {
+                (GetSignalSwitch() as SwitchInfo).Device.IsOpen = true;
+            }
+
             GlobalPulseParams.SetGlobalPulseLength("DelayCountSampleTime", GetInputParamValueByName("CountSampleTime"));
 
             MultiScan1DSession<object> Session = new MultiScan1DSession<object>();
@@ -113,7 +121,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("StartTime"), GetInputParamValueByName("EndTime"), GetInputParamValueByName("DelayCount"));
 
             Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+            Session.LoopEndEvent = new Action<int>((ind) => { LoopEndMethod?.Invoke(); });
             Session.BeginScan(GetInputParamValueByName("LoopCount"), GetInputParamValueByName("ScanType"), range, 0, 100);
+
         }
 
         private void PlotEvent(List<MultiLoopScanData> list)
@@ -172,6 +182,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void AfterLockInExpEventWithoutAFM()
         {
+            if (GetInputParamValueByName("OpenSignal"))
+            {
+                (GetSignalSwitch() as SwitchInfo).Device.IsOpen = false;
+            }
+
             //用正弦函数拟合得到的曲线
             var count = Get1DChartDataSource("光子数", "Delay测试数据");
             var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");

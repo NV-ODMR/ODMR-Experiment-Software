@@ -149,7 +149,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             (Get1DChartData("微波驱动时间(ns)", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi对比度数据");
             (Get1DChartData("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
             (Get1DChartData("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
-            
+
             (Get1DChartData("微波驱动时间(ns)", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi荧光数据");
             (Get1DChartData("通道X 平均光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X 平均光子数", "Rabi荧光数据");
             (Get1DChartData("通道X 信号光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X 信号光子数", "Rabi荧光数据");
@@ -216,19 +216,21 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             var xs = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
             var ys_x = Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
 
+            ExperimentHelper.GetNonNaNData(xs, ys_x, out var xxs, out var xys);
+
             //设置初值
-            double tau = (xs.Min() + xs.Max()) / 2;
-            double d_x = ys_x.Average();
-            double a_x = Math.Abs(ys_x.Min() - ys_x.Max()) / 2;
+            double tau = (xxs.Min() + xxs.Max()) / 2;
+            double d_x = xys.Average();
+            double a_x = Math.Abs(xys.Min() - xys.Max()) / 2;
             double c_x = 10;
             //Pi脉冲时间
             double b_x = 0;
             try
             {
-                var fys_x = ys_x.Select(x => x - ys_x.Average()).ToArray();
-                Fourier.Forward(fys_x, Enumerable.Repeat(0.0, ys_x.Count).ToArray(), FourierOptions.Matlab);
+                var fys_x = xys.Select(x => x - xys.Average()).ToArray();
+                Fourier.Forward(fys_x, Enumerable.Repeat(0.0, xys.Count).ToArray(), FourierOptions.Matlab);
                 fys_x = fys_x.ToList().GetRange(0, (fys_x.Length - 1) / 2).ToArray();
-                var freqs_x = Fourier.FrequencyScale(ys_x.Count, (int)1.0 / Math.Abs(xs[0] - xs[1]));
+                var freqs_x = Fourier.FrequencyScale(xys.Count, (int)1.0 / Math.Abs(xxs[0] - xxs[1]));
                 freqs_x = freqs_x.ToList().GetRange(0, (freqs_x.Length - 1) / 2).ToArray();
                 b_x = 1.0 / freqs_x[fys_x.ToList().IndexOf(fys_x.Max())];
                 if (double.IsInfinity(b_x)) b_x = 0;
@@ -237,10 +239,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
             }
 
-            double[] ps_x = CurveFitting.FitCurveWithFunc(xs, ys_x, new List<double>() { a_x, tau, b_x, c_x, d_x }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
+            double[] ps_x = CurveFitting.FitCurveWithFunc(xxs, xys, new List<double>() { a_x, tau, b_x, c_x, d_x }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
 
             //设置拟合曲线
-            var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;
+            var ftxs = new D1NumricLinearScanRange(xxs.Min(), xxs.Max(), 500).ScanPoints;
             var fitys_x = ftxs.Select(x => RabiFitFunc(x, ps_x)).ToList();
             D1FitDatas.Add(new FittedData1D("a*exp(-x/t)*cos(2*pi/b*(x-c))+d", "x", new List<string>() { "a", "t", "b", "c", "d" }, ps_x.ToList(), "微波驱动时间(ns)", "Rabi对比度数据", new NumricDataSeries("拟合曲线X", ftxs, fitys_x) { LineColor = Colors.LightSkyBlue }));
             UpdatePlotChart();
@@ -252,26 +254,28 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             OutputParams.Add(new Param<double>("通道X 3Pi/2脉冲长度(ns)", 3 * ps_x[2] / 4 + ps_x[3], "X_3HalfPiLength"));
             OutputParams.Add(new Param<double>("通道X 2Pi脉冲长度(ns)", ps_x[2] + ps_x[3], "X_2PiLength"));
             //计算平均光子计数
-            OutputParams.Add(new Param<double>("通道X 平均光子计数", Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据").Average(), "X_AverageCount"));
+            OutputParams.Add(new Param<double>("通道X 平均光子计数", Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据").Where(x => !double.IsNaN(x)).Average(), "X_AverageCount"));
             #endregion
 
             #region 计算通道Y Rabi脉冲周期
             //var xs = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
             var ys_y = Get1DChartDataSource("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
 
+            ExperimentHelper.GetNonNaNData(xs, ys_y, out var yxs, out var yys);
+
             //设置初值
             //double tau = (xs.Min() + xs.Max()) / 2;
-            double d_y = ys_y.Average();
-            double a_y = Math.Abs(ys_y.Min() - ys_y.Max()) / 2;
+            double d_y = yys.Average();
+            double a_y = Math.Abs(yys.Min() - yys.Max()) / 2;
             double c_y = 10;
             //Pi脉冲时间
             double b_y = 0;
             try
             {
-                var fys_y = ys_y.Select(x => x - ys_y.Average()).ToArray();
-                Fourier.Forward(fys_y, Enumerable.Repeat(0.0, ys_y.Count).ToArray(), FourierOptions.Matlab);
+                var fys_y = yys.Select(x => x - yys.Average()).ToArray();
+                Fourier.Forward(fys_y, Enumerable.Repeat(0.0, yys.Count).ToArray(), FourierOptions.Matlab);
                 fys_y = fys_y.ToList().GetRange(0, (fys_y.Length - 1) / 2).ToArray();
-                var freqs_y = Fourier.FrequencyScale(ys_y.Count, (int)1.0 / Math.Abs(xs[0] - xs[1]));
+                var freqs_y = Fourier.FrequencyScale(yys.Count, (int)1.0 / Math.Abs(yxs[0] - yxs[1]));
                 freqs_y = freqs_y.ToList().GetRange(0, (freqs_y.Length - 1) / 2).ToArray();
                 b_y = 1.0 / freqs_y[fys_y.ToList().IndexOf(fys_y.Max())];
                 if (double.IsInfinity(b_y)) b_y = 0;
@@ -280,7 +284,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
             }
 
-            double[] ps_y = CurveFitting.FitCurveWithFunc(xs, ys_y, new List<double>() { a_y, tau, b_y, c_y, d_y }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
+            double[] ps_y = CurveFitting.FitCurveWithFunc(yxs, yys, new List<double>() { a_y, tau, b_y, c_y, d_y }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
 
             //设置拟合曲线
             //var ftxs = new D1NumricLinearScanRange(xs.Min(), xs.Max(), 500).ScanPoints;

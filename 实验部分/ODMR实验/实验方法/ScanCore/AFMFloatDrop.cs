@@ -31,10 +31,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         /// <returns></returns>
         public override List<object> CoreMethod(List<object> InputParams, params InfoBase[] devices)
         {
-            if ((double)InputParams[1] < 0)
-            {
-                return new List<object>() { false };
-            }
             //下针
             LockinInfo lockin = devices[0] as LockinInfo;
             //读取SetPoint
@@ -89,19 +85,41 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 {
                     return new List<object>() { false };
                 }
-                //设置输出上限
-                lockin.Device.PIDOutputUpperLimit = height;
-                lockin.Device.SetPoint = setpoint;
-                //判断是否达到上限
-                time = 0;
-                while (Math.Abs(lockin.Device.PIDValue - height) > 1e-4 && time < 20000)
+                if (dropheight <= 0)
                 {
+                    //如果下针悬浮高度小于0则默认为接触扫描
+                    lockin.Device.PIDOutputUpperLimit = (double)InputParams[0];
+                    lockin.Device.SetPoint = setpoint;
+                    //判断是否达到上限
+                    pidout1 = lockin.Device.PIDValue;
                     Thread.Sleep(50);
-                    time += 50;
+                    pidout2 = lockin.Device.PIDValue;
+
+                    //如果达到上限或者PID输出出现下降(下到针)则结束下针
+                    while (pidout2 < lockin.Device.PIDOutputUpperLimit && Math.Abs(pidout2 - lockin.Device.PIDOutputUpperLimit) > 1e-3 && pidout2 >= pidout1)
+                    {
+                        pidout1 = lockin.Device.PIDValue;
+                        Thread.Sleep(50);
+                        pidout2 = lockin.Device.PIDValue;
+                        Thread.Sleep(50);
+                    }
                 }
-                if (time >= 20000)
+                else
                 {
-                    return new List<object>() { false };
+                    //设置输出上限
+                    lockin.Device.PIDOutputUpperLimit = height;
+                    lockin.Device.SetPoint = setpoint;
+                    //判断是否达到上限
+                    time = 0;
+                    while (Math.Abs(lockin.Device.PIDValue - height) > 1e-4 && time < 20000)
+                    {
+                        Thread.Sleep(50);
+                        time += 50;
+                    }
+                    if (time >= 20000)
+                    {
+                        return new List<object>() { false };
+                    }
                 }
                 //持续监控,发现下降则自动降低高度
                 return new List<object>() { true };

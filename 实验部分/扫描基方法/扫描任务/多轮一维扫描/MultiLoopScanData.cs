@@ -85,6 +85,19 @@ namespace ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描
             }
         }
 
+        public static List<double> GetSumData(List<MultiLoopScanData> Datas, string DataName, string DataGroupName)
+        {
+            try
+            {
+                var data = FindData(Datas, DataName, DataGroupName);
+                return data.DataAssemble.Select((x) => data.DataProcessMethod.GetSum(x, Datas)).ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public static MultiLoopScanData FindData(List<MultiLoopScanData> datas, string DataName, string DataGroupName)
         {
             var result = datas.Where((x) => { return x.DataName == DataName && x.DataGroupName == DataGroupName; });

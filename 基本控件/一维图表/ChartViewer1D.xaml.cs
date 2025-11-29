@@ -801,5 +801,28 @@ namespace ODMR_Lab.基本控件
             CursorCount.Content = chart.GetCursorCount();
         }
         #endregion
+
+        private void DataNames_ItemContextMenuSelected(int arg1, int arg2, object arg3)
+        {
+            try
+            {
+                //复制数据到剪切板
+                var data = (arg3 as ChartData1D).GetDataCopyAsDouble();
+                string name = (arg3 as ChartData1D).Name;
+                string result = name + "\n";
+                foreach (var item in data)
+                {
+                    result += item.ToString() + "\n";
+                }
+                Clipboard.SetText(result);
+                TimeWindow window = new TimeWindow();
+                window.Owner = Window.GetWindow(this);
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                window.ShowWindow("数据已复制到剪切板");
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 }

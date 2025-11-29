@@ -53,6 +53,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("对比度Rabi测量循环次数",10000,"ContrastRabiLoopCount"){ Helper= "进行Rabi实验时板卡序列的内部循环次数"},
             new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"){ Helper = "当选择此选项时,在进行此实验之前会使控制锁相信号的继电器打开,实验结束后则会关闭" },
             new Param<bool>("每点重新确定微波频率",false,"ConfirmCW"){ Helper = "当选择此选项时,在进行HahnEcho实验之前会先扫描CW谱来确定共振频率,具体的扫描参数由子实验确定" },
+            new Param<int>("序列阶数",1,"SequenceCount"){ Helper = "选择需要积累多少个周期的信号" },
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -120,6 +121,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             int delay = GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay");
             double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
             int echotime = (int)((signaltime - xLength) / 2);
+
+            int order = GetInputParamValueByName("SequenceCount");
+
+            if (order != 1)
+                echotime = (int)(signaltime / 2 - xLength);
+
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
             for (int i = 0; i < Loop; i++)
             {
@@ -127,8 +134,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 SetExpState("当前轮数:" + CurrentLoop.ToString() + "对比度:" + Math.Round(contrast, 5).ToString());
                 #region 点1
                 GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay);
-                PulsePhotonPack pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
-                    GetInputParamValueByName("TimeOut"));
+
+                PulsePhotonPack pack = null;
+
+                pack = DoLockInPulseExp("CMPG", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+                    GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+
                 int sig = pack.GetPhotonsAtIndex(0).Sum();
                 int reference = pack.GetPhotonsAtIndex(1).Sum();
 
@@ -171,8 +182,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 #endregion
                 #region 点2
                 GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay + (int)(1.0 / GetInputParamValueByName("SignalFreq") * 500));
-                pack = DoLockInPulseExp("LockInHahnEcho", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
-                    GetInputParamValueByName("TimeOut"));
+                pack = DoLockInPulseExp("CMPG", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+                    GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
                 sig = pack.GetPhotonsAtIndex(0).Sum();
                 reference = pack.GetPhotonsAtIndex(1).Sum();
 
@@ -274,6 +285,53 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     //NormalizedContrast = (contrast - LowContrast) / (HiContrast - LowContrast);
                 }
             }
+        }
+
+        private void SetSequenceCount(SequenceDataAssemble obj)
+        {
+            //传入参数为读取到的序列
+            //查找X:pi脉冲的通道
+            SequenceChannel ind = SequenceChannel.None;
+            foreach (var ch in obj.Channels)
+            {
+                var pilist = ch.Peaks.Where(x => x.PeakName == "PiX");
+                if (pilist.Count() != 0)
+                {
+                    if (pilist.ElementAt(0).WaveValue == WaveValues.One)
+                    {
+                        ind = ch.ChannelInd;
+                    }
+                }
+            }
+            //为每个通道添加对应阶数的序列
+            int order = GetInputParamValueByName("SequenceCount");
+            if (order > 1)
+            {
+                int det = order - 1;
+                int pix = GlobalPulseParams.GetGlobalPulseLength("PiX");
+                int spintime = GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime");
+                foreach (var ch in obj.Channels)
+                {
+                    ///Pi/2 Y脉冲的位置
+                    var halfpiys = ch.Peaks.Where((x) => x.PeakName == "HalfPiY").Select((x) => ch.Peaks.IndexOf(x)).ToList();
+                    halfpiys.Sort();
+                    halfpiys.Reverse();
+                    int signalch = halfpiys.Last();
+                    foreach (var item in halfpiys)
+                    {
+                        List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
+                        for (int i = 0; i < det; i++)
+                        {
+                            segs.Add(new SequenceWaveSeg("PiX", pix, (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
+                            segs.Add(new SequenceWaveSeg("SpinEchoTime", spintime, WaveValues.Zero, ch));
+                            segs.Add(new SequenceWaveSeg("PiX", pix, (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
+                            segs.Add(new SequenceWaveSeg("SpinEchoTime", spintime, WaveValues.Zero, ch));
+                        }
+                        ch.Peaks.InsertRange(item, segs);
+                    }
+                }
+            }
+
         }
 
         double OriginSignalAmplitude { get; set; } = 0;

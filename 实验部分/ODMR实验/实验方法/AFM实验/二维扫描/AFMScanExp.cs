@@ -106,6 +106,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void ODMRExpWithAFM()
         {
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             dropgap = 0;
             IsFirstDrop = true;
             devI = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
@@ -145,10 +146,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             SetExpState("正在移动到目标位置(μm) X: " + Math.Round(currentPoint.X, 5).ToString() + " Y: " + Math.Round(currentPoint.Y, 5));
             //移动位移台
-            scannerx.Device.MoveToAndWait(currentPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
+            scannerx.Device.MoveToAndWait(currentPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 200000);
             JudgeThreadEndOrResumeAction();
             //移动位移台
-            scannery.Device.MoveToAndWait(currentPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
+            scannery.Device.MoveToAndWait(currentPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 200000);
             JudgeThreadEndOrResumeAction();
 
             //如果是悬浮测量则执行对应程序
@@ -259,6 +260,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void AfterExpEventWithAFM()
         {
+            (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             //设置Lock In PID上限
             if (GetInputParamValueByName("IsFloatScan") == true)
             {
@@ -275,9 +277,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
-            infox.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
+            infox.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 200000);
             JudgeThreadEndOrResumeAction();
-            infoy.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
+            infoy.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 200000);
             JudgeThreadEndOrResumeAction();
         }
 

@@ -153,11 +153,18 @@
         </Grid.ColumnDefinitions>
         <scroll:ComboBox Name="DataGroups" DefaultSelectIndex="0" SelectionChanged="ChangeGroup" Margin="5" Background="#FF2E2E2E" TextAreaRatio="0.9" IconMargin="4" ImagePlace="Right" MoveInColor="#FF4D4D4D" PressedColor="#FF424242" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
         </scroll:ComboBox>
-        <local:DataListViewer Margin="5" Grid.RowSpan="1" Grid.Row="1" IsMultiSelected="True" MultiItemSelected="DataNames_MultiItemSelected" MultiItemUnSelected="DataNames_MultiItemUnSelected" x:Name="DataNames" Background="#FF2E2E2E">
+        <local:DataListViewer Margin="5" Grid.RowSpan="1" Grid.Row="1" IsMultiSelected="True" ItemContextMenuSelected="DataNames_ItemContextMenuSelected" MultiItemSelected="DataNames_MultiItemSelected" MultiItemUnSelected="DataNames_MultiItemUnSelected" x:Name="DataNames" Background="#FF2E2E2E">
             <local:DataListViewer.HeaderTemplate>
                 <scroll:ViewerTemplate Descriptions="名称" DataType="String" DataDisplayWidth="*" Editable="False"/>
                 <scroll:ViewerTemplate Descriptions="点数" DataType="String" DataDisplayWidth="100" Editable="False"/>
             </local:DataListViewer.HeaderTemplate>
+            <local:DataListViewer.ContextTemplate>
+                <scroll:ContextMenu>
+                    <scroll:ContextMenu.Items>
+                        <scroll:DecoratedButton Text="复制数据到剪切板" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                    </scroll:ContextMenu.Items>
+                </scroll:ContextMenu>
+            </local:DataListViewer.ContextTemplate>
         </local:DataListViewer>
         <scroll:AutoScrollViewer Grid.Column="1" Grid.RowSpan="2" Name="scroll">
             <scroll:AutoScrollViewer.Content>

@@ -116,7 +116,7 @@
                         <Label Name="EndTime" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Foreground="White"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1"/>
                         <Label Name="ProgressContent" Grid.Row="3" Margin="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Foreground="White"/>
                     </Grid>
-                    <TextBlock Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Grid.Row="1" Name="ProgressTitle"/>
+                    <TextBlock Foreground="White" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Grid.Column="1" Grid.Row="2" Name="ProgressTitle"/>
                     <Grid Grid.Row="3" Grid.Column="1" Grid.RowSpan="10" Margin="10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
