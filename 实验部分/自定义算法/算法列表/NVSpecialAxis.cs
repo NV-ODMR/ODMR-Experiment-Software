@@ -32,10 +32,10 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
 
         public override void CalculateFunc()
         {
-            double theta1 = GetInputParamValueByName("NVTheta1") / 180 * Math.PI;
-            double phi1 = GetInputParamValueByName("NVPhi1") / 180 * Math.PI;
-            double theta2 = GetInputParamValueByName("NVTheta2") / 180 * Math.PI;
-            double phi2 = GetInputParamValueByName("NVPhi2") / 180 * Math.PI;
+            double theta1 = GetInputParamValueByName("NVTheta1");
+            double phi1 = GetInputParamValueByName("NVPhi1");
+            double theta2 = GetInputParamValueByName("NVTheta2");
+            double phi2 = GetInputParamValueByName("NVPhi2");
 
             Vector3D nvaxis1 = AlgorithmTools.GetDirectionVector(theta1, phi1);
             Vector3D nvaxis2 = AlgorithmTools.GetDirectionVector(theta2, phi2);
@@ -43,16 +43,17 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
             Vector3D nvmirrory = Vector3D.CrossProduct(nvaxis1, nvaxis2);
             //投影朝向
             Vector3D nvmirrorx = Vector3D.CrossProduct(nvmirrory, nvaxis1);
+            nvmirrorx.Normalize();
             AlgorithmTools.GetAngles(nvmirrorx, out double t1, out double p1);
-            var rotmatrix = AlgorithmTools.CalculateRotationMatrix(nvaxis1, 120);
+            var rotmatrix = AlgorithmTools.CalculateRotationMatrix(nvaxis1, 120.0 / 180 * Math.PI);
             RealMatrix initvec = new RealMatrix(3, 1);
             initvec.Content[0][0] = nvmirrorx.X;
-            initvec.Content[0][1] = nvmirrorx.Y;
-            initvec.Content[0][2] = nvmirrorx.Z;
+            initvec.Content[1][0] = nvmirrorx.Y;
+            initvec.Content[2][0] = nvmirrorx.Z;
             var mat2 = rotmatrix * initvec;
             var mat3 = rotmatrix * rotmatrix * initvec;
-            AlgorithmTools.GetAngles(new Vector3D(mat2.Content[0][0], mat2.Content[0][1], mat2.Content[0][2]), out double t2, out double p2);
-            AlgorithmTools.GetAngles(new Vector3D(mat3.Content[0][0], mat3.Content[0][1], mat3.Content[0][2]), out double t3, out double p3);
+            AlgorithmTools.GetAngles(new Vector3D(mat2.Content[0][0], mat2.Content[1][0], mat2.Content[2][0]), out double t2, out double p2);
+            AlgorithmTools.GetAngles(new Vector3D(mat3.Content[0][0], mat3.Content[1][0], mat3.Content[2][0]), out double t3, out double p3);
 
             OutputParams.Add(new Param<double>("投影1 方位角θ", t1, "TargetTheta1"));
             OutputParams.Add(new Param<double>("投影1 方位角φ", p1, "TargetPhi1"));

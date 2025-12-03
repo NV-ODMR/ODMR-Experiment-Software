@@ -55,7 +55,9 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
 
         public static Vector3D GetDirectionVector(double theta, double phi)
         {
-            return new Vector3D(Math.Cos(phi) * Math.Sin(theta), Math.Sin(phi) * Math.Sin(theta), Math.Cos(theta));
+            double t = theta / 180 * Math.PI;
+            double p = phi / 180 * Math.PI;
+            return new Vector3D(Math.Cos(p) * Math.Sin(t), Math.Sin(p) * Math.Sin(t), Math.Cos(t));
         }
         /// <summary>
         /// 获取向量的球坐标(度)
@@ -66,7 +68,7 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
         {
             vec.Normalize();
             theta = Math.Acos(vec.Z) / Math.PI * 180;
-            phi = Math.Atan2(vec.Y, vec.X);
+            phi = Math.Atan2(vec.Y, vec.X) / Math.PI * 180;
             return;
         }
 

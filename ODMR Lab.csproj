@@ -382,6 +382,7 @@
     </Compile>
     <Compile Include="实验部分\自定义算法\算法列表\AlgorithmTools.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\CWCalculate.cs" />
+    <Compile Include="实验部分\自定义算法\算法列表\NVElectricFieldDirection.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\VectorAngle.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\NVSpecialAxis.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\VerticalMagnetField.cs" />

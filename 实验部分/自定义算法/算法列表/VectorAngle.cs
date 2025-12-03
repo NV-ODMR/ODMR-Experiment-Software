@@ -32,10 +32,10 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
 
         public override void CalculateFunc()
         {
-            double theta1 = GetInputParamValueByName("Theta1") / 180 * Math.PI;
-            double phi1 = GetInputParamValueByName("Phi1") / 180 * Math.PI;
-            double theta2 = GetInputParamValueByName("Theta2") / 180 * Math.PI;
-            double phi2 = GetInputParamValueByName("Phi2") / 180 * Math.PI;
+            double theta1 = GetInputParamValueByName("Theta1");
+            double phi1 = GetInputParamValueByName("Phi1");
+            double theta2 = GetInputParamValueByName("Theta2");
+            double phi2 = GetInputParamValueByName("Phi2");
 
             Vector3D v1 = AlgorithmTools.GetDirectionVector(theta1, phi1);
             Vector3D v2 = AlgorithmTools.GetDirectionVector(theta2, phi2);
