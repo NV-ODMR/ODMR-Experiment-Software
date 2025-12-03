@@ -5,6 +5,7 @@ using HardWares.Windows;
 using HardWares.温度控制器;
 using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
+using HardWares.电源;
 using HardWares.端口基类;
 using HardWares.端口基类部分;
 using HardWares.纳米位移台;
@@ -13,6 +14,7 @@ using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.温控;
 using ODMR_Lab.设备部分.源表;
 using System;
 using System.Collections.Generic;
@@ -39,14 +41,14 @@ namespace ODMR_Lab.设备部分.电源
     /// </summary>
     public partial class DevicePage : DevicePageBase
     {
-        public override string PageName { get; set; } = "源表";
+        public override string PageName { get; set; } = "电源";
 
-        public List<PowerMeterInfo> PowerMeterList { get; set; } = new List<PowerMeterInfo>();
+        public List<PowerInfo> PowerList { get; set; } = new List<PowerInfo>();
 
         /// <summary>
         /// 当前选中的源表
         /// </summary>
-        public PowerMeterInfo CurrentSelectedMeter { get; set; } = null;
+        public PowerInfo CurrentSelectedMeter { get; set; } = null;
 
         public DevicePage()
         {
@@ -55,12 +57,10 @@ namespace ODMR_Lab.设备部分.电源
 
         public override void InnerInit()
         {
-            CreateMeasureThread();
         }
 
         public override void CloseBehaviour()
         {
-            MeasureListener?.Abort();
         }
 
         public override void UpdateParam()
@@ -70,16 +70,14 @@ namespace ODMR_Lab.设备部分.电源
         #region 设备部分
         private void NewConnect(object sender, RoutedEventArgs e)
         {
-            ConnectWindow window = new ConnectWindow(typeof(PowerSourceBase));
+            ConnectWindow window = new ConnectWindow(typeof(PowerBase));
             bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
-                PowerMeterInfo power = new PowerMeterInfo() { Device = window.ConnectedDevice as PowerSourceBase, ConnectInfo = window.ConnectInfo };
+                PowerInfo power = new PowerInfo() { Device = window.ConnectedDevice as PowerBase, ConnectInfo = window.ConnectInfo };
                 power.CreateDeviceInfoBehaviour();
 
-                power.MaxSavePoint = Param.SamplePoint.Value;
-
-                PowerMeterList.Add(power);
+                PowerList.Add(power);
 
                 RefreshPanels();
             }
@@ -92,21 +90,28 @@ namespace ODMR_Lab.设备部分.电源
         public override void RefreshPanels()
         {
             DeviceList.ClearItems();
+            DeviceChannelList.ClearItems();
 
-            foreach (var item in PowerMeterList)
+            foreach (var item in PowerList)
             {
                 DeviceList.AddItem(item, item.Device.ProductName);
             }
         }
 
-        private void PowerMeterSelected(int arg1, object arg2)
+        private void PowerSelected(int arg1, object arg2)
         {
-            CurrentSelectedMeter = arg2 as PowerMeterInfo;
+            CurrentSelectedMeter = arg2 as PowerInfo;
+            //显示通道
+            DeviceChannelList.ClearItems();
+            foreach (var item in CurrentSelectedMeter.ChannelsInfo)
+            {
+                DeviceChannelList.AddItem(item, item.Name);
+            }
         }
 
         private void ContextMenuEvent(int arg1, int arg2, object arg3)
         {
-            PowerMeterInfo info = arg3 as PowerMeterInfo;
+            PowerInfo info = arg3 as PowerInfo;
             #region 关闭设备
             if (arg1 == 0)
             {
@@ -117,8 +122,7 @@ namespace ODMR_Lab.设备部分.电源
                     {
                         return;
                     }
-                    PowerMeterList.Remove(info);
-                    CurrentSelectedMeter = null;
+                    PowerList.Remove(info);
                     RefreshPanels();
                 }
             }
@@ -132,113 +136,16 @@ namespace ODMR_Lab.设备部分.电源
             #endregion
         }
 
-        #endregion
-
-        #region 电流监控线程
-
-        PowerMeterDevConfigParams Param = new PowerMeterDevConfigParams();
-
-        private void ApplySet(object sender, RoutedEventArgs e)
+        private void ChannelContextMenuEvent(int arg1, int arg2, object arg3)
         {
-            try
+            PowerMeterInfo info = arg3 as PowerMeterInfo;
+            #region 参数设置
+            if (arg1 == 0)
             {
-                Param.ReadFromPage(new FrameworkElement[] { this });
-                foreach (var item in PowerMeterList)
-                {
-                    item.MaxSavePoint = Param.SamplePoint.Value;
-                }
+                ParameterWindow window = new ParameterWindow(info.Device, Window.GetWindow(this));
+                window.ShowDialog();
             }
-            catch (Exception ex)
-            {
-                MessageWindow.ShowTipWindow("参数格式错误", Window.GetWindow(this));
-            }
-        }
-
-        Thread MeasureListener = null;
-
-        bool IsSampling = false;
-
-        /// <summary>
-        /// 创建监听线程
-        /// </summary>
-        private void CreateMeasureThread()
-        {
-            MeasureListener = new Thread(() =>
-            {
-                while (true)
-                {
-                    bool AllowSample = false;
-                    Dispatcher.Invoke(() =>
-                    {
-                        AllowSample = AutoSample.IsSelected;
-                    });
-                    if (!AllowSample)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            VoltagePanel.Value.Text = "--- V";
-                            CurrentPanel.Value.Text = "--- A";
-                        });
-                        Thread.Sleep((int)(Param.SampleTime.Value * 1000));
-                        continue;
-                    }
-                    IsSampling = true;
-                    for (int i = 0; i < PowerMeterList.Count; i++)
-                    {
-                        if (PowerMeterList[i].AllowAutoMeasure)
-                        {
-                            PowerMeterList[i].IsMeasuring = true;
-                            MeasureGroup result = PowerMeterList[i].Device.Measure();
-                            PowerMeterList[i].IsMeasuring = false;
-                            PowerMeterList[i].AddMeasurePoint(result.TimeStamp, result.Voltage, result.Current);
-                            //更新显示面板
-                            if (PowerMeterList[i] == CurrentSelectedMeter)
-                            {
-                                Dispatcher.Invoke(() =>
-                                {
-                                    VoltagePanel.Value.Text = result.Voltage.ToString() + " V";
-                                    CurrentPanel.Value.Text = result.Current.ToString() + " A";
-                                    CurrentPanel.SetRestrictState(result.IsCurrentLimited);
-                                });
-                            }
-                        }
-                    }
-                    if (CurrentSelectedMeter == null)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            VoltagePanel.Value.Text = "--- V";
-                            CurrentPanel.Value.Text = "--- A";
-                        });
-                    }
-                    IsSampling = false;
-                    Thread.Sleep((int)(Param.SampleTime.Value * 1000));
-                }
-            });
-            MeasureListener.Start();
-        }
-
-        #endregion
-
-
-        #region 图像显示
-        ChartViewerWindow GraphWindow = new ChartViewerWindow(true);
-        /// <summary>
-        /// 显示图表
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowGraph(object sender, RoutedEventArgs e)
-        {
-            if (CurrentSelectedMeter == null) return;
-            List<ChartData1D> list = new List<ChartData1D>();
-            list.Add(new NumricChartData1D("电流值(A)", "源表监测数据") { Data = new List<double>(CurrentSelectedMeter.CurrentBuffer) });
-            list.Add(new NumricChartData1D("电压值(V)", "源表监测数据") { Data = new List<double>(CurrentSelectedMeter.VoltageBuffer) });
-            list.Add(new TimeChartData1D("采样时间", "源表监测数据") { Data = new List<DateTime>(CurrentSelectedMeter.Times) });
-            GraphWindow.Title = "源表数据：" + CurrentSelectedMeter.Device.ProductName;
-            GraphWindow.ShowAs1D(list);
-            GraphWindow.Topmost = true;
-            GraphWindow.Topmost = false;
+            #endregion
         }
 
         #endregion

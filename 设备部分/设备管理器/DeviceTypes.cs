@@ -75,5 +75,9 @@ namespace ODMR_Lab.设备部分
         /// 开关
         /// </summary>
         开关 = 15,
+        /// <summary>
+        /// 电源
+        /// </summary>
+        电源 = 16,
     }
 }

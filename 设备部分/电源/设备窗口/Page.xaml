@@ -18,7 +18,7 @@
         <ColumnDefinition Width="300"/>
         <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <control:ListViewer Name="DeviceList" Margin="5" Grid.Column="0" Grid.RowSpan="3" ItemSelected="PowerMeterSelected" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+    <control:ListViewer Name="DeviceList" Margin="5" Grid.Column="0" Grid.RowSpan="3" ItemSelected="PowerSelected" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
             <control:ContextMenu>
                 <control:ContextMenu.Items>
@@ -40,11 +40,10 @@
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
     </control:ListViewer>
-    <control:ListViewer Name="DeviceChannelList" Grid.Column="1" Grid.RowSpan="3" Margin="5" ItemSelected="PowerMeterSelected" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
+    <control:ListViewer Name="DeviceChannelList" Grid.Column="1" Grid.RowSpan="4" Margin="5" ItemContextMenuSelected="ChannelContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
             <control:ContextMenu>
                 <control:ContextMenu.Items>
-                    <control:DecoratedButton Text="关闭设备" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                     <control:DecoratedButton Text="参数设置" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                 </control:ContextMenu.Items>
             </control:ContextMenu>

@@ -70,7 +70,7 @@
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -438,6 +438,8 @@
     <Compile Include="设备部分\源表\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="设备部分\电源\PowerInfo.cs" />
+    <Compile Include="设备部分\电源\PowerChannelInfo.cs" />
     <Compile Include="设备部分\电源\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>

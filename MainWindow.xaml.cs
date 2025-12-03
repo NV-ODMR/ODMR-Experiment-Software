@@ -32,6 +32,8 @@ namespace ODMR_Lab
 
         public static 设备部分.相机_翻转镜.DevicePage Dev_CameraPage = new 设备部分.相机_翻转镜.DevicePage();
 
+        public static 设备部分.电源.DevicePage Dev_PowerPage = new 设备部分.电源.DevicePage();
+
         public static 设备部分.源表.DevicePage Dev_PowerMeterPage = new 设备部分.源表.DevicePage();
 
         public static 设备部分.射频源_锁相放大器.DevicePage Dev_RFSource_LockInPage = new 设备部分.射频源_锁相放大器.DevicePage();
@@ -308,6 +310,11 @@ namespace ODMR_Lab
             {
                 CurrentPage = Dev_PowerMeterPage;
                 AddPageToView(Dev_PowerMeterPage);
+            }
+            if (btn.Text == "电源")
+            {
+                CurrentPage = Dev_PowerPage;
+                AddPageToView(Dev_PowerPage);
             }
             if (btn.Text == "射频源/Lock In")
             {
