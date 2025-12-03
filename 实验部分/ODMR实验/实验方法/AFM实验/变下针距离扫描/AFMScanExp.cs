@@ -159,6 +159,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             Get1DChartDataSource("距离(nm)", "变下针距离扫描数据").Add(currentvalue);
             foreach (var item in exp.OutputParams)
             {
+                if (item.GroupName != "")
+                {
+                    var xdata = Get1DChartData("距离(nm)", item.GroupName);
+                    if (xdata == null)
+                    {
+                        xdata = new NumricChartData1D("距离(nm)", item.GroupName, ChartDataType.X);
+                        D1ChartDatas.Add(xdata);
+                    }
+                   (xdata as NumricChartData1D).Data.Add(currentvalue);
+                }
                 if (item.RawValue is bool)
                 {
                     value = (bool)item.RawValue ? 1 : 0;
@@ -175,10 +185,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 {
                     value = (float)item.RawValue;
                 }
-                var data = Get1DChartData(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "变下针距离扫描数据");
+                var data = Get1DChartData(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, item.GroupName == "" ? "变下针距离扫描数据" : item.GroupName);
                 if (data == null)
                 {
-                    data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "变下针距离扫描数据", ChartDataType.Y);
+                    data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, item.GroupName == "" ? "变下针距离扫描数据" : item.GroupName, ChartDataType.Y);
                     D1ChartDatas.Add(data);
                     UpdatePlotChart();
                 }

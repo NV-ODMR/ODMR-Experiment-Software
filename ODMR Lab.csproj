@@ -437,6 +437,9 @@
     <Compile Include="设备部分\源表\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="设备部分\电源\设备窗口\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="设备部分\相机，翻转镜，开关\CameraInfo.cs" />
     <Compile Include="设备部分\相机，翻转镜，开关\SwitchInfo.cs" />
     <Compile Include="设备部分\相机，翻转镜，开关\FlipMotorInfo.cs" />
@@ -655,6 +658,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="设备部分\源表\设备窗口\Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="设备部分\电源\设备窗口\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

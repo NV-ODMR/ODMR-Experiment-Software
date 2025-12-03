@@ -27,6 +27,8 @@ using System.Threading;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.设备部分.相机_翻转镜;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -49,8 +51,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
             new Param<int>("单点超时时间",10000,"TimeOut"){ Helper="每个时间点扫描的时间上限,超时则跳过此点" },
-            new Param<bool>("测量单点对比度",false,"SingleContrast"){Helper="如果勾选此选项,则在HahnEcho实验完成后会进行一个施加Pi脉冲的Rabi实验,利用得到的对比度对HahnEcho信号归一化" },
-            new Param<int>("对比度Rabi测量循环次数",10000,"ContrastRabiLoopCount"){ Helper= "进行Rabi实验时板卡序列的内部循环次数"},
             new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"){ Helper = "当选择此选项时,在进行此实验之前会使控制锁相信号的继电器打开,实验结束后则会关闭" },
             new Param<bool>("每点重新确定微波频率",false,"ConfirmCW"){ Helper = "当选择此选项时,在进行HahnEcho实验之前会先扫描CW谱来确定共振频率,具体的扫描参数由子实验确定" },
             new Param<int>("序列阶数",1,"SequenceCount"){ Helper = "选择需要积累多少个周期的信号" },
@@ -82,209 +82,148 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         private int CurrentLoop = 0;
 
-        double contrast = double.NaN;
-        double Sig = double.NaN;
-        double Ref = double.NaN;
-        double contrast2 = double.NaN;
-        double Sig2 = double.NaN;
-        double Ref2 = double.NaN;
-        double LowContrast = double.NaN;
-        double HiContrast = double.NaN;
-        double NormalizedContrast = double.NaN;
-        double NormalizedContrast1 = double.NaN;
-        double NormalizedContrast2 = double.NaN;
-        double sigma = double.NaN;
-        double sigma2 = double.NaN;
-        List<double> HistData = new List<double>();
-        List<double> HistData2 = new List<double>();
-
         public override void ODMRExpWithoutAFM()
         {
-            contrast = double.NaN;
-            Sig = double.NaN;
-            Ref = double.NaN;
-            contrast2 = double.NaN;
-            Sig2 = double.NaN;
-            Ref2 = double.NaN;
-            HiContrast = double.NaN;
-            LowContrast = double.NaN;
-            NormalizedContrast1 = double.NaN;
-            NormalizedContrast2 = double.NaN;
-            sigma = double.NaN;
-            sigma2 = double.NaN;
-            HistData.Clear();
-            HistData2 = new List<double>();
-            int Loop = GetInputParamValueByName("LoopCount");
             //设置HahnEchoTime
             //XPi脉冲时间
             int xLength = GlobalPulseParams.GetGlobalPulseLength("PiX");
-            int delay = GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay");
             double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
             int echotime = (int)((signaltime - xLength) / 2);
 
-            int order = GetInputParamValueByName("SequenceCount");
-
-            if (order != 1)
-                echotime = (int)(signaltime / 2 - xLength);
-
-            GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
-            for (int i = 0; i < Loop; i++)
+            MultiScan1DSession<object> Session = new MultiScan1DSession<object>();
+            Session.FirstScanEvent = ScanEvent;
+            Session.ScanEvent = ScanEvent;
+            Session.ScanSource = null;
+            Session.PlotEvent = PlotEvent;
+            Session.ProgressBarMethod = new Action<object, double>((obj, v) =>
             {
-                CurrentLoop = i;
-                SetExpState("当前轮数:" + CurrentLoop.ToString() + "对比度:" + Math.Round(contrast, 5).ToString());
-                #region 点1
-                GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay);
+                SetProgress(v);
+            });
+            Session.SetStateMethod = new Action<object, int, double>((obj, loop, v) =>
+            {
+                SetExpState("当前扫描轮数:" + loop.ToString());
+            });
+            D1NumricListScanRange range = new D1NumricListScanRange(new List<double>() { 1 });
 
-                PulsePhotonPack pack = null;
+            Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+            Session.BeginScan(GetInputParamValueByName("LoopCount"), MultiScanType.正向扫描, range, 0, 100);
+        }
 
-                pack = DoLockInPulseExp("CMPG", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
-                    GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+        List<MultiLoopScanData> listdata = null;
 
-                int sig = pack.GetPhotonsAtIndex(0).Sum();
-                int reference = pack.GetPhotonsAtIndex(1).Sum();
+        private void PlotEvent(List<MultiLoopScanData> list)
+        {
+            listdata = list;
+        }
 
-                double tempcontrast = 1;
-                try
-                {
-                    tempcontrast = (sig - reference) / (double)reference;
-                }
-                catch (Exception)
-                {
-                }
+        private List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> inputParams)
+        {
+            PulsePhotonPack pack = null;
 
-                if (double.IsNaN(contrast))
-                {
-                    contrast = tempcontrast;
-                }
-                else
-                {
-                    contrast = (contrast * (CurrentLoop - 1) + tempcontrast) / CurrentLoop;
-                }
-                HistData.Add(contrast);
-                //方差
-                sigma = Math.Sqrt(HistData.Select(x => Math.Pow(x - HistData.Average(), 2)).Sum() / (CurrentLoop + 1));
-                if (double.IsNaN(Sig))
-                {
-                    Sig = sig;
-                }
-                else
-                {
-                    Sig = (Sig * (CurrentLoop - 1) + sig) / CurrentLoop;
-                }
-                if (double.IsNaN(Ref))
-                {
-                    Ref = reference;
-                }
-                else
-                {
-                    Ref = (Ref * (CurrentLoop - 1) + reference) / CurrentLoop;
-                }
-                #endregion
-                #region 点2
-                GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay + (int)(1.0 / GetInputParamValueByName("SignalFreq") * 500));
-                pack = DoLockInPulseExp("CMPG", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
-                    GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
-                sig = pack.GetPhotonsAtIndex(0).Sum();
-                reference = pack.GetPhotonsAtIndex(1).Sum();
+            #region 点1(1/2pi Y)
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
 
-                tempcontrast = 1;
-                try
-                {
-                    tempcontrast = (sig - reference) / (double)reference;
-                }
-                catch (Exception)
-                {
-                }
+            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
-                if (double.IsNaN(contrast2))
-                {
-                    contrast2 = tempcontrast;
-                }
-                else
-                {
-                    contrast2 = (contrast2 * (CurrentLoop - 1) + tempcontrast) / CurrentLoop;
-                }
-                HistData2.Add(contrast2);
-                //方差
-                sigma2 = Math.Sqrt(HistData2.Select(x => Math.Pow(x - HistData2.Average(), 2)).Sum() / (CurrentLoop + 1));
-                if (double.IsNaN(Sig2))
-                {
-                    Sig2 = sig;
-                }
-                else
-                {
-                    Sig2 = (Sig2 * (CurrentLoop - 1) + sig) / CurrentLoop;
-                }
-                if (double.IsNaN(Ref2))
-                {
-                    Ref2 = reference;
-                }
-                else
-                {
-                    Ref2 = (Ref2 * (CurrentLoop - 1) + reference) / CurrentLoop;
-                }
-                #endregion
+            double sigY = pack.GetPhotonsAtIndex(0).Sum();
+            double referenceY = pack.GetPhotonsAtIndex(1).Sum();
 
-                GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delay);
+            if (sigY == 0) sigY = double.NaN;
+            if (referenceY == 0) referenceY = double.NaN;
 
-                JudgeThreadEndOrResumeAction?.Invoke();
-                double rabicontrast = double.NaN;
-                if (GetInputParamValueByName("SingleContrast"))
-                {
-                    //测量Rabi得到对比度
-                    GlobalPulseParams.SetGlobalPulseLength("RabiTime", GlobalPulseParams.GetGlobalPulseLength("PiX"));
-                    PulsePhotonPack rabipack = DoPulseExp("Rabi", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("ContrastRabiLoopCount"), 8, GetInputParamValueByName("TimeOut"));
-                    double signalcount1 = rabipack.GetPhotonsAtIndex(0).Sum();
-                    double refcount = rabipack.GetPhotonsAtIndex(1).Sum();
-                    //double refcount = rabipack.GetPhotonsAtIndex(2).Sum();
-                    LowContrast = (signalcount1 - refcount) / refcount;
-                    //hicontrast = (signalcount0 - refcount) / refcount;
-
-                    //if (double.IsNaN(HiContrast))
-                    //{
-                    //    HiContrast = hicontrast;
-                    //}
-                    //else
-                    //{
-                    //    HiContrast = (HiContrast * (CurrentLoop - 1) + hicontrast) / CurrentLoop;
-                    //}
-                    //if (double.IsNaN(LowContrast))
-                    //{
-                    //    LowContrast = lowcontrast;
-                    //}
-                    //else
-                    //{
-                    //    LowContrast = (LowContrast * (CurrentLoop - 1) + lowcontrast) / CurrentLoop;
-                    //}
-                    if (contrast < LowContrast)
-                    {
-                        NormalizedContrast1 = 0;
-                        JudgeThreadEndOrResumeAction?.Invoke();
-                    }
-                    else
-                    {
-                        NormalizedContrast1 = (contrast - LowContrast) / Math.Abs(LowContrast);
-                        JudgeThreadEndOrResumeAction?.Invoke();
-                    }
-                    if (contrast2 < LowContrast)
-                    {
-                        NormalizedContrast2 = 0;
-                        JudgeThreadEndOrResumeAction?.Invoke();
-                    }
-                    else
-                    {
-                        NormalizedContrast2 = (contrast2 - LowContrast) / Math.Abs(LowContrast);
-                        JudgeThreadEndOrResumeAction?.Invoke();
-                    }
-                    //if (contrast < HiContrast)
-                    //{
-                    //    NormalizedContrast = 1;
-                    //    JudgeThreadEndOrResumeAction?.Invoke();
-                    //    continue;
-                    //}
-                    //NormalizedContrast = (contrast - LowContrast) / (HiContrast - LowContrast);
-                }
+            double tempcontrastY = double.NaN;
+            try
+            {
+                tempcontrastY = (sigY - referenceY) / (double)referenceY;
             }
+            catch (Exception)
+            {
+            }
+            #endregion
+            JudgeThreadEndOrResumeAction?.Invoke();
+            #region 点2(3/2pi Y)
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("3HalfPiY"));
+
+            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+
+            double sigY3 = pack.GetPhotonsAtIndex(0).Sum();
+            double referenceY3 = pack.GetPhotonsAtIndex(1).Sum();
+
+            if (sigY3 == 0) sigY3 = double.NaN;
+            if (referenceY3 == 0) referenceY3 = double.NaN;
+
+            double tempcontrastY3 = double.NaN;
+            try
+            {
+                tempcontrastY3 = (sigY3 - referenceY3) / (double)referenceY3;
+            }
+            catch (Exception)
+            {
+            }
+            #endregion
+            JudgeThreadEndOrResumeAction?.Invoke();
+            #region 点3(1/2pi X)
+            GlobalPulseParams.SetGlobalPulseLength("CustomXLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiX"));
+
+            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+
+            double sigX = pack.GetPhotonsAtIndex(0).Sum();
+            double referenceX = pack.GetPhotonsAtIndex(1).Sum();
+
+            if (sigX == 0) sigX = double.NaN;
+            if (referenceX == 0) referenceX = double.NaN;
+
+            double tempcontrastX = double.NaN;
+            try
+            {
+                tempcontrastX = (sigX - referenceX) / (double)referenceX;
+            }
+            catch (Exception)
+            {
+            }
+            #endregion
+            JudgeThreadEndOrResumeAction?.Invoke();
+            #region 点2(3/2pi Y)
+            GlobalPulseParams.SetGlobalPulseLength("CustomXLength", GlobalPulseParams.GetGlobalPulseLength("3HalfPiX"));
+
+            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+
+            double sigX3 = pack.GetPhotonsAtIndex(0).Sum();
+            double referenceX3 = pack.GetPhotonsAtIndex(1).Sum();
+
+            if (sigX3 == 0) sigX3 = double.NaN;
+            if (referenceX3 == 0) referenceX3 = double.NaN;
+
+            double tempcontrastX3 = double.NaN;
+            try
+            {
+                tempcontrastX3 = (sigX3 - referenceX3) / (double)referenceX3;
+            }
+            catch (Exception)
+            {
+            }
+            #endregion
+            JudgeThreadEndOrResumeAction?.Invoke();
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y对比度", "对比度数据", tempcontrastY, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y对比度", "对比度数据", tempcontrastY3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X对比度", "对比度数据", tempcontrastX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X对比度", "对比度数据", tempcontrastX3, new StandardDataProcess()));
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 平均光子数", "荧光数据", referenceY, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 信号光子数", "荧光数据", sigY, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 平均光子数", "荧光数据", referenceY3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 信号光子数", "荧光数据", sigY3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 平均光子数", "荧光数据", referenceX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 信号光子数", "荧光数据", sigX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 平均光子数", "荧光数据", referenceX3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 信号光子数", "荧光数据", sigX3, new StandardDataProcess()));
+
+            return new List<object>();
         }
 
         private void SetSequenceCount(SequenceDataAssemble obj)
@@ -312,8 +251,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 int spintime = GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime");
                 foreach (var ch in obj.Channels)
                 {
-                    ///Pi/2 Y脉冲的位置
-                    var halfpiys = ch.Peaks.Where((x) => x.PeakName == "HalfPiY").Select((x) => ch.Peaks.IndexOf(x)).ToList();
+                    ///Pi/2 脉冲的位置
+                    var halfpiys = ch.Peaks.Where((x) => x.PeakName == "CustomYLength" || x.PeakName == "CustomXLength").Select((x) => ch.Peaks.IndexOf(x)).ToList();
                     halfpiys.Sort();
                     halfpiys.Reverse();
                     int signalch = halfpiys.Last();
@@ -367,23 +306,28 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void AfterLockInExpEventWithoutAFM()
         {
+            double cY = MultiLoopScanData.GetAverageData(listdata, "PI/2 Y对比度", "对比度数据")[0];
+            double cY3 = MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y对比度", "对比度数据")[0];
+            double cX = MultiLoopScanData.GetAverageData(listdata, "PI/2 X对比度", "对比度数据")[0];
+            double cX3 = MultiLoopScanData.GetAverageData(listdata, "3PI/2 X对比度", "对比度数据")[0];
             //设置输出
-            OutputParams.Add(new Param<double>("信号光子计数", Sig, "SignalCount"));
-            OutputParams.Add(new Param<double>("参考光子计数", Ref, "ReferenceCount"));
-            OutputParams.Add(new Param<double>("对比度", contrast, "Contrast"));
-            OutputParams.Add(new Param<double>("对比度标准差", sigma, "Error"));
-            OutputParams.Add(new Param<double>("信号光子计数2", Sig2, "SignalCount2"));
-            OutputParams.Add(new Param<double>("参考光子计数2", Ref2, "ReferenceCount2"));
-            OutputParams.Add(new Param<double>("对比度2", contrast2, "Contrast2"));
-            OutputParams.Add(new Param<double>("对比度标准差2", sigma2, "Error2"));
-            OutputParams.Add(new Param<double>("对比度差值", contrast2 - contrast, "Det"));
-            if (GetInputParamValueByName("SingleContrast"))
-            {
-                OutputParams.Add(new Param<double>("Rabi对比度", LowContrast, "RabiContrast"));
-                OutputParams.Add(new Param<double>("归一化对比度1", NormalizedContrast1, "NomContrast1"));
-                OutputParams.Add(new Param<double>("归一化对比度2", NormalizedContrast2, "NomContrast2"));
-                OutputParams.Add(new Param<double>("归一化对比度差值", NormalizedContrast1 - NormalizedContrast2, "NomContrastDet"));
-            }
+            OutputParams.Add(new Param<double>("PI/2 Y对比度", cY, "ContrastY") { GroupName = "对比度数据" });
+            OutputParams.Add(new Param<double>("3PI/2 Y对比度", cY3, "ContrastY3") { GroupName = "对比度数据" });
+            OutputParams.Add(new Param<double>("PI/2 X对比度", cX, "ContrastX") { GroupName = "对比度数据" });
+            OutputParams.Add(new Param<double>("3PI/2 X对比度", cX3, "ContrastX3") { GroupName = "对比度数据" });
+            OutputParams.Add(new Param<double>("对比度差值", cY3 - cY, "DetCon") { GroupName = "对比度数据" });
+            OutputParams.Add(new Param<double>("归一化对比度[(3pi/2Y-pi/2Y)/(pi/2X-3pi/2X)]", (cY3 - cY) / (cX - cX3), "NContrast") { GroupName = "对比度数据" });
+            OutputParams.Add(new Param<double>("还原相位(度)", Math.Atan2(cY3 - cY, cX - cX3) * 180 / Math.PI, "Phase") { GroupName = "对比度数据" });
+
+            OutputParams.Add(new Param<double>("PI/2 Y 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 Y 信号光子数", "荧光数据")[0], "SignalCountY") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("PI/2 Y 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 Y 平均光子数", "荧光数据")[0], "ReferenceCountY") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 Y 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y 信号光子数", "荧光数据")[0], "SignalCountY3") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 Y 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y 平均光子数", "荧光数据")[0], "ReferenceCountY3") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("PI/2 X 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 X 信号光子数", "荧光数据")[0], "SignalCountX") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("PI/2 X 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 X 平均光子数", "荧光数据")[0], "ReferenceCountX") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 X 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 X 信号光子数", "荧光数据")[0], "SignalCountX3") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 X 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 X 平均光子数", "荧光数据")[0], "ReferenceCountX3") { GroupName = "荧光数据" });
+
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
                 //修改信号源强度

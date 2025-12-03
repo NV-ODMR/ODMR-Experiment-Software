@@ -220,11 +220,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             //进行实验
             ODMRExpObject exp = RunSubExperimentBlock(1, GetInputParamValueByName("ShowSubMenu"));
             JudgeThreadEndOrResumeAction?.Invoke();
+
+            Get1DChartDataSource("扫描点序号", "一维扫描数据").Add(scanPoints.GetNearestIndex(currentloc));
             //获取输出参数
             double value = 0;
-            Get1DChartDataSource("扫描点序号", "一维扫描数据").Add(scanPoints.GetNearestIndex(currentloc));
             foreach (var item in exp.OutputParams)
             {
+                if (item.GroupName != "")
+                {
+                    var xdata = Get1DChartData("扫描点序号", item.GroupName);
+                    if (xdata == null)
+                    {
+                        xdata = new NumricChartData1D("扫描点序号", item.GroupName, ChartDataType.X);
+                        D1ChartDatas.Add(xdata);
+                    }
+                    (xdata as NumricChartData1D).Data.Add(scanPoints.GetNearestIndex(currentloc));
+                }
                 if (item.RawValue is bool)
                 {
                     value = (bool)item.RawValue ? 1 : 0;
@@ -241,15 +252,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 {
                     value = (float)item.RawValue;
                 }
-                var data = Get1DChartData(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "一维扫描数据");
+                var data = Get1DChartData(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, item.GroupName == "" ? "一维扫描数据" : item.GroupName);
                 if (data == null)
                 {
-                    data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, "一维扫描数据", ChartDataType.Y);
+                    data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, item.GroupName == "" ? "一维扫描数据" : item.GroupName, ChartDataType.Y);
                     D1ChartDatas.Add(data);
                     UpdatePlotChart();
                 }
                 (data as NumricChartData1D).Data.Add(value);
             }
+            UpdatePlotChart();
             //刷新形貌数据
             var afm = Get1DChartDataSource("AFM形貌数据(PID输出)", "一维扫描数据");
             afm.Add((GetDeviceByName("LockIn") as LockinInfo).Device.PIDValue);

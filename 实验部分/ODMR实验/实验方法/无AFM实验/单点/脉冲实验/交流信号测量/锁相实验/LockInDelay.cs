@@ -155,8 +155,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
 
             PulsePhotonPack pack = null;
-
-            pack = DoLockInPulseExp("CMPG", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
+            pack = DoLockInPulseExp("CMPGY", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
            GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             Sig = pack.GetPhotonsAtIndex(0).Sum();
@@ -198,7 +198,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 foreach (var ch in obj.Channels)
                 {
                     ///Pi/2 Y脉冲的位置
-                    var halfpiys = ch.Peaks.Where((x) => x.PeakName == "HalfPiY").Select((x) => ch.Peaks.IndexOf(x)).ToList();
+                    var halfpiys = ch.Peaks.Where((x) => x.PeakName == "CustomYLength" || x.PeakName == "CustomXLength").Select((x) => ch.Peaks.IndexOf(x)).ToList();
                     halfpiys.Sort();
                     halfpiys.Reverse();
                     int signalch = halfpiys.Last();

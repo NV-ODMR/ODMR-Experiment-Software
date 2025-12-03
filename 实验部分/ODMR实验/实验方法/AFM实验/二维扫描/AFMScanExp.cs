@@ -219,12 +219,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 {
                     value = (float)item.RawValue;
                 }
-                var data = Get2DChartData(exp.ODMRExperimentName + ":" + item.Description, "二维扫描数据");
+                var data = Get2DChartData(exp.ODMRExperimentName + ":" + item.Description, item.GroupName == "" ? "二维扫描数据" : item.GroupName);
                 if (data == null)
                 {
                     data = new ChartData2D(new FormattedDataSeries2D(D2ScanRange.XCount, D2ScanRange.XLo, D2ScanRange.XHi, D2ScanRange.YCount, D2ScanRange.YLo, D2ScanRange.YHi)
                     { XName = "轴X位置", YName = "轴Y位置", ZName = exp.ODMRExperimentName + ":" + item.Description })
-                    { GroupName = "二维扫描数据" };
+                    { GroupName = item.GroupName == "" ? "二维扫描数据" : item.GroupName };
                     D2ChartDatas.Add(data);
                     UpdatePlotChart();
                 }
