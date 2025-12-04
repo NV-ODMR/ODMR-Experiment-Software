@@ -138,11 +138,11 @@ namespace ODMR_Lab.设备部分.电源
 
         private void ChannelContextMenuEvent(int arg1, int arg2, object arg3)
         {
-            PowerMeterInfo info = arg3 as PowerMeterInfo;
+            PowerChannelInfo info = arg3 as PowerChannelInfo;
             #region 参数设置
             if (arg1 == 0)
             {
-                ParameterWindow window = new ParameterWindow(info.Device, Window.GetWindow(this));
+                ParameterWindow window = new ParameterWindow(info.Channel, Window.GetWindow(this));
                 window.ShowDialog();
             }
             #endregion

@@ -129,6 +129,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             var cont = signal.Zip(refe, new Func<double, double, double>((s, r) => { return (s - r) / r; }));
             (Get1DChartData("对比度", "Delay测试数据") as NumricChartData1D).Data = cont.ToList();
 
+            (Get1DChartData("信号光子数3PI/2", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "信号光子数3PI/2", "Delay测试数据");
+            (Get1DChartData("参考光子数3PI/2", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "参考光子数3PI/2", "Delay测试数据");
+            var signal2 = MultiLoopScanData.GetSumData(list, "信号光子数3PI/2", "Delay测试数据");
+            var refe2 = MultiLoopScanData.GetSumData(list, "参考光子数3PI/2", "Delay测试数据");
+            var cont2 = signal2.Zip(refe2, new Func<double, double, double>((s, r) => { return (s - r) / r; }));
+            (Get1DChartData("对比度3PI/2", "Delay测试数据") as NumricChartData1D).Data = cont2.ToList();
+
             (Get1DChartData("时间(ns)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
             (Get1DChartData("信号光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "信号光子数", "Delay测试数据");
             (Get1DChartData("参考光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "参考光子数", "Delay测试数据");
@@ -138,7 +145,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             UpdatePlotChartFlow(true);
         }
 
-        private void HahnEchoExp(out double contrast, out double Sig, out double Ref)
+        private void HahnEchoExp(out double contrast, out double Sig, out double Ref, bool Is3HalfPi = false)
         {
             //设置HahnEchoTime
             //XPi脉冲时间
@@ -155,7 +162,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
 
             PulsePhotonPack pack = null;
-            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength(Is3HalfPi ? "3HalfPiY" : "HalfPiY"));
             pack = DoLockInPulseExp("CMPGY", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
            GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
@@ -223,12 +230,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)arg3);
             JudgeThreadEndOrResumeAction();
-            HahnEchoExp(out double contrast, out double sig, out double reference);
+            HahnEchoExp(out double contrast, out double sig, out double reference, false);
+            HahnEchoExp(out double contrast2, out double sig2, out double reference2, true);
 
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("时间(ns)", "Delay测试数据", arg3, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("信号光子数", "Delay测试数据", sig, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("参考光子数", "Delay测试数据", reference, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("对比度", "Delay测试数据", contrast, new StandardDataProcess()));
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("信号光子数3PI/2", "Delay测试数据", sig2, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("参考光子数3PI/2", "Delay测试数据", reference2, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("对比度3PI/2", "Delay测试数据", contrast2, new StandardDataProcess()));
 
             return new List<object>();
         }
@@ -245,6 +257,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 new NumricChartData1D("对比度","Delay测试数据",ChartDataType.Y),
                 new NumricChartData1D("信号光子数","Delay测试数据",ChartDataType.Y),
                 new NumricChartData1D("参考光子数","Delay测试数据",ChartDataType.Y),
+                new NumricChartData1D("对比度3PI/2","Delay测试数据",ChartDataType.Y),
+                new NumricChartData1D("信号光子数3PI/2","Delay测试数据",ChartDataType.Y),
+                new NumricChartData1D("参考光子数3PI/2","Delay测试数据",ChartDataType.Y),
 
                 new NumricChartData1D("时间(ns)","方差",ChartDataType.X),
                 new NumricChartData1D("对比度","方差",ChartDataType.Y),
