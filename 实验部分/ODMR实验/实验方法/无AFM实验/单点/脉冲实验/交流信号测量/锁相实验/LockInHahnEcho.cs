@@ -29,6 +29,7 @@ using ODMR_Lab.设备部分.相机_翻转镜;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
+using ODMR_Lab.设备部分.电源;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -50,9 +51,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("序列循环次数",1000,"SeqLoopCount"){Helper="扫描每个点时板卡序列的内部循环次数" },
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+
+            new Param<double>("90度 脉冲电压(V)",0,"V90"),
+            new Param<double>("180度 脉冲电压(V)",0,"V180"),
+            new Param<double>("270度脉冲电压(V)",0,"V270"),
+
             new Param<int>("单点超时时间",10000,"TimeOut"){ Helper="每个时间点扫描的时间上限,超时则跳过此点" },
             new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"){ Helper = "当选择此选项时,在进行此实验之前会使控制锁相信号的继电器打开,实验结束后则会关闭" },
             new Param<bool>("每点重新确定微波频率",false,"ConfirmCW"){ Helper = "当选择此选项时,在进行HahnEcho实验之前会先扫描CW谱来确定共振频率,具体的扫描参数由子实验确定" },
+            new Param<bool>("每点重新确定拉比频率",false,"ConfirmRabi"){ Helper = "当选择此选项时,在进行HahnEcho实验之前会先做拉比实验来确定振荡频率,具体的扫描参数由子实验确定" },
+
             new Param<int>("序列阶数",1,"SequenceCount"){ Helper = "选择需要积累多少个周期的信号" },
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
@@ -60,6 +68,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         };
         public override List<KeyValuePair<DeviceTypes, Param<string>>> LockInExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.电源,new Param<string>("相移器电源","","Power")),
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
@@ -69,7 +78,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             return new List<ODMRExpObject>()
             {
-                new AdjustedCW()
+                new AdjustedCW(),
+                new Rabi()
             };
         }
 
@@ -82,14 +92,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         private int CurrentLoop = 0;
 
+        private int hpix = 0;
+        private int h3pix = 0;
+        private int pix = 0;
+        private int hpiy = 0;
+        private int h3piy = 0;
+        private int piy = 0;
+        private int spinechotime = 0;
+
+        private int origin_hpix = 0;
+        private int origin_pix = 0;
+
         public override void ODMRExpWithoutAFM()
         {
-            //设置HahnEchoTime
-            //XPi脉冲时间
-            int xLength = GlobalPulseParams.GetGlobalPulseLength("PiX");
-            double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
-            int echotime = (int)((signaltime - xLength) / 2);
-
             MultiScan1DSession<object> Session = new MultiScan1DSession<object>();
             Session.FirstScanEvent = ScanEvent;
             Session.ScanEvent = ScanEvent;
@@ -120,22 +135,44 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             PulsePhotonPack pack = null;
 
-            #region 点1(1/2pi Y)
-            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
+            PowerChannelInfo channel = GetDeviceByName("Power") as PowerChannelInfo;
 
-            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+            GlobalPulseParams.SetGlobalPulseLength("HalfPiX", hpix);
+            GlobalPulseParams.SetGlobalPulseLength("PiX", pix);
+
+            //设置HahnEchoTime
+            //XPi脉冲时间
+            int xLength = pix;
+            double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
+            spinechotime = (int)((signaltime - xLength) / 2);
+            int order = GetInputParamValueByName("SequenceCount");
+            if (order != 1)
+                spinechotime = (int)(signaltime / 2 - xLength);
+            GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", spinechotime);
+
+
+            #region 点1(1/2pi Y)
+            channel.Channel.Voltage = GetInputParamValueByName("V90");
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", hpiy);
+
+            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
                 GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             double sigY = pack.GetPhotonsAtIndex(0).Sum();
-            double referenceY = pack.GetPhotonsAtIndex(1).Sum();
+            double reference0Y = pack.GetPhotonsAtIndex(1).Sum();
+            double reference1Y = pack.GetPhotonsAtIndex(2).Sum();
 
             if (sigY == 0) sigY = double.NaN;
-            if (referenceY == 0) referenceY = double.NaN;
+            if (reference0Y == 0) reference0Y = double.NaN;
 
             double tempcontrastY = double.NaN;
+            double temppY = double.NaN;
             try
             {
-                tempcontrastY = (sigY - referenceY) / (double)referenceY;
+                tempcontrastY = (sigY - reference0Y) / (double)reference0Y;
+                temppY = (sigY - reference1Y) / (reference0Y - reference1Y);
+                if (temppY > 1) temppY = 1;
+                if (temppY < 0) temppY = 0;
             }
             catch (Exception)
             {
@@ -143,21 +180,56 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             #endregion
             JudgeThreadEndOrResumeAction?.Invoke();
             #region 点2(3/2pi Y)
-            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("3HalfPiY"));
 
-            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+            //channel.Channel.Voltage = GetInputParamValueByName("V270");
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", h3piy);
+
+            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
                 GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             double sigY3 = pack.GetPhotonsAtIndex(0).Sum();
-            double referenceY3 = pack.GetPhotonsAtIndex(1).Sum();
+            double reference0Y3 = pack.GetPhotonsAtIndex(1).Sum();
+            double reference1Y3 = pack.GetPhotonsAtIndex(2).Sum();
 
             if (sigY3 == 0) sigY3 = double.NaN;
-            if (referenceY3 == 0) referenceY3 = double.NaN;
+            if (reference0Y3 == 0) reference0Y3 = double.NaN;
 
             double tempcontrastY3 = double.NaN;
+            double temppY3 = double.NaN;
             try
             {
-                tempcontrastY3 = (sigY3 - referenceY3) / (double)referenceY3;
+                tempcontrastY3 = (sigY3 - reference0Y3) / (double)reference0Y3;
+                temppY3 = (sigY3 - reference1Y3) / (reference0Y3 - reference1Y3);
+                if (temppY3 > 1) temppY3 = 1;
+                if (temppY3 < 0) temppY3 = 0;
+            }
+            catch (Exception)
+            {
+            }
+            #endregion
+            JudgeThreadEndOrResumeAction?.Invoke();
+            #region 点2(-1/2pi X)
+            //channel.Channel.Voltage = GetInputParamValueByName("V180");
+            GlobalPulseParams.SetGlobalPulseLength("CustomXLength", h3pix);
+
+            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+
+            double sigX3 = pack.GetPhotonsAtIndex(0).Sum();
+            double reference0X3 = pack.GetPhotonsAtIndex(1).Sum();
+            double reference1X3 = pack.GetPhotonsAtIndex(2).Sum();
+
+            if (sigX3 == 0) sigX3 = double.NaN;
+            if (reference0X3 == 0) reference0X3 = double.NaN;
+
+            double tempcontrastX3 = double.NaN;
+            double temppX3 = double.NaN;
+            try
+            {
+                tempcontrastX3 = (sigX3 - reference0X3) / (double)reference0X3;
+                temppX3 = (sigX3 - reference1X3) / (reference0X3 - reference1X3);
+                if (temppX3 > 1) temppX3 = 1;
+                if (temppX3 < 0) temppX3 = 0;
             }
             catch (Exception)
             {
@@ -165,43 +237,26 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             #endregion
             JudgeThreadEndOrResumeAction?.Invoke();
             #region 点3(1/2pi X)
-            GlobalPulseParams.SetGlobalPulseLength("CustomXLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiX"));
+            GlobalPulseParams.SetGlobalPulseLength("CustomXLength", hpix);
 
-            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
                 GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             double sigX = pack.GetPhotonsAtIndex(0).Sum();
-            double referenceX = pack.GetPhotonsAtIndex(1).Sum();
+            double reference0X = pack.GetPhotonsAtIndex(1).Sum();
+            double reference1X = pack.GetPhotonsAtIndex(2).Sum();
 
             if (sigX == 0) sigX = double.NaN;
-            if (referenceX == 0) referenceX = double.NaN;
+            if (reference0X == 0) reference0X = double.NaN;
 
             double tempcontrastX = double.NaN;
+            double temppX = double.NaN;
             try
             {
-                tempcontrastX = (sigX - referenceX) / (double)referenceX;
-            }
-            catch (Exception)
-            {
-            }
-            #endregion
-            JudgeThreadEndOrResumeAction?.Invoke();
-            #region 点2(3/2pi Y)
-            GlobalPulseParams.SetGlobalPulseLength("CustomXLength", GlobalPulseParams.GetGlobalPulseLength("3HalfPiX"));
-
-            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
-                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
-
-            double sigX3 = pack.GetPhotonsAtIndex(0).Sum();
-            double referenceX3 = pack.GetPhotonsAtIndex(1).Sum();
-
-            if (sigX3 == 0) sigX3 = double.NaN;
-            if (referenceX3 == 0) referenceX3 = double.NaN;
-
-            double tempcontrastX3 = double.NaN;
-            try
-            {
-                tempcontrastX3 = (sigX3 - referenceX3) / (double)referenceX3;
+                tempcontrastX = (sigX - reference0X) / (double)reference0X;
+                temppX = (sigX - reference1X) / (reference0X - reference1X);
+                if (temppX > 1) temppX = 1;
+                if (temppX < 0) temppX = 0;
             }
             catch (Exception)
             {
@@ -214,13 +269,25 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X对比度", "对比度数据", tempcontrastX, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X对比度", "对比度数据", tempcontrastX3, new StandardDataProcess()));
 
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 平均光子数", "荧光数据", referenceY, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y布居度", "亮态布居度数据", temppY, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y布居度", "亮态布居度数据", temppY3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X布居度", "亮态布居度数据", temppX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X布居度", "亮态布居度数据", temppX3, new StandardDataProcess()));
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 平均光子数", "荧光数据", reference0Y, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 暗态光子数", "荧光数据", reference1Y, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 信号光子数", "荧光数据", sigY, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 平均光子数", "荧光数据", referenceY3, new StandardDataProcess()));
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 平均光子数", "荧光数据", reference0Y3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 暗态光子数", "荧光数据", reference1Y3, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 信号光子数", "荧光数据", sigY3, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 平均光子数", "荧光数据", referenceX, new StandardDataProcess()));
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 平均光子数", "荧光数据", reference0X, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 暗态光子数", "荧光数据", reference1X, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 信号光子数", "荧光数据", sigX, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 平均光子数", "荧光数据", referenceX3, new StandardDataProcess()));
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 平均光子数", "荧光数据", reference0X3, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 暗态光子数", "荧光数据", reference1X3, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 信号光子数", "荧光数据", sigX3, new StandardDataProcess()));
 
             return new List<object>();
@@ -242,13 +309,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     }
                 }
             }
-            //为每个通道添加对应阶数的序列
+
+            #region 为每个通道添加对应阶数的序列
             int order = GetInputParamValueByName("SequenceCount");
             if (order > 1)
             {
                 int det = order - 1;
-                int pix = GlobalPulseParams.GetGlobalPulseLength("PiX");
-                int spintime = GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime");
                 foreach (var ch in obj.Channels)
                 {
                     ///Pi/2 脉冲的位置
@@ -261,15 +327,31 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                         List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
                         for (int i = 0; i < det; i++)
                         {
-                            segs.Add(new SequenceWaveSeg("PiX", pix, (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("SpinEchoTime", spintime, WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("PiX", pix, (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("SpinEchoTime", spintime, WaveValues.Zero, ch));
+                            segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
+                            segs.Add(new SequenceWaveSeg("SpinEchoTime", GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime"), WaveValues.Zero, ch));
+                            segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
+                            segs.Add(new SequenceWaveSeg("SpinEchoTime", GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime"), WaveValues.Zero, ch));
                         }
                         ch.Peaks.InsertRange(item, segs);
                     }
                 }
             }
+            #endregion
+
+            #region 计算Delay等待时间
+            var cha = obj.Channels[0];
+            int triggerind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").First());
+            int countind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "CountWait").First());
+            int totalexptime = 0;
+            for (int i = triggerind + 1; i < countind; i++)
+            {
+                totalexptime += cha.Peaks[i].PeakSpan;
+            }
+            int lighttime = totalexptime - GlobalPulseParams.GetGlobalPulseLength("LasetPolar") - GlobalPulseParams.GetGlobalPulseLength("LaserWait");
+            int darktime = lighttime - GlobalPulseParams.GetGlobalPulseLength("PiX");
+            GlobalPulseParams.SetGlobalPulseLength("LightHahnechoWaitTime", lighttime);
+            GlobalPulseParams.SetGlobalPulseLength("DarkhahnechoWaitTime", darktime);
+            #endregion
 
         }
 
@@ -295,6 +377,55 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 }
                 OutputParams.Add(new Param<double>("谱峰位置", peak, "CWPeakLoc"));
             }
+            origin_pix = GlobalPulseParams.GetGlobalPulseLength("PiX");
+            origin_hpix = GlobalPulseParams.GetGlobalPulseLength("HalfPiX");
+
+            //如果要先测Rabi
+            if (GetInputParamValueByName("ConfirmRabi") == true)
+            {
+                var exp = RunSubExperimentBlock(1, true);
+                //如果Pi脉冲长度大于测量范围的一半则把测量范围扩大2倍重新测
+                var datx = exp.Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+                var daty = exp.Get1DChartDataSource("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+                if (datx.IndexOf(datx.Min()) > datx.Count / 2 || daty.IndexOf(daty.Min()) > daty.Count / 2)
+                {
+                    exp = RunSubExperimentBlock(1, true, new List<ParamB>() { new Param<int>("时间最大值(ns)", exp.GetInputParamValueByName("Rabimax") * 2, "Rabimax") });
+                }
+                hpix = (int)exp.GetOutputParamValueByName("X_HalfPiLength");
+                h3pix = (int)exp.GetOutputParamValueByName("X_3HalfPiLength");
+                h3piy = (int)exp.GetOutputParamValueByName("Y_3HalfPiLength");
+                hpiy = (int)exp.GetOutputParamValueByName("Y_HalfPiLength");
+                pix = (int)exp.GetOutputParamValueByName("X_PiLength");
+                piy = (int)exp.GetOutputParamValueByName("Y_PiLength");
+            }
+            else
+            {
+                hpix = GlobalPulseParams.GetGlobalPulseLength("HalfPiX");
+                h3pix = GlobalPulseParams.GetGlobalPulseLength("3HalfPiX");
+                h3piy = GlobalPulseParams.GetGlobalPulseLength("3HalfPiY");
+                hpiy = GlobalPulseParams.GetGlobalPulseLength("HalfPiY");
+                pix = GlobalPulseParams.GetGlobalPulseLength("PiX");
+                piy = GlobalPulseParams.GetGlobalPulseLength("PiY");
+            }
+
+            if (pix > 1000)
+            {
+                pix = 1000;
+                hpix = 500;
+                h3pix = 1500;
+            }
+            if (piy > 1000)
+            {
+                piy = 1000;
+                hpiy = 500;
+                h3piy = 1500;
+            }
+            OutputParams.Add(new Param<double>("PI/2 X脉冲长度", hpix, "XHalfPi") { GroupName = "脉冲长度" });
+            OutputParams.Add(new Param<double>("PI/2 Y脉冲长度", hpiy, "YHalfPi") { GroupName = "脉冲长度" });
+            OutputParams.Add(new Param<double>("PI X脉冲长度", pix, "XPi") { GroupName = "脉冲长度" });
+            OutputParams.Add(new Param<double>("PI Y脉冲长度", piy, "YPi") { GroupName = "脉冲长度" });
+            OutputParams.Add(new Param<double>("3PI/2 X脉冲长度", pix, "X3HalfPi") { GroupName = "脉冲长度" });
+            OutputParams.Add(new Param<double>("3PI/2 Y脉冲长度", piy, "Y3HalfPi") { GroupName = "脉冲长度" });
 
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
@@ -306,6 +437,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override void AfterLockInExpEventWithoutAFM()
         {
+            #region 恢复全局脉冲长度
+            GlobalPulseParams.SetGlobalPulseLength("HalfPiX", origin_hpix);
+            GlobalPulseParams.SetGlobalPulseLength("PiX", origin_pix);
+            #endregion
+
             double cY = MultiLoopScanData.GetAverageData(listdata, "PI/2 Y对比度", "对比度数据")[0];
             double cY3 = MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y对比度", "对比度数据")[0];
             double cX = MultiLoopScanData.GetAverageData(listdata, "PI/2 X对比度", "对比度数据")[0];
@@ -318,15 +454,37 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             OutputParams.Add(new Param<double>("对比度差值", cY3 - cY, "DetCon") { GroupName = "对比度数据" });
             OutputParams.Add(new Param<double>("归一化对比度[(3pi/2Y-pi/2Y)/(pi/2X-3pi/2X)]", (cY3 - cY) / (cX - cX3), "NContrast") { GroupName = "对比度数据" });
             OutputParams.Add(new Param<double>("还原相位(度)", Math.Atan2(cY3 - cY, cX - cX3) * 180 / Math.PI, "Phase") { GroupName = "对比度数据" });
+            OutputParams.Add(new Param<double>("相位角速度(度/ns)", Math.Atan2(cY3 - cY, cX - cX3) * 180 / Math.PI / (2 * spinechotime), "PhaseV") { GroupName = "对比度数据" });
+
+            double pY = MultiLoopScanData.GetAverageData(listdata, "PI/2 Y布居度", "亮态布居度数据")[0];
+            double pY3 = MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y布居度", "亮态布居度数据")[0];
+            double pX = MultiLoopScanData.GetAverageData(listdata, "PI/2 X布居度", "亮态布居度数据")[0];
+            double pX3 = MultiLoopScanData.GetAverageData(listdata, "3PI/2 X布居度", "亮态布居度数据")[0];
+            //设置输出
+            OutputParams.Add(new Param<double>("PI/2 Y布居度", pY, "PY") { GroupName = "亮态布居度数据" });
+            OutputParams.Add(new Param<double>("3PI/2 Y布居度", pY3, "PY3") { GroupName = "亮态布居度数据" });
+            OutputParams.Add(new Param<double>("PI/2 X布居度", pX, "PX") { GroupName = "亮态布居度数据" });
+            OutputParams.Add(new Param<double>("3PI/2 X布居度", pX3, "PX3") { GroupName = "亮态布居度数据" });
+            OutputParams.Add(new Param<double>("布居度差值", pY3 - pY, "DetP") { GroupName = "亮态布居度数据" });
+            OutputParams.Add(new Param<double>("归一化布居度[(3pi/2Y-pi/2Y)/(pi/2X-3pi/2X)]", (pY3 - pY) / (pX - pX3), "NP") { GroupName = "亮态布居度数据" });
+            OutputParams.Add(new Param<double>("还原相位(度)", Math.Atan2(pY3 - pY, pX - pX3) * 180 / Math.PI, "PPhase") { GroupName = "亮态布居度数据" });
+            OutputParams.Add(new Param<double>("相位角速度(度/ns)", Math.Atan2(pY3 - pY, pX - pX3) * 180 / Math.PI / (2 * spinechotime), "PPhaseV") { GroupName = "亮态布居度数据" });
 
             OutputParams.Add(new Param<double>("PI/2 Y 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 Y 信号光子数", "荧光数据")[0], "SignalCountY") { GroupName = "荧光数据" });
-            OutputParams.Add(new Param<double>("PI/2 Y 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 Y 平均光子数", "荧光数据")[0], "ReferenceCountY") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("PI/2 Y 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 Y 平均光子数", "荧光数据")[0], "ReferenceCount0Y") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("PI/2 Y 暗态光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 Y 暗态光子数", "荧光数据")[0], "ReferenceCount1Y") { GroupName = "荧光数据" });
+
             OutputParams.Add(new Param<double>("3PI/2 Y 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y 信号光子数", "荧光数据")[0], "SignalCountY3") { GroupName = "荧光数据" });
-            OutputParams.Add(new Param<double>("3PI/2 Y 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y 平均光子数", "荧光数据")[0], "ReferenceCountY3") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 Y 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y 平均光子数", "荧光数据")[0], "ReferenceCount0Y3") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 Y 暗态光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 Y 暗态光子数", "荧光数据")[0], "ReferenceCount1Y3") { GroupName = "荧光数据" });
+
             OutputParams.Add(new Param<double>("PI/2 X 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 X 信号光子数", "荧光数据")[0], "SignalCountX") { GroupName = "荧光数据" });
-            OutputParams.Add(new Param<double>("PI/2 X 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 X 平均光子数", "荧光数据")[0], "ReferenceCountX") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("PI/2 X 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 X 平均光子数", "荧光数据")[0], "ReferenceCount0X") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("PI/2 X 暗态光子计数", MultiLoopScanData.GetAverageData(listdata, "PI/2 X 暗态光子数", "荧光数据")[0], "ReferenceCount1X") { GroupName = "荧光数据" });
+
             OutputParams.Add(new Param<double>("3PI/2 X 信号光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 X 信号光子数", "荧光数据")[0], "SignalCountX3") { GroupName = "荧光数据" });
-            OutputParams.Add(new Param<double>("3PI/2 X 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 X 平均光子数", "荧光数据")[0], "ReferenceCountX3") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 X 参考光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 X 平均光子数", "荧光数据")[0], "ReferenceCount0X3") { GroupName = "荧光数据" });
+            OutputParams.Add(new Param<double>("3PI/2 X 暗态光子计数", MultiLoopScanData.GetAverageData(listdata, "3PI/2 X 暗态光子数", "荧光数据")[0], "ReferenceCount1X3") { GroupName = "荧光数据" });
 
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {

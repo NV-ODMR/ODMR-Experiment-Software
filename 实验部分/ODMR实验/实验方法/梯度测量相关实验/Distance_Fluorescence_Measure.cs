@@ -51,6 +51,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             new Param<int>("测量轮数",5,"LoopCount"),
             new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"),
             new Param<int>("超时时间(ms)",1000,"TimeOut"),
+            new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>();
         public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
@@ -157,7 +158,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         {
             //下针到指定距离
             AFMFloatDrop floadrop = new AFMFloatDrop();
-            var result = floadrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), arg3 * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I") }, GetDeviceByName("LockIn"));
+            var result = floadrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), arg3 * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
             if (((bool)result[0]) == false) throw new Exception();
             //测量光子计数
             PulsePhotonPack photonpack = DoPulseExp("DelayCountTest", 2870, -20, GetInputParamValueByName("SeqLoopCount"), 2, GetInputParamValueByName("TimeOut"));

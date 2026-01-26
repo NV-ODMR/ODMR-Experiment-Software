@@ -22,7 +22,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
         Thread AFMFloatListener = null;
 
         /// <summary>
-        /// AFM悬浮下针操作：输入参数：最大限制电压(V),下到针之后抬高的距离(V),参数I
+        /// AFM悬浮下针操作：输入参数：最大限制电压(V),下到针之后抬高的距离(V),参数I,PID采样时间
         /// 设备:LockIn
         /// 返回参数:下针结果(Bool,成功为True)
         /// </summary>
@@ -63,11 +63,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             {
                 return new List<object>() { false };
             }
-            //如果下到则撤针一定距离以悬浮测量
+            //如果下到则撤针一定距离以悬浮测量(设置一定长度的采样时间,取这段时间中的PID平均值作为高度数据)
             else
             {
-                Thread.Sleep(1000);
-                double initheight = lockin.Device.PIDValue;
+                int sampletime = 0;
+                int Totalsampletime = (int)InputParams[3];
+                List<double> pids = new List<double>();
+                while (sampletime < Totalsampletime)
+                {
+                    double temppid = lockin.Device.PIDValue;
+                    if (!double.IsNaN(temppid))
+                        pids.Add(temppid);
+                    Thread.Sleep(50);
+                    sampletime += 50;
+                }
+
+                double initheight = pids.Average();
                 double dropheight = (double)InputParams[1];
                 double currentvalue = lockin.Device.PIDValue;
                 lockin.Device.SetPoint += 30 * 1e-3;
@@ -96,7 +107,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                     pidout2 = lockin.Device.PIDValue;
 
                     //如果达到上限或者PID输出出现下降(下到针)则结束下针
-                    while (pidout2 < lockin.Device.PIDOutputUpperLimit && Math.Abs(pidout2 - lockin.Device.PIDOutputUpperLimit) > 1e-3 && pidout2 >= pidout1)
+                    while (pidout2 < lockin.Device.PIDOutputUpperLimit && Math.Abs(pidout2 - lockin.Device.PIDOutputUpperLimit) > 1e-3 && pidout2 >= pidout1 && pidout2 > 1e-3)
                     {
                         pidout1 = lockin.Device.PIDValue;
                         Thread.Sleep(50);
@@ -109,7 +120,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                     //设置输出上限
                     lockin.Device.PIDOutputUpperLimit = height;
                     lockin.Device.SetPoint = setpoint;
-                    //判断是否达到上限
+                    //判断是否达到上限,如果达到上限或者小于上限则结束下针
                     time = 0;
                     while (Math.Abs(lockin.Device.PIDValue - height) > 1e-4 && time < 20000)
                     {
@@ -118,7 +129,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                     }
                     if (time >= 20000)
                     {
-                        return new List<object>() { false };
+                        //如果小于上限则认为已经下到但是接触
+                        if (lockin.Device.PIDValue < height)
+                            return new List<object>() { true };
+                        else
+                            return new List<object>() { false };
                     }
                 }
                 //持续监控,发现下降则自动降低高度

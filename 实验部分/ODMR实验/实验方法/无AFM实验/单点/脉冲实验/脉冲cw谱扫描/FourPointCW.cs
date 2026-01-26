@@ -23,6 +23,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
             new Param<double>("频率点3",2850,"Frequency3"),
             new Param<double>("频率点4",2890,"Frequency4"),
             new Param<double>("微波功率(dBm)",-20,"RFPower"),
+            new Param<int>("自由演化时间(ns)",400,"EvoTime"),
+            new Param<double>("90度电压(V)",0,"V90"),
+            new Param<double>("270度电压(V)",0,"V270"),
             new Param<int>("序列循环次数",1000,"PulseLoopCount"),
             new Param<int>("循环次数",1000,"LoopCount"),
             new Param<int>("单点扫描时间上限(ms)",0,"TimeOut"),
@@ -44,6 +47,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
         protected override int GetLoopCount()
         {
             return GetInputParamValueByName("LoopCount");
+        }
+
+        protected override int GetEvoTime()
+        {
+            return GetInputParamValueByName("EvoTime");
+        }
+
+        protected override double GetV90()
+        {
+            return GetInputParamValueByName("V90");
+        }
+        protected override double GetV270()
+        {
+            return GetInputParamValueByName("V270");
         }
 
         protected override int GetPointTimeout()

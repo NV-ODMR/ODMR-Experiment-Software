@@ -245,7 +245,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PulsePhotonSample.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PhotonSample.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\TwoPeakCW.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInSequenceTest.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\脉冲相位测试实验\LockInSequenceTest.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInEvolutionTime.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInDelayCountTest.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\脉冲cw谱扫描\AdjustedCWScan.cs" />
@@ -269,6 +269,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInDelay.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInHahnEcho.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInExpBase.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\脉冲相位测试实验\PulsePhaseTest.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\探针测试\ProbeConfocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\Distance_Fluorescence_Measure.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\梯度测量相关实验\CWLockInHahnEcho.cs" />

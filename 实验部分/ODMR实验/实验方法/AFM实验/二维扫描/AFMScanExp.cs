@@ -51,6 +51,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
             new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
             new Param<double>("悬浮下针参数I",-3,"FloatI"),
+            new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
             new Param<double>("Z扫描台电压/位移系数(μm/V)",0.876,"Z_Voltage_Displacement_Ratio"),
@@ -166,14 +167,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     if (IsFirstDrop == true)
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), (GetDeviceByName("LockIn") as LockinInfo).Device.I, GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
                         re = (bool)res[0];
                         IsFirstDrop = false;
                     }
                     else
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
                         re = (bool)res[0];
                         IsFirstDrop = false;
                     }
@@ -271,20 +272,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventBeforeDropWithAFM()
         {
-            //添加范围参数
-            OutputParams.Add(new Param<string>("扫描范围信息", D2ScanRange.ScanName + "\n" + D2ScanRange.GetDescription(), "ScanRangeInform"));
             //将位移台复位
             SetExpState("正在将位移台复位到零点...");
             NanoStageInfo infox = GetDeviceByName("ScannerX") as NanoStageInfo;
             NanoStageInfo infoy = GetDeviceByName("ScannerY") as NanoStageInfo;
-            infox.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 200000);
+            infox.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 500000);
             JudgeThreadEndOrResumeAction();
-            infoy.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 200000);
+            infoy.Device.MoveToAndWait(D2ScanRange.ScanPoints[0].LocPoint.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 500000);
             JudgeThreadEndOrResumeAction();
         }
 
         public override void PreExpEventWithAFM()
         {
+            //添加范围参数
+            OutputParams.Add(new Param<string>("扫描范围信息", D2ScanRange.ScanName + "\n" + D2ScanRange.GetDescription(), "ScanRangeInform"));
             (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             D2ChartDatas.Clear();
             D1ChartDatas.Clear();

@@ -61,6 +61,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
           new Param<double>("X扫描范围下限(mm)", double.NaN, "XScanLo"),
           new Param<double>("Y扫描范围上限(mm)", double.NaN, "YScanHi"),
           new Param<double>("Y扫描范围下限(mm)", double.NaN, "YScanLo"),
+          new Param<bool>("是否重新确定Z距离", true, "IsCalcZLoc"){ Helper=""},
+          new Param<double>("Z方向NV与磁铁距离(mm)", double.NaN, "ZDistance"){ Helper=""},
           new Param<double>("Z扫描高度(mm)", double.NaN, "ZPlane"){ Helper="定位过程中磁铁保持的高度"},
           new Param<double>("D值(Mhz)", double.NaN, "D")
         };
@@ -139,9 +141,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             JudgeThreadEndOrResumeAction?.Invoke();
             (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("YLoc"), 10000);
             JudgeThreadEndOrResumeAction?.Invoke();
-            //Z扫描
-            ScanZ(40, 60);
-            JudgeThreadEndOrResumeAction?.Invoke();
+            if (GetInputParamValueByName("IsCalcZLoc") == true)
+            {
+                //Z扫描
+                ScanZ(40, 60);
+                JudgeThreadEndOrResumeAction?.Invoke();
+            }
+            else
+            {
+                OutputParams.Add(new Param<double>("Z方向参考位置", GetInputParamValueByName("ZPlane"), "ZLoc"));
+                OutputParams.Add(new Param<double>("参考位置与NV的距离", GetInputParamValueByName("ZDistance"), "ZDistance"));
+            }
             //角度扫描
             SetExpState("正在扫描角度轴...");
             (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("ZLoc"), 10000);

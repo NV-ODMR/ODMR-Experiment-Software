@@ -52,6 +52,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("变距离测量终止点(nm)",100,"FloatHeightEnd"),
             new Param<int>("变距离测量点数",5,"FloatHeightCount"),
             new Param<double>("电压/位移系数(V/μm)",1.1416,"Voltage_Displacement_Ratio"),
+            new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
@@ -141,7 +142,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             SetExpState("下针...距离: " + Math.Round(currentvalue, 5).ToString() + "nm");
             AFMFloatDrop drop = new AFMFloatDrop();
-            drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), currentvalue / 1000 * GetInputParamValueByName("Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), }, scanner);
+            drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), currentvalue / 1000 * GetInputParamValueByName("Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, scanner);
             JudgeThreadEndOrResumeAction();
 
             if (ScanPointCount >= ScanPointGap && AllowAutoTrace)

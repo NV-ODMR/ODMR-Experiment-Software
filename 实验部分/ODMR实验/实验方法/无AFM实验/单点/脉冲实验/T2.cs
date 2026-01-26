@@ -82,6 +82,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> inputParams)
         {
             GlobalPulseParams.SetGlobalPulseLength("T2Step", (int)locvalue);
+            GlobalPulseParams.SetGlobalPulseLength("T2Res", (int)0);
 
             PulsePhotonPack pack = DoPulseExp("T2", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"));
 

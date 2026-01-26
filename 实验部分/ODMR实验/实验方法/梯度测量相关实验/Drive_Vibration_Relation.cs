@@ -60,6 +60,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             new Param<int>("驱动电压扫描点数",5,"VoltScanPoint"),
 
             new Param<bool>("子实验每轮扫描结束后重新下针",true,"RedropAfterLoop"),
+
+            new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
         };
 
         private string FluorescenceFilePath = "";
@@ -98,7 +100,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                      //重新下针
                      AFMFloatDrop floatdrop = new AFMFloatDrop();
                      var result = floatdrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
-                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I") }, GetDeviceByName("LockIn"));
+                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
                      if ((bool)result[0] == false) throw new Exception();
                      sw.Device.IsOpen = true;
                      RunSubExperimentBlock(1);
@@ -139,7 +141,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             //重新下针
             AFMFloatDrop floatdrop = new AFMFloatDrop();
             var result = floatdrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
-                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I") }, GetDeviceByName("LockIn"));
+                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
             if ((bool)result[0] == false) throw new Exception();
 
             //打开信号

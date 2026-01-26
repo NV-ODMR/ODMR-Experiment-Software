@@ -58,14 +58,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
         /// <param name="rfpower">微波功率(dbm)</param>
         /// <param name="LaserCountPulses">APD触发脉冲数,必须是偶数</param>>
         /// <returns></returns>
-        protected PulsePhotonPack DoPulseExp(string pulsename, double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout)
+        protected PulsePhotonPack DoPulseExp(string pulsename, double rffrequency, double rfpower, int loopcount, int LaserCountPulses, int timeout, Action<SequenceDataAssemble> sequenceAction = null)
         {
             //设置微波
             SignalGeneratorChannelInfo Rf = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
             Rf.Device.Frequency = rffrequency;
             Rf.Device.Amplitude = rfpower;
+            Rf.Device.Frequency = rffrequency;
+            Rf.Device.Amplitude = rfpower;
             //设置序列
             var sequence = SequenceDataAssemble.ReadFromSequenceName(pulsename);
+            sequenceAction?.Invoke(sequence);
             //设置全局参数
             foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
             {
@@ -115,6 +118,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
                 throw new Exception("APD触发脉冲数必须是偶数");
             }
         }
+
+
 
         #region 交互按钮
         private void SetGlobalParams()

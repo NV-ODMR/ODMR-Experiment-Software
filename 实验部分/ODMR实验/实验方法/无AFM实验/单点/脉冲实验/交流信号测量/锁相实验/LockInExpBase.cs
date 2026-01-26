@@ -52,6 +52,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
 
         protected abstract List<KeyValuePair<string, Action>> AddPulseInteractiveButtons();
 
+        public LockInExpBase()
+        {
+            AddDevicesToList(LockInExpDevices);
+        }
+
         /// <summary>
         /// 获取脉冲实验的光子计数,返回相邻两个计数脉冲之间的计数,失败则报错
         /// </summary>

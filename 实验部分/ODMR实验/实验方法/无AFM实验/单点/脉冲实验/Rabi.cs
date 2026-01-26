@@ -249,12 +249,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             UpdatePlotChartFlow(true);
             Show1DFittedData("拟合曲线X");
 
-            OutputParams.Add(new Param<double>("通道X Pi脉冲长度(ns)", ps_x[2] / 2 + ps_x[3], "X_PiLength"));
-            OutputParams.Add(new Param<double>("通道X Pi/2脉冲长度(ns)", ps_x[2] / 4 + ps_x[3], "X_HalfPiLength"));
-            OutputParams.Add(new Param<double>("通道X 3Pi/2脉冲长度(ns)", 3 * ps_x[2] / 4 + ps_x[3], "X_3HalfPiLength"));
-            OutputParams.Add(new Param<double>("通道X 2Pi脉冲长度(ns)", ps_x[2] + ps_x[3], "X_2PiLength"));
-            //计算平均光子计数
-            OutputParams.Add(new Param<double>("通道X 平均光子计数", Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据").Where(x => !double.IsNaN(x)).Average(), "X_AverageCount"));
             #endregion
 
             #region 计算通道Y Rabi脉冲周期
@@ -293,13 +287,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
             Show1DFittedData("拟合曲线Y");
-
-            OutputParams.Add(new Param<double>("通道Y Pi脉冲长度(ns)", ps_y[2] / 2 + ps_y[3], "Y_PiLength"));
-            OutputParams.Add(new Param<double>("通道Y Pi/2脉冲长度(ns)", ps_y[2] / 4 + ps_y[3], "Y_HalfPiLength"));
-            OutputParams.Add(new Param<double>("通道Y 3Pi/2脉冲长度(ns)", 3 * ps_y[2] / 4 + ps_y[3], "Y_3HalfPiLength"));
-            OutputParams.Add(new Param<double>("通道Y 2Pi脉冲长度(ns)", ps_y[2] + ps_y[3], "Y_2PiLength"));
-            //计算平均光子计数
-            OutputParams.Add(new Param<double>("通道Y 平均光子计数", Get1DChartDataSource("通道Y 平均光子数", "Rabi荧光数据").Average(), "Y_AverageCount"));
             #endregion
 
             //通道x结果
@@ -307,13 +294,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             int hpi_x = (int)(ps_x[2] / 4 + ps_x[3]);
             int h3pi_x = (int)(3 * ps_x[2] / 4 + ps_x[3]);
             int pi2_x = (int)(ps_x[2] + ps_x[3]);
-            if (pi_x < 0)
+            if (pi_x < 20)
                 pi_x = (int)(ps_x[2] + ps_x[2] / 2 + ps_x[3]);
-            if (hpi_x < 0)
+            if (hpi_x < 20)
                 hpi_x = (int)(ps_x[2] + ps_x[2] / 4 + ps_x[3]);
-            if (h3pi_x < 0)
+            if (h3pi_x < 20)
                 pi_x = (int)(ps_x[2] + 3 * ps_x[2] / 4 + ps_x[3]);
-            if (pi2_x < 0)
+            if (pi2_x < 20)
                 pi_x = (int)(ps_x[2] + ps_x[2] + ps_x[3]);
 
             //通道y结果
@@ -321,14 +308,29 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             int hpi_y = (int)(ps_y[2] / 4 + ps_y[3]);
             int h3pi_y = (int)(3 * ps_y[2] / 4 + ps_y[3]);
             int pi2_y = (int)(ps_y[2] + ps_y[3]);
-            if (pi_y < 0)
+            if (pi_y < 20)
                 pi_y = (int)(ps_y[2] + ps_y[2] / 2 + ps_y[3]);
-            if (hpi_y < 0)
+            if (hpi_y < 20)
                 hpi_y = (int)(ps_y[2] + ps_y[2] / 4 + ps_y[3]);
-            if (h3pi_y < 0)
+            if (h3pi_y < 20)
                 pi_y = (int)(ps_y[2] + 3 * ps_y[2] / 4 + ps_y[3]);
-            if (pi2_y < 0)
+            if (pi2_y < 20)
                 pi_y = (int)(ps_y[2] + ps_y[2] + ps_y[3]);
+
+            OutputParams.Add(new Param<double>("通道Y Pi脉冲长度(ns)", pi_y, "Y_PiLength"));
+            OutputParams.Add(new Param<double>("通道Y Pi/2脉冲长度(ns)", hpi_y, "Y_HalfPiLength"));
+            OutputParams.Add(new Param<double>("通道Y 3Pi/2脉冲长度(ns)", h3pi_y, "Y_3HalfPiLength"));
+            OutputParams.Add(new Param<double>("通道Y 2Pi脉冲长度(ns)", pi2_y, "Y_2PiLength"));
+            //计算平均光子计数
+            OutputParams.Add(new Param<double>("通道Y 平均光子计数", Get1DChartDataSource("通道Y 平均光子数", "Rabi荧光数据").Average(), "Y_AverageCount"));
+
+            OutputParams.Add(new Param<double>("通道X Pi脉冲长度(ns)", pi_x, "X_PiLength"));
+            OutputParams.Add(new Param<double>("通道X Pi/2脉冲长度(ns)", hpi_x, "X_HalfPiLength"));
+            OutputParams.Add(new Param<double>("通道X 3Pi/2脉冲长度(ns)", h3pi_x, "X_3HalfPiLength"));
+            OutputParams.Add(new Param<double>("通道X 2Pi脉冲长度(ns)", pi2_x, "X_2PiLength"));
+            //计算平均光子计数
+            OutputParams.Add(new Param<double>("通道X 平均光子计数", Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据").Where(x => !double.IsNaN(x)).Average(), "X_AverageCount"));
+
 
             if (GetInputParamValueByName("ToGlobal") == true)
             {
@@ -347,11 +349,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
             List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
-            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "Rabi对比度数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "Rabi对比度数据"), false));//false有同名就不加，true加到结果里
+            PlotData.Add(new ParentPlotDataPack("微波驱动时间(ns)", "Rabi对比度数据", ChartDataType.X, Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据"), false));//false有同名就不加，true加到结果里
             PlotData.Add(new ParentPlotDataPack("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据", ChartDataType.Y, Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据"), true));
             PlotData.Add(new ParentPlotDataPack("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据", ChartDataType.Y, Get1DChartDataSource("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据"), true));
 
-            PlotData.Add(new ParentPlotDataPack("驰豫时间长度(ns)", "Rabi荧光数据", ChartDataType.X, Get1DChartDataSource("驰豫时间长度(ns)", "Rabi荧光数据"), false));
+            PlotData.Add(new ParentPlotDataPack("微波驱动时间(ns)", "Rabi荧光数据", ChartDataType.X, Get1DChartDataSource("微波驱动时间(ns)", "Rabi荧光数据"), false));
             PlotData.Add(new ParentPlotDataPack("通道X 平均光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据"), true));
             PlotData.Add(new ParentPlotDataPack("通道X 信号光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道X 信号光子数", "Rabi荧光数据"), true));
             PlotData.Add(new ParentPlotDataPack("通道Y 平均光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道Y 平均光子数", "Rabi荧光数据"), true));

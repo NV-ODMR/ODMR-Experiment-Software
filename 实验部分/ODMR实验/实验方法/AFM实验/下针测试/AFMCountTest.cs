@@ -48,6 +48,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
             new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
             new Param<double>("电压/位移系数(V/μm)",1.1416,"Voltage_Displacement_Ratio"),
+            new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
             new Param<double>("采样时间间隔(s)",1,"SampleGap"),
         };
@@ -92,7 +93,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             {
                 double I = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
                 AFMFloatDrop drop = new AFMFloatDrop();
-                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, I }, GetDeviceByName("LockIn"));
+                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, I,GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
                 if ((bool)result[0] == false)
                 {
                     throw new Exception("下针失败，实验已结束");

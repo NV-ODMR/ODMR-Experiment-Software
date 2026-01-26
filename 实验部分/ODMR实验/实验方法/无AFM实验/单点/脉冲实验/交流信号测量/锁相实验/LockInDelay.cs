@@ -28,6 +28,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.设备部分.相机_翻转镜;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
+using ODMR_Lab.设备部分.电源;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -60,6 +61,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<double>("锁相信号频率(MHz)",1,"SignalFreq"){ Helper="输出锁相信号通道的频率,仅用于确定信号的积累时间,不参与仪器参数的设置" },
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<double>("90度电压(V)",0,"V90"),
+            new Param<double>("270度电压(V)",0,"V270"),
             new Param<int>("单点超时时间",10000,"TimeOut"){ Helper="每个时间点扫描的时间上限,超时则跳过此点" },
             new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp") { Helper = "当选择此选项时,在进行此实验之前会使控制锁相信号的继电器打开,实验结束后则会关闭" },
             new Param<int>("序列阶数",1,"SequenceCount"){ Helper = "选择需要积累多少个周期的信号" },
@@ -69,6 +72,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         };
         public override List<KeyValuePair<DeviceTypes, Param<string>>> LockInExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.电源,new Param<string>("移相器电源","","Power")),
         };
         public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
         public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
@@ -121,31 +125,44 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         private void PlotEvent(List<MultiLoopScanData> list)
         {
-            (Get1DChartData("时间(ns)", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
-            (Get1DChartData("信号光子数", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "信号光子数", "Delay测试数据");
-            (Get1DChartData("参考光子数", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "参考光子数", "Delay测试数据");
+            (Get1DChartData("时间(ns)", "光子数") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
+            (Get1DChartData("时间(ns)", "布居度") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
+            (Get1DChartData("时间(ns)", "对比度") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
+
+
+            (Get1DChartData("信号光子数", "光子数") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "信号光子数", "Delay测试数据");
+            (Get1DChartData("参考光子数", "光子数") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "参考光子数", "Delay测试数据");
+            (Get1DChartData("暗态参考光子数", "光子数") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "暗态参考光子数", "Delay测试数据");
+
             var signal = MultiLoopScanData.GetSumData(list, "信号光子数", "Delay测试数据");
             var refe = MultiLoopScanData.GetSumData(list, "参考光子数", "Delay测试数据");
-            var cont = signal.Zip(refe, new Func<double, double, double>((s, r) => { return (s - r) / r; }));
-            (Get1DChartData("对比度", "Delay测试数据") as NumricChartData1D).Data = cont.ToList();
+            var darkrefe = MultiLoopScanData.GetSumData(list, "暗态参考光子数", "Delay测试数据");
 
-            (Get1DChartData("信号光子数3PI/2", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "信号光子数3PI/2", "Delay测试数据");
-            (Get1DChartData("参考光子数3PI/2", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "参考光子数3PI/2", "Delay测试数据");
+            var cont = signal.Zip(refe, new Func<double, double, double>((s, r) => { return (s - r) / r; }));
+            (Get1DChartData("对比度", "对比度") as NumricChartData1D).Data = cont.ToList();
+
+            var pup = signal.Zip(darkrefe, new Func<double, double, double>((s, r) => { return (s - r); }));
+            var pdown = refe.Zip(darkrefe, new Func<double, double, double>((s, r) => { return (s - r); }));
+            (Get1DChartData("亮态布居度", "布居度") as NumricChartData1D).Data = pup.Zip(pdown, new Func<double, double, double>((s, r) => { return s / r; })).ToList();
+
+            (Get1DChartData("信号光子数3PI/2", "光子数") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "信号光子数3PI/2", "Delay测试数据");
+            (Get1DChartData("参考光子数3PI/2", "光子数") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "参考光子数3PI/2", "Delay测试数据");
+            (Get1DChartData("暗态参考光子数3PI/2", "光子数") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "暗态参考光子数3PI/2", "Delay测试数据");
+
             var signal2 = MultiLoopScanData.GetSumData(list, "信号光子数3PI/2", "Delay测试数据");
             var refe2 = MultiLoopScanData.GetSumData(list, "参考光子数3PI/2", "Delay测试数据");
+            var darkrefe2 = MultiLoopScanData.GetSumData(list, "暗态参考光子数3PI/2", "Delay测试数据");
             var cont2 = signal2.Zip(refe2, new Func<double, double, double>((s, r) => { return (s - r) / r; }));
-            (Get1DChartData("对比度3PI/2", "Delay测试数据") as NumricChartData1D).Data = cont2.ToList();
-
-            (Get1DChartData("时间(ns)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
-            (Get1DChartData("信号光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "信号光子数", "Delay测试数据");
-            (Get1DChartData("参考光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "参考光子数", "Delay测试数据");
-            (Get1DChartData("对比度", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "对比度", "Delay测试数据");
+            (Get1DChartData("对比度3PI/2", "对比度") as NumricChartData1D).Data = cont2.ToList();
+            var pup2 = signal2.Zip(darkrefe2, new Func<double, double, double>((s, r) => { return (s - r); }));
+            var pdown2 = refe2.Zip(darkrefe2, new Func<double, double, double>((s, r) => { return (s - r); }));
+            (Get1DChartData("亮态布居度3PI/2", "布居度") as NumricChartData1D).Data = pup2.Zip(pdown2, new Func<double, double, double>((s, r) => { return s / r; })).ToList();
 
             UpdatePlotChart();
             UpdatePlotChartFlow(true);
         }
 
-        private void HahnEchoExp(out double contrast, out double Sig, out double Ref, bool Is3HalfPi = false)
+        private void HahnEchoExp(out double contrast, out double p, out double Sig, out double Ref, out double darkRef)
         {
             //设置HahnEchoTime
             //XPi脉冲时间
@@ -162,16 +179,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", echotime);
 
             PulsePhotonPack pack = null;
-            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength(Is3HalfPi ? "3HalfPiY" : "HalfPiY"));
-            pack = DoLockInPulseExp("CMPGY", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
+            pack = DoLockInPulseExp("CMPGY", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"),6,
            GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             Sig = pack.GetPhotonsAtIndex(0).Sum();
             Ref = pack.GetPhotonsAtIndex(1).Sum();
+            darkRef = pack.GetPhotonsAtIndex(2).Sum();
             contrast = 1;
+            p = 1;
             try
             {
                 contrast = (Sig - Ref) / (double)Ref;
+                p = (Sig - darkRef) / (Ref - darkRef);
             }
             catch (Exception)
             {
@@ -195,7 +215,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     }
                 }
             }
-            //为每个通道添加对应阶数的序列
+            #region 为每个通道添加对应阶数的序列
             int order = GetInputParamValueByName("SequenceCount");
             if (order > 1)
             {
@@ -204,7 +224,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 int spintime = GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime");
                 foreach (var ch in obj.Channels)
                 {
-                    ///Pi/2 Y脉冲的位置
+                    ///Pi/2 脉冲的位置
                     var halfpiys = ch.Peaks.Where((x) => x.PeakName == "CustomYLength" || x.PeakName == "CustomXLength").Select((x) => ch.Peaks.IndexOf(x)).ToList();
                     halfpiys.Sort();
                     halfpiys.Reverse();
@@ -223,6 +243,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     }
                 }
             }
+            #endregion
+
+            #region 计算Delay等待时间
+            var cha = obj.Channels[0];
+            int triggerind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").First());
+            int countind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "CountWait").First());
+            int totalexptime = 0;
+            for (int i = triggerind + 1; i < countind; i++)
+            {
+                totalexptime += cha.Peaks[i].PeakSpan;
+            }
+            int lighttime = totalexptime - GlobalPulseParams.GetGlobalPulseLength("LasetPolar") - GlobalPulseParams.GetGlobalPulseLength("LaserWait");
+            int darktime = lighttime - GlobalPulseParams.GetGlobalPulseLength("PiX");
+            GlobalPulseParams.SetGlobalPulseLength("LightHahnechoWaitTime", lighttime);
+            GlobalPulseParams.SetGlobalPulseLength("DarkhahnechoWaitTime", darktime);
+            #endregion
 
         }
 
@@ -230,16 +266,27 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         {
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)arg3);
             JudgeThreadEndOrResumeAction();
-            HahnEchoExp(out double contrast, out double sig, out double reference, false);
-            HahnEchoExp(out double contrast2, out double sig2, out double reference2, true);
+            PowerChannelInfo dev = GetDeviceByName("Power") as PowerChannelInfo;
+            //Pi/2 Y脉冲(90度)
+            dev.Channel.Voltage = GetInputParamValueByName("V90");
+            HahnEchoExp(out double contrast, out double p1, out double sig, out double reference, out double darkref);
+
+            //-Pi/2 Y脉冲(270度)
+            dev.Channel.Voltage = GetInputParamValueByName("V270");
+            HahnEchoExp(out double contrast2, out double p2, out double sig2, out double reference2, out double darkref2);
 
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("时间(ns)", "Delay测试数据", arg3, new StandardDataProcess()));
+
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("信号光子数", "Delay测试数据", sig, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("参考光子数", "Delay测试数据", reference, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("暗态参考光子数", "Delay测试数据", darkref, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("亮态布居度", "Delay测试数据", p1, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("对比度", "Delay测试数据", contrast, new StandardDataProcess()));
 
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("信号光子数3PI/2", "Delay测试数据", sig2, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("参考光子数3PI/2", "Delay测试数据", reference2, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("暗态参考光子数3PI/2", "Delay测试数据", darkref2, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("亮态布居度3PI/2", "Delay测试数据", p2, new StandardDataProcess()));
             outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("对比度3PI/2", "Delay测试数据", contrast2, new StandardDataProcess()));
 
             return new List<object>();
@@ -253,21 +300,24 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             //新建数据集
             D1ChartDatas = new List<ChartData1D>()
             {
-                new NumricChartData1D("时间(ns)","Delay测试数据",ChartDataType.X),
-                new NumricChartData1D("对比度","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("信号光子数","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("参考光子数","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("对比度3PI/2","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("信号光子数3PI/2","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("参考光子数3PI/2","Delay测试数据",ChartDataType.Y),
+                new NumricChartData1D("时间(ns)","对比度",ChartDataType.X),
+                new NumricChartData1D("对比度","对比度",ChartDataType.Y),
+                new NumricChartData1D("对比度3PI/2","对比度",ChartDataType.Y),
 
-                new NumricChartData1D("时间(ns)","方差",ChartDataType.X),
-                new NumricChartData1D("对比度","方差",ChartDataType.Y),
-                new NumricChartData1D("信号光子数","方差",ChartDataType.Y),
-                new NumricChartData1D("参考光子数","方差",ChartDataType.Y)
+                new NumricChartData1D("时间(ns)","布居度",ChartDataType.X),
+                new NumricChartData1D("亮态布居度","布居度",ChartDataType.Y),
+                new NumricChartData1D("亮态布居度3PI/2","布居度",ChartDataType.Y),
+
+                new NumricChartData1D("时间(ns)","光子数",ChartDataType.X),
+                new NumricChartData1D("信号光子数","光子数",ChartDataType.Y),
+                new NumricChartData1D("参考光子数","光子数",ChartDataType.Y),
+                new NumricChartData1D("暗态参考光子数","光子数",ChartDataType.Y),
+
+                new NumricChartData1D("信号光子数3PI/2","光子数",ChartDataType.Y),
+                new NumricChartData1D("暗态参考光子数3PI/2","光子数",ChartDataType.Y),
+                new NumricChartData1D("参考光子数3PI/2","光子数",ChartDataType.Y),
             };
             UpdatePlotChart();
-            Show1DChartData("Delay测试数据", "时间(ns)", "对比度");
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
                 var dev = GetSignalSwitch() as SwitchInfo;
@@ -280,8 +330,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override void AfterLockInExpEventWithoutAFM()
         {
             //用正弦函数拟合得到的曲线
-            var count = Get1DChartDataSource("对比度", "Delay测试数据");
-            var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");
+            var count = Get1DChartDataSource("对比度", "对比度");
+            var time = Get1DChartDataSource("时间(ns)", "对比度");
             double d_x = count.Average();
             double a_x = Math.Abs(count.Min() - count.Max()) / 2;
             double c_x = 10;
@@ -305,7 +355,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             double phase = ps_x[2] + ps_x[1] / 2;
             if (ps_x[0] < 0) phase = ps_x[2] + ps_x[1];
             OutputParams.Add(new Param<double>("Delay相位(ns)", phase, "Phase"));
-            OutputParams.Add(new Param<double>("平均参考光子数", Get1DChartDataSource("参考光子数", "Delay测试数据").Average(), "AveCount"));
+            OutputParams.Add(new Param<double>("平均参考光子数", Get1DChartDataSource("参考光子数", "光子数").Average(), "AveCount"));
 
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
@@ -327,10 +377,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
             return new List<ParentPlotDataPack>() {
-                new ParentPlotDataPack("时间(ns)", "单点Delay曲线", ChartDataType.X, Get1DChartDataSource("时间(ns)", "Delay测试数据"), false),
-                new ParentPlotDataPack("对比度曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("对比度", "Delay测试数据"), true),
-                new ParentPlotDataPack("荧光曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("参考光子数", "Delay测试数据"), true),
-                new ParentPlotDataPack("时间(ns)", "单点Delay曲线方差", ChartDataType.X, Get1DChartDataSource("时间(ns)", "方差"), false),
+                new ParentPlotDataPack("时间(ns)", "单点Delay曲线", ChartDataType.X, Get1DChartDataSource("时间(ns)", "对比度"), false),
+                new ParentPlotDataPack("对比度曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("对比度", "对比度"), true),
+                new ParentPlotDataPack("亮态布居度曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("亮态布居度", "布居度"), true),
+                new ParentPlotDataPack("荧光曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("参考光子数", "光子数"), true),
+
+                new ParentPlotDataPack("时间(ns)", "单点Delay曲线方差", ChartDataType.X, Get1DChartDataSource("时间(ns)", "对比度"), false),
                 new ParentPlotDataPack("对比度曲线方差", "单点Delay曲线方差", ChartDataType.Y, Get1DChartDataSource("对比度", "方差"), true)
             };
         }

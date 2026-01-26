@@ -55,6 +55,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("Z扫描台电压/位移系数(μm/V)",0.876,"Z_Voltage_Displacement_Ratio"),
             new Param<double>("X扫描台电压/位移系数(μm/V)",2.034,"X_Voltage_Displacement_Ratio"),
             new Param<double>("Y扫描台电压/位移系数(μm/V)",2.031,"Y_Voltage_Displacement_Ratio"),
+            new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
@@ -160,19 +161,19 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             if (GetInputParamValueByName("IsFloatScan") == false)
             {
                 AFMFloatDrop drop = new AFMFloatDrop();
-                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
             }
             SetExpState("正在移动到目标位置(μm) X: " + Math.Round(currentloc.X, 5).ToString() + " Y: " + Math.Round(currentloc.Y, 5));
-            scannerx.Device.MoveToAndWait(currentloc.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 120000);
+            scannerx.Device.MoveToAndWait(currentloc.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 500000);
             JudgeThreadEndOrResumeAction();
-            scannery.Device.MoveToAndWait(currentloc.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 120000);
+            scannery.Device.MoveToAndWait(currentloc.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 500000);
             JudgeThreadEndOrResumeAction();
 
             //如果不是悬浮扫,则先撤针一段距离,位移台移动之后再下针
             if (GetInputParamValueByName("IsFloatScan") == false)
             {
                 AFMFloatDrop drop = new AFMFloatDrop();
-                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), -1 / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), -1 / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
             }
 
             //如果是悬浮测量则执行对应程序
@@ -189,14 +190,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     if (IsFirstDrop == true)
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), (GetDeviceByName("LockIn") as LockinInfo).Device.I }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), (GetDeviceByName("LockIn") as LockinInfo).Device.I, GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
                         re = (bool)res[0];
                         IsFirstDrop = false;
                     }
                     else
                     {
                         AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI") }, GetDeviceByName("LockIn"));
+                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
                         re = (bool)res[0];
                         IsFirstDrop = false;
                     }
@@ -221,21 +222,25 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             ODMRExpObject exp = RunSubExperimentBlock(1, GetInputParamValueByName("ShowSubMenu"));
             JudgeThreadEndOrResumeAction?.Invoke();
 
-            Get1DChartDataSource("扫描点序号", "一维扫描数据").Add(scanPoints.GetNearestIndex(currentloc));
+            HashSet<string> set = exp.OutputParams.Select(x => x.GroupName).ToHashSet();
+            if (!set.Contains(""))
+                set.Add("一维扫描数据");
+            foreach (var item in set)
+            {
+                string name = item == "" ? "一维扫描数据" : item;
+
+                var xdata = Get1DChartData("扫描点序号", name);
+                if (xdata == null)
+                {
+                    xdata = new NumricChartData1D("扫描点序号", name, ChartDataType.X);
+                    D1ChartDatas.Add(xdata);
+                }
+                (xdata as NumricChartData1D).Data.Add(scanPoints.GetNearestIndex(currentloc));
+            }
             //获取输出参数
             double value = 0;
             foreach (var item in exp.OutputParams)
             {
-                if (item.GroupName != "")
-                {
-                    var xdata = Get1DChartData("扫描点序号", item.GroupName);
-                    if (xdata == null)
-                    {
-                        xdata = new NumricChartData1D("扫描点序号", item.GroupName, ChartDataType.X);
-                        D1ChartDatas.Add(xdata);
-                    }
-                    (xdata as NumricChartData1D).Data.Add(scanPoints.GetNearestIndex(currentloc));
-                }
                 if (item.RawValue is bool)
                 {
                     value = (bool)item.RawValue ? 1 : 0;
@@ -257,11 +262,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 {
                     data = new NumricChartData1D(ODMRExperimentGroupName + ":" + ODMRExperimentName + ":" + item.Description, item.GroupName == "" ? "一维扫描数据" : item.GroupName, ChartDataType.Y);
                     D1ChartDatas.Add(data);
-                    UpdatePlotChart();
                 }
                 (data as NumricChartData1D).Data.Add(value);
             }
-            UpdatePlotChart();
             //刷新形貌数据
             var afm = Get1DChartDataSource("AFM形貌数据(PID输出)", "一维扫描数据");
             afm.Add((GetDeviceByName("LockIn") as LockinInfo).Device.PIDValue);
@@ -274,14 +277,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 {
                     if (!plot.IsContinusPlot)
                     {
-                        if (Get1DChartData(plot.Name, plot.GroupName) == null)
+                        if (Get1DChartData(plot.Name, "一维扫描数据 " + plot.GroupName) == null)
                         {
-                            D1ChartDatas.Add(new NumricChartData1D(plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
+                            D1ChartDatas.Add(new NumricChartData1D(plot.Name, "一维扫描数据 " + plot.GroupName, plot.AxisType) { Data = plot.ChartData.ToArray().ToList() });
                         }
                     }
                     else
                     {
-                        D1ChartDatas.Add(new NumricChartData1D("X(μm):" + Math.Round(currentloc.X, 5).ToString() + "Y(μm):" + Math.Round(currentloc.Y, 5).ToString() + " " + plot.Name, plot.GroupName, plot.AxisType) { Data = plot.ChartData });
+                        D1ChartDatas.Add(new NumricChartData1D("X(μm):" + Math.Round(currentloc.X, 5).ToString() + "Y(μm):" + Math.Round(currentloc.Y, 5).ToString() + " " + plot.Name, "一维扫描数据 " + plot.GroupName, plot.AxisType) { Data = plot.ChartData.ToArray().ToList() });
                     }
                 }
             }
