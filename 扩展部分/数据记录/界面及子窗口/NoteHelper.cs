@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -191,6 +192,12 @@ namespace ODMR_Lab.数据记录
                 stream.Close();
                 return bitmapImage;
             }
+        }
+
+        public static BitmapImage LoadImageFromResource(string path)
+        {
+            Uri uri = new Uri($"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/{path}", UriKind.Absolute);
+            return new BitmapImage(uri);
         }
     }
 }
