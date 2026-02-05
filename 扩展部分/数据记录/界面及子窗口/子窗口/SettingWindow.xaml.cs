@@ -47,6 +47,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
 
         private void Cameras_Click(object sender, RoutedEventArgs e)
         {
+            Cameras.Items.Clear();
             //刷新相机设备
             foreach (var c in DeviceDispatcher.GetDevice(DeviceTypes.相机))
             {

@@ -22,7 +22,7 @@
         <Image Name="DisplayedImage" Visibility="Hidden"/>
     </Grid>
     <StackPanel Name="FileViewer" Visibility="Hidden" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Image Name="FileIcon" Width="60" Height="60" Source="/图片资源/pdf.png"/>
+        <Image Name="FileIcon" Width="60" Height="60"/>
         <TextBlock Name="PDFName" Text="111111.pdf" Foreground="White" HorizontalAlignment="Center" MaxWidth="300"/>
     </StackPanel>
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">

@@ -62,19 +62,19 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Code\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Code\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Code\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Code\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -90,7 +90,7 @@
     </Reference>
     <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Code\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -807,232 +807,106 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\resize.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\resize.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\information.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\information.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\snap.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\snap.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\directory.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\directory.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\maximize.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\minimize.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\maximize.png" />
+    <Resource Include="图片资源\minimize.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\close.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\close.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\device.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\device.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\experiment.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\experiment.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\data.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\data.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\camera.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\journey.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\temperature.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\camera.png" />
+    <Resource Include="图片资源\journey.png" />
+    <Resource Include="图片资源\temperature.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\exp.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\exp.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\downArrow.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\downArrow.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\icon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\screenshot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\screenshot.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\cameraresize.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\cameraresize.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\setting.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\setting.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\refresh.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\refresh.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="图片资源\zip.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="图片资源\pythonfile.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="图片资源\mathematica.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="图片资源\matlab.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="图片资源\nanFile.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="图片资源\txt.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="图片资源\ppt.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="图片资源\word.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Resource Include="图片资源\video.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\text.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\fit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\power.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <EmbeddedResource Include="图片资源\excel.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Resource Include="图片资源\save.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\file.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\custom.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\extension.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\rightarrow.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\python.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\zip.png" />
+    <Resource Include="图片资源\pythonfile.png" />
+    <Resource Include="图片资源\mathematica.png" />
+    <Resource Include="图片资源\matlab.png" />
+    <Resource Include="图片资源\nanFile.png" />
+    <Resource Include="图片资源\txt.png" />
+    <Resource Include="图片资源\ppt.png" />
+    <Resource Include="图片资源\word.png" />
+    <Resource Include="图片资源\video.png" />
+    <Resource Include="图片资源\text.png" />
+    <Resource Include="图片资源\fit.png" />
+    <Resource Include="图片资源\power.png" />
+    <Resource Include="图片资源\excel.png" />
+    <Resource Include="图片资源\save.png" />
+    <Resource Include="图片资源\file.png" />
+    <Resource Include="图片资源\custom.png" />
+    <Resource Include="图片资源\extension.png" />
+    <Resource Include="图片资源\rightarrow.png" />
+    <Resource Include="图片资源\python.png" />
     <Content Include="Python\Magnet.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="图片资源\rotateX.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\rotateY.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\sequence.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\sequenceedit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\magnet.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\laser.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\editimage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\algorithm.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\list.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\search.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\attach.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\add.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\dialog.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <EmbeddedResource Include="图片资源\pdf.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Resource Include="图片资源\lock.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\photo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\delete.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <EmbeddedResource Include="图片资源\experimentfile.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Resource Include="图片资源\rename.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\Setup.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\pause.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\play.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\stop.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="图片资源\ok.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="图片资源\rotateX.png" />
+    <Resource Include="图片资源\rotateY.png" />
+    <Resource Include="图片资源\sequence.png" />
+    <Resource Include="图片资源\sequenceedit.png" />
+    <Resource Include="图片资源\magnet.png" />
+    <Resource Include="图片资源\laser.png" />
+    <Resource Include="图片资源\editimage.png" />
+    <Resource Include="图片资源\algorithm.png" />
+    <Resource Include="图片资源\list.png" />
+    <Resource Include="图片资源\search.png" />
+    <Resource Include="图片资源\attach.png" />
+    <Resource Include="图片资源\add.png" />
+    <Resource Include="图片资源\dialog.png" />
+    <Resource Include="图片资源\pdf.png" />
+    <Resource Include="图片资源\lock.png" />
+    <Resource Include="图片资源\photo.png" />
+    <Resource Include="图片资源\delete.png" />
+    <Resource Include="图片资源\experimentfile.png" />
+    <Resource Include="图片资源\rename.png" />
+    <Resource Include="图片资源\Setup.png" />
+    <Resource Include="图片资源\pause.png" />
+    <Resource Include="图片资源\play.png" />
+    <Resource Include="图片资源\stop.png" />
+    <Resource Include="图片资源\ok.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

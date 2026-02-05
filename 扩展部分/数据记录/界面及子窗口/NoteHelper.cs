@@ -196,7 +196,7 @@ namespace ODMR_Lab.数据记录
 
         public static BitmapImage LoadImageFromResource(string path)
         {
-            Uri uri = new Uri($"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/{path}", UriKind.Absolute);
+            Uri uri = new Uri($"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/{path}", UriKind.RelativeOrAbsolute);
             return new BitmapImage(uri);
         }
     }
