@@ -1,0 +1,43 @@
+﻿<Grid x:Class="ODMR_Lab.扩展部分.数据记录.界面及子窗口.TagCreateControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ODMR_Lab.基本控件" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="300">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="40"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+    <Popup Name="ColorPopup" Width="100" Height="100" StaysOpen="False">
+        <control:ColorSelector Name="ColorSelect" ColorChanged="ColorSelect_ColorChanged" LostFocus="ColorSelect_LostFocus" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <control:ColorSelector.CircleTemplate>
+                <Ellipse Width="5" Height="5"/>
+            </control:ColorSelector.CircleTemplate>
+        </control:ColorSelector>
+    </Popup>
+    <control:AutoScrollViewer Name="scroll">
+        <control:AutoScrollViewer.Content>
+            <StackPanel Name="NoteUnitPanel" Width="{Binding ElementName=scroll, Path=ActualWidth}" Orientation="Vertical">
+            </StackPanel>
+        </control:AutoScrollViewer.Content>
+    </control:AutoScrollViewer>
+    <Label Visibility="Collapsed" Name="LabelTemplate" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="标题" Foreground="White" VerticalAlignment="Center"/>
+    <TextBox Visibility="Collapsed" Name="TextBoxTemplate" BorderThickness="0" BorderBrush="Transparent" Foreground="White" Padding="5" Background= "Transparent" Text="12123111111111111111111111111112121121" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" CaretBrush="White"/>
+    <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Name="PureColumn"/>
+            <ColumnDefinition Name="SingleColumn"/>
+            <ColumnDefinition Name="MultiColumn"/>
+            <ColumnDefinition Name="CaptionColumn"/>
+        </Grid.ColumnDefinitions>
+        <control:DecoratedButton Name="templatebtn" TextAreaRatio="0.7" IconSource="/图片资源/add.png" IconMargin="5" Grid.Column="0" Grid.Row="0" Click="AddTag" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Text="纯文本" FontWeight="Thin" FontSize="11" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="1" TextAreaRatio="0.7" IconSource="/图片资源/add.png" IconMargin="5" Grid.Row="0" Click="AddTag" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Text="单选" FontWeight="Thin" FontSize="11" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="2" TextAreaRatio="0.7" IconSource="/图片资源/add.png" IconMargin="5" Grid.Row="0" Click="AddTag" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Text="多选" FontWeight="Thin" FontSize="11" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="3" TextAreaRatio="0.7" IconSource="/图片资源/add.png" IconMargin="5" Grid.Row="0" Click="AddTag" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Text="标题文本" FontWeight="Thin" FontSize="11" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+    </Grid>
+</Grid>

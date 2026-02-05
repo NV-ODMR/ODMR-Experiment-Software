@@ -91,6 +91,11 @@ namespace ODMR_Lab
         /// </summary>
         public static Python管理器.ExtPage Ext_PythonPage = new Python管理器.ExtPage();
 
+        /// <summary>
+        /// Python管理器
+        /// </summary>
+        public static 数据记录.ExtPage Ext_NotePage = new 数据记录.ExtPage();
+
         #endregion
 
         #region 数据处理部分
@@ -397,6 +402,11 @@ namespace ODMR_Lab
             {
                 CurrentPage = Ext_PythonPage;
                 AddPageToView(Ext_PythonPage);
+            }
+            if (btn.Text == "数据记录")
+            {
+                CurrentPage = Ext_NotePage;
+                AddPageToView(Ext_NotePage);
             }
         }
 

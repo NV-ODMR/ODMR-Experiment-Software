@@ -192,6 +192,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
         {
             try
             {
+                if (CameraPage == null) return;
                 double x = Camera.DisplayWindow.Left;
                 double y = Camera.DisplayWindow.Top;
                 double width = Camera.DisplayWindow.ActualWidth;

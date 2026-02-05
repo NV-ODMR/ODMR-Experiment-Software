@@ -1,0 +1,49 @@
+﻿<Grid x:Class="ODMR_Lab.扩展部分.数据记录.界面及子窗口.ImageViewingControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ODMR_Lab.基本控件" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      mc:Ignorable="d" 
+             d:DesignHeight="550" d:DesignWidth="900" Background="Transparent" DragEnter="Window_DragEnter" AllowDrop="True" Drop="Grid_Drop" PreviewKeyDown="Grid_KeyDown" MouseLeftButtonDown="Grid_MouseLeftButtonDown" Focusable="True">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="30"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+    </Grid.ColumnDefinitions>
+    <Grid Grid.Row="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+    </Grid>
+    <Grid Grid.Row="0" Grid.Column="0" ClipToBounds="True">
+        <Image Name="DisplayedImage" Visibility="Hidden"/>
+    </Grid>
+    <StackPanel Name="FileViewer" Visibility="Hidden" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Image Name="FileIcon" Width="60" Height="60" Source="/图片资源/pdf.png"/>
+        <TextBlock Name="PDFName" Text="111111.pdf" Foreground="White" HorizontalAlignment="Center" MaxWidth="300"/>
+    </StackPanel>
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/camera.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="TakePhoto" ToolTip="拍摄图片" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/refresh.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="ReloadImages" ToolTip="重新加载" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/directory.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="ImportFile" ToolTip="导入文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton IconSource="/图片资源/rename.png" Margin="4" IconMargin="3" Width="30" TextAreaRatio="0" Click="RenameFile" ToolTip="重命名文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/resize.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="Resize" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton IconSource="/图片资源/dialog.png" IconMargin="3" Width="30" Margin="4" TextAreaRatio="0" Click="ShowInNewWindow" ToolTip="在新窗口中显示" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/delete.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="DeletePhoto" ToolTip="删除当前图片" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <Label Name="ImageIndex" Foreground="White" FontSize="10" Content="第1/N个" VerticalContentAlignment="Center" Margin="14,0,14,0"/>
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/rightarrow.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="Up" ToolTip="上一个" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" RenderTransformOrigin="0.5,0.5">
+            <control:DecoratedButton.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="180"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </control:DecoratedButton.RenderTransform>
+        </control:DecoratedButton>
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/rightarrow.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="Down" ToolTip="下一个" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+    </StackPanel>
+</Grid>

@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:control="clr-namespace:Controls;assembly=Controls"
       mc:Ignorable="d" 
-      xmlns:image="clr-namespace:ODMR_Lab.基本控件" xmlns:控件="clr-namespace:ODMR_Lab.实验部分.ODMR实验.控件"
+      xmlns:image="clr-namespace:ODMR_Lab.基本控件"
                        d:DesignHeight="600" d:DesignWidth="800"
       >
     <control:AutoScrollViewer Name="sc" Visibility="Visible">
@@ -53,7 +53,7 @@
                         <ColumnDefinition Name="ParamsColumn" Width="200"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <控件:TabViewer x:Name="OpenedExpList" Grid.Row="1" Grid.Column="1"/>
+                    <image:TabPanel x:Name="OpenedExpList" Grid.Row="1" Grid.Column="1" TabClicked="SelectTabExp"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                         <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="0" FontSize="11" Foreground="White" Content="实验类型" Margin="20,0,0,0" Background="{x:Null}"/>
                         <TextBlock Name="ExpGroupName" Margin="20,0,0,0"  Foreground="White" VerticalAlignment="Center"/>

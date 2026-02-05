@@ -113,7 +113,7 @@ namespace ODMR_Lab.数据处理
         /// 导入指定路径文件
         /// </summary>
         /// <param name="paths"></param>
-        private void LoadFiles(List<string> paths)
+        public void LoadFiles(List<string> paths)
         {
             DataVisualSource sou = null;
             int ind = -1;

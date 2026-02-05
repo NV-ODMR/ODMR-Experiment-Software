@@ -1,0 +1,22 @@
+﻿<标签控件:TagPanelBase xmlns:标签控件="clr-namespace:ODMR_Lab.扩展部分.数据记录" x:Class="ODMR_Lab.扩展部分.数据记录.界面及子窗口.PureTextPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ODMR_Lab.基本控件" xmlns:control="clr-namespace:Controls;assembly=Controls"
+      mc:Ignorable="d" Margin="3"
+            >
+    <标签控件:TagPanelBase.RowDefinitions>
+        <RowDefinition Height="*"/>
+    </标签控件:TagPanelBase.RowDefinitions>
+    <标签控件:TagPanelBase.ColumnDefinitions>
+        <ColumnDefinition Width="60"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="50"/>
+        <ColumnDefinition Name="LockColumn" Width="20"/>
+    </标签控件:TagPanelBase.ColumnDefinitions>
+    <control:DecoratedButton Name="ColorBtn" Grid.Column="2" Click="ColorSelectorClicked" Grid.RowSpan="2" FontSize="20" Background="Transparent" Text="■" Height="30" Width="30" MoveInColor="#FF424242" PressedColor="#FF0066FF"/>
+    <TextBox Visibility="Visible" Name="StringContent" Grid.Column="1" BorderThickness="0" Text="test" BorderBrush="Transparent" Foreground="White" Padding="5" Background= "Transparent" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" CaretBrush="White"/>
+    <Label Foreground="White" Grid.Column="0" Content="标签内容:" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+    <Image Name="LockImage" Source="/图片资源/lock.png" Height="20" Width="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="3"/>
+</标签控件:TagPanelBase>

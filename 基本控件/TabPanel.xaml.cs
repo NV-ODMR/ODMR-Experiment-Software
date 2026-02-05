@@ -17,53 +17,100 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ODMR_Lab.实验部分.ODMR实验.控件
+namespace ODMR_Lab.基本控件
 {
     /// <summary>
     /// TabViewer.xaml 的交互逻辑
     /// </summary>
-    public partial class TabViewer : Grid
+    public partial class TabPanel : Grid
     {
-        public TabViewer()
+        /// <summary>
+        /// 导航栏点击事件
+        /// </summary>
+        public event Action<Tuple<string, string, object>> TabClicked = null;
+
+        public TabPanel()
         {
             InitializeComponent();
         }
 
-        private List<ODMRExpObject> Exps { get; set; } = new List<ODMRExpObject>();
+        private Panel content = null;
+        public Panel ContentPanel
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                if (content != null)
+                    Children.Remove(content);
+                content = value;
+                Children.Add(value);
+                SetRow(value, 1);
+                SetColumn(value, 0);
+                SetColumnSpan(value, 2);
+            }
+        }
 
-        public DisplayPage ParentPage { get; set; } = null;
+        List<Tuple<string, string, object>> tabPair = new List<Tuple<string, string, object>>();
 
         /// <summary>
         /// 添加实验导航栏
         /// </summary>
-        public void AddExp(ODMRExpObject exp)
+        public void AddTabElement(string tabName, string tooltip, object tabTag)
         {
-            if (Exps.IndexOf(exp) != -1)
+            if (tabPair.Where((x) => x.Item1 == tabName).Count() == 0)
+                tabPair.Add(new Tuple<string, string, object>(tabName, tooltip, tabTag));
+            UpdateTabs();
+        }
+
+        public void RemoveTabElement(string tabName)
+        {
+            try
             {
-                SelectExpWithoutOpen(exp);
-            }
-            else
-            {
-                Exps.Insert(0, exp);
+                tabPair.Remove(tabPair.Where((x) => x.Item1 == tabName).ElementAt(0));
                 UpdateTabs();
             }
+            catch (Exception)
+            {
+            }
+        }
+
+        public void ChangeTabElement(string tabname, Tuple<string, string, object> newele)
+        {
+            try
+            {
+                int ind= tabPair.IndexOf(tabPair.Where((x) => x.Item1 == tabname).ElementAt(0));
+                tabPair[ind] = newele;
+                UpdateTabs();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public void ClearTabElement()
+        {
+            tabPair.Clear();
+            UpdateTabs();
         }
 
         private int DisplayNumber = 0;
 
         public void UpdateTabs()
         {
-            TabPanel.Children.Clear();
-            //计算需要显示多少个实验
-            int number = (int)(TabPanel.ActualWidth / 150);
-            for (int i = 0; i < Math.Min(number, Exps.Count); i++)
+            TabBar.Children.Clear();
+            //计算需要显示多少个内容
+            int number = (int)(TabBar.ActualWidth / 150);
+            for (int i = 0; i < Math.Min(number, tabPair.Count); i++)
             {
-                TabPanel.Children.Add(CreateTab(Exps[i]));
+                TabBar.Children.Add(CreateTab(tabPair[i]));
             }
             DisplayNumber = number;
         }
 
-        private Grid CreateTab(ODMRExpObject exp)
+        private Grid CreateTab(Tuple<string, string, object> pair)
         {
             #region 创建标签卡
             Grid g = new Grid();
@@ -80,13 +127,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.控件
             UIUpdater.CloneStyle(LabelTemplate, l);
             g.Children.Add(l);
             Grid.SetColumn(l, 0);
-            l.Content = exp.ODMRExperimentName;
-            g.ToolTip = exp.ODMRExperimentName + "  " + exp.ODMRExperimentGroupName;
+            l.Content = pair.Item1;
+            g.ToolTip = pair.Item2;
             #endregion
 
             l.Tag = g;
             btn.Tag = g;
-            g.Tag = exp;
+            g.Tag = pair;
 
             ControlEventHelper h = new ControlEventHelper(l);
             h.Click += SelectExpAndOpen;
@@ -98,31 +145,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.控件
         private void CloseTab(object sender, RoutedEventArgs e)
         {
             PopList.CancelPop();
-            Exps.Remove(((sender as DecoratedButton).Tag as Grid).Tag as ODMRExpObject);
+            tabPair.Remove((Tuple<string, string, object>)((sender as DecoratedButton).Tag as Grid).Tag);
             UpdateTabs();
         }
 
         private void SelectExpAndOpen(object sender, MouseButtonEventArgs e)
         {
             PopList.CancelPop();
-            ODMRExpObject exp = ((sender as Label).Tag as Grid).Tag as ODMRExpObject;
-            ParentPage?.SelectExp(ParentPage.ExpObjects.IndexOf(exp));
-        }
-
-        private void SelectExpWithoutOpen(ODMRExpObject exp)
-        {
-            PopList.CancelPop();
-            int ind = Exps.IndexOf(exp);
-            if (ind >= DisplayNumber)
+            var ele = (Tuple<string, string, object>)((sender as Label).Tag as Grid).Tag;
+            TabClicked?.Invoke(ele);
+            foreach (var g in TabBar.Children)
             {
-                //不在显示列表中
-                Exps.Remove(exp);
-                Exps.Insert(0, exp);
-                UpdateTabs();
-            }
-            foreach (var g in TabPanel.Children)
-            {
-                if ((g as Grid).Tag as ODMRExpObject == exp)
+                if ((g as Grid).Tag == ele)
                 {
                     (g as Grid).Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1792E5"));
                 }
@@ -141,9 +175,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.控件
         private void PopButton_PreviewPopOpen(object sender, RoutedEventArgs e)
         {
             TabStorePanel.Children.Clear();
-            for (int i = DisplayNumber; i < Exps.Count; i++)
+            for (int i = DisplayNumber; i < tabPair.Count; i++)
             {
-                Grid g = CreateTab(Exps[i]);
+                Grid g = CreateTab(tabPair[i]);
                 g.Width = 300;
                 TabStorePanel.Children.Add(g);
             }

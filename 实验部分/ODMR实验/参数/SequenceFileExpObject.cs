@@ -259,5 +259,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
             }
             return null;
         }
+
+        /// <summary>
+        /// 从文件读取ODMR实验信息
+        /// </summary>
+        public static void ReadODMRExpImformationFromFile(string Path, out string ODMRGroupName, out string ODMRExpName)
+        {
+            var dic = FileObject.ReadDescription(Path);
+            if (dic.ContainsKey("实验分组") && dic.ContainsKey("实验名"))
+            {
+                ODMRGroupName = dic["实验分组"];
+                ODMRExpName = dic["实验名"];
+                return;
+            }
+            ODMRExpName = "";
+            ODMRGroupName = "";
+            return;
+        }
     }
 }

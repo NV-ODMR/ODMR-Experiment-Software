@@ -22,6 +22,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 using Controls.Windows;
 using ODMR_Lab.实验部分.ODMR实验.实验方法;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -151,7 +152,6 @@ namespace ODMR_Lab.实验部分.ODMR实验
         public DisplayPage(bool isLoadExps)
         {
             InitializeComponent();
-            OpenedExpList.ParentPage = this;
             if (isLoadExps)
                 LoadExps();
         }
@@ -331,7 +331,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 }
 
                 //设置选项卡
-                OpenedExpList.AddExp(CurrentExpObject);
+                OpenedExpList.AddTabElement(CurrentExpObject.ODMRExperimentName, CurrentExpObject.ODMRExperimentName + "  " + CurrentExpObject.ODMRExperimentGroupName, CurrentExpObject);
 
                 return;
 
@@ -584,6 +584,12 @@ namespace ODMR_Lab.实验部分.ODMR实验
         private void ShowDescription(object sender, RoutedEventArgs e)
         {
             MessageWindow.ShowTipWindow(CurrentExpObject.Description, Window.GetWindow(this));
+        }
+
+        private void SelectTabExp(Tuple<string, string, object> obj)
+        {
+            ODMRExpObject exp = obj.Item3 as ODMRExpObject;
+            SelectExp(ExpObjects.IndexOf(exp));
         }
     }
 }

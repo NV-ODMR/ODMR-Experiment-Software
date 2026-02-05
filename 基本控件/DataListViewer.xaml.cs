@@ -222,6 +222,13 @@ namespace ODMR_Lab.基本控件
             datacontentscroll.ClearItems();
         }
 
+        public void RemoveItem(int ind)
+        {
+            tags.RemoveAt(ind);
+            values.RemoveAt(ind);
+            datacontentscroll.DeleteItems(ind);
+        }
+
         private void FormerDataList(object sender, RoutedEventArgs e)
         {
             CurrentPageIndex -= 1;

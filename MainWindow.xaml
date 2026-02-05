@@ -61,6 +61,7 @@
                     </WrapPanel>
                     <WrapPanel Name="ExternalList" Width="{Binding ActualWidth, ElementName=autoScrollViewer1, Mode=OneWay}">
                         <control:DecoratedButton CornerRadius="10" IconMargin="6" TextAreaRatio="0.7" Click="ShowExternalContent" Text="Python管理器" FontSize="16" FontWeight="UltraBold" ImagePlace="Left" Margin="5" Width="150" Height="50" HorizontalAlignment="Stretch" Background="#FF383838" MoveInColor="Gray" PressedColor="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" Foreground="White" IconSource="/图片资源/python.png"/>
+                        <control:DecoratedButton CornerRadius="10" IconMargin="6" TextAreaRatio="0.7" Click="ShowExternalContent" Text="数据记录" FontSize="16" FontWeight="UltraBold" ImagePlace="Left" Margin="5" Width="150" Height="50" HorizontalAlignment="Stretch" Background="#FF383838" MoveInColor="Gray" PressedColor="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" Foreground="White" IconSource="/图片资源/python.png"/>
                     </WrapPanel>
                 </WrapPanel>
             </control:AutoScrollViewer.Content>
