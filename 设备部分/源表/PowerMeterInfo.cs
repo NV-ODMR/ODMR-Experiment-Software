@@ -45,6 +45,7 @@ namespace ODMR_Lab.设备部分.源表
         /// </summary>
         public List<DateTime> Times { get; set; } = new List<DateTime>();
 
+        public override bool IsLoadParams { get; set; } = false;
         public PowerMeterInfo()
         {
         }

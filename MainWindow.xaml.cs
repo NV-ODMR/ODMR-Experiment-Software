@@ -238,7 +238,10 @@ namespace ODMR_Lab
                 }
                 catch (Exception ex)
                 {
-                    MessageWindow.ShowTipWindow("程序环境安装出现问题,即将退出：\n" + ex.Message, Window.GetWindow(this));
+                    Dispatcher.Invoke(() =>
+                    {
+                        MessageWindow.ShowTipWindow("程序环境安装出现问题,即将退出：\n" + ex.Message, Window.GetWindow(this));
+                    });
                     Environment.Exit(0);
                     return;
                 }

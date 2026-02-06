@@ -42,6 +42,8 @@ namespace ODMR_Lab.设备部分.温控
         /// </summary>
         public SensorChannelBase Channel { get; private set; } = null;
 
+        public override bool IsLoadParams { get; set; } = false;
+
 
         public SensorChannelInfo(TemperatureControllerInfo parentinfo, SensorChannelBase channel, string name) : base(name)
         {
@@ -69,6 +71,8 @@ namespace ODMR_Lab.设备部分.温控
         /// </summary>
         public OutputChannelBase Channel { get; private set; } = null;
 
+        public override bool IsLoadParams { get; set; } = false;
+
         public OutputChannelInfo(TemperatureControllerInfo parentinfo, OutputChannelBase channel, string name) : base(name)
         {
             Channel = channel;
@@ -90,6 +94,8 @@ namespace ODMR_Lab.设备部分.温控
 
     public class TemperatureControllerInfo : DeviceInfoBase<TemperatureControllerBase>
     {
+        public override bool IsLoadParams { get; set; } = false;
+
         public TemperatureControllerInfo()
         {
         }

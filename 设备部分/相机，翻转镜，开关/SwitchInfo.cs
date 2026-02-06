@@ -6,6 +6,8 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 {
     public class SwitchInfo : DeviceInfoBase<SwitchBase>
     {
+        public override bool IsLoadParams { get; set; } = false;
+
         public override void CreateDeviceInfoBehaviour()
         {
         }

@@ -17,6 +17,8 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
 
         public SignalChannelBase Device { get; set; } = null;
 
+        public override bool IsLoadParams { get; set; } = false;
+
         public SignalGeneratorChannelInfo(SignalGeneratorInfo parentInfo, SignalChannelBase channel)
         {
             ParentInfo = parentInfo;

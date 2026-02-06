@@ -12,7 +12,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 {
     public class CameraInfo : DeviceInfoBase<CameraBase>
     {
-
+        public override bool IsLoadParams { get; set; } = true;
         public CameraWindow DisplayWindow { get; set; } = null;
 
         public override void CreateDeviceInfoBehaviour()

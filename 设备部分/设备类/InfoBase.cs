@@ -20,6 +20,7 @@ namespace ODMR_Lab.设备部分
 
         protected object SourceDevice { get; set; } = null;
 
+        public abstract bool IsLoadParams { get; set; }
 
         private object lockobj = new object();
 
@@ -153,7 +154,7 @@ namespace ODMR_Lab.设备部分
         /// <summary>
         /// 尝试打开所有设备，导入参数
         /// </summary>
-        public static List<InfoBase> ConnectAllAndLoadParams(string ParamFolder, out List<KeyValuePair<Type, DeviceInfoBase>> connectedDeviceinfo, out List<KeyValuePair<Type, DeviceInfoBase>> unconnectedDeviceinfo)
+        public static List<InfoBase> ConnectAllAndLoadParams(string ParamFolder, out List<KeyValuePair<Type, DeviceInfoBase>> connectedDeviceinfo, out List<KeyValuePair<Type, DeviceInfoBase>> unconnectedDeviceinfo, bool LoadParams = false)
         {
             if (!Directory.Exists(ParamFolder))
             {
@@ -225,7 +226,7 @@ namespace ODMR_Lab.设备部分
                                             dev.CreateDeviceInfoBehaviour();
                                             dev.AutoConnectedAction(obj);
                                             ConnectDevices.Add(dev);
-                                            if (obj.DataCount() != 0)
+                                            if (obj.DataCount() != 0 && LoadParams)
                                             {
                                                 dev.Device.LoadParams(obj);
                                             }
@@ -253,7 +254,7 @@ namespace ODMR_Lab.设备部分
         /// </summary>
         /// <param name="filepath"></param>
         /// <returns></returns>
-        public static DeviceInfoBase<T> OpenAndLoadParams(string filepath, Type deviceType)
+        public static DeviceInfoBase<T> OpenAndLoadParams(string filepath, Type deviceType, bool LoadParams = false)
         {
             FileObject obj = FileObject.ReadFromFile(filepath);
             //找到确定的设备类型
@@ -297,7 +298,7 @@ namespace ODMR_Lab.设备部分
             res.CreateDeviceInfoBehaviour();
             res.AutoConnectedAction(obj);
 
-            if (obj.DataCount() != 0)
+            if (obj.DataCount() != 0 && LoadParams)
             {
                 res.Device.LoadParams(obj);
             }

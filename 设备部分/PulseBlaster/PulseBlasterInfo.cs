@@ -11,6 +11,8 @@ namespace ODMR_Lab.设备部分.板卡
     {
         public List<KeyValuePair<string, int>> ChannelDescriptions { get; set; } = new List<KeyValuePair<string, int>>();
 
+        public override bool IsLoadParams { get; set; } = true;
+
         public override void CreateDeviceInfoBehaviour()
         {
             foreach (var item in Device.ChannelInds)

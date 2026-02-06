@@ -16,6 +16,8 @@ namespace ODMR_Lab.设备部分.位移台部分
     {
         public List<NanoStageInfo> Stages { get; private set; } = new List<NanoStageInfo>();
 
+        public override bool IsLoadParams { get; set; } = false;
+
         public NanoMoverInfo()
         {
         }
@@ -63,6 +65,8 @@ namespace ODMR_Lab.设备部分.位移台部分
     public class NanoStageInfo : DeviceElementInfoBase<StageBase>
     {
         public MoverTypes MoverType { get; set; } = MoverTypes.None;
+
+        public override bool IsLoadParams { get; set; } = false;
 
         /// <summary>
         /// 所属部分

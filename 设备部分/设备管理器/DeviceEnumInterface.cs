@@ -66,7 +66,7 @@ namespace ODMR_Lab.设备部分
 
             MethodInfo inf = info.DeviceInfoType.BaseType.GetMethod("ConnectAllAndLoadParams");
 
-            object[] param = new object[] { Path.Combine(Environment.CurrentDirectory, "DevParamDir"), null, null };
+            object[] param = new object[] { Path.Combine(Environment.CurrentDirectory, "DevParamDir"), null, null, info.DeviceInfoType.GetProperty("IsLoadParams").GetValue(Activator.CreateInstance(info.DeviceInfoType)) };
 
             object result = inf.Invoke(null, param);
 

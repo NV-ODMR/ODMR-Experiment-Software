@@ -18,6 +18,8 @@ namespace ODMR_Lab.设备部分.电源
 {
     public class PowerChannelInfo : InfoBase
     {
+        public override bool IsLoadParams { get; set; } = false;
+
         public PowerInfo ParentInfo { get; protected set; } = null;
 
         /// <summary>

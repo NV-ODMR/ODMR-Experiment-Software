@@ -27,6 +27,7 @@ namespace ODMR_Lab.设备部分.光子探测器
         /// </summary>
         public string PulseSourceName { get; set; } = "";
 
+        public override bool IsLoadParams { get; set; } = true;
 
         public override void CreateDeviceInfoBehaviour()
         {

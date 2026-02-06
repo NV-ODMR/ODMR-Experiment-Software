@@ -19,6 +19,8 @@ namespace ODMR_Lab.设备部分.电源
 {
     public class PowerInfo : DeviceInfoBase<PowerBase>
     {
+        public override bool IsLoadParams { get; set; } = false;
+
         public PowerInfo()
         {
         }

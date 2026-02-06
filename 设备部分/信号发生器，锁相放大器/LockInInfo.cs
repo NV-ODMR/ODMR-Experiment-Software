@@ -6,6 +6,8 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
 {
     public class LockinInfo : DeviceInfoBase<LockInBase>
     {
+        public override bool IsLoadParams { get; set; } = false;
+
         public override void CreateDeviceInfoBehaviour()
         {
         }
