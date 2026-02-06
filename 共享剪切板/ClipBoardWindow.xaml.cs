@@ -63,12 +63,17 @@ namespace ODMR_Lab.共享剪切板
                         {
                             IsEnabled = false;
                             w.Show();
-                            file = Clipboard.GetFileDropList();
-                            //远程数据
-                            data = Clipboard.GetData("remoteCustomData");
                         });
+                        file = Clipboard.GetFileDropList();
+                        //远程数据
+                        data = Clipboard.GetData("remoteCustomData");
                         if (file.Count == 0 && data == null)
                         {
+                            Dispatcher.Invoke(() =>
+                            {
+                                IsEnabled = true;
+                                w.Close();
+                            });
                             return;
                         }
                         if (file.Count != 0)
@@ -110,6 +115,7 @@ namespace ODMR_Lab.共享剪切板
                         });
                     }
                 });
+                t.SetApartmentState(ApartmentState.STA);
                 t.Start();
             }
             //粘贴图片
@@ -124,9 +130,9 @@ namespace ODMR_Lab.共享剪切板
                             IsEnabled = false;
                             w.Show();
                             if (CurrentFile == "") return;
-                            Clipboard.Clear();
-                            Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
                         });
+                        Clipboard.Clear();
+                        Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
                         Dispatcher.Invoke(() =>
                         {
                             IsEnabled = true;
@@ -142,6 +148,7 @@ namespace ODMR_Lab.共享剪切板
                         });
                     }
                 });
+                t.SetApartmentState(ApartmentState.STA);
                 t.Start();
             }
         }
@@ -151,11 +158,8 @@ namespace ODMR_Lab.共享剪切板
             List<object> result = new List<object>();
             result.Add(System.IO.Path.GetFileName(filepath));
             result.Add(File.ReadAllBytes(filepath));
-            Dispatcher.Invoke(() =>
-            {
-                Clipboard.Clear();
-                Clipboard.SetData("remoteCustomData", result);
-            });
+            Clipboard.Clear();
+            Clipboard.SetData("remoteCustomData", result);
             return;
         }
 
@@ -185,9 +189,9 @@ namespace ODMR_Lab.共享剪切板
                         {
                             IsEnabled = false;
                             w.Show();
-                            Clipboard.Clear();
-                            Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
                         });
+                        Clipboard.Clear();
+                        Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
                         Dispatcher.Invoke(() =>
                         {
                             IsEnabled = true;
@@ -208,6 +212,7 @@ namespace ODMR_Lab.共享剪切板
                     }
                 }
             });
+            t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }
 
@@ -248,6 +253,7 @@ namespace ODMR_Lab.共享剪切板
                     }
                 }
             });
+            t.SetApartmentState(ApartmentState.STA);
             t.Start();
         }
     }
