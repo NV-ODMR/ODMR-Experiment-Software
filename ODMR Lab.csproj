@@ -70,7 +70,7 @@
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Desktop\Code\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -390,6 +390,7 @@
     <Compile Include="扩展部分\Python管理器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
+    <Compile Include="扩展部分\数据记录\界面及子窗口\RemoteClipboard.cs" />
     <Compile Include="扩展部分\数据记录\界面及子窗口\子控件\ImageViewingControl.xaml.cs">
       <DependentUpon>ImageViewingControl.xaml</DependentUpon>
     </Compile>

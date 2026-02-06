@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Windows;
 using HardWares.Windows;
 using HardWares.相机_CCD_;
 using HardWares.端口基类;
@@ -52,7 +53,15 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
             InitCursorSettings();
 
-            CreateCameraThread();
+            try
+            {
+                CreateCameraThread();
+            }
+            catch (Exception)
+            {
+                MessageWindow.ShowTipWindow("相机正在使用", this);
+                Close(null, new RoutedEventArgs());
+            }
 
             CameraPixelHeight = info.Device.CameraPixelHeightCount;
             CameraPixelHeight = info.Device.CameraPixelWidthCount;
@@ -128,6 +137,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
         private void CreateCameraThread()
         {
+            Camera?.BeginUse();
             CameraThread = new Thread(() =>
             {
                 while (!isThreadEnd)
@@ -166,6 +176,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
             {
                 Thread.Sleep(30);
             }
+            Camera?.EndUse();
         }
 
         /// <summary>
@@ -198,6 +209,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                 double width = Camera.DisplayWindow.ActualWidth;
                 double height = Camera.DisplayWindow.ActualHeight;
                 WindowState state = Camera.DisplayWindow.WindowState;
+                Camera?.EndUse();
                 string path = Camera.CloseDeviceInfoAndSaveParams(out bool result);
                 if (result == false) { return; }
 
@@ -214,7 +226,17 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                 newcam.DisplayWindow.WindowState = state;
                 newcam.DisplayWindow.Show();
             }
-            catch (Exception exc) { }
+            catch (Exception exc)
+            {
+                try
+                {
+                    Camera?.BeginUse();
+                }
+                catch (Exception)
+                {
+
+                }
+            }
         }
 
         private void SetParams(object sender, RoutedEventArgs e)
