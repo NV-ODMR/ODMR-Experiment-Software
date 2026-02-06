@@ -38,6 +38,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
             new Param<int>("单点扫描时间上限(ms)",20000,"TimeOut"),
             new Param<int>("谱峰数量",2,"FitType"),
             new Param<double>("预计峰宽",2.5,"PeakWidth"),
+            new Param<int>("脉冲阶数",2,"PulseOrder"),
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {

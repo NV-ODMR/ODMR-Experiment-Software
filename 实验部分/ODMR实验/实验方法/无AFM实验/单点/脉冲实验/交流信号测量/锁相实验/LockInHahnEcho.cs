@@ -60,6 +60,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<bool>("单次实验前打开信号",false,"OpenSignalBeforeExp"){ Helper = "当选择此选项时,在进行此实验之前会使控制锁相信号的继电器打开,实验结束后则会关闭" },
             new Param<bool>("每点重新确定微波频率",false,"ConfirmCW"){ Helper = "当选择此选项时,在进行HahnEcho实验之前会先扫描CW谱来确定共振频率,具体的扫描参数由子实验确定" },
             new Param<bool>("每点重新确定拉比频率",false,"ConfirmRabi"){ Helper = "当选择此选项时,在进行HahnEcho实验之前会先做拉比实验来确定振荡频率,具体的扫描参数由子实验确定" },
+            new Param<bool>("自动调整微波功率",false,"AdjustRFPower"){ Helper = "" },
+            new Param<int>("Rabi Pi脉冲长度上限(ns)",250,"PiSetMaxLength"){ Helper = "" },
+            new Param<int>("Rabi Pi脉冲长度下限(ns)",130,"PiSetMinLength"){ Helper = "" },
+            new Param<int>("微波功率上限(dbm)",10,"RFPowerLimit"){ Helper = "" },
+            new Param<bool>("使用上次调整后的的微波功率",false,"UseHistoryPower"){ Helper = "" },
 
             new Param<int>("序列阶数",1,"SequenceCount"){ Helper = "选择需要积累多少个周期的信号" },
         };
@@ -139,6 +144,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             GlobalPulseParams.SetGlobalPulseLength("HalfPiX", hpix);
             GlobalPulseParams.SetGlobalPulseLength("PiX", pix);
+            int delaytime = GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay");
 
             //设置HahnEchoTime
             //XPi脉冲时间
@@ -154,8 +160,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             #region 点1(1/2pi Y)
             channel.Channel.Voltage = GetInputParamValueByName("V90");
             GlobalPulseParams.SetGlobalPulseLength("CustomYLength", hpiy);
+            GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
 
-            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
+            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
                 GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             double sigY = pack.GetPhotonsAtIndex(0).Sum();
@@ -182,9 +189,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             #region 点2(3/2pi Y)
 
             //channel.Channel.Voltage = GetInputParamValueByName("V270");
-            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", h3piy);
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", hpiy);
+            GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)(delaytime + signaltime / 2));
 
-            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
+            pack = DoLockInPulseExp("CMPGY", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
                 GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             double sigY3 = pack.GetPhotonsAtIndex(0).Sum();
@@ -211,8 +219,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             #region 点2(-1/2pi X)
             //channel.Channel.Voltage = GetInputParamValueByName("V180");
             GlobalPulseParams.SetGlobalPulseLength("CustomXLength", h3pix);
+            GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
 
-            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
+            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
                 GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             double sigX3 = pack.GetPhotonsAtIndex(0).Sum();
@@ -238,8 +247,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             JudgeThreadEndOrResumeAction?.Invoke();
             #region 点3(1/2pi X)
             GlobalPulseParams.SetGlobalPulseLength("CustomXLength", hpix);
+            GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
 
-            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
+            pack = DoLockInPulseExp("CMPGX", double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
                 GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
 
             double sigX = pack.GetPhotonsAtIndex(0).Sum();
@@ -261,6 +271,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             catch (Exception)
             {
             }
+
+            GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
+
             #endregion
             JudgeThreadEndOrResumeAction?.Invoke();
 
@@ -357,6 +370,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         double OriginSignalAmplitude { get; set; } = 0;
         double cwpeak = double.NaN;
+        public double RFHistoryPower = double.NaN;
+
         public override void PreLockInExpEventWithoutAFM()
         {
             //打开微波
@@ -380,16 +395,45 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             origin_pix = GlobalPulseParams.GetGlobalPulseLength("PiX");
             origin_hpix = GlobalPulseParams.GetGlobalPulseLength("HalfPiX");
 
+
             //如果要先测Rabi
             if (GetInputParamValueByName("ConfirmRabi") == true)
             {
-                var exp = RunSubExperimentBlock(1, true);
-                //如果Pi脉冲长度大于测量范围的一半则把测量范围扩大2倍重新测
+                bool useHistoryPower = GetInputParamValueByName("UseHistoryPower");
+                if (!useHistoryPower) RFHistoryPower = GetInputParamValueByName("RFAmplitude");
+                double currentPower = useHistoryPower ? RFHistoryPower : GetInputParamValueByName("RFAmplitude");
+                if (double.IsNaN(currentPower))
+                {
+                    currentPower = GetInputParamValueByName("RFAmplitude");
+                }
+                var exp = RunSubExperimentBlock(1, true, new List<ParamB>() { new Param<double>("微波功率(dBm)", currentPower, "RFAmplitude") });
+                //如果Pi脉冲长度大于预设PI脉冲长度则提高功率重新测
+                int PiLengthMaxLimit = (int)GetInputParamValueByName("PiSetMaxLength");
+                int PiLengthMinLimit = (int)GetInputParamValueByName("PiSetMinLength");
+                var time = exp.Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
                 var datx = exp.Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
                 var daty = exp.Get1DChartDataSource("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
-                if (datx.IndexOf(datx.Min()) > datx.Count / 2 || daty.IndexOf(daty.Min()) > daty.Count / 2)
+                if (time[datx.IndexOf(datx.Min())] > PiLengthMaxLimit)
                 {
-                    exp = RunSubExperimentBlock(1, true, new List<ParamB>() { new Param<int>("时间最大值(ns)", exp.GetInputParamValueByName("Rabimax") * 2, "Rabimax") });
+                    //获取需要增加的功率倍数
+                    double ratio = time[datx.IndexOf(datx.Min())] / ((PiLengthMaxLimit + PiLengthMinLimit) * 0.5);
+                    double dbmdet = Math.Log(ratio) / Math.Log(1.26);
+                    RFHistoryPower = Math.Min(GetInputParamValueByName("RFPowerLimit"), currentPower + dbmdet);
+                    exp = RunSubExperimentBlock(1, true, new List<ParamB>() { new Param<double>("微波功率(dBm)", RFHistoryPower, "RFAmplitude") });
+                }
+                if (time[datx.IndexOf(datx.Min())] < PiLengthMinLimit)
+                {
+                    //获取需要降低的功率倍数
+                    double ratio = time[datx.IndexOf(datx.Min())] / ((PiLengthMaxLimit + PiLengthMinLimit) * 0.5);
+                    double dbmdet = Math.Log(ratio) / Math.Log(1.26);
+                    RFHistoryPower = Math.Min(GetInputParamValueByName("RFPowerLimit"), currentPower + dbmdet);
+                    exp = RunSubExperimentBlock(1, true, new List<ParamB>() { new Param<double>("微波功率(dBm)", RFHistoryPower, "RFAmplitude") });
+                }
+                datx = exp.Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+                daty = exp.Get1DChartDataSource("通道Y Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+                if (datx.IndexOf(datx.Min()) > datx.Count / 2 + 1)
+                {
+                    exp = RunSubExperimentBlock(1, true, new List<ParamB>() { new Param<int>("时间最大值(ns)", SubExperiments[1].GetInputParamValueByName("Rabimax") * 2, "Rabimax"), new Param<double>("微波功率(dBm)", RFHistoryPower, "RFAmplitude") });
                 }
                 hpix = (int)exp.GetOutputParamValueByName("X_HalfPiLength");
                 h3pix = (int)exp.GetOutputParamValueByName("X_3HalfPiLength");
@@ -426,6 +470,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             OutputParams.Add(new Param<double>("PI Y脉冲长度", piy, "YPi") { GroupName = "脉冲长度" });
             OutputParams.Add(new Param<double>("3PI/2 X脉冲长度", pix, "X3HalfPi") { GroupName = "脉冲长度" });
             OutputParams.Add(new Param<double>("3PI/2 Y脉冲长度", piy, "Y3HalfPi") { GroupName = "脉冲长度" });
+            OutputParams.Add(new Param<double>("微波功率", RFHistoryPower, "RFPower") { GroupName = "脉冲长度" });
 
             if (GetInputParamValueByName("OpenSignalBeforeExp") == true)
             {
