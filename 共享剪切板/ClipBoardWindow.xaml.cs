@@ -1,4 +1,6 @@
 ﻿using CodeHelper;
+using Controls.Windows;
+using ODMR_Lab.Windows;
 using ODMR_Lab.数据记录;
 using System;
 using System.Collections.Generic;
@@ -6,6 +8,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,64 +45,104 @@ namespace ODMR_Lab.共享剪切板
         }
 
         private string CurrentFile = "";
-        private bool IsLocalFile = false;
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            MessageWindow w = new MessageWindow("操作", "正在操作文件...", MessageBoxButton.OK, false, false);
+            w.Owner = this;
+            w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             if (e.Key == Key.V && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                try
+                Thread t = new Thread(() =>
                 {
-                    var file = Clipboard.GetFileDropList();
-                    //远程数据
-                    var data = Clipboard.GetData("remoteCustomData");
-                    if (file == null && data == null)
+                    try
                     {
-                        return;
+                        StringCollection file = null;
+                        object data = null;
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = false;
+                            w.Show();
+                            file = Clipboard.GetFileDropList();
+                            //远程数据
+                            data = Clipboard.GetData("remoteCustomData");
+                        });
+                        if (file.Count == 0 && data == null)
+                        {
+                            return;
+                        }
+                        if (file.Count != 0)
+                        {
+                            //本地文件传入
+                            string lastpath = file[file.Count - 1];
+                            Dispatcher.Invoke(() =>
+                            {
+                                FileViewer.SetDisplayFile(lastpath);
+                            });
+                            CurrentFile = lastpath;
+                        }
+                        if (data != null)
+                        {
+                            //远程文件传入
+                            var input = data as List<object>;
+                            ConvertToFile(input);
+                            string filepath = Path.Combine(Environment.CurrentDirectory, "TempPasteFile", (string)input[0]);
+                            Dispatcher.Invoke(() =>
+                            {
+                                FileViewer.SetDisplayFile(filepath);
+                            });
+                            CurrentFile = filepath;
+                        }
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                        });
                     }
-                    if (file != null)
+                    catch (Exception)
                     {
-                        //本地文件传入
-                        string lastpath = file[file.Count - 1];
-                        FileViewer.SetDisplayFile(lastpath);
-                        CurrentFile = lastpath;
-                        IsLocalFile = true;
+                        CurrentFile = "";
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                        });
                     }
-                    if (data != null)
-                    {
-                        //远程文件传入
-                        var input = data as List<object>;
-                        ConvertToFile(input);
-                        string filepath = Path.Combine(Environment.CurrentDirectory, "TempPasteFile", (string)input[0]);
-                        FileViewer.SetDisplayFile(filepath);
-                        CurrentFile = filepath;
-                        IsLocalFile = false;
-                    }
-                }
-                catch (Exception)
-                {
-                    CurrentFile = "";
-                }
+                });
+                t.Start();
             }
             //粘贴图片
             if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                try
+                Thread t = new Thread(() =>
                 {
-                    if (CurrentFile == "") return;
-                    if (IsLocalFile)
+                    try
                     {
-                        Clipboard.Clear();
-                        Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = false;
+                            w.Show();
+                            if (CurrentFile == "") return;
+                            Clipboard.Clear();
+                            Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
+                        });
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                        });
                     }
-                    else
+                    catch (Exception)
                     {
-                        ConvertToByteAndSetToClipboard(CurrentFile);
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                        });
                     }
-                }
-                catch (Exception)
-                {
-                }
+                });
+                t.Start();
             }
         }
 
@@ -108,8 +151,11 @@ namespace ODMR_Lab.共享剪切板
             List<object> result = new List<object>();
             result.Add(System.IO.Path.GetFileName(filepath));
             result.Add(File.ReadAllBytes(filepath));
-            Clipboard.Clear();
-            Clipboard.SetData("remoteCustomData", result);
+            Dispatcher.Invoke(() =>
+            {
+                Clipboard.Clear();
+                Clipboard.SetData("remoteCustomData", result);
+            });
             return;
         }
 
@@ -126,19 +172,83 @@ namespace ODMR_Lab.共享剪切板
 
         private void CopyLocalFile(object sender, RoutedEventArgs e)
         {
-            if (CurrentFile != "")
+            MessageWindow w = new MessageWindow("操作", "正在操作文件...", MessageBoxButton.OK, false, false);
+            w.Owner = this;
+            w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            Thread t = new Thread(() =>
             {
-                Clipboard.Clear();
-                Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
-            }
+                if (CurrentFile != "")
+                {
+                    try
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = false;
+                            w.Show();
+                            Clipboard.Clear();
+                            Clipboard.SetFileDropList(new StringCollection() { CurrentFile });
+                        });
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                            TimeWindow win = new TimeWindow();
+                            win.Owner = this;
+                            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            win.ShowWindow("文件已复制");
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                        });
+                    }
+                }
+            });
+            t.Start();
         }
 
         private void CopyRemoteData(object sender, RoutedEventArgs e)
         {
-            if (CurrentFile != "")
+            MessageWindow w = new MessageWindow("操作", "正在操作文件...", MessageBoxButton.OK, false, false);
+            w.Owner = this;
+            w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            Thread t = new Thread(() =>
             {
-                ConvertToByteAndSetToClipboard(CurrentFile);
-            }
+                if (CurrentFile != "")
+                {
+                    try
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = false;
+                            w.Show();
+                        });
+                        ConvertToByteAndSetToClipboard(CurrentFile);
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                            TimeWindow win = new TimeWindow();
+                            win.Owner = this;
+                            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            win.ShowWindow("文件已复制");
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            IsEnabled = true;
+                            w.Close();
+                        });
+                    }
+                }
+            });
+            t.Start();
         }
     }
 }
