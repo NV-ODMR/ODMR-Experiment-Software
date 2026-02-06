@@ -7,7 +7,7 @@
         xmlns:control="clr-namespace:Controls;assembly=Controls"
         xmlns:sheel="she"
         mc:Ignorable="d"
-        Title="MainWindow" Height="805" Width="1280" WindowChrome.IsHitTestVisibleInChrome="False" Loaded="WindowLoaded" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+        Title="MainWindow" Height="805" Width="1280" WindowChrome.IsHitTestVisibleInChrome="False" Icon="/图片资源/icon.ico" Loaded="WindowLoaded" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid Name="GeneralGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -33,6 +33,7 @@
                     <control:DecoratedButton CornerRadius="20" Click="ShowSubMenu" IconMargin="0,-5,0,10" TextAreaRatio="0.5" Text="实验" FontSize="17" FontWeight="UltraBold" ImagePlace="Bottom" Margin="5" Width="80" Height="80" HorizontalAlignment="Stretch" Background="#FF383838" MoveInColor="Gray" PressedColor="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" Foreground="White" IconSource="/图片资源/experiment.png"/>
                     <control:DecoratedButton CornerRadius="20" Click="ShowSubMenu" IconMargin="0,-5,0,10" TextAreaRatio="0.5" Text="数据" FontSize="17" FontWeight="UltraBold" ImagePlace="Bottom" Margin="5" Width="80" Height="80" HorizontalAlignment="Stretch" Background="#FF383838" MoveInColor="Gray" PressedColor="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" Foreground="White" IconSource="/图片资源/data.png"/>
                     <control:DecoratedButton CornerRadius="20" Click="ShowSubMenu" IconMargin="0,-5,0,10" TextAreaRatio="0.5" Text="扩展" FontSize="17" FontWeight="UltraBold" ImagePlace="Bottom" Margin="5" Width="80" Height="80" HorizontalAlignment="Stretch" Background="#FF383838" MoveInColor="Gray" PressedColor="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" Foreground="White" IconSource="/图片资源/extension.png"/>
+                    <control:DecoratedButton CornerRadius="20" Click="ShowSubMenu" IconMargin="0,5,0,10" TextAreaRatio="0.5" Text="共享剪切板" FontSize="17" FontWeight="UltraBold" ImagePlace="Bottom" Margin="5" Width="80" Height="100" HorizontalAlignment="Stretch" Background="#FF383838" MoveInColor="Gray" PressedColor="#FF2E2E2E" MoveInForeground="White" PressedForeground="White" Foreground="White" IconSource="/图片资源/clipboard.png"/>
                 </WrapPanel>
             </control:AutoScrollViewer.Content>
         </control:AutoScrollViewer>

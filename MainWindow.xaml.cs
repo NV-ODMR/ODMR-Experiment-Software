@@ -12,6 +12,10 @@ using ODMR_Lab.数据处理;
 using ODMR_Lab.IO操作;
 using Controls.Windows;
 using ODMR_Lab.设备部分;
+using ODMR_Lab.共享剪切板;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
+using HardWares.APD.Exclitas_SPCM_AQRH;
 
 namespace ODMR_Lab
 {
@@ -257,6 +261,16 @@ namespace ODMR_Lab
         #region 设备列表
         #endregion
 
+
+        ClipBoardWindow ClipboardWindow = null;
+
+        // 导入 Windows API 中的设置任务栏应用程序 ID 的方法
+        [DllImport("shell32.dll", SetLastError = true)]
+        private static extern void SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
+
+        public static void SetAppIdForWindow(Window window, string appId)
+        {
+        }
         /// <summary>
         /// 显示次级菜单
         /// </summary>
@@ -289,6 +303,19 @@ namespace ODMR_Lab
             {
                 ExternalList.Visibility = Visibility.Visible;
                 GeneralGrid.ColumnDefinitions[1].Width = new GridLength(160);
+            }
+            if (btn.Text == "共享剪切板")
+            {
+                if (ClipboardWindow == null)
+                {
+                    ClipboardWindow = new ClipBoardWindow();
+                    var helper = new WindowInteropHelper(ClipboardWindow);
+                    SetCurrentProcessExplicitAppUserModelID("RemoteClipboard");
+                }
+                ClipboardWindow.WindowState = WindowState.Normal;
+                ClipboardWindow.Activate();
+                ClipboardWindow.Show();
+
             }
         }
 

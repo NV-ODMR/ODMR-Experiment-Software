@@ -21,10 +21,7 @@
     <Grid Grid.Row="0" Grid.Column="0" ClipToBounds="True">
         <Image Name="DisplayedImage" Visibility="Hidden"/>
     </Grid>
-    <StackPanel Name="FileViewer" Visibility="Hidden" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Image Name="FileIcon" Width="60" Height="60"/>
-        <TextBlock Name="PDFName" Text="111111.pdf" Foreground="White" HorizontalAlignment="Center" MaxWidth="300"/>
-    </StackPanel>
+    <local:FileViewingControl Visibility="Hidden" x:Name="FileImage"/>
     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
         <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/camera.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="TakePhoto" ToolTip="拍摄图片" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
         <control:DecoratedButton Grid.Column="0" Grid.Row="2" IconSource="/图片资源/refresh.png" IconMargin="3" Width="30" Margin="4" HorizontalAlignment="Stretch" TextAreaRatio="0" VerticalAlignment="Stretch" Click="ReloadImages" ToolTip="重新加载" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>

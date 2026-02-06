@@ -191,85 +191,20 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             if (DisplayedImagePairIndex < 0) DisplayedImagePairIndex = 0;
             DisplayedImage.Source = null;
             DisplayedImage.Visibility = Visibility.Hidden;
-            FileViewer.Visibility = Visibility.Hidden;
+            FileImage.Visibility = Visibility.Hidden;
             try
             {
                 if (ImageList[DisplayedImagePairIndex].Key != null)
                 {
                     DisplayedImage.Visibility = Visibility.Visible;
-                    FileViewer.Visibility = Visibility.Hidden;
+                    FileImage.Visibility = Visibility.Hidden;
                     DisplayedImage.Source = ImageList[DisplayedImagePairIndex].Key;
                 }
                 else
                 {
                     DisplayedImage.Visibility = Visibility.Hidden;
-                    FileViewer.Visibility = Visibility.Visible;
-                    string ext = Path.GetExtension(ImageList[DisplayedImagePairIndex].Value);
-                    if (ext == ".pdf")
-                    {
-                        FileIcon.Source = pdfImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".ppt" || ext == ".pptx" || ext == ".ppsx" || ext == ".potx")
-                    {
-                        FileIcon.Source = PPTImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".xls" || ext == ".xlsx" || ext == ".xlsm" || ext == ".xltx")
-                    {
-                        FileIcon.Source = ExcelImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".doc" || ext == ".docx" || ext == ".dotx")
-                    {
-                        FileIcon.Source = WordImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".txt")
-                    {
-                        FileIcon.Source = TxtImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".m" || ext == ".wl" || ext == ".nb")
-                    {
-                        FileIcon.Source = MathematicaImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".py")
-                    {
-                        FileIcon.Source = PythonImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".zip" || ext == ".7z" || ext == ".rar")
-                    {
-                        FileIcon.Source = ZipImage;
-                        PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
-                        return;
-                    }
-                    if (ext == ".userdat")
-                    {
-                        FileIcon.Source = expImage;
-                        string filename = "";
-                        var exptype = ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(ImageList[DisplayedImagePairIndex].Value);
-                        filename += exptype.ToString() + " ";
-                        if (exptype == ExperimentFileTypes.ODMR实验)
-                        {
-                            SequenceFileExpObject.ReadODMRExpImformationFromFile(ImageList[DisplayedImagePairIndex].Value, out string groupname, out string expname);
-                            filename += groupname.ToString() + " " + expname + " ";
-                        }
-                        PDFName.Text = filename + ext;
-                        return;
-                    }
-
-                    FileIcon.Source = NanImage;
-                    PDFName.Text = Path.GetFileName(ImageList[DisplayedImagePairIndex].Value);
+                    FileImage.Visibility = Visibility.Visible;
+                    FileImage.SetDisplayFile(ImageList[DisplayedImagePairIndex].Value);
                     return;
                 }
             }

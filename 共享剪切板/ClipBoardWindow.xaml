@@ -1,0 +1,47 @@
+﻿<Window x:Class="ODMR_Lab.共享剪切板.ClipBoardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件"
+        mc:Ignorable="d"
+        Title="" Height="390" Width="540" BorderThickness="2" ResizeMode="NoResize" KeyDown="Window_KeyDown" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA" Icon="/图片资源/clipboard.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+        </Grid.ColumnDefinitions>
+        <Label Name="title" Grid.Row="0" Content="" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="CloseBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Name="MinBtn" Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
+        <control:DecoratedButton Name="MaxBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="90"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="当前文件" Foreground="White" Grid.ColumnSpan="2" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment='Center'/>
+            <基本控件:FileViewingControl x:Name="FileViewer" Grid.Row="1"/>
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <control:DecoratedButton Grid.Column="0" Grid.Row="0" IconMargin="3" TextAreaRatio="1" Margin="5" Text="复制远程传输数据到剪切板" FontSize="12" Grid.ColumnSpan="1" Click="CopyRemoteData" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray"/>
+                <control:DecoratedButton Grid.Column="0" Grid.Row="1" IconMargin="3" TextAreaRatio="1" Margin="5" Text="复制本地文件到剪切板" FontSize="12" Grid.ColumnSpan="1" Click="CopyLocalFile" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray"/>
+            </Grid>
+            <TextBlock Foreground="White" Grid.ColumnSpan="2" Grid.Row="2" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Text="将本地文件复制到此处，文件将转换成适于远程桌面传输的数据格式并存入剪切板。将远程文件粘贴到此处，文件将转换成原有格式供本地使用。"/>
+        </Grid>
+    </Grid>
+</Window>
