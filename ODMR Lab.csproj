@@ -62,19 +62,19 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -148,16 +148,10 @@
     <Compile Include="MessageLogger.cs" />
     <Compile Include="PageBase.cs" />
     <Compile Include="UI刷新部分\UIUpdater.cs" />
-    <Compile Include="共享剪切板\ClipBoardWindow.xaml.cs">
-      <DependentUpon>ClipBoardWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="基本控件\DataListViewer.xaml.cs">
       <DependentUpon>DataListViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="基本控件\ImageLabel.cs" />
-    <Compile Include="基本控件\FileViewingControl.xaml.cs">
-      <DependentUpon>FileViewingControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="基本控件\LabeledImage.xaml.cs">
       <DependentUpon>LabeledImage.xaml</DependentUpon>
     </Compile>
@@ -525,17 +519,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="共享剪切板\ClipBoardWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="基本控件\DataListViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="基本控件\FileViewingControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="基本控件\LabeledImage.xaml">
       <SubType>Designer</SubType>
@@ -876,7 +862,6 @@
     <Resource Include="图片资源\refresh.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="图片资源\clipboard.png" />
     <Resource Include="图片资源\zip.png" />
     <Resource Include="图片资源\pythonfile.png" />
     <Resource Include="图片资源\mathematica.png" />

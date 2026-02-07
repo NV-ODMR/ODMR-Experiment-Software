@@ -69,6 +69,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 int sampletime = 0;
                 int Totalsampletime = (int)InputParams[3];
                 List<double> pids = new List<double>();
+                pids.Add(lockin.Device.PIDValue);
                 while (sampletime < Totalsampletime)
                 {
                     double temppid = lockin.Device.PIDValue;
