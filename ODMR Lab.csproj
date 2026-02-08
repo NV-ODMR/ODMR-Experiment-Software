@@ -394,6 +394,9 @@
     <Compile Include="扩展部分\数据记录\界面及子窗口\子控件\ImageViewingControl.xaml.cs">
       <DependentUpon>ImageViewingControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="扩展部分\数据记录\界面及子窗口\子控件\标签控件\NoteSearchBar.xaml.cs">
+      <DependentUpon>NoteSearchBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="扩展部分\数据记录\界面及子窗口\子控件\标签控件\PureTextPanel.xaml.cs">
       <DependentUpon>PureTextPanel.xaml</DependentUpon>
     </Compile>
@@ -664,6 +667,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="扩展部分\数据记录\界面及子窗口\子控件\ImageViewingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="扩展部分\数据记录\界面及子窗口\子控件\标签控件\NoteSearchBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

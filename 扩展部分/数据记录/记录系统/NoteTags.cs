@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ODMR_Lab.数据记录
 {
@@ -35,6 +36,12 @@ namespace ODMR_Lab.数据记录
         public abstract bool IsSameAs(NoteTag target);
 
         public bool IsPrivate { get; set; } = false;
+
+        /// <summary>
+        /// 获取标签描述
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetDescription();
     }
 
     public class PureTextTag : NoteTag
@@ -127,6 +134,11 @@ namespace ODMR_Lab.数据记录
                 if ((target as PureTextTag).Content == Content) return true;
             }
             return false;
+        }
+
+        public override string GetDescription()
+        {
+            return Content;
         }
     }
 
@@ -225,6 +237,11 @@ namespace ODMR_Lab.数据记录
             }
             return false;
         }
+
+        public override string GetDescription()
+        {
+            return Title + " : " + Content;
+        }
     }
 
     public abstract class OptionTag : NoteTag
@@ -247,7 +264,7 @@ namespace ODMR_Lab.数据记录
             {
                 (target as MultiOptionTag).Options = Options.ToArray().ToList();
                 (target as MultiOptionTag).Title = Title;
-               (target as MultiOptionTag).TagColor = TagColor;
+                (target as MultiOptionTag).TagColor = TagColor;
             }
             catch (Exception)
             {
@@ -360,6 +377,21 @@ namespace ODMR_Lab.数据记录
             }
             return false;
         }
+
+        public override string GetDescription()
+        {
+            string content = Title + " : ";
+            for (int i = 0; i < OptionIndex.Count; i++)
+            {
+                int index = OptionIndex[i];
+                content += Options[index];
+                if (i < OptionIndex.Count - 1)
+                {
+                    content += " , ";
+                }
+            }
+            return content;
+        }
     }
 
     public class SingleOptionTag : OptionTag
@@ -455,6 +487,11 @@ namespace ODMR_Lab.数据记录
                 if ((target as SingleOptionTag).Title == Title) return true;
             }
             return false;
+        }
+
+        public override string GetDescription()
+        {
+            return Title + ":" + Options[OptionIndex];
         }
     }
 }

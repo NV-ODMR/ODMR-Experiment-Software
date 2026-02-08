@@ -15,7 +15,7 @@
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Name="FileColumn" Width="30"/>
     </Grid.ColumnDefinitions>
-    <TextBlock Name="Description" Background="Transparent" FontWeight="Normal" FontSize="14" Foreground="White" Text="" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
+    <TextBox Name="Description" Background="Transparent" HorizontalAlignment="Left" BorderThickness="0" BorderBrush="Transparent" IsReadOnly="True" FontWeight="Normal" FontSize="14" Foreground="White" Text="" VerticalAlignment="Center" TextWrapping="Wrap" Margin="10"/>
     <Grid Grid.Column="1" Grid.RowSpan="2">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -29,6 +29,6 @@
                 <WrapPanel Orientation="Horizontal" Name="TagPanel"/>
             </control:AutoScrollViewer.Content>
         </control:AutoScrollViewer>
-    <Label Name="Time" FontSize="12" Grid.Row="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Right" FontWeight="Bold" Foreground="#FFC06A11" Content="2025/12/12 16:59" VerticalContentAlignment="Center"/>
+    <TextBox IsReadOnly="True" Background="Transparent" BorderThickness="0" BorderBrush="Transparent" Name="Time" FontSize="12" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" HorizontalContentAlignment="Right" FontWeight="Bold" Foreground="#FFC06A11" VerticalContentAlignment="Center"/>
     <control:DecoratedButton Name="template" Visibility="Hidden" Grid.Column="0" Grid.Row="2" Margin="5" Text="新建记录" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
 </Grid>

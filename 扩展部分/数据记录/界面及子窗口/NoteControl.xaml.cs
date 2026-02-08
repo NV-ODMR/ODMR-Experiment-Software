@@ -80,6 +80,8 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
         private void ShowNoteSetWindow(object sender, MouseButtonEventArgs e)
         {
             changeNotewindow.LoadNote((sender as NoteUnitBar).Tag as Note);
+            changeNotewindow.WindowState = WindowState.Normal;
+            changeNoteUnitWindow?.Activate();
             changeNotewindow.Show();
         }
 
@@ -251,6 +253,8 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
         {
             changeNoteUnitWindow.LoadNoteUnit((sender as NoteUnitBar).Tag as NoteUnit);
             changeNoteUnitWindow.ImageViewer.ParentPage = ParentPage;
+            changeNoteUnitWindow.WindowState = WindowState.Normal;
+            changeNoteUnitWindow?.Activate();
             changeNoteUnitWindow.Show();
         }
 
@@ -287,6 +291,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 {
                     NoteUnitPanel.Children.Add(CreateNoteUnitBar(item));
                 }
+                NoteUnitSearcher.SetNoteUnitSource(CurrentNote.NoteContents);
             }
         }
 
@@ -301,6 +306,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 {
                     NotePanel.Children.Add(CreateNoteBar(item));
                 }
+                NoteSearcher.SetNoteSource(CurrentNoteAssemble.Notes);
             }
         }
         #endregion
@@ -350,6 +356,42 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
         private void NoteUnitUnAppliedCommand(NoteUnit unit)
         {
             unit.DeleteNoteUnitFromFile();
+        }
+
+        private void NoteSearcher_BeforeSearch(object sender, RoutedEventArgs e)
+        {
+            if (CurrentNoteAssemble == null) return;
+            NoteSearcher.SetNoteSource(CurrentNoteAssemble.Notes);
+        }
+
+        private void NoteUnitSearcher_BeforeSearch(object sender, RoutedEventArgs e)
+        {
+            if (CurrentNote == null) return;
+            NoteUnitSearcher.SetNoteUnitSource(CurrentNote.NoteContents);
+        }
+
+        private void NoteUnitSearcher_NoteUnitSearchFinished(List<NoteUnit> obj)
+        {
+            if (CurrentNote != null)
+            {
+                NoteUnitPanel.Children.Clear();
+                foreach (var item in obj)
+                {
+                    NoteUnitPanel.Children.Add(CreateNoteUnitBar(item));
+                }
+            }
+        }
+
+        private void NoteSearcher_NoteSearchFinished(List<Note> obj)
+        {
+            if (CurrentNoteAssemble != null)
+            {
+                NotePanel.Children.Clear();
+                foreach (var item in obj)
+                {
+                    NotePanel.Children.Add(CreateNoteBar(item));
+                }
+            }
         }
     }
 }

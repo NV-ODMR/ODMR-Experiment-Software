@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ODMR_Lab.基本控件" xmlns:control="clr-namespace:Controls;assembly=Controls"
+             xmlns:local="clr-namespace:ODMR_Lab.基本控件" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:界面及子窗口="clr-namespace:ODMR_Lab.扩展部分.数据记录.界面及子窗口"
       mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid.RowDefinitions>
+        <RowDefinition Height="60"/>
         <RowDefinition Height="*"/>
         <RowDefinition Height="50"/>
     </Grid.RowDefinitions>
@@ -14,12 +15,14 @@
         <ColumnDefinition Width="300"/>
         <ColumnDefinition/>
     </Grid.ColumnDefinitions>
-    <control:AutoScrollViewer Name="scr" Grid.Column="0">
+    <control:AutoScrollViewer Name="scr" Grid.Row="1" Grid.Column="0" Background="#FF2E2E2E" Margin="4">
         <control:AutoScrollViewer.Content>
             <StackPanel Name="NotePanel" Orientation="Vertical" HorizontalAlignment="Stretch" Width="{Binding ElementName=scr, Path=ActualWidth}"/>
         </control:AutoScrollViewer.Content>
     </control:AutoScrollViewer>
-    <Grid Grid.Column="1">
+    <界面及子窗口:NoteSearchBar x:Name="NoteSearcher" BeforeSearch="NoteSearcher_BeforeSearch" NoteSearchFinished="NoteSearcher_NoteSearchFinished"/>
+    <界面及子窗口:NoteSearchBar x:Name="NoteUnitSearcher" BeforeSearch="NoteUnitSearcher_BeforeSearch" NoteUnitSearchFinished="NoteUnitSearcher_NoteUnitSearchFinished" Grid.Column="1"/>
+    <Grid Grid.Column="1" Grid.Row="1" Background="#FF2E2E2E" Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>

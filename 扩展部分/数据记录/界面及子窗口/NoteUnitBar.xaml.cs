@@ -71,7 +71,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             TimeRow.Height = new GridLength(30);
             FileColumn.Width = new GridLength(30);
             Description.Text = noteunit.Description;
-            Time.Content = noteunit.NoteTime.ToString("yyyy-MM-dd HH:mm:ss");
+            Time.Text = noteunit.NoteTime.ToString("yyyy-MM-dd HH:mm:ss");
             FileCount.Content = noteunit.GetFileCount();
             //加载标签
             TagPanel.Children.Clear();
@@ -139,8 +139,15 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.MaxWidth = 300;
                 b.MinWidth = 30;
                 b.Background = new SolidColorBrush(tag.TagColor);
-                b.ToolTip = (tag as PureTextTag).Content;
-                b.Child = new Label() { Foreground = Brushes.White, Content = (tag as PureTextTag).Content, VerticalAlignment = VerticalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Center };
+                b.ToolTip = tag.GetDescription();
+                TextBox box = new TextBox();
+                UIUpdater.CloneStyle(Time, box);
+                box.Text = tag.GetDescription();
+                box.IsReadOnly = true;
+                box.Foreground = Brushes.White;
+                box.FontWeight = FontWeights.Normal;
+                box.Padding = new Thickness(5);
+                b.Child = box;
                 return new List<Border>() { b };
             }
             if (tag is CaptionTextTag)
@@ -151,8 +158,15 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.MaxWidth = 300;
                 b.MinWidth = 30;
                 b.Background = new SolidColorBrush(tag.TagColor);
-                b.ToolTip = (tag as CaptionTextTag).Title + " : " + (tag as CaptionTextTag).Content;
-                b.Child = new Label() { Foreground = Brushes.White, Content = (tag as CaptionTextTag).Title + " : " + (tag as CaptionTextTag).Content, VerticalAlignment = VerticalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Center };
+                b.ToolTip = tag.GetDescription();
+                TextBox box = new TextBox();
+                UIUpdater.CloneStyle(Time, box);
+                box.Foreground = Brushes.White;
+                box.FontWeight = FontWeights.Normal;
+                box.Text = tag.GetDescription();
+                box.IsReadOnly = true;
+                b.Child = box;
+                box.Padding = new Thickness(5);
                 return new List<Border>() { b };
             }
             if (tag is SingleOptionTag)
@@ -163,9 +177,15 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.MaxWidth = 300;
                 b.MinWidth = 30;
                 b.Background = new SolidColorBrush(tag.TagColor);
-                string content = (tag as SingleOptionTag).Title + ":" + (tag as SingleOptionTag).Options[(tag as SingleOptionTag).OptionIndex];
-                b.ToolTip = content;
-                b.Child = new Label() { Foreground = Brushes.White, Content = content, VerticalAlignment = VerticalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Center };
+                b.ToolTip = tag.GetDescription();
+                TextBox box = new TextBox();
+                UIUpdater.CloneStyle(Time, box);
+                box.Text = tag.GetDescription();
+                box.IsReadOnly = true;
+                box.Foreground = Brushes.White;
+                box.FontWeight = FontWeights.Normal;
+                b.Child = box;
+                box.Padding = new Thickness(5);
                 return new List<Border>() { b };
             }
             if (tag is MultiOptionTag)
@@ -177,18 +197,15 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.MaxWidth = 300;
                 b.MinWidth = 30;
                 b.Background = new SolidColorBrush(tag.TagColor);
-                string content = (tag as MultiOptionTag).Title + " : ";
-                for (int i = 0; i < (tag as MultiOptionTag).OptionIndex.Count; i++)
-                {
-                    int index = (tag as MultiOptionTag).OptionIndex[i];
-                    content += (tag as MultiOptionTag).Options[index];
-                    if (i < (tag as MultiOptionTag).OptionIndex.Count - 1)
-                    {
-                        content += " , ";
-                    }
-                }
-                b.ToolTip = content;
-                b.Child = new Label() { Foreground = Brushes.White, Content = content, VerticalAlignment = VerticalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Center };
+                b.ToolTip = tag.GetDescription();
+                TextBox box = new TextBox();
+                UIUpdater.CloneStyle(Time, box);
+                box.Text = tag.GetDescription();
+                box.IsReadOnly = true;
+                box.Foreground = Brushes.White;
+                box.FontWeight = FontWeights.Normal;
+                b.Child = box;
+                box.Padding = new Thickness(5);
                 results.Add(b);
                 return results;
             }

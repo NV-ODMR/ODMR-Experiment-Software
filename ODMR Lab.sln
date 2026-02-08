@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.35130.168
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODMR Lab", "ODMR Lab.csproj", "{6FE79D8A-CA23-4DD5-89EA-142513D90519}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ODMR Setup", "ODMR Setup\ODMR Setup.vdproj", "{C0BD33D4-B835-4700-9958-1AA7CD56D34A}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup1", "ODMR Setup\Setup1\Setup1.vdproj", "{CE44AE19-F4B7-02BE-28E1-50B9BD007794}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,10 @@ Global
 		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Release|x64.ActiveCfg = Release|x64
 		{6FE79D8A-CA23-4DD5-89EA-142513D90519}.Release|x64.Build.0 = Release|x64
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|Any CPU.ActiveCfg = Debug
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|Any CPU.Build.0 = Debug
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|x64.ActiveCfg = Debug
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Debug|x64.Build.0 = Debug
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|Any CPU.ActiveCfg = Release
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|Any CPU.Build.0 = Release
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|x64.ActiveCfg = Release
-		{C0BD33D4-B835-4700-9958-1AA7CD56D34A}.Release|x64.Build.0 = Release
+		{CE44AE19-F4B7-02BE-28E1-50B9BD007794}.Debug|Any CPU.ActiveCfg = Debug
+		{CE44AE19-F4B7-02BE-28E1-50B9BD007794}.Debug|x64.ActiveCfg = Debug
+		{CE44AE19-F4B7-02BE-28E1-50B9BD007794}.Release|Any CPU.ActiveCfg = Release
+		{CE44AE19-F4B7-02BE-28E1-50B9BD007794}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
