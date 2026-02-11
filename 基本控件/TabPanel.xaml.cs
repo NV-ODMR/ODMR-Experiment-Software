@@ -102,7 +102,7 @@ namespace ODMR_Lab.基本控件
         {
             TabBar.Children.Clear();
             //计算需要显示多少个内容
-            int number = (int)(TabBar.ActualWidth / 150);
+            int number = (int)(TabGrid.ActualWidth / 150);
             for (int i = 0; i < Math.Min(number, tabPair.Count); i++)
             {
                 TabBar.Children.Add(CreateTab(tabPair[i]));
@@ -152,7 +152,15 @@ namespace ODMR_Lab.基本控件
         private void SelectExpAndOpen(object sender, MouseButtonEventArgs e)
         {
             PopList.CancelPop();
+            Grid gr = (sender as Label).Tag as Grid;
             var ele = (Tuple<string, string, object>)((sender as Label).Tag as Grid).Tag;
+            if (!TabBar.Children.Contains(gr))
+            {
+                //将所选tab移到最前面
+                tabPair.Remove(ele);
+                tabPair.Insert(0, ele);
+                UpdateTabs();
+            }
             TabClicked?.Invoke(ele);
             foreach (var g in TabBar.Children)
             {

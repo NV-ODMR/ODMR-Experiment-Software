@@ -109,7 +109,15 @@ namespace ODMR_Lab.激光控制
                 }
                 //打开激光
                 LaserOn lon = new LaserOn();
-                lon.CoreMethod(new List<object>() { LightSlide.Value }, CurrentPB);
+                double light = 0;
+                try
+                {
+                    light = double.Parse(Ligntness.Text);
+                }
+                catch (Exception) { }
+                if (light < 0) light = 0;
+                if (light > 100) light = 100;
+                lon.CoreMethod(new List<object>() { light / 100 }, CurrentPB);
                 //打开APDTrace源
                 dev.Device.PulseFrequency = ConfigParam.SampleFreq.Value;
                 dev.Device.Start();

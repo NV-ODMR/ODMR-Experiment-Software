@@ -25,5 +25,7 @@
     </local:PopButton>
     <local:DecoratedButton Name="ButtonTemplate" Visibility="Collapsed" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" TextAreaRatio="0" Margin="2" IconMargin="7" FontWeight="Thin" Background="#00000000" Foreground="#FFFAFAFA" MoveInColor="#FF64BAF4" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     <Label Name="LabelTemplate" Visibility="Collapsed" Background="#00000000" Foreground="#FFFAFAFA" FontSize="10" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-    <StackPanel Name="TabBar" Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0"/>
+    <Grid Grid.Row="0" Grid.Column="0" Name="TabGrid" HorizontalAlignment="Stretch">
+        <StackPanel Name="TabBar" Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0"/>
+    </Grid>
 </Grid>
