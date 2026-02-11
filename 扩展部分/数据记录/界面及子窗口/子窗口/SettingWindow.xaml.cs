@@ -31,7 +31,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
             Title = wintitle;
             title.Content = "     " + wintitle;
         }

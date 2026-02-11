@@ -34,7 +34,7 @@ namespace ODMR_Lab.基本控件.一维图表
             InitializeComponent();
 
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterWindow(this,MinBtn,null,CloseBtn, 0, 40);
+            h.RegisterCloseWindow(this, MinBtn, null, CloseBtn, 0, 40);
         }
 
         public void ShowDialog(double lo, double hi, int count)

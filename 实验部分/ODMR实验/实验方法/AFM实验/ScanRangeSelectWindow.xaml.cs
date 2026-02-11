@@ -37,7 +37,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
             TitleWindow.Content = "扫描范围设置" + "(" + exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName + ")";
             Title = "扫描范围设置" + "(" + exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName + ")";
             WindowResizeHelper helper = new WindowResizeHelper();
-            helper.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 6, 30);
+            helper.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, 6, 30);
+            helper.BeforeClose += BeforeClose;
         }
 
         public void ShowD1(D1PointsScanRangeBase scanrange)
@@ -332,10 +333,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
         }
         #endregion
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void BeforeClose(object sender, RoutedEventArgs e)
         {
             Exp.RangeWindow = null;
-            Close();
         }
 
         #region 一维点列表扫描

@@ -16,7 +16,7 @@
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Content="磁场调节扩展" x:Name="WindowTitle" IsHitTestVisible="False" Grid.ColumnSpan="3" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
-        <Controls:DecoratedButton Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Click="Close" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <Controls:DecoratedButton Name="CloseBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <Grid Grid.Row="1" Grid.ColumnSpan="5" Margin="50,30,50,30">
             <Grid.RowDefinitions>
                 <RowDefinition/>

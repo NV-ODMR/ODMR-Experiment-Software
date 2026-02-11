@@ -18,7 +18,7 @@
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
         <Label Name="title" Grid.Row="0" Content="       已有序列" IsHitTestVisible="False" Grid.ColumnSpan="3" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
-        <control:DecoratedButton Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Name="CloseBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="40">
             <Grid.RowDefinitions>
                 <RowDefinition/>

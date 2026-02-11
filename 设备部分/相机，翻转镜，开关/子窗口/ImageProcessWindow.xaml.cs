@@ -42,16 +42,11 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
             InitializeComponent();
             cameraInfo = info;
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, null, null, null, 0, 40);
+            hel.RegisterCloseWindow(this, null, null, CloseBtn, 0, 40);
             //更新参数
             SaturationSlider.Value = info.Device.Saturation;
             LightnessSlider.Value = info.Device.Lightness;
             ContrastSlider.Value = info.Device.Contrast;
-        }
-
-        private void Close(object sender, RoutedEventArgs e)
-        {
-            Close();
         }
 
         private void SaturationSlider_ValueChanged(object sender, RoutedEventArgs e)

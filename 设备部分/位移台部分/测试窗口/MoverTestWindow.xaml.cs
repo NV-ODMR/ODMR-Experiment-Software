@@ -41,18 +41,17 @@ namespace ODMR_Lab.设备部分.位移台部分
                 MoverLists.Children.Add(CreateMoverGridBar(item));
             }
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterWindow(this, null, null, null, 5, 30);
+            h.RegisterCloseWindow(this, null, null, CloseBtn, 5, 30);
             CreateListenThread();
         }
 
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void BeforeClose(object sender, RoutedEventArgs e)
         {
             DisposeThread();
             List<NanoStageInfo> movers = DeviceDispatcher.GetMoverDevice(part);
             //解除占用
             DeviceDispatcher.EndUseDevices(movers.Select(x => x as InfoBase).ToList());
-            Close();
         }
 
         private void Window_MouseMove(object sender, MouseEventArgs e)

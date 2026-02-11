@@ -29,14 +29,14 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 FilesPanel.AddItem(item.Value, item.Key);
             }
             WindowResizeHelper helper = new WindowResizeHelper();
-            helper.RegisterWindow(this, null, null, null, 0, 30);
+            helper.RegisterCloseWindow(this, null, null, CloseBtn, 0, 30);
+            helper.BeforeClose += BeforeClose;
         }
 
         string selectedfile = "";
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void BeforeClose(object sender, RoutedEventArgs e)
         {
-            Close();
             selectedfile = "";
         }
 

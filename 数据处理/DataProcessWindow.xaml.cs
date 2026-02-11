@@ -40,17 +40,12 @@ namespace ODMR_Lab.数据处理
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
 
             ParentPage = parentPage;
         }
 
         public DataVisualSource ParentDataSource { get; set; } = null;
-
-        private void Close(object sender, RoutedEventArgs e)
-        {
-            Hide();
-        }
 
         #region 数据显示区域
 

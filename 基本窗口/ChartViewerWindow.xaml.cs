@@ -21,20 +21,11 @@ namespace ODMR_Lab.基本窗口
     /// </summary>
     public partial class ChartViewerWindow : Window
     {
-
-        bool IsHideWhenClose = false;
-
-        public ChartViewerWindow(bool isHideWhenClose)
+        public ChartViewerWindow()
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 40);
-            IsHideWhenClose = isHideWhenClose;
-        }
-
-        private void Close(object sender, RoutedEventArgs e)
-        {
-            Hide();
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
         }
 
         ChartViewer1D C1D = new ChartViewer1D();

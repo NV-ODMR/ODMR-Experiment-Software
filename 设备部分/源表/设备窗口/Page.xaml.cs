@@ -222,7 +222,7 @@ namespace ODMR_Lab.设备部分.源表
 
 
         #region 图像显示
-        ChartViewerWindow GraphWindow = new ChartViewerWindow(true);
+        ChartViewerWindow GraphWindow = new ChartViewerWindow();
         /// <summary>
         /// 显示图表
         /// </summary>

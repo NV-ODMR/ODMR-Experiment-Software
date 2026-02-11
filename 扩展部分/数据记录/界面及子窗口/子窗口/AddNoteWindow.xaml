@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:界面及子窗口="clr-namespace:ODMR_Lab.扩展部分.数据记录.界面及子窗口"
+        xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls" Closing="Window_Closing" xmlns:界面及子窗口="clr-namespace:ODMR_Lab.扩展部分.数据记录.界面及子窗口"
         mc:Ignorable="d"
         Title="" Height="546" Width="733" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
@@ -19,7 +19,7 @@
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
         <Label Name="title" Grid.Row="0" Content="新建条目" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
-        <control:DecoratedButton Name="CloseBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Name="CloseBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <control:DecoratedButton Name="MinBtn" Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
         <control:DecoratedButton Name="MaxBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">

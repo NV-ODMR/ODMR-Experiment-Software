@@ -213,8 +213,6 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             }
         }
 
-
-        TakePhotoWindow window = null;
         /// <summary>
         /// 拍照
         /// </summary>
@@ -225,7 +223,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             if (ParentPage.PhotoCamera == null) return;
             if (!ParentPage.PhotoCamera.IsWriting)
             {
-                window = new TakePhotoWindow(ParentPage.PhotoCamera);
+                TakePhotoWindow window = new TakePhotoWindow(ParentPage.PhotoCamera);
                 window.PhotoTakenCommand += new Action<BitmapSource>((image) =>
                 {
                     try

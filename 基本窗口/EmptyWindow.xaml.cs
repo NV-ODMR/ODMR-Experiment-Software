@@ -26,16 +26,16 @@ namespace ODMR_Lab.基本窗口
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.BeforeHide += BeforeHide;
             Title = wintitle;
             title.Content = "     " + wintitle;
             ParentPage = parent;
         }
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void BeforeHide(object sender, RoutedEventArgs e)
         {
             ParentPage.IsDisplayedInPage = true;
-            Hide();
         }
 
     }

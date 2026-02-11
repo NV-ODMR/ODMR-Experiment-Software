@@ -24,7 +24,8 @@ namespace ODMR_Lab.基本窗口
         {
             InitializeComponent();
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterWindow(this, null, null, null, 5, 30);
+            h.RegisterCloseWindow(this, null, null, CloseBtn, 5, 30);
+            h.BeforeClose += BeforeClose;
             Title = wintitle;
             title.Content = "     " + wintitle;
         }
@@ -60,10 +61,9 @@ namespace ODMR_Lab.基本窗口
             return g;
         }
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void BeforeClose(object sender, RoutedEventArgs e)
         {
             result = new Dictionary<string, string>();
-            Close();
         }
 
         private void Apply(object sender, RoutedEventArgs e)

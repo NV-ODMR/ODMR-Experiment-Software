@@ -126,7 +126,7 @@ namespace ODMR_Lab.场效应器件测量
         /// </summary>
         IVMeasureExpObject IVMeasureObj = new IVMeasureExpObject();
 
-        public ChartViewerWindow IVResultWindow = new ChartViewerWindow(true);
+        public ChartViewerWindow IVResultWindow = new ChartViewerWindow();
         /// <summary>
         /// IV测量结果
         /// </summary>

@@ -49,8 +49,8 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
 
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 30);
-
+            hel.RegisterCloseWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 30);
+            hel.BeforeClose += BeforeClose;
             InitCursorSettings();
 
             try
@@ -60,18 +60,18 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
             catch (Exception)
             {
                 MessageWindow.ShowTipWindow("相机正在使用", this);
-                Close(null, new RoutedEventArgs());
+                BeforeClose(null, new RoutedEventArgs());
+                Close();
             }
 
             CameraPixelHeight = info.Device.CameraPixelHeightCount;
             CameraPixelHeight = info.Device.CameraPixelWidthCount;
         }
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void BeforeClose(object sender, RoutedEventArgs e)
         {
             CancelThread();
             Camera.DisplayWindow = null;
-            Close();
         }
 
         #region 光标设置

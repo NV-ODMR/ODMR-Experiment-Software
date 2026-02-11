@@ -16,7 +16,7 @@
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
         <Label Content="    图像处理参数" Grid.Row="0" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
-        <Controls:DecoratedButton IconMargin="7" TextAreaRatio="0" Grid.Row="0" Grid.Column="3" Click="Close" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <Controls:DecoratedButton Name="CloseBtn" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Grid.Column="3" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>

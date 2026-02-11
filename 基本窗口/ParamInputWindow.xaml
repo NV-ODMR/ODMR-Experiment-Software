@@ -17,7 +17,7 @@
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
         <Label Name="title" Grid.Row="0" Content="" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
-        <control:DecoratedButton Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Name="CloseBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <TextBlock Name="tbTemplate" Foreground="White" FontSize="11" Visibility="Hidden" HorizontalAlignment="Center" Text="111" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
         <TextBox Name="TextTemplate" Foreground="White" BorderThickness="0" Visibility="Hidden" Text="111" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" Background="#FF2E2E2E" BorderBrush="{x:Null}" CaretBrush="White"/>
         <control:DecoratedButton Grid.Row="2" Grid.ColumnSpan="2" Margin="5" Text="确定" Click="Apply" Background="#FF2E2E2E" Foreground="White" MoveInForeground="White" PressedForeground="White" MoveInColor="#FF4D4D4D" PressedColor="#FF424242"/>

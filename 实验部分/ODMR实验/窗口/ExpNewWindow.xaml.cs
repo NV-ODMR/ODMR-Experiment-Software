@@ -31,8 +31,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
             Exp = exp;
             OriginParentPage = parentpage;
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 6, 30);
-
+            h.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, 6, 30);
+            h.BeforeClose += BeforeClose;
             SubExpContent.Children.Add(new DisplayPage(false));
             Title = title;
             TitleWindow.Content = title;
@@ -50,7 +50,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
             base.Show();
         }
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void BeforeClose(object sender, RoutedEventArgs e)
         {
             Exp.NewDisplayWindow = null;
             Exp.ParentPage = OriginParentPage;
@@ -60,7 +60,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
                 Exp.ParentPage.ShowInwindowPanel.Visibility = Visibility.Hidden;
                 Exp.ParentPage.ExpPanel.Visibility = Visibility.Visible;
             }
-            Close();
         }
     }
 }

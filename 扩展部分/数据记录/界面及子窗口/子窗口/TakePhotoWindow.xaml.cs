@@ -38,7 +38,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             InitializeComponent();
             CameraInfo = info;
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.RegisterCloseWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
             CloseBtn.Click += EndThread;
             Title = "拍摄";
             title.Content = "     " + "拍摄";

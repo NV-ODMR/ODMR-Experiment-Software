@@ -35,16 +35,16 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.AfterHide += AfterHide;
             Title = wintitle;
             title.Content = "     " + wintitle;
             TagsPanel.SetInnerTagMode();
         }
 
 
-        private void Close(object sender, RoutedEventArgs e)
+        private void AfterHide(object sender, RoutedEventArgs e)
         {
-            Hide();
             HideAction?.Invoke(sender, e);
             NoteUnitUnApplied?.Invoke(OriginNoteUnit);
         }

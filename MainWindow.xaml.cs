@@ -119,7 +119,7 @@ namespace ODMR_Lab
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinimizeBtn, MaximizeBtn, null, 5, 30);
+            hel.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, null, 5, 30);
 
             #region 调用页面的初始化方法
             var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));

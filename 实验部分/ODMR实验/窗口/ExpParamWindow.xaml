@@ -12,7 +12,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Label Background="#FF3E3E42" Foreground="White" Content="      参数预览/设置"/>
-        <control:DecoratedButton Grid.Column="5" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Width="50" HorizontalAlignment="Right" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Name="CloseBtn" Grid.Column="5" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Width="50" HorizontalAlignment="Right" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <Grid Margin="10" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>

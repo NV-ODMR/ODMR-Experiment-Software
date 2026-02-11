@@ -61,7 +61,7 @@ namespace ODMR_Lab.基本窗口.数据拟合
             UpdateFuncs();
 
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterWindow(this, MinBtn, MaxBtn, CloseBtn, 0, 30);
+            h.RegisterCloseWindow(this, MinBtn, MaxBtn, CloseBtn, 0, 30);
         }
 
         public void UpdateFuncs()

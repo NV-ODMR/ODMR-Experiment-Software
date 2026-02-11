@@ -39,15 +39,10 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterWindow(this, MinBtn, MaxBtn, null, 5, 40);
+            hel.AfterHide += new RoutedEventHandler((sender, e) => HideAction?.Invoke(sender, e));
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
             Title = wintitle;
             title.Content = "     " + wintitle;
-        }
-
-        private void Close(object sender, RoutedEventArgs e)
-        {
-            Hide();
-            HideAction?.Invoke(sender, e);
         }
 
 
@@ -113,6 +108,11 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                     MessageWindow.ShowTipWindow("记录本无法保存" + ex.Message, this);
                 }
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
         }
     }
 }

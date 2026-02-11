@@ -17,7 +17,7 @@
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
         <Label Name="Title" Grid.Column="0" Grid.Row="0" Background="#FF383838" Foreground="White"/>
-        <control:DecoratedButton Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Grid.Column="1" Name="CloseBtn" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <control:DecoratedButton Grid.Row="2" Grid.ColumnSpan="2" Text="应用" Click="Apply" Width="150" Margin="8" Background="#FF4D4D4D" Foreground="White" MoveInColor="#FF8D8D8D" PressedColor="#FF585858" MoveInForeground="White" PressedForeground="White"/>
         <control:AutoScrollViewer Name="autoscrollviewer" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF2E2E2E">
             <control:AutoScrollViewer.Content>
