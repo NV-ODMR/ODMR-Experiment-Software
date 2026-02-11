@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件"
         mc:Ignorable="d"
-        Title="" Height="390" Width="540" BorderThickness="2" ResizeMode="NoResize" KeyDown="Window_KeyDown" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA" Icon="/图片资源/clipboard.png">
+        Title="" Height="390" Width="540" BorderThickness="2" ResizeMode="NoResize" KeyDown="Window_KeyDown" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA" Icon="/ODMR Lab;component/图片资源/clipboard.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
