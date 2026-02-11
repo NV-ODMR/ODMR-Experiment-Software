@@ -23,6 +23,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
 using Controls.Windows;
 using ODMR_Lab.实验部分.ODMR实验.实验方法;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using Clipboard = System.Windows.Clipboard;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -590,6 +591,39 @@ namespace ODMR_Lab.实验部分.ODMR实验
         {
             ODMRExpObject exp = obj.Item3 as ODMRExpObject;
             SelectExp(ExpObjects.IndexOf(exp));
+        }
+
+        /// <summary>
+        /// 复制实验文件到剪切板
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CopyToClipBoard(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string filename = SavedFileName.Text.ToString().Split(Path.DirectorySeparatorChar).Last();
+                string path = Path.Combine(SavePath.Content.ToString(), CurrentExpObject.ODMRExperimentGroupName, CurrentExpObject.ODMRExperimentName, filename);
+                if (!File.Exists(path))
+                {
+                    TimeWindow window = new TimeWindow();
+                    window.Owner = Window.GetWindow(this);
+                    window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    window.ShowWindow("文件不存在");
+                    return;
+                }
+                else
+                {
+                    Clipboard.SetFileDropList(new System.Collections.Specialized.StringCollection() { path });
+                    TimeWindow window = new TimeWindow();
+                    window.Owner = Window.GetWindow(this);
+                    window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    window.ShowWindow("文件已复制");
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

@@ -89,7 +89,7 @@ namespace ODMR_Lab.ODMR实验
                 {
                     if (ParentPage.CurrentExpObject == this)
                     {
-                        ParentPage.SavedFileName.Content = value;
+                        ParentPage.SavedFileName.Text = value;
                         ParentPage.SavedFileName.ToolTip = value;
                     }
                 });
