@@ -54,6 +54,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
         public ODMRExpObject CurrentExpObject = null;
 
+        public string CurrentExpFilePath = "";
 
         private void LoadExps()
         {
@@ -244,7 +245,6 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
                 //更新文件名
                 CurrentExpObject.SavedFileName = CurrentExpObject.SavedFileName;
-
                 Chart1D.DataSelectionChanged = CurrentExpObject.SetCurrentData1DInfo;
                 Chart2D.DataSelected = CurrentExpObject.SetCurrentData2DInfo;
                 CurrentExpObject.SelectDataDisplay();
@@ -602,9 +602,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
         {
             try
             {
-                string filename = SavedFileName.Text.ToString().Split(Path.DirectorySeparatorChar).Last();
-                string path = Path.Combine(SavePath.Content.ToString(), CurrentExpObject.ODMRExperimentGroupName, CurrentExpObject.ODMRExperimentName, filename);
-                if (!File.Exists(path))
+                if (!File.Exists(Path.Combine(CurrentExpObject.SavedFilePath, CurrentExpObject.SavedFileName + ".userdat")))
                 {
                     TimeWindow window = new TimeWindow();
                     window.Owner = Window.GetWindow(this);
@@ -614,7 +612,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 }
                 else
                 {
-                    Clipboard.SetFileDropList(new System.Collections.Specialized.StringCollection() { path });
+                    Clipboard.SetFileDropList(new System.Collections.Specialized.StringCollection() { Path.Combine(CurrentExpObject.SavedFilePath, CurrentExpObject.SavedFileName + ".userdat") });
                     TimeWindow window = new TimeWindow();
                     window.Owner = Window.GetWindow(this);
                     window.WindowStartupLocation = WindowStartupLocation.CenterOwner;

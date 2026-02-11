@@ -117,14 +117,14 @@ namespace ODMR_Lab.基本控件
                 {
                     FileIcon.Source = expImage;
                     string filename = "";
-                    var exptype = ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(filename);
-                    filename += exptype.ToString() + " ";
+                    var exptype = ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(filepath);
+                    filename += "(" + exptype.ToString() + ") ";
                     if (exptype == ExperimentFileTypes.ODMR实验)
                     {
                         SequenceFileExpObject.ReadODMRExpImformationFromFile(filepath, out string groupname, out string expname);
-                        filename += groupname.ToString() + " " + expname + " ";
+                        filename += "(" + groupname.ToString() + ") (" + expname + ") ";
                     }
-                    PDFName.Text = filename + ext;
+                    PDFName.Text = filename + Path.GetFileName(filepath);
                     return;
                 }
 

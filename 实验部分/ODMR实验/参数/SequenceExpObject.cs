@@ -96,6 +96,8 @@ namespace ODMR_Lab.ODMR实验
             }
         }
 
+        public string SavedFilePath = "";
+
         public static bool IsAFMScanExperiment(ODMRExpObject exp)
         {
             Type ptype = exp.GetType();
@@ -622,7 +624,8 @@ namespace ODMR_Lab.ODMR实验
                     string name = ODMRExperimentName + date + ".userdat";
                     CustomSaveFile(root, name);
                     SetExpState("实验完成,文件已保存.  " + GetExpState());
-                    SavedFileName = Path.Combine(ODMRExperimentGroupName, ODMRExperimentName + date);
+                    SavedFileName = ODMRExperimentName + date;
+                    SavedFilePath = root;
                 }
                 catch (Exception)
                 {
@@ -647,7 +650,8 @@ namespace ODMR_Lab.ODMR实验
             fob.D1ChartDatas = D1ChartDatas;
             fob.D2ChartDatas = D2ChartDatas;
             fob.WriteToFile(filepath, filename);
-            SavedFileName = Path.Combine(filepath, filename);
+            SavedFileName = filename;
+            SavedFilePath = filepath;
         }
 
         /// <summary>

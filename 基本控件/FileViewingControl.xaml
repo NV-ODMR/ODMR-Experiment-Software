@@ -20,6 +20,6 @@
     </Grid>
     <StackPanel Name="FileViewer" Visibility="Visible" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Image Name="FileIcon" Width="60" Height="60"/>
-        <TextBlock Name="PDFName" Text="" Foreground="White" HorizontalAlignment="Center" MaxWidth="300"/>
+        <TextBlock Name="PDFName" Text="" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="300"/>
     </StackPanel>
 </Grid>
