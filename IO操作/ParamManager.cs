@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CodeHelper;
+using Controls.Windows;
 using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.位移台界面.参数;
@@ -108,7 +109,7 @@ namespace ODMR_Lab.IO操作
         /// <summary>
         /// 
         /// </summary>
-        public static void ReadAndLoadParams()
+        public static void ReadAndLoadParams(MessageWindow window = null)
         {
             if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "UIParam", "Param.userdat")))
             {
@@ -116,18 +117,21 @@ namespace ODMR_Lab.IO操作
             }
             FileObject fobj = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "UIParam", "Param.userdat"));
 
+            WindowHelper.SetContent(window, "正在读取保存参数:" + "设备参数");
             #region 设备参数
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
             ReadFromFile(P1, fobj);
             P1.LoadToPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
             #endregion
 
+            WindowHelper.SetContent(window, "正在读取保存参数:" + "温度监控参数");
             #region 温度监控参数
             TemperatureConfigParams TP = new TemperatureConfigParams();
             ReadFromFile(TP, fobj);
             TP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage, MainWindow.Exp_TemPeraPage.SetWindow }, false);
             #endregion
 
+            WindowHelper.SetContent(window, "正在读取保存参数:" + "场效应器件测量参数");
             #region 场效应器件测量参数
             IVMeasureConfigParams IVP = new IVMeasureConfigParams();
             ReadFromFile(IVP, fobj);
@@ -137,41 +141,52 @@ namespace ODMR_Lab.IO操作
             VP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
             #endregion
 
+            WindowHelper.SetContent(window, "正在读取保存参数:" + "位移台控制参数");
             #region 位移台控制参数
-            StageControlConfigParams SCP = new StageControlConfigParams();
-            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.ProbePanel.Name);
-            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.ProbePanel }, false);
-            SCP = new StageControlConfigParams();
-            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MagnetPanel.Name);
-            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MagnetPanel }, false);
-            SCP = new StageControlConfigParams();
-            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.SamplePanel.Name);
-            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.SamplePanel }, false);
-            SCP = new StageControlConfigParams();
-            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
-            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
-            SCP = new StageControlConfigParams();
-            ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.LenPanel.Name);
-            SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.LenPanel }, false);
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                StageControlConfigParams SCP = new StageControlConfigParams();
+                ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.ProbePanel.Name);
+                SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.ProbePanel }, false);
+                SCP = new StageControlConfigParams();
+                ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MagnetPanel.Name);
+                SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MagnetPanel }, false);
+                SCP = new StageControlConfigParams();
+                ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.SamplePanel.Name);
+                SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.SamplePanel }, false);
+                SCP = new StageControlConfigParams();
+                ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
+                SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
+                SCP = new StageControlConfigParams();
+                ReadFromFile(SCP, fobj, MainWindow.Exp_StagePage.LenPanel.Name);
+                SCP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_StagePage.LenPanel }, false);
+            });
             #endregion
 
+
+            WindowHelper.SetContent(window, "正在读取保存参数:" + "ODMR实验");
             #region ODMR实验
             ODMRConfigParams ODMRP = new ODMRConfigParams();
             ReadFromFile(ODMRP, fobj);
             ODMRP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SequencePage });
             #endregion
 
+
             #region ODMR实验
             if (File.Exists(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat")))
             {
                 FileObject ODMRSaveFile = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
+                int index = 1;
                 foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
                 {
+                    WindowHelper.SetContent(window, "正在读取保存参数:" + "ODMR实验  " + index.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString() + "个");
                     item.ReadFromFileAndLoadToPage(ODMRSaveFile);
+                    ++index;
                 }
             }
             #endregion
 
+            WindowHelper.SetContent(window, "正在读取保存参数:" + "全局序列参数");
             #region 全局序列参数
             GlobalPulseParams.ReadFromFile();
             #endregion

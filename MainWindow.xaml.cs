@@ -234,13 +234,27 @@ namespace ODMR_Lab
                         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                         window.Show();
                     });
-                    string connectresult = DeviceDispatcher.ScanDevices();
+                    string connectresult = DeviceDispatcher.ScanDevices(window);
+                    Dispatcher.Invoke(() =>
+                    {
+                        window.Close();
+                        window = new MessageWindow("设置参数", "正在读取保存参数...", MessageBoxButton.OK, false, false);
+                        window.Owner = this;
+                        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        window.Show();
+                    });
+
+                    #region 加载参数
+                    ParamManager.ReadAndLoadParams(window);
+                    #endregion
+
                     Dispatcher.Invoke(() =>
                     {
                         window.Close();
                         MessageWindow.ShowMessageBox("自动连接", connectresult, MessageBoxButton.OK, true, owner: this);
                         IsEnabled = true;
                     });
+
                 }
                 catch (Exception ex)
                 {
@@ -254,14 +268,7 @@ namespace ODMR_Lab
             });
             t.Start();
             #endregion
-            #region 加载参数
-            ParamManager.ReadAndLoadParams();
-            #endregion
         }
-
-
-        #region 设备列表
-        #endregion
 
 
         ClipBoardWindow ClipboardWindow = null;

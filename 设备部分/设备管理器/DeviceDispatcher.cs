@@ -1,4 +1,5 @@
-﻿using HardWares.仪器列表.电动翻转座;
+﻿using Controls.Windows;
+using HardWares.仪器列表.电动翻转座;
 using HardWares.温度控制器;
 using HardWares.相机_CCD_;
 using HardWares.端口基类;
@@ -29,13 +30,14 @@ namespace ODMR_Lab.设备部分
         /// <summary>
         /// 自动搜索设备
         /// </summary>
-        public static string ScanDevices()
+        public static string ScanDevices(MessageWindow window = null)
         {
             string connectedmessage = "";
             string unconnectmessage = "";
 
             foreach (var item in DevInfos)
             {
+                WindowHelper.SetContent(window, "正在连接设备:   " + item.deviceType.ToString());
                 ScanDevice(item, out string appendconnected, out string appendunconnected);
                 connectedmessage += appendconnected;
                 unconnectmessage += appendunconnected;
