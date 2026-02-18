@@ -118,14 +118,14 @@ namespace ODMR_Lab.数据记录
                         });
                         foreach (var dir in dirs)
                         {
-                            if (!NoteHelper.GetLastFolder(dir).Contains("assemble"))
+                            if (!FileHelper.GetLastFolder(dir).Contains("assemble"))
                             {
                                 continue;
                             }
                             NoteAssemble assem = null;
                             Dispatcher.Invoke(() =>
                             {
-                                assem = new NoteAssemble("") { RootFolderPath = AssembleFolderPath.Text, FileIndex = int.Parse(NoteHelper.GetLastFolder(dir).Replace("assemble", "")) };
+                                assem = new NoteAssemble("") { RootFolderPath = AssembleFolderPath.Text, FileIndex = int.Parse(FileHelper.GetLastFolder(dir).Replace("assemble", "")) };
                             });
                             assem.Load();
                             Dispatcher.Invoke(() =>

@@ -42,7 +42,7 @@ namespace ODMR_Lab.数据记录
 
         public Note(string noteDirePath, NoteAssemble parent)
         {
-            FileIndex = int.Parse(NoteHelper.GetLastFolder(noteDirePath).Replace("note", ""));
+            FileIndex = int.Parse(FileHelper.GetLastFolder(noteDirePath).Replace("note", ""));
             Parent = parent;
             FileObject obj = FileObject.ReadFromFile(Path.Combine(noteDirePath, "data.userdat"));
             FileObject gtagobj = FileObject.ReadFromFile(Path.Combine(noteDirePath, "globaltagdata.userdat"));
@@ -93,7 +93,7 @@ namespace ODMR_Lab.数据记录
             {
                 try
                 {
-                    nums.Add(int.Parse(NoteHelper.GetLastFolder(dir).Replace("note", "")));
+                    nums.Add(int.Parse(FileHelper.GetLastFolder(dir).Replace("note", "")));
                 }
                 catch (Exception)
                 {
@@ -119,7 +119,7 @@ namespace ODMR_Lab.数据记录
         /// <returns></returns>
         public string GetNoteFolderPath()
         {
-            return System.IO.Path.Combine(Parent.GetAssembleFolderPath(), NoteHelper.ProcessPathStr("note" + FileIndex.ToString()));
+            return System.IO.Path.Combine(Parent.GetAssembleFolderPath(), FileHelper.ProcessFileStr("note" + FileIndex.ToString()));
         }
 
 

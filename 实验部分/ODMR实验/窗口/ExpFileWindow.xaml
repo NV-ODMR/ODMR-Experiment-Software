@@ -1,0 +1,97 @@
+﻿<Window x:Class="ODMR_Lab.实验部分.ODMR实验.ExpFileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ODMR_Lab.实验部分.ODMR实验" xmlns:control="clr-namespace:Controls;assembly=Controls"
+        mc:Ignorable="d"
+        Title="实验参数预览/设置" Height="537" Width="450" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Background="#FF3E3E42" Foreground="White" Content="      实验文件"/>
+        <control:DecoratedButton Name="CloseBtn" Grid.Column="5" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Width="50" HorizontalAlignment="Right" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <Grid Margin="10" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="105"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="1" HorizontalContentAlignment="Center" Content="选择实验:" Foreground="White" VerticalContentAlignment="Center"/>
+                <control:SearchBar Name="ExpSearchBar" ResultSelected="ExpSearchBar_ResultSelected" Margin="3" Grid.Row="0" Grid.Column="1" ResultBarHeight="50" ValidateResultWhenTextChanged="True" DisplayResultNumber="5" Background="#FF2E2E2E">
+                    <control:SearchBar.SearchButtonTemplate>
+                        <control:DecoratedButton TextAreaRatio="0" IconMargin="7" IconSource="/图片资源/search.png" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                    </control:SearchBar.SearchButtonTemplate>
+                    <control:SearchBar.ResultBoxTemplate>
+                        <control:DecoratedButton FontSize="12" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                    </control:SearchBar.ResultBoxTemplate>
+                    <control:SearchBar.TextBoxTemplate>
+                        <TextBox CaretBrush="White" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Background="#FF4D4D4D"/>
+                    </control:SearchBar.TextBoxTemplate>
+                </control:SearchBar>
+            </Grid>
+            <TextBlock Grid.Row="1" Name="ExpType" HorizontalAlignment="Center" Foreground="White" TextAlignment="Center" VerticalAlignment="Center"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="1" HorizontalContentAlignment="Center" Content="起始时间" Foreground="White" VerticalContentAlignment="Center"/>
+                <TextBox Name="TitleInput" PreviewKeyDown="TitleInput_PreviewKeyDown" Margin="4" CaretBrush="White" Grid.Column="0" Grid.ColumnSpan="2" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Background="#FF4D4D4D"/>
+                <control:DecoratedButton TextAreaRatio="0" Click="SearchTitle" Grid.Column="2" Margin="4" IconMargin="5" IconSource="/图片资源/search.png" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <control:TimePicker Name="StartTime" Grid.Row="1" Grid.Column="1" TimeChoosed="TimeChoosedEvent" Margin="4" Background="#FF383838">
+                    <control:TimePicker.DateButtonTemplate>
+                        <control:DecoratedButton Background="Black" BorderThickness="0" FontSize="9" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+                    </control:TimePicker.DateButtonTemplate>
+                    <control:TimePicker.DateViewerTemplate>
+                        <TextBox Background="{x:Null}" FontSize="9" FontWeight="Bold" Foreground="White" CaretBrush="White" BorderThickness="0"/>
+                    </control:TimePicker.DateViewerTemplate>
+                    <control:TimePicker.DateImageButtonTemplate>
+                        <control:DecoratedButton Background="#FF383838" FontSize="9" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+                    </control:TimePicker.DateImageButtonTemplate>
+                    <control:TimePicker.DateDisplayBtnTemplate>
+                        <control:DecoratedButton Background="#FF1A1A1A" FontSize="11" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+                    </control:TimePicker.DateDisplayBtnTemplate>
+                </control:TimePicker>
+                <control:DecoratedButton Background="#FF383838" Grid.Row="1" Grid.Column="2" Click="CleanStartDate" TextAreaRatio="0" IconSource="/图片资源/clean.png" IconMargin="5" Margin="4" FontSize="9" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+                <Label Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Center" Content="终止时间" Foreground="White" VerticalContentAlignment="Center"/>
+                <control:TimePicker Name="EndTime" Grid.Row="2" Grid.Column="1" TimeChoosed="TimeChoosedEvent" Margin="4" Background="#FF383838">
+                    <control:TimePicker.DateButtonTemplate>
+                        <control:DecoratedButton Background="Black" BorderThickness="0" FontSize="9" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+                    </control:TimePicker.DateButtonTemplate>
+                    <control:TimePicker.DateViewerTemplate>
+                        <TextBox Background="{x:Null}" FontSize="9" FontWeight="Bold" Foreground="White" CaretBrush="White" BorderThickness="0"/>
+                    </control:TimePicker.DateViewerTemplate>
+                    <control:TimePicker.DateImageButtonTemplate>
+                        <control:DecoratedButton Background="#FF383838" FontSize="9" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+                    </control:TimePicker.DateImageButtonTemplate>
+                    <control:TimePicker.DateDisplayBtnTemplate>
+                        <control:DecoratedButton Background="#FF1A1A1A" FontSize="11" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+                    </control:TimePicker.DateDisplayBtnTemplate>
+                </control:TimePicker>
+                <control:DecoratedButton Background="#FF383838" Grid.Row="2" Click="CleanEndDate" Grid.Column="2" TextAreaRatio="0" IconSource="/图片资源/clean.png" IconMargin="5" Margin="4" FontSize="9" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
+            </Grid>
+            <TextBlock Name="TextblockTemplate" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Margin="5" Visibility="Collapsed" FontSize="12"/>
+            <control:AutoScrollViewer Grid.Row="3" Name="scroll" Margin="10" Background="#FF2E2E2E">
+                <control:AutoScrollViewer.Content>
+                    <StackPanel Name="FilesPanel" Orientation="Vertical" Width="{Binding ElementName=scroll,Path=ActualWidth}">
+                    </StackPanel>
+                </control:AutoScrollViewer.Content>
+            </control:AutoScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

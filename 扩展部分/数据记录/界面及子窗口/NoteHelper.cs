@@ -19,54 +19,6 @@ namespace ODMR_Lab.数据记录
 {
     public class NoteHelper
     {
-        public static string ProcessPathStr(string rawstr)
-        {
-            var chars = Path.GetInvalidPathChars();
-            foreach (char c in chars)
-            {
-                rawstr = rawstr.Replace(c.ToString(), "");
-            }
-            return rawstr;
-        }
-        public static string ProcessFileStr(string rawstr)
-        {
-            var chars = Path.GetInvalidPathChars();
-            foreach (char c in chars)
-            {
-                rawstr = rawstr.Replace(c.ToString(), "");
-            }
-            return rawstr;
-        }
-
-        public static string Combine(string combinestr, params string[] strs)
-        {
-            string newstr = "";
-            for (int i = 0; i < strs.Length; i++)
-            {
-                if (i < strs.Length - 1)
-                    newstr += strs[i] + combinestr;
-                else
-                {
-                    newstr += strs[i];
-                }
-            }
-            return newstr;
-        }
-
-        public static string Combine(string combinestr, List<string> strs)
-        {
-            string newstr = "";
-            for (int i = 0; i < strs.Count; i++)
-            {
-                if (i < strs.Count - 1)
-                    newstr += strs[i] + combinestr;
-                else
-                {
-                    newstr += strs[i];
-                }
-            }
-            return newstr;
-        }
 
         public static List<NoteTag> ReadTags(FileObject obj)
         {
@@ -128,19 +80,19 @@ namespace ODMR_Lab.数据记录
             {
                 if (item is PureTextTag)
                 {
-                    obj.WriteStringData(Combine("♠", "PureTextTag", item.TagColor.ToString()), new List<string>() { (item as PureTextTag).Content });
+                    obj.WriteStringData(FileHelper.Combine("♠", "PureTextTag", item.TagColor.ToString()), new List<string>() { (item as PureTextTag).Content });
                 }
                 if (item is CaptionTextTag)
                 {
-                    obj.WriteStringData(Combine("♠", "CaptionTextTag", item.TagColor.ToString(), (item as CaptionTextTag).Title), new List<string>() { (item as CaptionTextTag).Content });
+                    obj.WriteStringData(FileHelper.Combine("♠", "CaptionTextTag", item.TagColor.ToString(), (item as CaptionTextTag).Title), new List<string>() { (item as CaptionTextTag).Content });
                 }
                 if (item is SingleOptionTag)
                 {
-                    obj.WriteStringData(Combine("♠", "SingleOptionTag", item.TagColor.ToString(), (item as SingleOptionTag).OptionIndex.ToString(), (item as SingleOptionTag).Title), (item as SingleOptionTag).Options);
+                    obj.WriteStringData(FileHelper.Combine("♠", "SingleOptionTag", item.TagColor.ToString(), (item as SingleOptionTag).OptionIndex.ToString(), (item as SingleOptionTag).Title), (item as SingleOptionTag).Options);
                 }
                 if (item is MultiOptionTag)
                 {
-                    obj.WriteStringData(Combine("♠", "MultiOptionTag", item.TagColor.ToString(), (item as MultiOptionTag).Title, Combine("♠", (item as MultiOptionTag).OptionIndex.Select(x => x.ToString()).ToList())), (item as MultiOptionTag).Options);
+                    obj.WriteStringData(FileHelper.Combine("♠", "MultiOptionTag", item.TagColor.ToString(), (item as MultiOptionTag).Title, FileHelper.Combine("♠", (item as MultiOptionTag).OptionIndex.Select(x => x.ToString()).ToList())), (item as MultiOptionTag).Options);
                 }
             }
         }
@@ -156,48 +108,6 @@ namespace ODMR_Lab.数据记录
                 }
             }
             return newTags;
-        }
-
-        public static string GetLastFolder(string path)
-        {
-            return path.Split(Path.DirectorySeparatorChar).Last();
-        }
-        public static void SaveAsPng(BitmapSource bitmapSource, string filePath)
-        {
-            // 创建PngBitmapEncoder对象，用于编码为PNG格式
-            PngBitmapEncoder encoder = new PngBitmapEncoder();
-            // 将BitmapSource对象添加到编码器中
-            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
-
-            // 使用FileStream打开指定路径的文件，用于写入图像数据
-            using (FileStream stream = new FileStream(filePath, FileMode.Create))
-            {
-                // 将编码后的图像数据写入文件流
-                encoder.Save(stream);
-            }
-        }
-
-        public static BitmapImage LoadImage(string path)
-        {
-            using (FileStream stream = new FileStream(path, FileMode.Open))
-            {
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = stream;
-                bitmapImage.EndInit();
-
-                // 这里可以对 bitmapImage 进行操作
-
-                stream.Close();
-                return bitmapImage;
-            }
-        }
-
-        public static BitmapImage LoadImageFromResource(string path)
-        {
-            Uri uri = new Uri($"pack://application:,,,/{Assembly.GetExecutingAssembly().GetName().Name};component/{path}", UriKind.RelativeOrAbsolute);
-            return new BitmapImage(uri);
         }
     }
 }

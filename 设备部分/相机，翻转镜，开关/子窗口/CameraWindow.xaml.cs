@@ -7,9 +7,11 @@ using HardWares.端口基类;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分.相机_翻转镜_开关;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -27,6 +29,7 @@ using System.Windows.Shapes;
 using ContextMenu = Controls.ContextMenu;
 using Cursors = System.Windows.Input.Cursors;
 using Image = System.Windows.Controls.Image;
+using Path = System.IO.Path;
 using Point = System.Windows.Point;
 
 namespace ODMR_Lab.设备部分.相机_翻转镜
@@ -51,7 +54,6 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
             WindowResizeHelper hel = new WindowResizeHelper();
             hel.RegisterCloseWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 30);
             hel.BeforeClose += BeforeClose;
-            InitCursorSettings();
 
             try
             {
@@ -63,9 +65,6 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                 BeforeClose(null, new RoutedEventArgs());
                 Close();
             }
-
-            CameraPixelHeight = info.Device.CameraPixelHeightCount;
-            CameraPixelHeight = info.Device.CameraPixelWidthCount;
         }
 
         private void BeforeClose(object sender, RoutedEventArgs e)
@@ -74,66 +73,10 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
             Camera.DisplayWindow = null;
         }
 
-        #region 光标设置
-
-        private void InitCursorSettings()
-        {
-            ContextMenu menu = new ContextMenu();
-            menu.ItemHeight = 30;
-            menu.PanelMinWidth = 70;
-            DecoratedButton btn = new DecoratedButton() { Text = "添加标记点" };
-            SnapBtn.CloneStyleTo(btn);
-            btn.Click += AddCursor;
-            menu.Items.Add(btn);
-            btn = new DecoratedButton() { Text = "设置拍摄区域" };
-            SnapBtn.CloneStyleTo(btn);
-            btn.Click += EnableResize;
-            menu.Items.Add(btn);
-            menu.ApplyToControl(DisplayArea);
-        }
-
-        private void AddCursor(object sender, RoutedEventArgs e)
-        {
-            ImageLabel ell = DisplayArea.AddCursor(pos);
-
-            ContextMenu menu = new ContextMenu();
-            menu.PanelMinWidth = 50;
-            DecoratedButton btn = new DecoratedButton() { Text = "删除" };
-            btn.Height = 30;
-            SnapBtn.CloneStyleTo(btn);
-            btn.Tag = ell;
-            btn.Click += RemoveCursour;
-            menu.Items.Add(btn);
-            menu.ApplyToControl(ell.Geometry);
-        }
-
-        private void CursorDragEnd(object sender, MouseButtonEventArgs e)
-        {
-            (sender as Ellipse).ReleaseMouseCapture();
-        }
-
-
-        private void RemoveCursour(object sender, RoutedEventArgs e)
-        {
-            ImageLabel po = (sender as DecoratedButton).Tag as ImageLabel;
-            DisplayArea.RemoveCursour(po);
-        }
-
-        private Point pos = new Point();
-        /// <summary>
-        /// 记录右键点击的位置
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RecordClickPos(object sender, MouseButtonEventArgs e)
-        {
-            pos = e.GetPosition(DisplayArea);
-        }
-
-        #endregion
-
         Thread CameraThread = null;
         bool isThreadEnd = false;
+
+        bool isMarkerLoaded = false;
 
         private void CreateCameraThread()
         {
@@ -151,6 +94,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                         {
                             image = ClipImage(image, ClipImageBound);
                             DisplayArea.SetSource(image);
+                            DrawingPanel.UpdateLayout();
                         });
                         Thread.Sleep(40);
                         long tik2 = DateTime.Now.Ticks;
@@ -158,6 +102,33 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                         Dispatcher.Invoke(() =>
                         {
                             Framerate.Content = "帧率:" + Math.Round(1000.0 / ((tik2 - tik1) / 10000.0), 3).ToString() + "\t" + "未捕获帧数:" + Camera.Device.BrokenFrameCount.ToString();
+                            if (image != null)
+                            {
+                                //导入标签文件
+                                if (!isMarkerLoaded)
+                                {
+                                    if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "CameraMarkerFile")))
+                                    {
+                                        var files = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "CameraMarkerFile"));
+                                        foreach (var item in files)
+                                        {
+                                            try
+                                            {
+                                                var descs = FileObject.ReadDescription(item);
+                                                if (descs["DeviceName"] == Camera.Device.ProductName)
+                                                {
+                                                    DisplayArea.ReadFromMarkersFile(FileObject.ReadFromFile(item));
+                                                    break;
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                            }
+                                        }
+                                    }
+                                    isMarkerLoaded = true;
+                                }
+                            }
                         });
                     }
                     catch (Exception e)
@@ -176,6 +147,15 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
             {
                 Thread.Sleep(30);
             }
+            //保存标签文件
+            FileObject obj = new FileObject();
+            obj.Descriptions.Add("DeviceName", Camera.Device.ProductName);
+            obj = DisplayArea.GenerateMarkersFile(obj);
+            if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "CameraMarkerFile")))
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "CameraMarkerFile"));
+            }
+            obj.SaveToFile(Path.Combine(Environment.CurrentDirectory, "CameraMarkerFile", FileHelper.ProcessFileStr(Camera.Device.ProductName)));
             Camera?.EndUse();
         }
 
@@ -248,26 +228,87 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
         }
 
 
+        private void ImageProcess(object sender, RoutedEventArgs e)
+        {
+            ImageProcessWindow win = new ImageProcessWindow(Camera);
+            win.ShowDialog();
+        }
+
+        MarkerBase marker = null;
+        /// <summary>
+        /// 绘制标记
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Paint(object sender, RoutedEventArgs e)
+        {
+            string name = (sender as DecoratedButton).Name;
+            if (name == "PointBtn")
+            {
+                marker = new PointMarker();
+                DisplayArea.CreateMarkerAndEdit(marker);
+            }
+            if (name == "CircleBtn")
+            {
+                marker = new CircleMarker();
+                DisplayArea.CreateMarkerAndEdit(marker);
+            }
+            if (name == "CenterCircleBtn")
+            {
+                marker = new CenterCircleMarker();
+                DisplayArea.CreateMarkerAndEdit(marker);
+            }
+            if (name == "RectangleBtn")
+            {
+                marker = new RectangleMarker();
+                DisplayArea.CreateMarkerAndEdit(marker);
+            }
+            if (name == "CenterRectangleBtn")
+            {
+                marker = new CenterRectangleMarker();
+                DisplayArea.CreateMarkerAndEdit(marker);
+            }
+            marker.MarkerConfirmedEvent += (s, ev) =>
+            {
+                MarkersPanel.IsEnabled = true;
+                FunctionPanel.IsEnabled = true;
+            };
+            MarkersPanel.IsEnabled = false;
+            FunctionPanel.IsEnabled = false;
+        }
+
+        /// <summary>
+        /// 设置拍摄区域
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetSnapArea(object sender, RoutedEventArgs e)
+        {
+            BeginResize();
+        }
+
         #region 相机区域调整
 
+        public void BeginResize()
+        {
+            IsResize = true;
+            MarkersPanel.IsEnabled = false;
+            FunctionPanel.IsEnabled = false;
+        }
 
-        int CameraPixelHeight;
-
-        int CameraPixelWidth;
+        public void EndResize()
+        {
+            IsResize = false;
+            MarkersPanel.IsEnabled = true;
+            FunctionPanel.IsEnabled = true;
+            ResizeBound.Visibility = Visibility.Hidden;
+        }
 
         Rect ClipImageBound = Rect.Empty;
 
         bool IsResize = false;
 
-        bool IsResizeBegin = false;
-
         Point beginPoint = new Point();
-
-        private void EnableResize(object sender, RoutedEventArgs e)
-        {
-            IsResize = true;
-            e.Handled = true;
-        }
 
         /// <summary>
         /// 开始设定范围
@@ -284,7 +325,6 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                 Canvas.SetTop(ResizeBound, beginPoint.Y);
                 ResizeBound.Width = 0;
                 ResizeBound.Height = 0;
-                IsResizeBegin = true;
                 DisplayArea.CaptureMouse();
             }
         }
@@ -314,7 +354,6 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
         {
             if (IsResize)
             {
-                IsResizeBegin = false;
                 DisplayArea.ReleaseMouseCapture();
                 //刷新边框
                 Point p1 = DrawingPanel.TranslatePoint(beginPoint, DisplayArea);
@@ -322,8 +361,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
                 GetRatioPoint(DisplayArea.DisplayArea, p1, out Point rp1);
                 GetRatioPoint(DisplayArea.DisplayArea, p2, out Point rp2);
                 ClipImageBound = new Rect(rp1, rp2);
-                IsResize = false;
-                ResizeBound.Visibility = Visibility.Hidden;
+                EndResize();
             }
         }
 
@@ -373,16 +411,9 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
         /// <param name="e"></param>
         private void CancelResize(object sender, MouseButtonEventArgs e)
         {
-            IsResize = false;
-            ResizeBound.Visibility = Visibility.Hidden;
+            EndResize();
         }
 
         #endregion
-
-        private void ImageProcess(object sender, RoutedEventArgs e)
-        {
-            ImageProcessWindow win = new ImageProcessWindow(Camera);
-            win.ShowDialog();
-        }
     }
 }

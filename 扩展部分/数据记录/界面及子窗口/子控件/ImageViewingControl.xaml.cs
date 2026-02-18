@@ -54,16 +54,16 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
 
         int DisplayedImagePairIndex = 0;
 
-        private static BitmapImage pdfImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "pdf.png"));
-        private static BitmapImage PPTImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "ppt.png"));
-        private static BitmapImage ExcelImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "excel.png"));
-        private static BitmapImage TxtImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "txt.png"));
-        private static BitmapImage WordImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "word.png"));
-        private static BitmapImage NanImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "nanFile.png"));
-        private static BitmapImage MathematicaImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "mathematica.png"));
-        private static BitmapImage PythonImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "pythonfile.png"));
-        private static BitmapImage ZipImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "zip.png"));
-        private static BitmapImage expImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "experimentfile.png"));
+        private static BitmapImage pdfImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "pdf.png"));
+        private static BitmapImage PPTImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "ppt.png"));
+        private static BitmapImage ExcelImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "excel.png"));
+        private static BitmapImage TxtImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "txt.png"));
+        private static BitmapImage WordImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "word.png"));
+        private static BitmapImage NanImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "nanFile.png"));
+        private static BitmapImage MathematicaImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "mathematica.png"));
+        private static BitmapImage PythonImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "pythonfile.png"));
+        private static BitmapImage ZipImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "zip.png"));
+        private static BitmapImage expImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "experimentfile.png"));
 
         public ImageViewingControl()
         {
@@ -89,7 +89,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                     string extention = Path.GetExtension(item);
                     if (extention == ".png" || extention == ".jpg")
                     {
-                        BitmapImage img = NoteHelper.LoadImage(item);
+                        BitmapImage img = ImageHelper.LoadImage(item);
                         img.Freeze();
                         ImageList.Add(new KeyValuePair<BitmapImage, string>(img, item));
                     }
@@ -125,7 +125,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             ViewingControl.InitControlTransform();
         }
 
-        public ExpDisplayWindow ParentExpDisplayWindow = null;
+        public DataViewingWindow ParentExpDisplayWindow = null;
 
         private void ShowInNewWindow(object sender, RoutedEventArgs e)
         {
@@ -230,8 +230,8 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                     {
                         string path = Path.Combine(ParentNoteUnit.GetNoteUnitFolderPath(), DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff") + ".png");
                         ///保存图片
-                        NoteHelper.SaveAsPng(image, path);
-                        BitmapImage img = NoteHelper.LoadImage(path);
+                        ImageHelper.SaveAsPng(image, path);
+                        BitmapImage img = ImageHelper.LoadImage(path);
                         img.Freeze();
                         ImageList.Add(new KeyValuePair<BitmapImage, string>(img, path));
                         UpdateImagesDisplay();
@@ -282,7 +282,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                         try
                         {
                             File.Copy(item, path + ext);
-                            BitmapImage img = NoteHelper.LoadImage(path + ext);
+                            BitmapImage img = ImageHelper.LoadImage(path + ext);
                             img.Freeze();
                             ImageList.Add(new KeyValuePair<BitmapImage, string>(img, path + ext));
                             DisplayedImagePairIndex = ImageList.Count - 1;
@@ -335,8 +335,8 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                     {
                         string path = Path.Combine(ParentNoteUnit.GetNoteUnitFolderPath(), DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff") + ".png");
                         ///保存图片
-                        NoteHelper.SaveAsPng(image, path);
-                        BitmapImage img = NoteHelper.LoadImage(path);
+                        ImageHelper.SaveAsPng(image, path);
+                        BitmapImage img = ImageHelper.LoadImage(path);
                         img.Freeze();
                         ImageList.Add(new KeyValuePair<BitmapImage, string>(img, path));
                         DisplayedImagePairIndex = ImageList.Count - 1;

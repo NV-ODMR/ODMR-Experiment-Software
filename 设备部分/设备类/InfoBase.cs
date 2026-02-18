@@ -145,7 +145,6 @@ namespace ODMR_Lab.设备部分
             }
             else
             {
-                MessageLogger.AddLogger("设备", "此设备正在被使用，无法关闭", MessageTypes.Warning, true, true);
                 IsSucceedClosed = false;
                 return "";
             }

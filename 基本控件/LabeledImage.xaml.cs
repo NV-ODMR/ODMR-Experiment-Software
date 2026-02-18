@@ -1,6 +1,8 @@
 ﻿using CodeHelper;
 using CodeHelper.ResizeElements;
 using Controls;
+using ODMR_Lab.设备部分.相机_翻转镜;
+using ODMR_Lab.设备部分.相机_翻转镜_开关;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
 using Point = System.Windows.Point;
+using Size = System.Windows.Size;
 
 namespace ODMR_Lab.基本控件
 {
@@ -51,7 +56,14 @@ namespace ODMR_Lab.基本控件
             if (Resizeable == true)
             {
                 helper = new ViewingHelper(DisplayArea, this);
-                helper.AfterTransformUpdated += UpdateCursorLocations;
+                helper.AfterTransformUpdated += (s, ev) =>
+                {
+                    DrawingPanel.Margin = DisplayArea.Margin;
+                    foreach (var item in DisplayMarkers)
+                    {
+                        item.ValidateShape();
+                    }
+                };
             }
         }
 
@@ -67,132 +79,147 @@ namespace ODMR_Lab.基本控件
 
         #region 光标设置
 
-        List<ImageLabel> DisplayCursors = new List<ImageLabel>();
+        List<MarkerBase> DisplayMarkers = new List<MarkerBase>();
 
-        public ImageLabel AddCursor(Point mousepos)
+        public void CreateMarkerAndEdit(MarkerBase marker)
         {
-            ImageLabel l = new ImageLabel();
-
-            Point newpo = TranslatePoint(mousepos, DisplayArea);
-            DisplayCursors.Add(l);
-            l.Geometry.Cursor = Cursors.Hand;
-            l.PixelPoint = new Point(newpo.X, newpo.Y);
-            l.RatioPoint = new Point(newpo.X / DisplayArea.ActualWidth, newpo.Y / DisplayArea.ActualHeight);
-            l.Geometry.MouseLeftButtonDown += CursorDragBegin;
-            l.Geometry.MouseMove += CursorDragMove;
-            l.Geometry.MouseLeftButtonUp += CursorDragEnd;
-            l.AddToControl(DrawingPanel);
-            UpdatePointLocation(l);
-            return l;
+            marker.RegisterToCanvas(DrawingPanel);
+            marker.MarkerDoubleClick += ShowMarkerSetWindow;
+            marker.DeleteEvent += (s, e) =>
+            {
+                DisplayMarkers.Remove(marker);
+            };
+            marker.BeginEdit();
+            DisplayMarkers.Add(marker);
         }
 
-        public void SelectCursor(int ind)
+        MarkerSetWindow window = new MarkerSetWindow();
+        private void ShowMarkerSetWindow(object sender, RoutedEventArgs e)
         {
-            foreach (var item in DisplayCursors)
+            BitmapSource source = null;
+            try
             {
-                item.IsSelected = false;
+                source = DisplayArea.Source as WriteableBitmap;
             }
-            DisplayCursors[ind].IsSelected = true;
-        }
-
-        public void SelectCursor(ImageLabel ind)
-        {
-            foreach (var item in DisplayCursors)
+            catch (Exception)
             {
-                item.IsSelected = false;
             }
-            ind.IsSelected = true;
+            window.WindowState = WindowState.Normal;
+            window.Activate();
+            window.Show(sender as MarkerBase, source);
+        }
+        #endregion
+
+        #region 标记文件保存
+        public FileObject GenerateMarkersFile(FileObject obj)
+        {
+            var points = DisplayMarkers.Where((x) => x is PointMarker);
+            var circles = DisplayMarkers.Where((x) => x is CircleMarker);
+            var centercircles = DisplayMarkers.Where((x) => x is CenterCircleMarker);
+            var rectangles = DisplayMarkers.Where((x) => x is RectangleMarker);
+            var centerrectangles = DisplayMarkers.Where((x) => x is CenterRectangleMarker);
+            if (points.Count() != 0)
+                obj.WriteStringData("PointMarker", points.Select((x) => FileHelper.Combine("@", x.GetRatioPosition().ToString(), x.InitialPoint.ToString(), x.FinalPoint.ToString(), x.GetRatioSize().ToString(), x.MarkerColor.Color.ToString(), x.MarkerStrokeThickness.ToString())).ToList());
+            if (circles.Count() != 0)
+                obj.WriteStringData("CircleMarker", circles.Select((x) => FileHelper.Combine("@", x.GetRatioPosition().ToString(), x.InitialPoint.ToString(), x.FinalPoint.ToString(), x.GetRatioSize().ToString(), x.MarkerColor.Color.ToString(), x.MarkerStrokeThickness.ToString())).ToList());
+            if (rectangles.Count() != 0)
+                obj.WriteStringData("RectangleMarker", rectangles.Select((x) => FileHelper.Combine("@", x.GetRatioPosition().ToString(), x.InitialPoint.ToString(), x.FinalPoint.ToString(), x.GetRatioSize().ToString(), x.MarkerColor.Color.ToString(), x.MarkerStrokeThickness.ToString())).ToList());
+            if (centercircles.Count() != 0)
+                obj.WriteStringData("CenterCircleMarker", centercircles.Select((x) => FileHelper.Combine("@", x.GetRatioPosition().ToString(), x.InitialPoint.ToString(), x.FinalPoint.ToString(), x.GetRatioSize().ToString(), x.MarkerColor.Color.ToString(), x.MarkerStrokeThickness.ToString())).ToList());
+            if (centerrectangles.Count() != 0)
+                obj.WriteStringData("CenterRectangleMarker", centerrectangles.Select((x) => FileHelper.Combine("@", x.GetRatioPosition().ToString(), x.InitialPoint.ToString(), x.FinalPoint.ToString(), x.GetRatioSize().ToString(), x.MarkerColor.Color.ToString(), x.MarkerStrokeThickness.ToString())).ToList());
+            return obj;
         }
 
-        public ImageLabel GetSelectedCursor()
+        public void ReadFromMarkersFile(FileObject obj)
         {
-            foreach (var item in DisplayCursors)
+            var names = obj.GetDataNames();
+            if (names.Contains("PointMarker"))
             {
-                if (item.IsSelected)
+                var strs = obj.ExtractString("PointMarker");
+                foreach (var item in strs)
                 {
-                    return item;
+                    PointMarker marker = new PointMarker();
+                    var ss = item.Split('@').ToList();
+                    marker.RegisterToCanvas(DrawingPanel);
+                    DisplayMarkers.Add(marker);
+                    marker.Position = marker.GetTransformPoint(Point.Parse(ss[0]));
+                    marker.InitialPoint = Point.Parse(ss[1]);
+                    marker.FinalPoint = Point.Parse(ss[2]);
+                    marker.MarkerSize = marker.GetTransformSize(Size.Parse(ss[3]));
+                    marker.MarkerColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ss[4]));
+                    marker.MarkerStrokeThickness = double.Parse(ss[5]);
                 }
             }
-            return null;
-        }
-
-        private void CursorDragEnd(object sender, MouseButtonEventArgs e)
-        {
-            ImageLabel imlabel = (sender as Ellipse).Tag as ImageLabel;
-            if (imlabel.IsSelected == false && OnlySelectionMove) return;
-            imlabel.Geometry.ReleaseMouseCapture();
-        }
-
-        private void CursorDragMove(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            ImageLabel imlabel = (sender as Ellipse).Tag as ImageLabel;
-            if (imlabel.IsSelected == false && OnlySelectionMove) return;
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (names.Contains("CircleMarker"))
             {
-                Point p = e.GetPosition(DisplayArea);
-                if (p.X < 0 || p.X > DisplayArea.ActualWidth) return;
-                if (p.Y < 0 || p.Y > DisplayArea.ActualHeight) return;
-                ImageLabel ellipse = (sender as Ellipse).Tag as ImageLabel;
-                ellipse.PixelPoint = new Point(p.X, p.Y);
-                ellipse.RatioPoint = new Point(p.X / DisplayArea.ActualWidth, p.Y / DisplayArea.ActualHeight);
-                UpdatePointLocation(ellipse);
+                var strs = obj.ExtractString("CircleMarker");
+                foreach (var item in strs)
+                {
+                    CircleMarker marker = new CircleMarker();
+                    var ss = item.Split('@').ToList();
+                    marker.RegisterToCanvas(DrawingPanel);
+                    DisplayMarkers.Add(marker);
+                    marker.Position = marker.GetTransformPoint(Point.Parse(ss[0]));
+                    marker.InitialPoint = Point.Parse(ss[1]);
+                    marker.FinalPoint = Point.Parse(ss[2]);
+                    marker.MarkerSize = marker.GetTransformSize(Size.Parse(ss[3]));
+                    marker.MarkerColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ss[4]));
+                    marker.MarkerStrokeThickness = double.Parse(ss[5]);
+                }
+            }
+            if (names.Contains("RectangleMarker"))
+            {
+                var strs = obj.ExtractString("RectangleMarker");
+                foreach (var item in strs)
+                {
+                    RectangleMarker marker = new RectangleMarker();
+                    var ss = item.Split('@').ToList();
+                    marker.RegisterToCanvas(DrawingPanel);
+                    DisplayMarkers.Add(marker);
+                    marker.Position = marker.GetTransformPoint(Point.Parse(ss[0]));
+                    marker.InitialPoint = Point.Parse(ss[1]);
+                    marker.FinalPoint = Point.Parse(ss[2]);
+                    marker.MarkerSize = marker.GetTransformSize(Size.Parse(ss[3]));
+                    marker.MarkerColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ss[4]));
+                    marker.MarkerStrokeThickness = double.Parse(ss[5]);
+                }
+            }
+            if (names.Contains("CenterCircleMarker"))
+            {
+                var strs = obj.ExtractString("CenterCircleMarker");
+                foreach (var item in strs)
+                {
+                    CenterCircleMarker marker = new CenterCircleMarker();
+                    var ss = item.Split('@').ToList();
+                    marker.RegisterToCanvas(DrawingPanel);
+                    DisplayMarkers.Add(marker);
+                    marker.Position = marker.GetTransformPoint(Point.Parse(ss[0]));
+                    marker.InitialPoint = Point.Parse(ss[1]);
+                    marker.FinalPoint = Point.Parse(ss[2]);
+                    marker.MarkerSize = marker.GetTransformSize(Size.Parse(ss[3]));
+                    marker.MarkerColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ss[4]));
+                    marker.MarkerStrokeThickness = double.Parse(ss[5]);
+                }
+            }
+            if (names.Contains("CenterRectangleMarker"))
+            {
+                var strs = obj.ExtractString("CenterRectangleMarker");
+                foreach (var item in strs)
+                {
+                    CenterRectangleMarker marker = new CenterRectangleMarker();
+                    var ss = item.Split('@').ToList();
+                    marker.RegisterToCanvas(DrawingPanel);
+                    DisplayMarkers.Add(marker);
+                    marker.Position = marker.GetTransformPoint(Point.Parse(ss[0]));
+                    marker.InitialPoint = Point.Parse(ss[1]);
+                    marker.FinalPoint = Point.Parse(ss[2]);
+                    marker.MarkerSize = marker.GetTransformSize(Size.Parse(ss[3]));
+                    marker.MarkerColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ss[4]));
+                    marker.MarkerStrokeThickness = double.Parse(ss[5]);
+                }
             }
         }
-
-        private void CursorDragBegin(object sender, MouseButtonEventArgs e)
-        {
-            ImageLabel imlabel = (sender as Ellipse).Tag as ImageLabel;
-            if (imlabel.IsSelected == false && OnlySelectionMove) return;
-            imlabel.Geometry.CaptureMouse();
-        }
-
-        private void UpdateCursorLocations(object sender, SizeChangedEventArgs e)
-        {
-            foreach (var item in DisplayCursors)
-            {
-                UpdatePointLocation(item);
-            }
-        }
-
-        private void UpdateCursorLocations(object sender, RoutedEventArgs e)
-        {
-            foreach (var item in DisplayCursors)
-            {
-                UpdatePointLocation(item);
-            }
-        }
-
-        public void UpdatePointLocation(ImageLabel point)
-        {
-            Point p = point.RatioPoint;
-            double x = p.X * DisplayArea.ActualWidth;
-            double y = p.Y * DisplayArea.ActualHeight;
-            Point tpoint = new Point();
-            if (helper == null)
-            {
-                tpoint = new Point(x, y);
-            }
-            else
-            {
-                tpoint = helper.GetTramsform().Transform(new Point(x, y));
-            }
-            point.SetLoc(tpoint.X, tpoint.Y);
-            PointLocChanged?.Invoke(point, DisplayCursors.IndexOf(point));
-        }
-
-        public void RemoveCursour(int ind)
-        {
-            ImageLabel po = DisplayCursors[ind];
-            po.RemoveFromControl(DrawingPanel);
-            DisplayCursors.Remove(po);
-        }
-
-        public void RemoveCursour(ImageLabel po)
-        {
-            po.RemoveFromControl(DrawingPanel);
-            DisplayCursors.Remove(po);
-        }
-
         #endregion
     }
 }

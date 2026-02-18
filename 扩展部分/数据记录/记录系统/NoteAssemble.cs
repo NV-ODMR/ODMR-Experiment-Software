@@ -51,7 +51,7 @@ namespace ODMR_Lab.数据记录
             {
                 try
                 {
-                    nums.Add(int.Parse(NoteHelper.GetLastFolder(dir).Replace("assemble", "")));
+                    nums.Add(int.Parse(FileHelper.GetLastFolder(dir).Replace("assemble", "")));
                 }
                 catch (Exception)
                 {

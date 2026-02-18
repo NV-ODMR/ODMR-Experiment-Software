@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Xml.Linq;
 using ComboBox = Controls.ComboBox;
 
@@ -44,6 +45,10 @@ namespace ODMR_Lab.IO操作
             if (obj.RawValue is DateTime)
             {
                 return (DateTime)obj.RawValue;
+            }
+            if (obj.RawValue is Color)
+            {
+                return (Color)obj.RawValue;
             }
             return null;
         }
@@ -122,7 +127,10 @@ namespace ODMR_Lab.IO操作
                     obj.RawValue = value.ToString();
                 }
             }
-
+            if (obj.RawValue is Color)
+            {
+                obj.RawValue = (Color)value;
+            }
             if (obj.RawValue is Enum)
             {
                 if (value is string)

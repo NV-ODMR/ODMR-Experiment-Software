@@ -139,6 +139,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\FileHelper.cs" />
     <Compile Include="IO操作\ConfigBase.cs" />
     <Compile Include="IO操作\ExperimentFileTypes.cs" />
     <Compile Include="IO操作\ExpParamBase.cs" />
@@ -297,6 +299,9 @@
     <Compile Include="实验部分\ODMR实验\窗口\ExpNewWindow.xaml.cs">
       <DependentUpon>ExpNewWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="实验部分\ODMR实验\窗口\ExpFileWindow.xaml.cs">
+      <DependentUpon>ExpFileWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="实验部分\ODMR实验\窗口\ExpParamWindow.xaml.cs">
       <DependentUpon>ExpParamWindow.xaml</DependentUpon>
     </Compile>
@@ -426,9 +431,6 @@
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="扩展部分\数据记录\界面及子窗口\子控件\标签控件\TagPanelBase.cs" />
-    <Compile Include="扩展部分\数据记录\界面及子窗口\子窗口\ExpDisplayWindow.xaml.cs">
-      <DependentUpon>ExpDisplayWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="扩展部分\数据记录\界面及子窗口\子窗口\TakePhotoWindow.xaml.cs">
       <DependentUpon>TakePhotoWindow.xaml</DependentUpon>
     </Compile>
@@ -451,6 +453,9 @@
     <Compile Include="数据处理\DataVisualSource.cs" />
     <Compile Include="数据处理\DataVisualPage.xaml.cs">
       <DependentUpon>DataVisualPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="数据处理\DataViewingWindow.xaml.cs">
+      <DependentUpon>DataViewingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\UserCustomFileObject.cs" />
     <Compile Include="设备部分\PulseBlaster\PulseBlasterDevConfigParams.cs" />
@@ -508,6 +513,15 @@
     <Compile Include="设备部分\相机，翻转镜，开关\子窗口\ImageProcessWindow.xaml.cs">
       <DependentUpon>ImageProcessWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="设备部分\相机，翻转镜，开关\标记\CenterCircleMarker.cs" />
+    <Compile Include="设备部分\相机，翻转镜，开关\标记\MarkerSetWindow.xaml.cs">
+      <DependentUpon>MarkerSetWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="设备部分\相机，翻转镜，开关\标记\MarkerBase.cs" />
+    <Compile Include="设备部分\相机，翻转镜，开关\标记\CircleMarker.cs" />
+    <Compile Include="设备部分\相机，翻转镜，开关\标记\CenterRectangleMarker.cs" />
+    <Compile Include="设备部分\相机，翻转镜，开关\标记\RectangleMarker.cs" />
+    <Compile Include="设备部分\相机，翻转镜，开关\标记\PointMarker.cs" />
     <Compile Include="设备部分\相机，翻转镜，开关\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -605,6 +619,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="实验部分\ODMR实验\窗口\ExpNewWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\ODMR实验\窗口\ExpFileWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -716,10 +734,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="扩展部分\数据记录\界面及子窗口\子窗口\ExpDisplayWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="扩展部分\数据记录\界面及子窗口\子窗口\TakePhotoWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -741,6 +755,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="数据处理\DataVisualPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="数据处理\DataViewingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -796,6 +814,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="设备部分\相机，翻转镜，开关\标记\MarkerSetWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="设备部分\相机，翻转镜，开关\设备窗口\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -833,9 +855,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="图片资源\information.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="图片资源\snap.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="图片资源\directory.png" />
@@ -883,6 +902,15 @@
     <Resource Include="图片资源\refresh.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="图片资源\transform.png" />
+    <Resource Include="图片资源\snap.png" />
+    <Resource Include="图片资源\circlerectangle.png" />
+    <Resource Include="图片资源\centercircle.png" />
+    <Resource Include="图片资源\circle.png" />
+    <Resource Include="图片资源\dot.png" />
+    <Resource Include="图片资源\rectangle.png" />
+    <Resource Include="图片资源\dataviewing.png" />
+    <Resource Include="图片资源\clean.png" />
     <Resource Include="图片资源\clipboard.png" />
     <Resource Include="图片资源\zip.png" />
     <Resource Include="图片资源\pythonfile.png" />

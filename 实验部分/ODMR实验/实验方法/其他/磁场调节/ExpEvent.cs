@@ -82,8 +82,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
                     TotalCWPeaks2OrException(out List<double> peaks, out freqs, out contracts);
                     originOutput[1] = Math.Min(peaks[0], peaks[1]);
                     originOutput[2] = Math.Max(peaks[0], peaks[1]);
-                    //未扫描到谱峰，添加提示信息
-                    MessageLogger.AddLogger("磁场定位", "位移台" + stage.MoverType.ToString() + "=" + Math.Round(loc, 5).ToString() + "时未扫描到完整的共振峰谱", MessageTypes.Information);
                 }
                 else
                 {

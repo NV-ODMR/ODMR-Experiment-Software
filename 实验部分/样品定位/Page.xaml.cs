@@ -246,10 +246,10 @@ namespace ODMR_Lab.样品定位
 
                 Dispatcher.Invoke(() =>
                 {
-                    SourcePre = SourceImage.AddCursor(new Point(SourceImage.ActualWidth / 2, SourceImage.ActualHeight / 2));
-                    SourceImage.SelectCursor(SourcePre);
-                    TargetPre = TargetImage.AddCursor(new Point(0, 0));
-                    TargetImage.SelectCursor(TargetPre);
+                    //SourcePre = SourceImage.AddCursor(new Point(SourceImage.ActualWidth / 2, SourceImage.ActualHeight / 2));
+                    //SourceImage.SelectCursor(SourcePre);
+                    //TargetPre = TargetImage.AddCursor(new Point(0, 0));
+                    //TargetImage.SelectCursor(TargetPre);
 
                     PredictBtn.IsEnabled = false;
                     btnTemplate.IsEnabled = false;
@@ -270,8 +270,8 @@ namespace ODMR_Lab.样品定位
                     PredictBtn.IsEnabled = true;
                     btnTemplate.IsEnabled = true;
                     IsPredict = false;
-                    SourceImage.RemoveCursour(SourcePre);
-                    TargetImage.RemoveCursour(TargetPre);
+                    //SourceImage.RemoveCursour(SourcePre);
+                    //TargetImage.RemoveCursour(TargetPre);
                 });
 
             });
@@ -292,7 +292,7 @@ namespace ODMR_Lab.样品定位
                     Point res = CorrelatePointCollection.TransformPointToPixel(SourcePre.PixelPoint);
                     TargetPre.RatioPoint = new Point(res.X / TargetImage.DisplayArea.ActualWidth, res.Y / TargetImage.DisplayArea.ActualHeight);
                     TargetPre.PixelPoint = new Point(res.X, res.Y);
-                    TargetImage.UpdatePointLocation(TargetPre);
+                    //TargetImage.UpdatePointLocation(TargetPre);
                     //更新位移台值
                     res = CorrelatePointCollection.TransformPointToMover(SourcePre.PixelPoint);
                     UpdatePredictParams(res);
@@ -361,8 +361,8 @@ namespace ODMR_Lab.样品定位
 
         private void SelectPointBar(int arg1, object arg2)
         {
-            SourceImage.SelectCursor(arg1);
-            TargetImage.SelectCursor(arg1);
+            //SourceImage.SelectCursor(arg1);
+            //TargetImage.SelectCursor(arg1);
         }
 
         private void SourceImageSelected(object sender, MouseButtonEventArgs e)
@@ -371,7 +371,7 @@ namespace ODMR_Lab.样品定位
             IsPredict = false;
             try
             {
-                SourceSelectedPoint = SourceImage.GetSelectedCursor().PixelPoint;
+                //SourceSelectedPoint = SourceImage.GetSelectedCursor().PixelPoint;
             }
             catch (Exception ex) { return; }
         }
@@ -381,7 +381,7 @@ namespace ODMR_Lab.样品定位
             IsTargetSelectedEnd = true;
             try
             {
-                TargetSelectedPoint = TargetImage.GetSelectedCursor().PixelPoint;
+                //TargetSelectedPoint = TargetImage.GetSelectedCursor().PixelPoint;
             }
             catch (Exception ex) { return; }
         }
@@ -391,7 +391,7 @@ namespace ODMR_Lab.样品定位
             SourceImage.Focus();
             if (IsSourceSelectedEnd == false && double.IsNaN(SourceSelectedPoint.X))
             {
-                SourceImage.SelectCursor(SourceImage.AddCursor(e.GetPosition(SourceImage)));
+                //SourceImage.SelectCursor(SourceImage.AddCursor(e.GetPosition(SourceImage)));
                 SourceSelectedPoint = new Point(0, 0);
             }
             if (IsPredict)
@@ -405,7 +405,7 @@ namespace ODMR_Lab.样品定位
             TargetImage.Focus();
             if (IsTargetSelectedEnd == false && double.IsNaN(TargetSelectedPoint.X))
             {
-                TargetImage.SelectCursor(TargetImage.AddCursor(e.GetPosition(TargetImage)));
+                //TargetImage.SelectCursor(TargetImage.AddCursor(e.GetPosition(TargetImage)));
                 TargetSelectedPoint = new Point(0, 0);
             }
             if (IsPredict)

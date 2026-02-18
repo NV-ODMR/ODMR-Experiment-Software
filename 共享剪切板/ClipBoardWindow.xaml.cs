@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -39,7 +41,17 @@ namespace ODMR_Lab.共享剪切板
             title.Content = "     " + "共享剪切板";
         }
 
+        // 导入 Windows API 中的设置任务栏应用程序 ID 的方法
+        [DllImport("shell32.dll", SetLastError = true)]
+        private static extern void SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
         private string CurrentFile = "";
+
+        public new void Show()
+        {
+            var dwinhelper = new WindowInteropHelper(this);
+            SetCurrentProcessExplicitAppUserModelID("ClipboardWindow");
+            base.Show();
+        }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {

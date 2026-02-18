@@ -35,8 +35,6 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
         NoteUnitDisplayWindow addNoteUnitWindow = new NoteUnitDisplayWindow("新建条目");
         NoteUnitDisplayWindow changeNoteUnitWindow = new NoteUnitDisplayWindow("编辑条目");
 
-        ExpDisplayWindow expDisplayWindow = new ExpDisplayWindow();
-
         public NoteControl()
         {
             InitializeComponent();
@@ -49,21 +47,18 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             changeNotewindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             changeNotewindow.NoteApplied += ChangeNoteCommand;
 
-            expDisplayWindow.Owner = Window.GetWindow(this);
-            expDisplayWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
             addNoteUnitWindow.Owner = Window.GetWindow(this);
             addNoteUnitWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             addNoteUnitWindow.NoteUnitApplied += NoteUnitAppliedCommand;
             addNoteUnitWindow.NoteUnitUnApplied += NoteUnitUnAppliedCommand;
             addNoteUnitWindow.HideAction += new RoutedEventHandler((obj, e1) => { IsEnabled = true; });
-            addNoteUnitWindow.ImageViewer.ParentExpDisplayWindow = expDisplayWindow;
+            addNoteUnitWindow.ImageViewer.ParentExpDisplayWindow = MainWindow.DataWindow;
 
             changeNoteUnitWindow.Owner = Window.GetWindow(this);
             changeNoteUnitWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             changeNoteUnitWindow.NoteUnitApplied += NoteUnitChangedCommand;
             changeNoteUnitWindow.HideAction += new RoutedEventHandler((obj, e1) => { IsEnabled = true; });
-            changeNoteUnitWindow.ImageViewer.ParentExpDisplayWindow = expDisplayWindow;
+            changeNoteUnitWindow.ImageViewer.ParentExpDisplayWindow = MainWindow.DataWindow;
 
         }
 

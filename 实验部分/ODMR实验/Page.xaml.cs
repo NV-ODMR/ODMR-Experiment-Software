@@ -148,6 +148,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             foreach (var item in ExpObjects)
             {
                 ExpSearchBar.SearchList.Add(new KeyValuePair<string, object>(item.ODMRExperimentName + " " + item.ODMRExperimentGroupName, item));
+                ExpFileWindow.ExpSearchBar.SearchList.Add(new KeyValuePair<string, object>(item.ODMRExperimentName + " " + item.ODMRExperimentGroupName, new List<string>() { item.ODMRExperimentGroupName, item.ODMRExperimentName }));
             }
         }
 
@@ -403,7 +404,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             FolderBrowserDialog dialog = new FolderBrowserDialog();
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                SavePath.Content = dialog.SelectedPath;
+                SavePath.Text = dialog.SelectedPath;
                 SavePath.ToolTip = dialog.SelectedPath;
             }
         }
@@ -622,6 +623,15 @@ namespace ODMR_Lab.实验部分.ODMR实验
             catch (Exception)
             {
             }
+        }
+
+        ExpFileWindow ExpFileWindow = new ExpFileWindow();
+        private void ShowExpFiles(object sender, RoutedEventArgs e)
+        {
+            ExpFileWindow.RootFolder = SavePath.Text;
+            ExpFileWindow.Owner = Window.GetWindow(this);
+            ExpFileWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            ExpFileWindow.Show();
         }
     }
 }

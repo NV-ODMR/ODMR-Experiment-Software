@@ -612,8 +612,8 @@ namespace ODMR_Lab.ODMR实验
             {
                 try
                 {
-                    if (ParentPage.SavePath.Content.ToString() == "") return;
-                    string root = Path.Combine(ParentPage.SavePath.Content.ToString(), ODMRExperimentGroupName, ODMRExperimentName);
+                    if (ParentPage.SavePath.Text.ToString() == "") return;
+                    string root = Path.Combine(ParentPage.SavePath.Text.ToString(), ODMRExperimentGroupName, ODMRExperimentName);
                     if (!Directory.Exists(root))
                     {
                         Directory.CreateDirectory(root);

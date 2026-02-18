@@ -11,6 +11,7 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -18,12 +19,26 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
+        <Grid x:Name="MarkersPanel" Grid.Row="3" Grid.ColumnSpan="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Controls:DecoratedButton Name="PointBtn" FontSize="10" FontWeight="Normal" IconMargin="3" CornerRadius="5" ToolTip="绘制标记点" Click="Paint" Width="50" Height="25" TextAreaRatio="0" Grid.Row="0" Grid.Column="0" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/dot.png"/>
+            <Controls:DecoratedButton Name="CircleBtn" FontSize="10" FontWeight="Normal" IconMargin="3" CornerRadius="5" ToolTip="绘制圆" Click="Paint" Width="50" Height="25" TextAreaRatio="0" Grid.Row="0" Grid.Column="1" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/circle.png"/>
+            <Controls:DecoratedButton Name="CenterCircleBtn" FontSize="10" FontWeight="Normal" IconMargin="3" CornerRadius="5" ToolTip="绘制中心圆" Click="Paint" Width="50" Height="25" TextAreaRatio="0" Grid.Row="0" Grid.Column="2" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/centercircle.png"/>
+            <Controls:DecoratedButton Name="RectangleBtn" FontSize="10" FontWeight="Normal" IconMargin="3" CornerRadius="5" ToolTip="绘制矩形" Click="Paint" Width="50" Height="25" TextAreaRatio="0" Grid.Row="0" Grid.Column="3" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/rectangle.png"/>
+            <Controls:DecoratedButton Name="CenterRectangleBtn" FontSize="10" FontWeight="Normal" IconMargin="3" CornerRadius="5" ToolTip="绘制中心矩形" Click="Paint" Width="50" Height="25" TextAreaRatio="0" Grid.Row="0" Grid.Column="4" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/circlerectangle.png"/>
+        </Grid>
         <Label Name="Framerate" Grid.Row="1" Content="" IsHitTestVisible="False" FontWeight="ExtraBold" Background="{x:Null}" Foreground="#FFFAFAFA"/>
         <Label Name="WindowName" Grid.Row="0" Content="" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
         <Controls:DecoratedButton Name="CloseBtn" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Grid.Column="3" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
         <Controls:DecoratedButton Name="MinBtn" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Grid.Column="1" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/minimize.png" />
         <Controls:DecoratedButton Name="MaxBtn" IconMargin="7" TextAreaRatio="0" Grid.Row="0" Grid.Column="2" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/maximize.png"/>
-        <基本控件:LabeledImage x:Name="DisplayArea"  Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" IsHitTestVisible="True" MouseRightButtonUp="CancelResize" PreviewMouseRightButtonUp="RecordClickPos" MouseLeftButtonDown="BeginResize" MouseLeftButtonUp="EndResize" MouseMove="DragResize" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <基本控件:LabeledImage x:Name="DisplayArea"  Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" IsHitTestVisible="True" MouseRightButtonUp="CancelResize" MouseLeftButtonDown="BeginResize" MouseLeftButtonUp="EndResize" MouseMove="DragResize" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Canvas Name="DrawingPanel" IsHitTestVisible="False" ClipToBounds="True" Background="Transparent" Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" Panel.ZIndex="0">
             <Rectangle x:Name="ResizeBound" StrokeThickness="2" Stroke="#FF00F7FF">
                 <Rectangle.Fill>
@@ -31,19 +46,21 @@
                 </Rectangle.Fill>
             </Rectangle>
         </Canvas>
-        <Grid Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2">
+        <Grid x:Name="FunctionPanel" Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
-            <Controls:DecoratedButton Name="SnapBtn" FontSize="10" FontWeight="Normal" IconMargin="3" CornerRadius="5" ToolTip="复制截图到剪切板" Click="SnapToClipboard" Width="80" Height="40" TextAreaRatio="0" Grid.Row="0" Grid.Column="3" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
-            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="恢复为原尺寸" Width="80" Height="40" TextAreaRatio="0" Grid.Row="1" Grid.Column="3" Click="SetRange" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
-            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="参数设置" Width="80" Height="40" TextAreaRatio="0" Grid.Row="2" Grid.Column="3" Click="SetParams" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/setting.png"/>
-            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="刷新连接" Width="80" Height="40" TextAreaRatio="0" Grid.Row="4" Grid.Column="3" Click="RefreshConnection" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/refresh.png"/>
-            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="图像处理" Width="80" Height="40" TextAreaRatio="0" Grid.Row="3" Click="ImageProcess" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/editimage.png" Margin="20,19,20,19"/>
+            <Controls:DecoratedButton Name="SnapBtn" FontSize="10" FontWeight="Normal" IconMargin="3" CornerRadius="5" ToolTip="复制截图到剪切板" Click="SnapToClipboard" Width="40" Height="25" TextAreaRatio="0" Grid.Row="0" Grid.Column="3" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
+            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="恢复为原尺寸" Width="40" Height="25" TextAreaRatio="0" Grid.Row="1" Grid.Column="3" Click="SetRange" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
+            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="参数设置" Width="40" Height="25" TextAreaRatio="0" Grid.Row="2" Grid.Column="3" Click="SetParams" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/setting.png"/>
+            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="设置拍摄区域" Width="40" Height="25" TextAreaRatio="0" Grid.Row="4" Grid.Column="3" Click="SetSnapArea" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/transform.png"/>
+            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="刷新连接" Width="40" Height="25" TextAreaRatio="0" Grid.Row="5" Grid.Column="3" Click="RefreshConnection" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/refresh.png"/>
+            <Controls:DecoratedButton IconMargin="3" CornerRadius="5" ToolTip="图像处理" Width="40" Height="25" TextAreaRatio="0" Grid.Row="3" Click="ImageProcess" FontWeight="Thin" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/editimage.png"/>
         </Grid>
     </Grid>
 </Window>

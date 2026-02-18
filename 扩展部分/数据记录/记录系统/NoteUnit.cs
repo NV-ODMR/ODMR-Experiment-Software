@@ -83,7 +83,7 @@ namespace ODMR_Lab.数据记录
 
         public string GetNoteUnitFolderPath()
         {
-            return System.IO.Path.Combine(Parent.GetNoteFolderPath(), NoteHelper.ProcessPathStr(NoteTime.ToString("yyyy-MM-dd-HH-mm-ss")));
+            return System.IO.Path.Combine(Parent.GetNoteFolderPath(), FileHelper.ProcessFileStr(NoteTime.ToString("yyyy-MM-dd-HH-mm-ss")));
         }
 
         #region 文件操作

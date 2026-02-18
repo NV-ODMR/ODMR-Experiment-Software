@@ -11,24 +11,6 @@ namespace ODMR_Lab
 {
     public class MessageLogger
     {
-        public static List<Message> Messages = new List<Message>();
-
-        /// <summary>
-        /// 添加错误信息
-        /// </summary>
-        /// <param name="Message"></param>
-        /// <param name=""></param>
-        public static void AddLogger(string part, string message, MessageTypes type, bool ShowMessageBox = false, bool Log = true, Window owner = null)
-        {
-            if (Log)
-            {
-                Messages.Add(new Message(type, part, message));
-            }
-            if (ShowMessageBox)
-            {
-                MessageWindow.ShowTipWindow(message, owner);
-            }
-        }
     }
 
     /// <summary>

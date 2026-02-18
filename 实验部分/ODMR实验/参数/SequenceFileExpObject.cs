@@ -162,18 +162,36 @@ namespace ODMR_Lab.实验部分.ODMR实验.参数
             {
                 if (v.Key.Contains("Input" + "→"))
                 {
-                    string[] ss = v.Key.Split('→');
-                    InputParams.Add(new Param<string>(ss[1], v.Value, ss[2]));
+                    try
+                    {
+                        string[] ss = v.Key.Split('→');
+                        InputParams.Add(new Param<string>(ss[1], v.Value, ss[2]));
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
                 if (v.Key.Contains("Output" + "→"))
                 {
-                    string[] ss = v.Key.Split('→');
-                    OutputParams.Add(new Param<string>(ss[1], v.Value, ss[2]));
+                    try
+                    {
+                        string[] ss = v.Key.Split('→');
+                        OutputParams.Add(new Param<string>(ss[1], v.Value, ss[2]));
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
                 if (v.Key.Contains("Dev" + "→"))
                 {
-                    string[] ss = v.Key.Split('→');
-                    DeviceList.Add(new KeyValuePair<DeviceTypes, Param<string>>((DeviceTypes)Enum.Parse(typeof(DeviceTypes), ss[3]), new Param<string>(ss[1], v.Value, ss[2])));
+                    try
+                    {
+                        string[] ss = v.Key.Split('→');
+                        DeviceList.Add(new KeyValuePair<DeviceTypes, Param<string>>((DeviceTypes)Enum.Parse(typeof(DeviceTypes), ss[3]), new Param<string>(ss[1], v.Value, ss[2])));
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
             }
             #endregion

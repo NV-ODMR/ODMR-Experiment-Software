@@ -44,16 +44,16 @@ namespace ODMR_Lab.基本控件
     /// </summary>
     public partial class FileViewingControl : Grid
     {
-        private static BitmapImage pdfImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "pdf.png"));
-        private static BitmapImage PPTImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "ppt.png"));
-        private static BitmapImage ExcelImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "excel.png"));
-        private static BitmapImage TxtImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "txt.png"));
-        private static BitmapImage WordImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "word.png"));
-        private static BitmapImage NanImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "nanFile.png"));
-        private static BitmapImage MathematicaImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "mathematica.png"));
-        private static BitmapImage PythonImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "pythonfile.png"));
-        private static BitmapImage ZipImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "zip.png"));
-        private static BitmapImage expImage = NoteHelper.LoadImageFromResource(Path.Combine("图片资源", "experimentfile.png"));
+        private static BitmapImage pdfImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "pdf.png"));
+        private static BitmapImage PPTImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "ppt.png"));
+        private static BitmapImage ExcelImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "excel.png"));
+        private static BitmapImage TxtImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "txt.png"));
+        private static BitmapImage WordImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "word.png"));
+        private static BitmapImage NanImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "nanFile.png"));
+        private static BitmapImage MathematicaImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "mathematica.png"));
+        private static BitmapImage PythonImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "pythonfile.png"));
+        private static BitmapImage ZipImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "zip.png"));
+        private static BitmapImage expImage = ImageHelper.LoadImageFromResource(Path.Combine("图片资源", "experimentfile.png"));
 
         public FileViewingControl()
         {

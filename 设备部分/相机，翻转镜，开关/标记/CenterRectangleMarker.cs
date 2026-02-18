@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
+namespace ODMR_Lab.设备部分.相机_翻转镜_开关
+{
+    public class CenterRectangleMarker : MarkerBase
+    {
+        public override Shape MarkerShape { get; set; } = new Rectangle() { Stroke = Brushes.Red, StrokeThickness = 4 };
+
+        public override void ValidateShape()
+        {
+            if (IsNanPoint(InitialPoint) || IsNanPoint(FinalPoint)) return;
+            Point fp = GetTransformPoint(FinalPoint);
+            Point ip = GetTransformPoint(InitialPoint);
+            double width = Math.Abs(fp.X - ip.X);
+            double height = Math.Abs(fp.Y - ip.Y);
+            Position = new Point(ip.X - width, ip.Y - height);
+            MarkerSize = new Size(2 * width, 2 * height);
+        }
+    }
+}

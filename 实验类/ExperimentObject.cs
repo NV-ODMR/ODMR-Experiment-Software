@@ -59,21 +59,21 @@ namespace ODMR_Lab
         /// <summary>
         /// 实验开始时间
         /// </summary>
-        public string ExpStartTime { get; set; } = "";
+        public DateTime ExpStartTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 实验结束时间
         /// </summary>
-        public string ExpEndTime { get; set; } = "";
+        public DateTime ExpEndTime { get; set; } = DateTime.Now;
 
         public void SetStartTime(DateTime time)
         {
-            ExpStartTime = time.ToString("yyyy-MM-dd HH:mm:ss");
+            ExpStartTime = time;
         }
 
         public void SetEndTime(DateTime time)
         {
-            ExpEndTime = time.ToString("yyyy-MM-dd HH:mm:ss");
+            ExpEndTime = time;
         }
 
         /// <summary>
@@ -96,8 +96,31 @@ namespace ODMR_Lab
 
             if (ExpType == (ExperimentFileTypes)Enum.Parse(typeof(ExperimentFileTypes), obj.Descriptions["实验类型"]))
             {
-                ExpStartTime = obj.Descriptions["开始时间"];
-                ExpEndTime = obj.Descriptions["结束时间"];
+                //读取实验时间
+                if (obj.Descriptions["开始时间"].Contains(":") && obj.Descriptions["结束时间"].Contains(":"))
+                {
+                    try
+                    {
+                        ExpStartTime = DateTime.Parse(obj.Descriptions["开始时间"]);
+                        ExpEndTime = DateTime.Parse(obj.Descriptions["结束时间"]);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        ExpStartTime = DateTime.FromOADate(double.Parse(obj.Descriptions["开始时间"]));
+                        ExpEndTime = DateTime.FromOADate(double.Parse(obj.Descriptions["结束时间"]));
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+
                 InnerRead(obj);
 
                 if (Param != null)
@@ -127,8 +150,30 @@ namespace ODMR_Lab
 
             if (ExpType == (ExperimentFileTypes)Enum.Parse(typeof(ExperimentFileTypes), obj.Descriptions["实验类型"]))
             {
-                ExpStartTime = obj.Descriptions["开始时间"];
-                ExpEndTime = obj.Descriptions["结束时间"];
+                //读取实验时间
+                if (obj.Descriptions["开始时间"].Contains(":") && obj.Descriptions["结束时间"].Contains(":"))
+                {
+                    try
+                    {
+                        ExpStartTime = DateTime.Parse(obj.Descriptions["开始时间"]);
+                        ExpEndTime = DateTime.Parse(obj.Descriptions["结束时间"]);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        ExpStartTime = DateTime.FromOADate(double.Parse(obj.Descriptions["开始时间"]));
+                        ExpEndTime = DateTime.FromOADate(double.Parse(obj.Descriptions["结束时间"]));
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
 
                 InnerRead(obj);
 
@@ -162,11 +207,11 @@ namespace ODMR_Lab
             }
             if (!obj.Descriptions.Keys.Contains("开始时间"))
             {
-                obj.Descriptions.Add("开始时间", ExpStartTime);
+                obj.Descriptions.Add("开始时间", ExpStartTime.ToOADate().ToString());
             }
             if (!obj.Descriptions.Keys.Contains("结束时间"))
             {
-                obj.Descriptions.Add("结束时间", ExpEndTime);
+                obj.Descriptions.Add("结束时间", ExpEndTime.ToOADate().ToString());
             }
 
             InnerWrite(obj);
@@ -209,11 +254,11 @@ namespace ODMR_Lab
             }
             if (!obj.Descriptions.Keys.Contains("开始时间"))
             {
-                obj.Descriptions.Add("开始时间", ExpStartTime);
+                obj.Descriptions.Add("开始时间", ExpStartTime.ToOADate().ToString());
             }
             if (!obj.Descriptions.Keys.Contains("结束时间"))
             {
-                obj.Descriptions.Add("结束时间", ExpEndTime);
+                obj.Descriptions.Add("结束时间", ExpEndTime.ToOADate().ToString());
             }
 
             InnerWrite(obj);
@@ -267,6 +312,45 @@ namespace ODMR_Lab
             }
         }
 
+        public static void GetExpTime(string filepath, out DateTime starttime, out DateTime endtime)
+        {
+            Dictionary<string, string> dic = FileObject.ReadDescription(filepath);
+
+            if (dic["开始时间"] == "" || dic["结束时间"] == "")
+            {
+                throw new Exception("未能正确读取实验时间");
+            }
+
+            //读取实验时间
+            if (dic["开始时间"].Contains(":") && dic["结束时间"].Contains(":"))
+            {
+                try
+                {
+                    starttime = DateTime.Parse(dic["开始时间"]);
+                    endtime = DateTime.Parse(dic["结束时间"]);
+                    return;
+                }
+                catch (Exception)
+                {
+                }
+            }
+            else
+            {
+                try
+                {
+                    starttime = DateTime.FromOADate(double.Parse(dic["开始时间"]));
+                    endtime = DateTime.FromOADate(double.Parse(dic["结束时间"]));
+                    return;
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+
+            throw new Exception("未能正确读取实验时间");
+        }
+
         /// <summary>
         /// 内部读操作，将obj中的信息转化成对应的ExperimentFileObject
         /// </summary>
@@ -284,8 +368,8 @@ namespace ODMR_Lab
             DataVisualSource s = new DataVisualSource();
 
             s.Params.Add("实验类型", Enum.GetName(ExpType.GetType(), ExpType));
-            s.Params.Add("开始时间", ExpStartTime);
-            s.Params.Add("结束时间", ExpEndTime);
+            s.Params.Add("开始时间", ExpStartTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            s.Params.Add("结束时间", ExpEndTime.ToString("yyyy-MM-dd HH:mm:ss"));
 
             InnerToDataVisualSource(s);
             return s;

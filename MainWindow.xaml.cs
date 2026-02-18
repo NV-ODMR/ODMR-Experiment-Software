@@ -102,8 +102,8 @@ namespace ODMR_Lab
 
         #endregion
 
-        #region 数据处理部分
-        public static DataVisualPage Data_Page = new DataVisualPage();
+        #region 数据预览与处理窗口
+        public static DataViewingWindow DataWindow = new DataViewingWindow();
         #endregion
 
         public MainWindow()
@@ -114,6 +114,8 @@ namespace ODMR_Lab
                 Environment.Exit(0);
             }
             Handle = this;
+            var dwinhelper = new WindowInteropHelper(this);
+            SetCurrentProcessExplicitAppUserModelID("MainWindow");
             InitializeComponent();
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -264,13 +266,14 @@ namespace ODMR_Lab
 
         ClipBoardWindow ClipboardWindow = null;
 
+        public static void SetAppIdForWindow(Window window, string appId)
+        {
+        }
+
         // 导入 Windows API 中的设置任务栏应用程序 ID 的方法
         [DllImport("shell32.dll", SetLastError = true)]
         private static extern void SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
 
-        public static void SetAppIdForWindow(Window window, string appId)
-        {
-        }
         /// <summary>
         /// 显示次级菜单
         /// </summary>
@@ -294,10 +297,11 @@ namespace ODMR_Lab
             }
             if (btn.Text == "数据")
             {
-                CurrentPage = Data_Page;
-                GeneralGrid.ColumnDefinitions[1].Width = new GridLength(0);
-                PageContent.Children.Clear();
-                AddPageToView(Data_Page);
+                DataWindow.WindowState = WindowState.Normal;
+                DataWindow.Activate();
+                DataWindow.Show();
+                var dwinhelper = new WindowInteropHelper(this);
+                SetCurrentProcessExplicitAppUserModelID("MainWindow");
             }
             if (btn.Text == "扩展")
             {
@@ -309,12 +313,12 @@ namespace ODMR_Lab
                 if (ClipboardWindow == null)
                 {
                     ClipboardWindow = new ClipBoardWindow();
-                    var helper = new WindowInteropHelper(ClipboardWindow);
-                    SetCurrentProcessExplicitAppUserModelID("RemoteClipboard");
                 }
                 ClipboardWindow.WindowState = WindowState.Normal;
                 ClipboardWindow.Activate();
                 ClipboardWindow.Show();
+                var cwinhelper = new WindowInteropHelper(this);
+                SetCurrentProcessExplicitAppUserModelID("MainWindow");
 
             }
         }
