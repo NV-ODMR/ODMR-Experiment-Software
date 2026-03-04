@@ -150,13 +150,22 @@ namespace ODMR_Lab
                       MessageWindow win = null;
                       Dispatcher.Invoke(() =>
                       {
-                          win = new MessageWindow("提示", "正在关闭设备并保存参数...", MessageBoxButton.OK, false, false);
+                          win = new MessageWindow("提示", "正在保存参数...", MessageBoxButton.OK, false, false);
                           win.Owner = this;
                           win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                           IsEnabled = false;
                           win.Show();
-                          //保存界面参数
-                          ParamManager.SaveParams();
+                      });
+                      //保存界面参数
+                      ParamManager.SaveParams(win);
+                      Dispatcher.Invoke(() =>
+                      {
+                          win.Close();
+                          win = new MessageWindow("提示", "正在关闭设备...", MessageBoxButton.OK, false, false);
+                          win.Owner = this;
+                          win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                          IsEnabled = false;
+                          win.Show();
                       });
                       canclose = DeviceDispatcher.CloseDevicesAndSave();
                       Dispatcher.Invoke(() =>

@@ -37,7 +37,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         public override string ODMRExperimentName { get; set; } = "AFM下针稳定性测试";
         public override string ODMRExperimentGroupName { get; set; } = "AFM下针测试";
 
-        public override string Description { get; set; } ="";
+        public override string Description { get; set; } = "";
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
@@ -93,7 +93,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             {
                 double I = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
                 AFMFloatDrop drop = new AFMFloatDrop();
-                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, I,GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
+                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
+                    ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")),
+                    I,
+                    GetInputParamValueByName("PIDSampleTIme"),
+                    ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")+20),
+                    null
+                }, GetDeviceByName("LockIn"));
                 if ((bool)result[0] == false)
                 {
                     throw new Exception("下针失败，实验已结束");
@@ -187,6 +193,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected override double GetScannerYRatio()
         {
             return 1;
+        }
+
+        public override double ConvertHeightFromVoltage(double voltage)
+        {
+            return voltage / GetInputParamValueByName("Voltage_Displacement_Ratio") * 1000;
+        }
+
+        public override double ConvertHeightFromDistance(double distance)
+        {
+            return distance * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000;
         }
     }
 }

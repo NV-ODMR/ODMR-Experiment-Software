@@ -37,7 +37,6 @@ namespace ODMR_Lab.实验部分.序列编辑器
 
         private void BeforeClose(object sender, RoutedEventArgs e)
         {
-            selectedfile = "";
         }
 
         public new string ShowDialog()

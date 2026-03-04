@@ -110,12 +110,16 @@ namespace ODMR_Lab.序列编辑器
 
         private void ChannelPanel_ItemSelected(int arg1, object arg2)
         {
-            SignalPanel.ClearItems();
-            SequenceChannelData data = arg2 as SequenceChannelData;
-            foreach (var item in data.Peaks)
+            if (ChannelPanel.SelectedIndex != arg1 || SignalPanel.GetRowCount() == 0)
             {
-                SignalPanel.AddItem(item, GlobalPulseParams.GetGlobalPulses(), item.WaveValue, item.PeakSpan, item.IsTriggerCommand);
-                SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, item.PeakName);
+                SignalPanel.ClearItems();
+                SequenceChannelData data = arg2 as SequenceChannelData;
+                var pulses = GlobalPulseParams.GetGlobalPulses();
+                foreach (var item in data.Peaks)
+                {
+                    SignalPanel.AddItem(item, pulses, item.WaveValue, item.PeakSpan, item.IsTriggerCommand);
+                    SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, item.PeakName);
+                }
             }
         }
 
@@ -392,7 +396,7 @@ namespace ODMR_Lab.序列编辑器
             {
                 var seg = arg3 as SequenceChannelData;
                 Sequence.Channels.Remove(seg);
-                UpdateSequenceData();
+                ChannelPanel.RemoveItemAt(arg2);
             }
         }
 
@@ -403,21 +407,25 @@ namespace ODMR_Lab.序列编辑器
             {
                 var seg = arg3 as SequenceWaveSeg;
                 seg.ParentChannel.Peaks.Remove(seg);
-                UpdatePeakData();
+                SignalPanel.RemoveItemAt(arg2);
             }
             //上方插入
             if (arg1 == 1)
             {
                 var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Insert(arg2 < 0 ? 0 : arg2, new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel));
-                UpdatePeakData();
+                var waveseg = new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel);
+                seg.ParentChannel.Peaks.Insert(arg2 < 0 ? 0 : arg2, waveseg);
+                SignalPanel.InsertItem(arg2 < 0 ? 0 : arg2, waveseg, new List<object>() { GlobalPulseParams.GetGlobalPulses(), waveseg.WaveValue, waveseg.PeakSpan, waveseg.IsTriggerCommand });
+                SignalPanel.SetCelValue(arg2 < 0 ? 0 : arg2, 0, waveseg.PeakName);
             }
             //下方插入
             if (arg1 == 2)
             {
                 var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Insert(arg2 + 1, new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel));
-                UpdatePeakData();
+                var waveseg = new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel);
+                seg.ParentChannel.Peaks.Insert(arg2 + 1, waveseg);
+                SignalPanel.InsertItem(arg2 + 1, waveseg, new List<object>() { GlobalPulseParams.GetGlobalPulses(), waveseg.WaveValue, waveseg.PeakSpan, waveseg.IsTriggerCommand });
+                SignalPanel.SetCelValue(arg2 + 1, 0, waveseg.PeakName);
             }
         }
 

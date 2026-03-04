@@ -143,6 +143,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// </summary>
         /// <returns></returns>
         public abstract LockinInfo GetLockIn();
+        
+        /// <summary>
+        /// 从电压(V)转换成高度(nm)
+        /// </summary>
+        /// <returns></returns>
+        public abstract double ConvertHeightFromVoltage(double voltage);
+
+        /// <summary>
+        /// 从高度(nm)转换成电压(V)
+        /// </summary>
+        /// <returns></returns>
+        public abstract double ConvertHeightFromDistance(double distance);
 
         #region 按键功能
         protected void MoveScanner()

@@ -44,5 +44,21 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM
         /// </summary>
         /// <returns></returns>
         public abstract List<ParentPlotDataPack> GetD1PlotPacks();
+
+        /// <summary>
+        /// 在扫描实验中,如果模式为悬浮测量,此方法规定在每个扫描点下到针之后需要进行的操作
+        /// </summary>
+        public virtual void MethodAfterScanDrop()
+        {
+
+        }
+
+        /// <summary>
+        /// 在扫描实验中,如果模式为悬浮测量,此方法规定在每个扫描点下到针之前需要进行的操作
+        /// </summary>
+        public virtual void MethodBeforeScanDrop()
+        {
+
+        }
     }
 }

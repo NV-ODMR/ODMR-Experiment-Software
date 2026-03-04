@@ -50,6 +50,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("悬浮下针参数I",-3,"FloatI"),
             new Param<double>("变距离测量起始点(nm)",20,"FloatHeightStart"),
             new Param<double>("变距离测量终止点(nm)",100,"FloatHeightEnd"),
+            new Param<double>("悬浮操作距离(nm)",300,"FloatCoarseHeight"),
             new Param<int>("变距离测量点数",5,"FloatHeightCount"),
             new Param<double>("电压/位移系数(V/μm)",1.1416,"Voltage_Displacement_Ratio"),
             new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
@@ -131,6 +132,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             PointsScanSession.BeginScan(new D1NumricLinearScanRange(GetInputParamValueByName("FloatHeightStart"), GetInputParamValueByName("FloatHeightEnd"), GetInputParamValueByName("FloatHeightCount")), 0, 100);
         }
 
+        public void ScanAfterDropMethod()
+        {
+            foreach (var item in SubExperiments)
+            {
+                (item as ODMRExperimentWithoutAFM).MethodAfterScanDrop();
+            }
+        }
+
+        public void ScanBeforeDropMethod()
+        {
+            foreach (var item in SubExperiments)
+            {
+                (item as ODMRExperimentWithoutAFM).MethodBeforeScanDrop();
+            }
+        }
+
         /// <summary>
         /// 扫描操作，inputParams为空
         /// </summary>
@@ -142,7 +159,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             SetExpState("下针...距离: " + Math.Round(currentvalue, 5).ToString() + "nm");
             AFMFloatDrop drop = new AFMFloatDrop();
-            drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), currentvalue / 1000 * GetInputParamValueByName("Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, scanner);
+            drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
+                ConvertHeightFromDistance(currentvalue),
+                GetInputParamValueByName("FloatI"),
+                GetInputParamValueByName("PIDSampleTIme"),
+                ConvertHeightFromDistance(GetInputParamValueByName("FloatCoarseHeight")),
+                new Action(()=>ScanAfterDropMethod())
+            }, scanner); ;
             JudgeThreadEndOrResumeAction();
 
             if (ScanPointCount >= ScanPointGap && AllowAutoTrace)
@@ -235,6 +258,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override void PreExpEventWithAFM()
         {
+            ///检查撤针距离
+            double min = GetInputParamValueByName("FloatHeightStart");
+            double max = GetInputParamValueByName("FloatHeightEnd");
+            double dropheight = GetInputParamValueByName("FloatCoarseHeight");
+            if (dropheight < min || dropheight < max) throw new Exception("悬浮操作高度需要大于悬浮高度");
+
             (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             D1ChartDatas.Clear();
             D1ChartDatas.Add(new NumricChartData1D("距离(nm)", "变下针距离扫描数据", ChartDataType.X));
@@ -288,6 +317,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected override double GetScannerYRatio()
         {
             return 1;
+        }
+
+        public override double ConvertHeightFromVoltage(double voltage)
+        {
+            return voltage * 1000 / GetInputParamValueByName("Voltage_Displacement_Ratio");
+        }
+
+        public override double ConvertHeightFromDistance(double dis)
+        {
+            return dis / 1000 * GetInputParamValueByName("Voltage_Displacement_Ratio");
         }
     }
 }

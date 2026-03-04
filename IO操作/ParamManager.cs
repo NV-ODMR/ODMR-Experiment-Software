@@ -27,10 +27,11 @@ namespace ODMR_Lab.IO操作
         /// <summary>
         /// 保存参数
         /// </summary>
-        public static void SaveParams()
+        public static void SaveParams(MessageWindow window = null)
         {
             FileObject fobj = new FileObject();
 
+            WindowHelper.SetContent(window, "正在保存参数: " + "设备参数");
             #region 设备参数
 
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
@@ -38,12 +39,14 @@ namespace ODMR_Lab.IO操作
             WriteParamToFile(P1, fobj);
             #endregion
 
+            WindowHelper.SetContent(window, "正在保存参数: " + "温度监控参数");
             #region 温度监控参数
             TemperatureConfigParams TP = new TemperatureConfigParams();
             TP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage, MainWindow.Exp_TemPeraPage.SetWindow }, false);
             WriteParamToFile(TP, fobj);
             #endregion
 
+            WindowHelper.SetContent(window, "正在保存参数: " + "场效应器件测量参数");
             #region 场效应器件测量参数
             IVMeasureConfigParams IVP = new IVMeasureConfigParams();
             IVP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
@@ -53,57 +56,72 @@ namespace ODMR_Lab.IO操作
             WriteParamToFile(VP, fobj);
             #endregion
 
-            #region 位移台控制参数
-            StageControlConfigParams SCP = new StageControlConfigParams();
-            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.ProbePanel }, false);
-            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.ProbePanel.Name);
-            SCP = new StageControlConfigParams();
-            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MagnetPanel }, false);
-            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MagnetPanel.Name);
-            SCP = new StageControlConfigParams();
-            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.SamplePanel }, false);
-            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.SamplePanel.Name);
-            SCP = new StageControlConfigParams();
-            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
-            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
-            SCP = new StageControlConfigParams();
-            SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.LenPanel }, false);
-            WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.LenPanel.Name);
+            WindowHelper.SetContent(window, "正在保存参数: " + "位移台控制参数");
+            #region 
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                StageControlConfigParams SCP = new StageControlConfigParams();
+                SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.ProbePanel }, false);
+                WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.ProbePanel.Name);
+                SCP = new StageControlConfigParams();
+                SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MagnetPanel }, false);
+                WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MagnetPanel.Name);
+                SCP = new StageControlConfigParams();
+                SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.SamplePanel }, false);
+                WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.SamplePanel.Name);
+                SCP = new StageControlConfigParams();
+                SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.MWPanel }, false);
+                WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.MWPanel.Name);
+                SCP = new StageControlConfigParams();
+                SCP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_StagePage.LenPanel }, false);
+                WriteParamToFile(SCP, fobj, MainWindow.Exp_StagePage.LenPanel.Name);
+            });
             #endregion
 
+            WindowHelper.SetContent(window, "正在保存参数: " + "Trace参数");
             #region Trace参数
             TraceConfigParams APD1 = new TraceConfigParams();
             APD1.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_TracePage }, false);
             WriteParamToFile(APD1, fobj);
             #endregion
 
+            WindowHelper.SetContent(window, "正在保存参数: " + "ODMR全局参数");
             #region ODMR全局参数
             ODMRConfigParams ODMRC = new ODMRConfigParams();
             ODMRC.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_SequencePage }, false);
             WriteParamToFile(ODMRC, fobj);
             #endregion
 
-            #region ODMR实验
-            FileObject ODMRSaveFile = new FileObject();
-            foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
-            {
-                item.ReadFromPageAndWriteConfigToFile(ODMRSaveFile);
-            }
-            if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat")))
-            {
-                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData"));
-                var str = File.Create(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
-                str.Close();
-            }
-            ODMRSaveFile.SaveToFile(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
-            #endregion
-
-
             if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "UIParam")))
             {
                 Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "UIParam"));
             }
             fobj.SaveToFile(Path.Combine(Environment.CurrentDirectory, "UIParam", "Param.userdat"));
+
+            WindowHelper.SetContent(window, "正在保存参数: " + "ODMR实验");
+            #region ODMR实验
+
+            if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "ODMRConfig")))
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "ODMRConfig"));
+            }
+            int ind = 0;
+            foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
+            {
+                try
+                {
+                    WindowHelper.SetContent(window, "正在保存参数: " + "ODMR实验  " + ind.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString());
+                    FileObject ODMRSaveFile = new FileObject();
+                    item.ReadFromPageAndWriteConfigToFile(ODMRSaveFile);
+                    string path = Path.Combine(Environment.CurrentDirectory, "ODMRConfig", FileHelper.ProcessFileStr(FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName) + ".userdat"));
+                    ODMRSaveFile.SaveToFile(path);
+                }
+                catch (Exception)
+                {
+                }
+                ++ind;
+            }
+            #endregion
         }
 
         /// <summary>
@@ -173,16 +191,17 @@ namespace ODMR_Lab.IO操作
 
 
             #region ODMR实验
-            if (File.Exists(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat")))
+            int index = 1;
+            foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
             {
-                FileObject ODMRSaveFile = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "Sequence", "ConfigData", "ConfigParams.userdat"));
-                int index = 1;
-                foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
+                string path = Path.Combine(Environment.CurrentDirectory, "ODMRConfig", FileHelper.ProcessFileStr(FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName) + ".userdat"));
+                WindowHelper.SetContent(window, "正在读取保存参数:" + "ODMR实验  " + index.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString() + "个");
+                if (File.Exists(path))
                 {
-                    WindowHelper.SetContent(window, "正在读取保存参数:" + "ODMR实验  " + index.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString() + "个");
+                    FileObject ODMRSaveFile = FileObject.ReadFromFile(path);
                     item.ReadFromFileAndLoadToPage(ODMRSaveFile);
-                    ++index;
                 }
+                ++index;
             }
             #endregion
 

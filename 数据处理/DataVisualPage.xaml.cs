@@ -421,15 +421,21 @@ namespace ODMR_Lab.数据处理
         /// <param name="arg3"></param>
         private void SaveSnap(int arg1, int arg2, object arg3)
         {
-            var source = Source[GetSelectedIndex()];
-            string configs = "";
-            foreach (var item in source.Params)
+            try
             {
-                configs += item.Key + "→" + item.Value + "\n";
+                var source = Source[GetSelectedIndex()];
+                string configs = "";
+                foreach (var item in source.Params)
+                {
+                    configs += item.Key + "→" + item.Value + "\n";
+                }
+                Clipboard.SetText(configs);
+                TimeWindow win = new TimeWindow();
+                win.ShowWindow("实验信息已复制到剪切板");
             }
-            Clipboard.SetText(configs);
-            TimeWindow win = new TimeWindow();
-            win.ShowWindow("实验信息已复制到剪切板");
+            catch (Exception)
+            {
+            }
         }
     }
 }

@@ -81,6 +81,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
         }
 
+        public void ScanAfterDropMethod()
+        {
+            foreach (var item in SubExperiments)
+            {
+                (item as ODMRExperimentWithoutAFM).MethodAfterScanDrop();
+            }
+        }
+
+        public void ScanBeforeDropMethod()
+        {
+            foreach (var item in SubExperiments)
+            {
+                (item as ODMRExperimentWithoutAFM).MethodBeforeScanDrop();
+            }
+        }
+
         public override void ODMRExpWithAFM()
         {
             //悬浮测量
@@ -88,7 +104,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             {
                 double I = (GetDeviceByName("LockIn") as LockinInfo).Device.I;
                 AFMFloatDrop drop = new AFMFloatDrop();
-                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, I, GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
+                var result = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
+                    ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")),
+                    I,
+                    GetInputParamValueByName("PIDSampleTIme"),
+                    ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")+20),
+                    null
+                }, GetDeviceByName("LockIn"));
                 if ((bool)result[0] == false)
                 {
                     throw new Exception("下针失败，实验已结束");
@@ -160,6 +182,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected override double GetScannerYRatio()
         {
             return 1;
+        }
+
+        public override double ConvertHeightFromVoltage(double voltage)
+        {
+            return voltage / GetInputParamValueByName("Voltage_Displacement_Ratio") * 1000;
+        }
+
+        public override double ConvertHeightFromDistance(double distance)
+        {
+            return distance * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000;
         }
     }
 }

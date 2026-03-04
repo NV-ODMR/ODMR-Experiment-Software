@@ -63,7 +63,6 @@ namespace ODMR_Lab.基本窗口
 
         private void BeforeClose(object sender, RoutedEventArgs e)
         {
-            result = new Dictionary<string, string>();
         }
 
         private void Apply(object sender, RoutedEventArgs e)

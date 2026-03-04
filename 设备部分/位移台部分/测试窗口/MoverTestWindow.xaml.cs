@@ -42,6 +42,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             }
             WindowResizeHelper h = new WindowResizeHelper();
             h.RegisterCloseWindow(this, null, null, CloseBtn, 5, 30);
+            h.BeforeClose += BeforeClose;
             CreateListenThread();
         }
 

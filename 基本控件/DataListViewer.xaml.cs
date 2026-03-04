@@ -226,7 +226,7 @@ namespace ODMR_Lab.基本控件
         {
             tags.RemoveAt(ind);
             values.RemoveAt(ind);
-            datacontentscroll.DeleteItems(ind);
+            datacontentscroll.RemoveItemAt(ind);
         }
 
         private void FormerDataList(object sender, RoutedEventArgs e)

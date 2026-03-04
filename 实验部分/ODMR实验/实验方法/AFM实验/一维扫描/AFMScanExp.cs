@@ -50,8 +50,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
             new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
+            new Param<bool>("移动扫描台时撤针",true,"IsJumpMode"),
+            new Param<double>("移动扫描台时撤针距离(nm)",100,"JumpModeDistance"),
             new Param<double>("悬浮下针参数I",-3,"FloatI"),
             new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
+            new Param<double>("悬浮操作距离(nm)",300,"FloatCoarseHeight"),
             new Param<double>("Z扫描台电压/位移系数(μm/V)",0.876,"Z_Voltage_Displacement_Ratio"),
             new Param<double>("X扫描台电压/位移系数(μm/V)",2.034,"X_Voltage_Displacement_Ratio"),
             new Param<double>("Y扫描台电压/位移系数(μm/V)",2.031,"Y_Voltage_Displacement_Ratio"),
@@ -118,6 +121,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         private double devI = double.NaN;
         private int dropgap = 0;
 
+        public void ScanAfterDropMethod()
+        {
+            foreach (var item in SubExperiments)
+            {
+                (item as ODMRExperimentWithoutAFM).MethodAfterScanDrop();
+            }
+        }
+
+        public void ScanBeforeDropMethod()
+        {
+            foreach (var item in SubExperiments)
+            {
+                (item as ODMRExperimentWithoutAFM).MethodBeforeScanDrop();
+            }
+        }
+
         public override void ODMRExpWithAFM()
         {
             (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
@@ -157,28 +176,31 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// <returns></returns>
         public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, D1PointsScanRangeBase scanPoints, Point currentloc, List<object> inputParams)
         {
-            //如果不是悬浮扫,则先撤针一段距离,位移台移动之后再下针
-            if (GetInputParamValueByName("IsFloatScan") == false)
+            if (GetInputParamValueByName("IsJumpMode"))
             {
-                AFMFloatDrop drop = new AFMFloatDrop();
-                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
+                //移动位移台之前先撤针
+                AFMFloatDrop d = new AFMFloatDrop();
+                d.DistractDistance(new List<object>() { ConvertHeightFromDistance(GetInputParamValueByName("JumpModeDistance")) }, GetDeviceByName("LockIn"));
             }
+
+            #region 移动扫描态
             SetExpState("正在移动到目标位置(μm) X: " + Math.Round(currentloc.X, 5).ToString() + " Y: " + Math.Round(currentloc.Y, 5));
-            scannerx.Device.MoveToAndWait(currentloc.X / GetInputParamValueByName("X_Voltage_Displacement_Ratio"), 500000);
+            scannerx.Device.MoveToAndWait(currentloc.X / GetScannerXRatio(), 500000);
             JudgeThreadEndOrResumeAction();
-            scannery.Device.MoveToAndWait(currentloc.Y / GetInputParamValueByName("Y_Voltage_Displacement_Ratio"), 500000);
+            scannery.Device.MoveToAndWait(currentloc.Y / GetScannerYRatio(), 500000);
             JudgeThreadEndOrResumeAction();
+            #endregion
 
-            //如果不是悬浮扫,则先撤针一段距离,位移台移动之后再下针
-            if (GetInputParamValueByName("IsFloatScan") == false)
-            {
-                AFMFloatDrop drop = new AFMFloatDrop();
-                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), -1 / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
-            }
+            ScanBeforeDropMethod();
 
-            //如果是悬浮测量则执行对应程序
-            if (GetInputParamValueByName("IsFloatScan") == true)
+            Action tempaction = new Action(() =>
             {
+                ScanAfterDropMethod();
+            });
+
+            if (GetInputParamValueByName("IsFloatScan"))
+            {
+                //如果是悬浮测量则执行对应程序
                 if (dropgap == GetInputParamValueByName("ReDropGap"))
                 {
                     dropgap = 0;
@@ -187,26 +209,39 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 if (dropgap == 1)
                 {
                     bool re = true;
-                    if (IsFirstDrop == true)
-                    {
-                        AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), (GetDeviceByName("LockIn") as LockinInfo).Device.I, GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
-                        re = (bool)res[0];
-                        IsFirstDrop = false;
-                    }
-                    else
-                    {
-                        AFMFloatDrop drop = new AFMFloatDrop();
-                        var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), GetInputParamValueByName("FloatHeight") / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio"), GetInputParamValueByName("FloatI"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
-                        re = (bool)res[0];
-                        IsFirstDrop = false;
-                    }
+                    AFMFloatDrop drop = new AFMFloatDrop();
+                    var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
+                            ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")),
+                            GetInputParamValueByName("FloatI"),
+                            GetInputParamValueByName("PIDSampleTIme"),
+                            ConvertHeightFromDistance(GetInputParamValueByName("FloatCoarseHeight")),
+                            tempaction
+                        }, GetDeviceByName("LockIn"));
+                    re = (bool)res[0];
                     if (re == false)
                     {
                         throw new Exception("下针失败");
                     }
                 }
                 Thread.Sleep(GetInputParamValueByName("TimeWaitAfterDrop"));
+            }
+            else
+            {
+                //接触扫描
+                bool re = true;
+                AFMFloatDrop drop = new AFMFloatDrop();
+                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
+                            0,
+                            GetInputParamValueByName("FloatI"),
+                            GetInputParamValueByName("PIDSampleTIme"),
+                            ConvertHeightFromDistance(GetInputParamValueByName("FloatCoarseHeight")),
+                            tempaction
+                        }, GetDeviceByName("LockIn"));
+                re = (bool)res[0];
+                if (re == false)
+                {
+                    throw new Exception("下针失败");
+                }
             }
 
             SetExpState("正在进行实验...");
@@ -376,6 +411,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected override double GetScannerYRatio()
         {
             return GetInputParamValueByName("Y_Voltage_Displacement_Ratio");
+        }
+
+        public override double ConvertHeightFromVoltage(double voltage)
+        {
+            return voltage * 1000 * GetInputParamValueByName("Z_Voltage_Displacement_Ratio");
+        }
+
+        public override double ConvertHeightFromDistance(double dis)
+        {
+            return dis / 1000 / GetInputParamValueByName("Z_Voltage_Displacement_Ratio");
         }
     }
 }

@@ -185,18 +185,30 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
                 {
                     D2ScanRangeBase resrange = null;
                     #region 二维矩形扫描
+                    double xlo = double.Parse(D2RectScanXLo.Text);
+                    double xhi = double.Parse(D2RectScanXHi.Text);
+                    double ylo = double.Parse(D2RectScanYLo.Text);
+                    double yhi = double.Parse(D2RectScanYHi.Text);
+                    if (xlo >= xhi)
+                    {
+                        throw new Exception("X的范围下限不能大于上限");
+                    }
+                    if (ylo >= yhi)
+                    {
+                        throw new Exception("Y的范围下限不能大于上限");
+                    }
                     if (D2Panel1.Visibility == Visibility.Visible)
                     {
                         if (D2RectScanDirectionReverse.IsSelected)
                         {
-                            resrange = new D2LinearReverseScanRange(double.Parse(D2RectScanXLo.Text), double.Parse(D2RectScanXHi.Text), int.Parse(D2RectScanXCount.Text),
-                                double.Parse(D2RectScanYLo.Text), double.Parse(D2RectScanYHi.Text), int.Parse(D2RectScanYCount.Text), D2RectScanXReverse.IsSelected, D2RectScanYReverse.IsSelected,
+                            resrange = new D2LinearReverseScanRange(xlo, xhi, int.Parse(D2RectScanXCount.Text),
+                                ylo, yhi, int.Parse(D2RectScanYCount.Text), D2RectScanXReverse.IsSelected, D2RectScanYReverse.IsSelected,
                                 D2RectScanXFast.IsSelected);
                         }
                         else
                         {
-                            resrange = new D2LinearScanRange(double.Parse(D2RectScanXLo.Text), double.Parse(D2RectScanXHi.Text), int.Parse(D2RectScanXCount.Text),
-                            double.Parse(D2RectScanYLo.Text), double.Parse(D2RectScanYHi.Text), int.Parse(D2RectScanYCount.Text), D2RectScanXReverse.IsSelected, D2RectScanYReverse.IsSelected,
+                            resrange = new D2LinearScanRange(xlo, xhi, int.Parse(D2RectScanXCount.Text),
+                            ylo, yhi, int.Parse(D2RectScanYCount.Text), D2RectScanXReverse.IsSelected, D2RectScanYReverse.IsSelected,
                             D2RectScanXFast.IsSelected);
                         }
                     }
