@@ -100,7 +100,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 }
                 lockin.Device.PIDOutputUpperLimit = height;
                 lockin.Device.SetPoint = setpoint;
-                if (dropheight <= 0)
+                if ((double)InputParams[1] <= 0)
                 {
                     //如果下针悬浮高度小于0则默认为接触扫描
                     lockin.Device.PIDOutputUpperLimit = (double)InputParams[0];

@@ -258,7 +258,6 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PulsePhotonSample.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PhotonSample.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\cw谱扫描\TwoPeakCW.cs" />
-    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\T2_XY.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInPulseExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\脉冲相位测试实验\LockInSequenceTest.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\交流信号测量\锁相实验\LockInEvolutionTime.cs" />
@@ -398,6 +397,7 @@
     <Compile Include="实验部分\自定义算法\算法列表\AlgorithmTools.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\CWCalculate.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\NVElectricFieldDirection.cs" />
+    <Compile Include="实验部分\自定义算法\算法列表\VertialVector.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\VectorAngle.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\NVSpecialAxis.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\VerticalMagnetField.cs" />

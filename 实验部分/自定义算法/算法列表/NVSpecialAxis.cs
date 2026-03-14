@@ -45,24 +45,14 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
             Vector3D nvmirrorx = Vector3D.CrossProduct(nvmirrory, nvaxis1);
             nvmirrorx.Normalize();
             AlgorithmTools.GetAngles(nvmirrorx, out double t1, out double p1);
-            var rotmatrix = AlgorithmTools.CalculateRotationMatrix(nvaxis1, 120.0 / 180 * Math.PI);
-            RealMatrix initvec = new RealMatrix(3, 1);
-            initvec.Content[0][0] = nvmirrorx.X;
-            initvec.Content[1][0] = nvmirrorx.Y;
-            initvec.Content[2][0] = nvmirrorx.Z;
-            var mat2 = rotmatrix * initvec;
-            var mat3 = rotmatrix * rotmatrix * initvec;
-            AlgorithmTools.GetAngles(new Vector3D(mat2.Content[0][0], mat2.Content[1][0], mat2.Content[2][0]), out double t2, out double p2);
-            AlgorithmTools.GetAngles(new Vector3D(mat3.Content[0][0], mat3.Content[1][0], mat3.Content[2][0]), out double t3, out double p3);
+            var rotmatrix = AlgorithmTools.CalculateRotationMatrix(nvaxis1, Math.PI);
+            AlgorithmTools.GetAngles(-nvmirrorx, out double t2, out double p2);
 
-            OutputParams.Add(new Param<double>("投影1 方位角θ", t1, "TargetTheta1"));
-            OutputParams.Add(new Param<double>("投影1 方位角φ", p1, "TargetPhi1"));
+            OutputParams.Add(new Param<double>("可能的投影方向1 方位角θ", t1, "TargetTheta1_1"));
+            OutputParams.Add(new Param<double>("可能的投影方向1 方位角φ", p1, "TargetPhi1_1"));
 
-            OutputParams.Add(new Param<double>("投影2 方位角θ", t2, "TargetTheta2"));
-            OutputParams.Add(new Param<double>("投影2 方位角φ", p2, "TargetPhi2"));
-
-            OutputParams.Add(new Param<double>("投影3 方位角θ", t3, "TargetTheta3"));
-            OutputParams.Add(new Param<double>("投影3 方位角φ", p3, "TargetPhi3"));
+            OutputParams.Add(new Param<double>("可能的投影方向2 方位角θ", t2, "TargetTheta2_1"));
+            OutputParams.Add(new Param<double>("可能的投影方向2 方位角φ", p2, "TargetPhi2_1"));
         }
 
     }

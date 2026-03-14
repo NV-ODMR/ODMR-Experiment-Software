@@ -58,8 +58,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
             new Param<double>("悬浮操作距离(nm)",300,"FloatCoarseHeight"),
             new Param<double>("Z扫描台电压/位移系数(μm/V)",0.876,"Z_Voltage_Displacement_Ratio"),
-            new Param<double>("X扫描台电压/位移系数(μm/V)",2.034,"X_Voltage_Displacement_Ratio"),
-            new Param<double>("Y扫描台电压/位移系数(μm/V)",2.031,"Y_Voltage_Displacement_Ratio"),
+            new Param<double>("X扫描台电压/位移系数(μm/V)",1.71887,"X_Voltage_Displacement_Ratio"),
+            new Param<double>("Y扫描台电压/位移系数(μm/V)",1.50444,"Y_Voltage_Displacement_Ratio"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
             new Param<double>("最大限制电压(V)",10,"UpperLimit"),
         };

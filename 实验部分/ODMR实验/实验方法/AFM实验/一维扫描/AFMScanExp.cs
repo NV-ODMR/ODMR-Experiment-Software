@@ -56,8 +56,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<double>("悬浮测量距离(nm)",20,"FloatHeight"),
             new Param<double>("悬浮操作距离(nm)",300,"FloatCoarseHeight"),
             new Param<double>("Z扫描台电压/位移系数(μm/V)",0.876,"Z_Voltage_Displacement_Ratio"),
-            new Param<double>("X扫描台电压/位移系数(μm/V)",2.034,"X_Voltage_Displacement_Ratio"),
-            new Param<double>("Y扫描台电压/位移系数(μm/V)",2.031,"Y_Voltage_Displacement_Ratio"),
+            new Param<double>("X扫描台电压/位移系数(μm/V)",1.71887,"X_Voltage_Displacement_Ratio"),
+            new Param<double>("Y扫描台电压/位移系数(μm/V)",1.50444,"Y_Voltage_Displacement_Ratio"),
             new Param<int>("PID值采样时间(ms)",3000,"PIDSampleTIme"),
             new Param<int>("下针后等待时间(ms)",1000,"TimeWaitAfterDrop"),
             new Param<int>("重新下针间隔",1,"ReDropGap"),
@@ -231,7 +231,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 bool re = true;
                 AFMFloatDrop drop = new AFMFloatDrop();
                 var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
-                            0,
+                            -1.0,
                             GetInputParamValueByName("FloatI"),
                             GetInputParamValueByName("PIDSampleTIme"),
                             ConvertHeightFromDistance(GetInputParamValueByName("FloatCoarseHeight")),
@@ -264,13 +264,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             {
                 string name = item == "" ? "一维扫描数据" : item;
 
-                var xdata = Get1DChartData("扫描点序号", name);
+                var xdata = Get1DChartData("扫描线长度(nm)", name);
                 if (xdata == null)
                 {
-                    xdata = new NumricChartData1D("扫描点序号", name, ChartDataType.X);
+                    xdata = new NumricChartData1D("扫描线长度(nm)", name, ChartDataType.X);
                     D1ChartDatas.Add(xdata);
                 }
-                (xdata as NumricChartData1D).Data.Add(scanPoints.GetNearestIndex(currentloc));
+                (xdata as NumricChartData1D).Data.Add(1000 * (scanPoints.EndPoint - scanPoints.StartPoint).Length / (scanPoints.Counts - 1) * scanPoints.GetNearestIndex(currentloc));
             }
             //获取输出参数
             double value = 0;
@@ -347,7 +347,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         {
             (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
             D1ChartDatas.Clear();
-            D1ChartDatas.Add(new NumricChartData1D("扫描点序号", "一维扫描数据", ChartDataType.X));
+            D1ChartDatas.Add(new NumricChartData1D("扫描线长度(nm)", "一维扫描数据", ChartDataType.X));
             D1ChartDatas.Add(new NumricChartData1D("AFM形貌数据(PID输出)", "一维扫描数据", ChartDataType.Y));
             UpdatePlotChart();
         }

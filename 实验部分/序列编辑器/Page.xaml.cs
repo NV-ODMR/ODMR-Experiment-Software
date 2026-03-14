@@ -313,7 +313,7 @@ namespace ODMR_Lab.序列编辑器
         {
             //保存到目标文件夹
             DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
-            var files = info.GetFiles();
+            var files = info.GetFiles("*", SearchOption.AllDirectories);
             List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>();
             foreach (var item in files)
             {
@@ -400,6 +400,8 @@ namespace ODMR_Lab.序列编辑器
             }
         }
 
+        SequenceWaveSeg CopySeg = null;
+
         private void SignalPanel_ItemContextMenuSelected(int arg1, int arg2, object arg3)
         {
             //删除
@@ -423,6 +425,22 @@ namespace ODMR_Lab.序列编辑器
             {
                 var seg = arg3 as SequenceWaveSeg;
                 var waveseg = new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel);
+                seg.ParentChannel.Peaks.Insert(arg2 + 1, waveseg);
+                SignalPanel.InsertItem(arg2 + 1, waveseg, new List<object>() { GlobalPulseParams.GetGlobalPulses(), waveseg.WaveValue, waveseg.PeakSpan, waveseg.IsTriggerCommand });
+                SignalPanel.SetCelValue(arg2 + 1, 0, waveseg.PeakName);
+            }
+            //复制
+            if (arg1 == 3)
+            {
+                var seg = arg3 as SequenceWaveSeg;
+                CopySeg = seg;
+            }
+            //粘贴
+            if (arg1 == 4)
+            {
+                if (CopySeg == null) return;
+                var seg = arg3 as SequenceWaveSeg;
+                var waveseg = new SequenceWaveSeg(CopySeg.PeakName, CopySeg.PeakSpan, CopySeg.WaveValue, seg.ParentChannel);
                 seg.ParentChannel.Peaks.Insert(arg2 + 1, waveseg);
                 SignalPanel.InsertItem(arg2 + 1, waveseg, new List<object>() { GlobalPulseParams.GetGlobalPulses(), waveseg.WaveValue, waveseg.PeakSpan, waveseg.IsTriggerCommand });
                 SignalPanel.SetCelValue(arg2 + 1, 0, waveseg.PeakName);

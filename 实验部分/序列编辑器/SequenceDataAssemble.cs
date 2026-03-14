@@ -100,11 +100,17 @@ namespace ODMR_Lab.实验部分.序列编辑器
         /// <exception cref="Exception"></exception>
         public static SequenceDataAssemble ReadFromSequenceName(string name)
         {
-            if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "Sequences", name.Replace(".userdat", "") + ".userdat")))
+            if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "Sequences")))
             {
                 throw new Exception("找不到序列文件:" + name);
             }
-            var obj = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "Sequences", name.Replace(".userdat", "") + ".userdat"));
+            var files = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "Sequences"), "*", SearchOption.AllDirectories);
+            var selectfile = files.Where((x) => Path.GetFileNameWithoutExtension(x) == name);
+            if (selectfile.Count() == 0)
+            {
+                throw new Exception("找不到序列文件:" + name);
+            }
+            var obj = FileObject.ReadFromFile(selectfile.ElementAt(0));
             return ReadFromFile(obj);
         }
 

@@ -53,6 +53,17 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
             return mat;
         }
 
+        public static double GetSignedAngle3D(Vector3D from, Vector3D to, Vector3D axis)
+        {
+            // axis 是垂直于平面的轴（如 Vector3.up）
+            double angle = Vector3D.AngleBetween(from, to); // 无符号角度
+            Vector3D cross = Vector3D.CrossProduct(from, to);
+            if (Vector3D.DotProduct(cross, axis) < 0) // 判断旋转方向
+            {
+                angle = -angle;
+            }
+            return angle;
+        }
         public static Vector3D GetDirectionVector(double theta, double phi)
         {
             double t = theta / 180 * Math.PI;

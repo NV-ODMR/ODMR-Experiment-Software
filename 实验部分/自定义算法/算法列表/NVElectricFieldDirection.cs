@@ -20,8 +20,10 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
         {
             new Param<double>("NV轴 方位角θ(度)",double.NaN,"NVTheta"),
             new Param<double>("NV轴 方位角φ(度)",double.NaN,"NVPhi"),
-            new Param<double>("NV碳原子投影方向 方位角θ(度)",double.NaN,"CTheta"),
-            new Param<double>("NV碳原子投影方向 方位角φ(度)",double.NaN,"CPhi"),
+            new Param<double>("辅助NV轴方向 方位角θ(度)",double.NaN,"CTheta"),
+            new Param<double>("辅助NV轴方向 方位角φ(度)",double.NaN,"CPhi"),
+            new Param<double>("参考方向 方位角θ(度)",double.NaN,"RefTheta"),
+            new Param<double>("参考方向 方位角φ(度)",double.NaN,"RefPhi"),
             new Param<double>("相对于参考方向的角度(度)",double.NaN,"RelevAngle"),
         };
 
@@ -38,29 +40,58 @@ namespace ODMR_Lab.实验部分.自定义算法.算法列表
             double nvphi = GetInputParamValueByName("NVPhi");
             double ctheta = GetInputParamValueByName("CTheta");
             double cphi = GetInputParamValueByName("CPhi");
+            double reftheta = GetInputParamValueByName("RefTheta");
+            double refphi = GetInputParamValueByName("RefPhi");
             double angle = GetInputParamValueByName("RelevAngle") / 180 * Math.PI;
 
             Vector3D nvaxis1 = AlgorithmTools.GetDirectionVector(nvtheta, nvphi);
             Vector3D nvaxis2 = AlgorithmTools.GetDirectionVector(ctheta, cphi);
+            Vector3D refAxis = AlgorithmTools.GetDirectionVector(reftheta, refphi);
 
-            var rotmatrix1 = AlgorithmTools.CalculateRotationMatrix(nvaxis1, -angle / 2);
+            Vector3D nvmirrory = Vector3D.CrossProduct(nvaxis1, nvaxis2);
+            //投影朝向
+            Vector3D nvmirrorx = Vector3D.CrossProduct(nvmirrory, nvaxis1);
+            nvmirrorx.Normalize();
+            //C原子朝向
+            Vector3D nvCVec1 = nvmirrorx;
+            Vector3D nvCVec2 = -nvmirrorx;
 
-            var rotmatrix2 = AlgorithmTools.CalculateRotationMatrix(nvaxis1, angle);
+            double anglebetweenCAndRef1 = AlgorithmTools.GetSignedAngle3D(nvCVec1, refAxis, nvaxis1) / 180 * Math.PI;
+            double anglebetweenCAndRef2 = AlgorithmTools.GetSignedAngle3D(nvCVec2, refAxis, nvaxis1) / 180 * Math.PI;
+
+            var rotmatrix1 = AlgorithmTools.CalculateRotationMatrix(nvaxis1, angle + anglebetweenCAndRef1);
+
+            var rotmatrix2 = AlgorithmTools.CalculateRotationMatrix(nvaxis1, -(angle + anglebetweenCAndRef1) * 2);
 
             RealMatrix initvec = new RealMatrix(3, 1);
-            initvec.Content[0][0] = nvaxis2.X;
-            initvec.Content[1][0] = nvaxis2.Y;
-            initvec.Content[2][0] = nvaxis2.Z;
+            initvec.Content[0][0] = nvCVec1.X;
+            initvec.Content[1][0] = nvCVec1.Y;
+            initvec.Content[2][0] = nvCVec1.Z;
             var mat2 = rotmatrix1 * initvec;
             var mat3 = rotmatrix2 * initvec;
             AlgorithmTools.GetAngles(new Vector3D(mat2.Content[0][0], mat2.Content[1][0], mat2.Content[2][0]), out double t2, out double p2);
             AlgorithmTools.GetAngles(new Vector3D(mat3.Content[0][0], mat3.Content[1][0], mat3.Content[2][0]), out double t3, out double p3);
 
-            OutputParams.Add(new Param<double>("灵敏轴电场方向 方位角θ", t3, "TargetTheta1"));
-            OutputParams.Add(new Param<double>("灵敏轴电场方向 方位角φ", p3, "TargetPhi1"));
+            rotmatrix1 = AlgorithmTools.CalculateRotationMatrix(nvaxis1, angle + anglebetweenCAndRef2);
+            rotmatrix2 = AlgorithmTools.CalculateRotationMatrix(nvaxis1, -(angle + anglebetweenCAndRef2) * 2);
 
-            OutputParams.Add(new Param<double>("磁场方向 方位角θ", t2, "TargetTheta2"));
-            OutputParams.Add(new Param<double>("磁场方向 方位角φ", p2, "TargetPhi2"));
+            RealMatrix initvec2 = new RealMatrix(3, 1);
+            initvec2.Content[0][0] = nvCVec2.X;
+            initvec2.Content[1][0] = nvCVec2.Y;
+            initvec2.Content[2][0] = nvCVec2.Z;
+            var mat4 = rotmatrix1 * initvec2;
+            var mat5 = rotmatrix2 * initvec2;
+            AlgorithmTools.GetAngles(new Vector3D(mat4.Content[0][0], mat4.Content[1][0], mat4.Content[2][0]), out double t4, out double p4);
+            AlgorithmTools.GetAngles(new Vector3D(mat5.Content[0][0], mat5.Content[1][0], mat5.Content[2][0]), out double t5, out double p5);
+
+            OutputParams.Add(new Param<double>("灵敏轴电场方向1 方位角θ", t3, "TargetTheta1_1"));
+            OutputParams.Add(new Param<double>("灵敏轴电场方向1 方位角φ", p3, "TargetPhi1_1"));
+
+            OutputParams.Add(new Param<double>("灵敏轴电场方向2 方位角θ", t5, "TargetTheta2_1"));
+            OutputParams.Add(new Param<double>("灵敏轴电场方向2 方位角φ", p5, "TargetPhi2_1"));
+
+            OutputParams.Add(new Param<double>("磁场方向2 方位角θ", t4, "TargetTheta2_2"));
+            OutputParams.Add(new Param<double>("磁场方向2 方位角φ", p4, "TargetPhi2_2"));
         }
     }
 }

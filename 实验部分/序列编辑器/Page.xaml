@@ -114,6 +114,8 @@
                                 <control:DecoratedButton Text="删除波形" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                                 <control:DecoratedButton Text="在上方插入" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                                 <control:DecoratedButton Text="在下方插入" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                                <control:DecoratedButton Text="复制波形" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                                <control:DecoratedButton Text="粘贴波形" FontSize="12" Background="#FF4D4D4D" MoveInColor="#FF358EFF" PressedColor="#FF0082DA" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
                             </control:ContextMenu.Items>
                         </control:ContextMenu>
                     </control:ListViewer.ItemContextMenu>
