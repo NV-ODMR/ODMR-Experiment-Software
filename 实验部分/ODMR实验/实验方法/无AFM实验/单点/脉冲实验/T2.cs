@@ -44,7 +44,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             new Param<int>("测量次数",1000,"LoopCount"),
             new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"),
             new Param<SequenceTypes>("序列类型",SequenceTypes.CMPG,"SequenceType"),
-            new Param<int>("CMPG序列阶数",1,"CMPGOrder"),
+            new Param<int>("CMPG序列阶数",1,"SequenceCount"),
             new Param<int>("序列循环次数",1000,"SeqLoopCount"),
             new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
             new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
@@ -83,11 +83,29 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         private int CurrentLoop = 0;
         public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> inputParams)
         {
-            GlobalPulseParams.SetGlobalPulseLength("T2Step", (int)locvalue);
-            GlobalPulseParams.SetGlobalPulseLength("T2Res", (int)0);
+            //设置HahnEchoTime
+            ExperimentHelper.SetT2SequenceEvolutionPulses((int)locvalue, 0, 0, 0, 0);
 
-            PulsePhotonPack pack = DoPulseExp("T2", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"),
-                new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+            string sequenceName = "";
+            if (GetInputParamValueByName("SequenceType") == SequenceTypes.CMPG)
+            {
+                sequenceName = "T2";
+            }
+            if (GetInputParamValueByName("SequenceType") == SequenceTypes.XY4)
+            {
+                sequenceName = "XY-4-T2";
+            }
+            if (GetInputParamValueByName("SequenceType") == SequenceTypes.XY8)
+            {
+                sequenceName = "XY-8-T2";
+            }
+            if (GetInputParamValueByName("SequenceType") == SequenceTypes.XY8_2)
+            {
+                sequenceName = "XY-8-2-T2";
+            }
+
+            PulsePhotonPack pack = DoPulseExp(sequenceName, GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"),
+                new Action<SequenceDataAssemble>((seq) => { ExperimentHelper.SetSequenceCount(seq, GetInputParamValueByName("SequenceType"), GetInputParamValueByName("SequenceCount")); }));
 
             double signalcount0 = pack.GetPhotonsAtIndex(0).Sum();
             double signalcount1 = pack.GetPhotonsAtIndex(1).Sum();
@@ -116,54 +134,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             UpdatePlotChartFlow(true);
             return new List<object>();
         }
-
-        private void SetSequenceCount(SequenceDataAssemble obj)
-        {
-            //传入参数为读取到的序列
-            //查找X:pi脉冲的通道
-            SequenceChannel ind = SequenceChannel.None;
-            foreach (var ch in obj.Channels)
-            {
-                var pilist = ch.Peaks.Where(x => x.PeakName == "PiX");
-                if (pilist.Count() != 0)
-                {
-                    if (pilist.ElementAt(0).WaveValue == WaveValues.One)
-                    {
-                        ind = ch.ChannelInd;
-                    }
-                }
-            }
-
-            if (GetInputParamValueByName("SequenceType") == SequenceTypes.CMPG)
-            {
-                #region 为每个通道添加对应阶数的序列
-                int order = GetInputParamValueByName("CMPGOrder");
-                if (order > 1)
-                {
-                    int det = order - 1;
-                    foreach (var ch in obj.Channels)
-                    {
-                        ///Pi/2 脉冲的位置
-                        var halfpixs = ch.Peaks.Where((x) => x.PeakName == "HalfPiX" || x.PeakName == "HalfPiY").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                        var halfpi3xs = ch.Peaks.Where((x) => x.PeakName == "3HalfPiX" || x.PeakName == "3HalfPiY").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                        halfpixs.Sort();
-                        halfpixs.Reverse();
-                        List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
-                        for (int i = 0; i < det; i++)
-                        {
-                            segs.Add(new SequenceWaveSeg("T2Step", GlobalPulseParams.GetGlobalPulseLength("T2Step"), WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind) ? WaveValues.One : WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("T2Step", GlobalPulseParams.GetGlobalPulseLength("T2Step"), WaveValues.Zero, ch));
-                        }
-                        ch.Peaks.InsertRange(halfpi3xs[0], segs);
-                        ch.Peaks.InsertRange(halfpixs[1], segs);
-                    }
-                }
-                #endregion
-            }
-        }
-
-        private double t2total = 0;
 
         public override void ODMRExpWithoutAFM()
         {

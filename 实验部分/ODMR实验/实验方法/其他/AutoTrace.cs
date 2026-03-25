@@ -196,7 +196,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             c = fitresult1["c"];
             d = fitresult1["d"];
 
-            SetOutputParamByName("XPeak", c);
+            OutputParams.Add(new Param<double>("X方向峰值位置", c, "XPeak"));
+            var l = locs.Select(x => Math.Abs(x - c)).ToList();
+            OutputParams.Add(new Param<double>("X方向峰值计数", counts[l.IndexOf(l.Min())], "XValue"));
             //设置拟合线
             var fitx = new D1NumricLinearScanRange(pos - range / 2, pos + range / 2, 500).ScanPoints;
             var fity = fitx.Select(x => GaussFunc(x, a, b, c, d)).ToList();
@@ -248,7 +250,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             c = fitresult1["c"];
             d = fitresult1["d"];
 
-            SetOutputParamByName("YPeak", c);
+            OutputParams.Add(new Param<double>("Y方向峰值位置", c, "YPeak"));
+            l = locs.Select(x => Math.Abs(x - c)).ToList();         
+            OutputParams.Add(new Param<double>("Y方向峰值计数", counts[l.IndexOf(l.Min())], "YValue"));
             //设置拟合线
             fitx = new D1NumricLinearScanRange(pos - range / 2, pos + range / 2, 500).ScanPoints;
             fity = fitx.Select(x => GaussFunc(x, a, b, c, d)).ToList();
@@ -300,7 +304,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             c = fitresult1["c"];
             d = fitresult1["d"];
 
-            SetOutputParamByName("ZPeak", c);
+            OutputParams.Add(new Param<double>("Z方向峰值位置", c, "ZPeak"));
+            l = locs.Select(x => Math.Abs(x - c)).ToList();
+            OutputParams.Add(new Param<double>("Z方向峰值计数", counts[l.IndexOf(l.Min())], "ZValue"));
 
             //设置拟合线
             fitx = new D1NumricLinearScanRange(pos - range / 2, pos + range / 2, 500).ScanPoints;

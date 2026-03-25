@@ -108,6 +108,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         private int origin_hpix = 0;
         private int origin_pix = 0;
+        private int origin_hpiy = 0;
+        private int origin_piy = 0;
 
         public override void ODMRExpWithoutAFM()
         {
@@ -165,17 +167,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             GlobalPulseParams.SetGlobalPulseLength("HalfPiX", hpix);
             GlobalPulseParams.SetGlobalPulseLength("PiX", pix);
-            int delaytime = GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay");
+            GlobalPulseParams.SetGlobalPulseLength("HalfPiY", hpiy);
+            GlobalPulseParams.SetGlobalPulseLength("PiY", piy);
 
             //设置HahnEchoTime
-            //XPi脉冲时间
-            int xLength = pix;
             double signaltime = 1e+3 / GetInputParamValueByName("SignalFreq");
-            spinechotime = (int)((signaltime - xLength) / 2);
-            int order = GetInputParamValueByName("SequenceCount");
-            if (order != 1)
-                spinechotime = (int)(signaltime / 2 - xLength);
-            GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", spinechotime / 2);
+            ExperimentHelper.SetLockInSequenceEvolutionPulses(GetInputParamValueByName("SignalFreq"), pix, piy, hpix, hpiy);
 
             string sequenceXName = "";
             string sequenceYName = "";
@@ -200,13 +197,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 sequenceYName = "CMPGY";
             }
 
+            int delaytime = GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay");
+
             #region 点1(1/2pi Y)
             channel.Channel.Voltage = GetInputParamValueByName("V90");
             GlobalPulseParams.SetGlobalPulseLength("CustomYLength", hpiy);
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
 
             pack = DoLockInPulseExp(sequenceYName, double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
-                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { ExperimentHelper.SetSequenceCount(seq, GetInputParamValueByName("SequenceType"), GetInputParamValueByName("SequenceCount")); }));
 
             double sigY = pack.GetPhotonsAtIndex(0).Sum();
             double reference0Y = pack.GetPhotonsAtIndex(1).Sum();
@@ -233,11 +232,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             #region 点2(3/2pi Y)
 
             //channel.Channel.Voltage = GetInputParamValueByName("V270");
-            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", h3piy);
-            GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)(delaytime));
+            GlobalPulseParams.SetGlobalPulseLength("CustomYLength", hpiy);
+            GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)(delaytime + signaltime / 2));
 
             pack = DoLockInPulseExp(sequenceYName, double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
-                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { ExperimentHelper.SetSequenceCount(seq, GetInputParamValueByName("SequenceType"), GetInputParamValueByName("SequenceCount")); }));
 
             double sigY3 = pack.GetPhotonsAtIndex(0).Sum();
             double reference0Y3 = pack.GetPhotonsAtIndex(1).Sum();
@@ -267,7 +266,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
 
             pack = DoLockInPulseExp(sequenceXName, double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
-                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { ExperimentHelper.SetSequenceCount(seq, GetInputParamValueByName("SequenceType"), GetInputParamValueByName("SequenceCount")); }));
 
             double sigX3 = pack.GetPhotonsAtIndex(0).Sum();
             double reference0X3 = pack.GetPhotonsAtIndex(1).Sum();
@@ -296,7 +295,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
 
             pack = DoLockInPulseExp(sequenceXName, double.IsNaN(cwpeak) ? GetInputParamValueByName("RFFrequency") : cwpeak, GetInputParamValueByName("UseHistoryPower") ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6,
-                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+                GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { ExperimentHelper.SetSequenceCount(seq, GetInputParamValueByName("SequenceType"), GetInputParamValueByName("SequenceCount")); }));
 
             double sigX = pack.GetPhotonsAtIndex(0).Sum();
             double reference0X = pack.GetPhotonsAtIndex(1).Sum();
@@ -353,71 +352,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             return new List<object>();
         }
 
-        private void SetSequenceCount(SequenceDataAssemble obj)
-        {
-            //传入参数为读取到的序列
-            //查找X:pi脉冲的通道
-            SequenceChannel ind = SequenceChannel.None;
-            foreach (var ch in obj.Channels)
-            {
-                var pilist = ch.Peaks.Where(x => x.PeakName == "PiX");
-                if (pilist.Count() != 0)
-                {
-                    if (pilist.ElementAt(0).WaveValue == WaveValues.One)
-                    {
-                        ind = ch.ChannelInd;
-                    }
-                }
-            }
-
-            if (GetInputParamValueByName("SequenceType") == SequenceTypes.CMPG)
-            {
-                #region 为每个通道添加对应阶数的序列
-                int order = GetInputParamValueByName("SequenceCount");
-                if (order > 1)
-                {
-                    int det = order - 1;
-                    foreach (var ch in obj.Channels)
-                    {
-                        ///Pi/2 脉冲的位置
-                        var halfpiys = ch.Peaks.Where((x) => x.PeakName == "CustomYLength" || x.PeakName == "CustomXLength").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                        halfpiys.Sort();
-                        halfpiys.Reverse();
-                        int signalch = halfpiys.Last();
-                        foreach (var item in halfpiys)
-                        {
-                            List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
-                            for (int i = 0; i < det; i++)
-                            {
-                                segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                                segs.Add(new SequenceWaveSeg("SpinEchoTime", GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime"), WaveValues.Zero, ch));
-                                segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                                segs.Add(new SequenceWaveSeg("SpinEchoTime", GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime"), WaveValues.Zero, ch));
-                            }
-                            ch.Peaks.InsertRange(item, segs);
-                        }
-                    }
-                }
-                #endregion
-            }
-
-            #region 计算Delay等待时间
-            var cha = obj.Channels[0];
-            int triggerind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").First());
-            int countind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "CountWait").First());
-            int totalexptime = 0;
-            for (int i = triggerind + 1; i < countind; i++)
-            {
-                totalexptime += cha.Peaks[i].PeakSpan;
-            }
-            int lighttime = totalexptime - GlobalPulseParams.GetGlobalPulseLength("LasetPolar") - GlobalPulseParams.GetGlobalPulseLength("LaserWait");
-            int darktime = lighttime - GlobalPulseParams.GetGlobalPulseLength("PiX");
-            GlobalPulseParams.SetGlobalPulseLength("LightHahnechoWaitTime", lighttime);
-            GlobalPulseParams.SetGlobalPulseLength("DarkhahnechoWaitTime", darktime);
-            #endregion
-
-        }
-
         double OriginSignalAmplitude { get; set; } = 0;
         double cwpeak = double.NaN;
         public double RFHistoryPower = double.NaN;
@@ -444,6 +378,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             }
             origin_pix = GlobalPulseParams.GetGlobalPulseLength("PiX");
             origin_hpix = GlobalPulseParams.GetGlobalPulseLength("HalfPiX");
+            origin_piy = GlobalPulseParams.GetGlobalPulseLength("PiY");
+            origin_hpiy = GlobalPulseParams.GetGlobalPulseLength("HalfPiY");
 
 
             //如果要先测Rabi
@@ -519,7 +455,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             OutputParams.Add(new Param<double>("PI X脉冲长度", pix, "XPi") { GroupName = "脉冲长度" });
             OutputParams.Add(new Param<double>("PI Y脉冲长度", piy, "YPi") { GroupName = "脉冲长度" });
             OutputParams.Add(new Param<double>("3PI/2 X脉冲长度", h3pix, "X3HalfPi") { GroupName = "脉冲长度" });
-            OutputParams.Add(new Param<double>("3PI/2 Y脉冲长度", h3piy, "Y3HalfPi") { GroupName = "脉冲长度" });
+            OutputParams.Add(new Param<double>("3PI/2 Y脉冲长度", piy, "Y3HalfPi") { GroupName = "脉冲长度" });
             OutputParams.Add(new Param<double>("微波功率", RFHistoryPower, "RFPower") { GroupName = "脉冲长度" });
             OutputParams.Add(new Param<double>("Delay时间", GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay"), "Delay") { GroupName = "脉冲长度" });
 
@@ -530,6 +466,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             #region 恢复全局脉冲长度
             GlobalPulseParams.SetGlobalPulseLength("HalfPiX", origin_hpix);
             GlobalPulseParams.SetGlobalPulseLength("PiX", origin_pix);
+            GlobalPulseParams.SetGlobalPulseLength("HalfPiY", origin_hpiy);
+            GlobalPulseParams.SetGlobalPulseLength("PiY", origin_piy);
             #endregion
 
             double cY = MultiLoopScanData.GetAverageData(listdata, "PI/2 Y对比度", "对比度数据")[0];

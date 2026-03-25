@@ -229,6 +229,7 @@
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanXY.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\ScanZ.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner_PulseCW.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner_Theta_CW.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\MagnetFieldScanner_Theta_T2.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\磁场调节\子实验\OffsetCalculator.cs" />
@@ -254,6 +255,8 @@
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\二维扫描\Confocal.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\AFM实验\二维扫描\AFMScanExp.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\其他\AutoTrace.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\PhotonCountStatics.cs" />
+    <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\ProtectedRabi.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\脉冲实验\XYSequenceType.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PulsePhotonSample.cs" />
     <Compile Include="实验部分\ODMR实验\实验方法\无AFM实验\单点\单点光子采样\PhotonSample.cs" />

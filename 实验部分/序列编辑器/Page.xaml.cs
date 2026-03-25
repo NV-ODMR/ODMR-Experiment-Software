@@ -269,7 +269,8 @@ namespace ODMR_Lab.序列编辑器
                 if (SequenceName.Text == "" || SequenceName.Text == null) throw new Exception("序列名不能为空");
                 //检查是否已存在同名文件
                 DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
-                var files = info.GetFiles();
+                var files = info.GetFiles("*", SearchOption.AllDirectories);
+                string path = "";
                 foreach (var item in files)
                 {
                     try
@@ -281,6 +282,7 @@ namespace ODMR_Lab.序列编辑器
                             {
                                 return;
                             }
+                            path = item.FullName;
                             break;
                         }
                     }
@@ -293,7 +295,7 @@ namespace ODMR_Lab.序列编辑器
                 {
                     a.Channels.Add(item);
                 }
-                a.WriteToFile();
+                a.WriteToFile(path);
 
                 TipPanel.Visibility = Visibility.Visible;
                 SequencePanel.Visibility = Visibility.Hidden;

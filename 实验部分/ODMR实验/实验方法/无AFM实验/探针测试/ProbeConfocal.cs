@@ -39,7 +39,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
         {
             new Param<int>("采样率(Hz)",60,"SampleRate"),
             new Param<int>("位移台等待时间(ms)",0,"MoverWaitingTime"),
-            new Param<int>("自动测量Autotrace次数",5,"AutotraceNumber")
+            new Param<int>("自动测量Autotrace次数",5,"AutotraceNumber"),
+            new Param<int>("多点测量Autotrace阈值",50000,"AutotraceLimit")
         };
         public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
         {
@@ -294,11 +295,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
                 //移动到目标点
                 MoveToCursor(item);
                 int autotraceCount = GetInputParamValueByName("AutotraceNumber");
+                bool iscontinue = true;
                 for (int i = 0; i < autotraceCount; i++)
                 {
                     var autotraceexp = RunSubExperimentBlock(0, true);
                     if (i == autotraceCount - 1)
                     {
+
+                        //判断指定位置是否满足阈值
+                        var xvs = autotraceexp.GetOutputParamValueByName("XValue");
+                        var yvs = autotraceexp.GetOutputParamValueByName("YValue");
+                        var zvs = autotraceexp.GetOutputParamValueByName("ZValue");
+                        if (1.0 / 3 * (xvs + yvs + zvs) < GetInputParamValueByName("AutotraceLimit"))
+                        {
+                            iscontinue = false;
+                            continue;
+                        }
                         //添加数据
                         var locxs = autotraceexp.Get1DChartData("位置", "AutoTrace X") as NumricChartData1D;
                         var countxs = autotraceexp.Get1DChartData("计数", "AutoTrace X") as NumricChartData1D;
@@ -321,6 +333,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.探针测试
                         UpdatePlotChart();
                     }
                 }
+                if (!iscontinue) continue;
                 //测CW谱
                 var cwexp = RunSubExperimentBlock(1, true);
                 var freqs = cwexp.Get1DChartData("频率", "CW对比度数据") as NumricChartData1D;

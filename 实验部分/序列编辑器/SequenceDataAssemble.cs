@@ -1,5 +1,6 @@
 ﻿using CodeHelper;
 using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,8 +64,13 @@ namespace ODMR_Lab.实验部分.序列编辑器
         /// 写文件,出错则报错
         /// </summary>
         /// <param name="obj"></param>
-        public void WriteToFile()
+        public void WriteToFile(string path = "")
         {
+            //设置全局参数
+            foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
+            {
+                ChangeWaveSegSpan(item.PulseName, item.PulseLength);
+            }
             //检查序列文件
             CheckCommandFormat();
             FileObject obj = new FileObject();
@@ -87,8 +93,15 @@ namespace ODMR_Lab.实验部分.序列编辑器
             }
 
             //保存到目标文件夹
-            DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
-            obj.SaveToFile(Path.Combine(info.FullName, Name.ToString()));
+            if (path == "")
+            {
+                DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
+                obj.SaveToFile(Path.Combine(info.FullName, Name.ToString()));
+            }
+            else
+            {
+                obj.SaveToFile(path);
+            }
         }
 
 

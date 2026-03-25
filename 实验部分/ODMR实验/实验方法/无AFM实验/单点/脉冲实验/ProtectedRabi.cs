@@ -1,0 +1,269 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using Controls.Windows;
+using HardWares.射频源.Rigol_DSG_3060;
+using MathLib.NormalMath.Decimal;
+using ODMR_Lab.IO操作;
+using ODMR_Lab.ODMR实验;
+using ODMR_Lab.基本控件;
+using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
+using ODMR_Lab.实验部分.序列编辑器;
+using ODMR_Lab.实验部分.扫描基方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
+using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.射频源_锁相放大器;
+using MathNet.Numerics;
+using MathNet.Numerics.IntegralTransforms;
+using Window = System.Windows.Window;
+using Controls.Charts;
+using System.Windows.Media;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
+using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
+
+namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
+{
+    class ProtectedRabi : PulseExpBase
+    {
+        public override bool Is1DScanExp { get; set; } = false;
+        public override bool Is2DScanExp { get; set; } = false;
+
+        public override string ODMRExperimentName { get; set; } = "锁模拉比测量(Rabi)";
+
+        public override string ODMRExperimentGroupName { get; set; } = "点实验";
+
+        public override string Description { get; set; } = "使用的序列文件名称：Rabi";
+
+        public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
+        {
+            //0.Pi脉冲长度(整数),1.T1间隔长度(整数),2.采样循环次数(整数)，3.超时时间（整数）4.微波频率（小数）5.微波功率（小数）
+            new Param<int>("时间最小值(ns)",20,"Rabimin"),
+            new Param<int>("时间最大值(ns)",100,"Rabimax"),
+            new Param<int>("时间点数(ns)",20,"Rabipoints"),
+            new Param<int>("测量次数",1000,"LoopCount"),        //外部的循环
+            new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"),
+            new Param<int>("序列循环次数",1000,"SeqLoopCount"),   //板卡内的
+            new Param<double>("微波频率(MHz)",2870,"RFFrequency"),
+            new Param<double>("微波功率(dBm)",-20,"RFAmplitude"),
+            new Param<int>("单点超时时间",10000,"TimeOut"),
+        };
+        public override List<ParamB> OutputParams { get; set; } = new List<ParamB>()
+        {
+        };
+        public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>();
+        public override List<ChartData1D> D1ChartDatas { get; set; } = new List<ChartData1D>();
+        public override List<ChartData2D> D2ChartDatas { get; set; } = new List<ChartData2D>();
+        public override List<FittedData1D> D1FitDatas { get; set; } = new List<FittedData1D>();
+        protected override List<ODMRExpObject> GetSubExperiments()
+        {
+            return new List<ODMRExpObject>()
+            {
+            };
+        }
+
+        public override bool IsAFMSubExperiment { get; protected set; } = true;
+
+        public override bool PreConfirmProcedure()
+        {
+            if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private int CurrentLoop = 0;
+        public List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> inputParams)
+        {
+            ExperimentHelper.SetT2SequenceEvolutionPulses((int)200, 0, 0, 0, 0);
+
+            GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)locvalue);
+
+            PulsePhotonPack pack = DoPulseExp("ProtectRabi", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4, GetInputParamValueByName("TimeOut"));
+
+            //光子数
+            double signalcountX = pack.GetPhotonsAtIndex(0).Sum();
+            double refcountX = pack.GetPhotonsAtIndex(1).Sum();
+
+            //计算对比度
+            double signalcontrastX = 1;
+            try
+            {
+                if (refcountX != 0)
+                    signalcontrastX = (signalcountX - refcountX) / refcountX;
+            }
+            catch (Exception)
+            {
+            }
+
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("微波驱动时间(ns)", "Rabi对比度数据", locvalue, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据", signalcontrastX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("微波驱动时间(ns)", "Rabi荧光数据", locvalue, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道X 平均光子数", "Rabi荧光数据", refcountX, new StandardDataProcess()));
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("通道X 信号光子数", "Rabi荧光数据", signalcountX, new StandardDataProcess()));
+
+            return new List<object>();
+        }
+
+        public override void ODMRExpWithoutAFM()
+        {
+            MultiScan1DSession<object> Session = new MultiScan1DSession<object>();
+            Session.FirstScanEvent = ScanEvent;
+            Session.ScanEvent = ScanEvent;
+            Session.ScanSource = null;
+            Session.PlotEvent = PlotEvent;
+            Session.ProgressBarMethod = new Action<object, double>((obj, v) =>
+            {
+                SetProgress(v);
+            });
+            Session.SetStateMethod = new Action<object, int, double>((obj, loop, v) =>
+            {
+                SetExpState("当前扫描轮数:" + loop.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
+            });
+            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("Rabimin"), GetInputParamValueByName("Rabimax"), GetInputParamValueByName("Rabipoints"));
+
+            Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
+            Session.BeginScan(GetInputParamValueByName("LoopCount"), GetInputParamValueByName("ScanType"), range, 0, 100);
+        }
+
+        private void PlotEvent(List<MultiLoopScanData> list)
+        {
+            (Get1DChartData("微波驱动时间(ns)", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi对比度数据");
+            (Get1DChartData("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+
+            (Get1DChartData("微波驱动时间(ns)", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi荧光数据");
+            (Get1DChartData("通道X 平均光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X 平均光子数", "Rabi荧光数据");
+            (Get1DChartData("通道X 信号光子数", "Rabi荧光数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "通道X 信号光子数", "Rabi荧光数据");
+
+            (Get1DChartData("微波驱动时间(ns)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "微波驱动时间(ns)", "Rabi对比度数据");
+            (Get1DChartData("通道X 平均光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道X 平均光子数", "Rabi荧光数据");
+            (Get1DChartData("通道X 信号光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道X 信号光子数", "Rabi荧光数据");
+            (Get1DChartData("通道X Rabi信号对比度[(sig-ref)/ref]", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+
+
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
+        }
+
+        public override void PreExpEventWithoutAFM()
+        {
+            //打开微波
+            SignalGeneratorChannelInfo RF = GetDeviceByName("RFSource") as SignalGeneratorChannelInfo;
+            RF.Device.IsOutOpen = true;
+
+            D1ChartDatas = new List<ChartData1D>()
+            {
+                new NumricChartData1D("微波驱动时间(ns)","Rabi对比度数据",ChartDataType.X),
+                new NumricChartData1D("通道X Rabi信号对比度[(sig-ref)/ref]","Rabi对比度数据",ChartDataType.Y),
+
+                new NumricChartData1D("微波驱动时间(ns)","Rabi荧光数据",ChartDataType.X),
+                new NumricChartData1D("通道X 平均光子数","Rabi荧光数据",ChartDataType.Y),
+                new NumricChartData1D("通道X 信号光子数","Rabi荧光数据",ChartDataType.Y),
+
+                new NumricChartData1D("微波驱动时间(ns)","方差",ChartDataType.X),
+                new NumricChartData1D("通道X 平均光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("通道X 信号光子数","方差",ChartDataType.Y),
+                new NumricChartData1D("通道X Rabi信号对比度[(sig-ref)/ref]","方差",ChartDataType.Y),
+            };
+            UpdatePlotChart();
+            Show1DChartData("Rabi对比度数据", "微波驱动时间(ns)", "通道X Rabi信号对比度[(sig-ref)/ref]");//实验前展示的数据
+        }
+
+        //T1拟合函数
+        private double RabiFitFunc(double x, double[] ps)
+        {
+            double a = ps[0];
+            double tau = ps[1];
+            double b = ps[2];
+            double c = ps[3];
+            double d = ps[4];
+            return a * Math.Exp(-x / tau) * Math.Cos(2 * Math.PI / b * (x - c)) + d;
+        }
+
+        public override void AfterExpEventWithoutAFM()
+        {
+            #region 计算通道X Rabi脉冲周期
+            var xs = Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据");
+            var ys_x = Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据");
+
+            ExperimentHelper.GetNonNaNData(xs, ys_x, out var xxs, out var xys);
+
+            //设置初值
+            double tau = (xxs.Min() + xxs.Max()) / 2;
+            double d_x = xys.Average();
+            double a_x = Math.Abs(xys.Min() - xys.Max()) / 2;
+            double c_x = 10;
+            //Pi脉冲时间
+            double b_x = 0;
+            try
+            {
+                var fys_x = xys.Select(x => x - xys.Average()).ToArray();
+                Fourier.Forward(fys_x, Enumerable.Repeat(0.0, xys.Count).ToArray(), FourierOptions.Matlab);
+                fys_x = fys_x.ToList().GetRange(0, (fys_x.Length - 1) / 2).ToArray();
+                var freqs_x = Fourier.FrequencyScale(xys.Count, (int)1.0 / Math.Abs(xxs[0] - xxs[1]));
+                freqs_x = freqs_x.ToList().GetRange(0, (freqs_x.Length - 1) / 2).ToArray();
+                b_x = 1.0 / freqs_x[fys_x.ToList().IndexOf(fys_x.Max())];
+                if (double.IsInfinity(b_x)) b_x = 0;
+            }
+            catch (Exception)
+            {
+            }
+
+            double[] ps_x = CurveFitting.FitCurveWithFunc(xxs, xys, new List<double>() { a_x, tau, b_x, c_x, d_x }, new List<double>() { 10, 10, 10, 10, 10 }, RabiFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
+
+            //设置拟合曲线
+            var ftxs = new D1NumricLinearScanRange(xxs.Min(), xxs.Max(), 500).ScanPoints;
+            var fitys_x = ftxs.Select(x => RabiFitFunc(x, ps_x)).ToList();
+            D1FitDatas.Add(new FittedData1D("a*exp(-x/t)*cos(2*pi/b*(x-c))+d", "x", new List<string>() { "a", "t", "b", "c", "d" }, ps_x.ToList(), "微波驱动时间(ns)", "Rabi对比度数据", new NumricDataSeries("拟合曲线X", ftxs, fitys_x) { LineColor = Colors.LightSkyBlue }));
+            UpdatePlotChart();
+            UpdatePlotChartFlow(true);
+            Show1DFittedData("拟合曲线X");
+
+            #endregion
+
+
+            //通道x结果
+            int pi_x = (int)(ps_x[2] / 2 + ps_x[3]);
+            int hpi_x = (int)(ps_x[2] / 4 + ps_x[3]);
+            int h3pi_x = (int)(3 * ps_x[2] / 4 + ps_x[3]);
+            int pi2_x = (int)(ps_x[2] + ps_x[3]);
+            if (pi_x < 20)
+                pi_x = (int)(ps_x[2] + ps_x[2] / 2 + ps_x[3]);
+            if (hpi_x < 20)
+                hpi_x = (int)(ps_x[2] + ps_x[2] / 4 + ps_x[3]);
+            if (h3pi_x < 20)
+                pi_x = (int)(ps_x[2] + 3 * ps_x[2] / 4 + ps_x[3]);
+            if (pi2_x < 20)
+                pi_x = (int)(ps_x[2] + ps_x[2] + ps_x[3]);
+
+            //计算平均光子计数
+            OutputParams.Add(new Param<double>("通道X Pi脉冲长度(ns)", pi_x, "X_PiLength"));
+            OutputParams.Add(new Param<double>("通道X Pi/2脉冲长度(ns)", hpi_x, "X_HalfPiLength"));
+            OutputParams.Add(new Param<double>("通道X 3Pi/2脉冲长度(ns)", h3pi_x, "X_3HalfPiLength"));
+            OutputParams.Add(new Param<double>("通道X 2Pi脉冲长度(ns)", pi2_x, "X_2PiLength"));
+            //计算平均光子计数
+            OutputParams.Add(new Param<double>("通道X 平均光子计数", Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据").Where(x => !double.IsNaN(x)).Average(), "X_AverageCount"));
+        }
+
+        public override List<ParentPlotDataPack> GetD1PlotPacks()
+        {
+            List<ParentPlotDataPack> PlotData = new List<ParentPlotDataPack>();
+            PlotData.Add(new ParentPlotDataPack("微波驱动时间(ns)", "Rabi对比度数据", ChartDataType.X, Get1DChartDataSource("微波驱动时间(ns)", "Rabi对比度数据"), false));//false有同名就不加，true加到结果里
+            PlotData.Add(new ParentPlotDataPack("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据", ChartDataType.Y, Get1DChartDataSource("通道X Rabi信号对比度[(sig-ref)/ref]", "Rabi对比度数据"), true));
+
+            PlotData.Add(new ParentPlotDataPack("微波驱动时间(ns)", "Rabi荧光数据", ChartDataType.X, Get1DChartDataSource("微波驱动时间(ns)", "Rabi荧光数据"), false));
+            PlotData.Add(new ParentPlotDataPack("通道X 平均光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据"), true));
+            PlotData.Add(new ParentPlotDataPack("通道X 信号光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道X 信号光子数", "Rabi荧光数据"), true));return PlotData;
+        }
+
+        protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()
+        {
+            return new List<KeyValuePair<string, Action>>();
+        }
+    }
+}
