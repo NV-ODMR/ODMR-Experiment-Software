@@ -157,8 +157,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             if (order != 1)
                 echotime = (int)(signaltime / 2 - xLength);
             GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
-            pack = DoLockInPulseExp("CMPGY",GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
-            GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq); }));
+            pack = DoLockInPulseExp("CMPGY", GetInputParamValueByName("RFFrequency"), GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 4,
+            GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { ExperimentHelper.SetSequenceCount(seq, SequenceTypes.CMPG, GetInputParamValueByName("SequenceCount")); }));
 
             Sig = pack.GetPhotonsAtIndex(0).Sum();
             Ref = pack.GetPhotonsAtIndex(1).Sum();
@@ -173,52 +173,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             JudgeThreadEndOrResumeAction?.Invoke();
         }
 
-        private void SetSequenceCount(SequenceDataAssemble obj)
-        {
-            //传入参数为读取到的序列
-            //查找X:pi脉冲的通道
-            SequenceChannel ind = SequenceChannel.None;
-            foreach (var ch in obj.Channels)
-            {
-                var pilist = ch.Peaks.Where(x => x.PeakName == "PiX");
-                if (pilist.Count() != 0)
-                {
-                    if (pilist.ElementAt(0).WaveValue == WaveValues.One)
-                    {
-                        ind = ch.ChannelInd;
-                    }
-                }
-            }
-            //为每个通道添加对应阶数的序列
-            int order = GetInputParamValueByName("SequenceCount");
-            if (order > 1)
-            {
-                int det = order - 1;
-                int pix = GlobalPulseParams.GetGlobalPulseLength("PiX");
-                int spintime = GlobalPulseParams.GetGlobalPulseLength("SpinEchoTime");
-                foreach (var ch in obj.Channels)
-                {
-                    ///Pi/2 Y脉冲的位置
-                    var halfpiys = ch.Peaks.Where((x) => x.PeakName == "CustomYLength" || x.PeakName == "CustomXLength").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                    halfpiys.Sort();
-                    halfpiys.Reverse();
-                    int signalch = halfpiys.Last();
-                    foreach (var item in halfpiys)
-                    {
-                        List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
-                        for (int i = 0; i < det; i++)
-                        {
-                            segs.Add(new SequenceWaveSeg("PiX", pix, (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("SpinEchoTime", spintime, WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("PiX", pix, (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("SpinEchoTime", spintime, WaveValues.Zero, ch));
-                        }
-                        ch.Peaks.InsertRange(item, segs);
-                    }
-                }
-            }
-
-        }
         private List<object> ExpScanEvent(object arg1, D1NumricScanRangeBase arg2, double arg3, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> arg4)
         {
             GlobalPulseParams.SetGlobalPulseLength("SpinEchoTime", (int)arg3);

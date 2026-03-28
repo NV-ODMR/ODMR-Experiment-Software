@@ -235,52 +235,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             return new List<double>() { signalcount0, signalcount1, refcount, signalcontrast0, signalcontrast1 };
         }
 
-        private void SetSequenceCount(SequenceDataAssemble obj)
-        {
-            //传入参数为读取到的序列
-            //查找X:pi脉冲的通道
-            SequenceChannel ind = SequenceChannel.None;
-            foreach (var ch in obj.Channels)
-            {
-                var pilist = ch.Peaks.Where(x => x.PeakName == "PiX");
-                if (pilist.Count() != 0)
-                {
-                    if (pilist.ElementAt(0).WaveValue == WaveValues.One)
-                    {
-                        ind = ch.ChannelInd;
-                    }
-                }
-            }
-
-            if (GetInputParamValueByName("SequenceType") == SequenceTypes.CMPG)
-            {
-                #region 为每个通道添加对应阶数的序列
-                int order = GetInputParamValueByName("CMPGOrder");
-                if (order > 1)
-                {
-                    int det = order - 1;
-                    foreach (var ch in obj.Channels)
-                    {
-                        ///Pi/2 脉冲的位置
-                        var halfpixs = ch.Peaks.Where((x) => x.PeakName == "HalfPiX" || x.PeakName == "HalfPiY").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                        var halfpi3xs = ch.Peaks.Where((x) => x.PeakName == "3HalfPiX" || x.PeakName == "3HalfPiY").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                        halfpixs.Sort();
-                        halfpixs.Reverse();
-                        List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
-                        for (int i = 0; i < det; i++)
-                        {
-                            segs.Add(new SequenceWaveSeg("T2Step", GlobalPulseParams.GetGlobalPulseLength("T2Step"), WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind) ? WaveValues.One : WaveValues.Zero, ch));
-                            segs.Add(new SequenceWaveSeg("T2Step", GlobalPulseParams.GetGlobalPulseLength("T2Step"), WaveValues.Zero, ch));
-                        }
-                        ch.Peaks.InsertRange(halfpi3xs[0], segs);
-                        ch.Peaks.InsertRange(halfpixs[1], segs);
-                    }
-                }
-                #endregion
-            }
-        }
-
         private void T2Plot(List<double> data, int rowx, int rowy)
         {
             var c0 = Get2DChartData("0态对比度", "T2数据").Data;

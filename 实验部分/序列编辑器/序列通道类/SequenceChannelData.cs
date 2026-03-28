@@ -1,6 +1,8 @@
 ﻿using Controls.Charts;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,15 +17,34 @@ namespace ODMR_Lab.实验部分.序列编辑器
         /// </summary>
         public SequenceChannel ChannelInd { get; set; } = SequenceChannel.None;
 
+        public List<SequenceSegBase> Peaks { get; set; } = new List<SequenceSegBase>();
+
         /// <summary>
-        /// 峰位置，键值为起始时间
+        ///将所有组合的峰展开后的结果
         /// </summary>
-        public List<SequenceWaveSeg> Peaks { get; set; } = new List<SequenceWaveSeg>();
+        //public List<SingleSequenceWaveSeg> ExpandedPeaks { get; private set; } = new List<SingleSequenceWaveSeg>();
 
         public SequenceChannelData(SequenceChannel channel)
         {
             ChannelInd = channel;
             ChannelWaveData = new NumricDataSeries("") { LineThickness = 3, LineColor = CodeHelper.ColorHelper.GenerateHighContrastColor(Colors.Black) };
+        }
+
+        public static List<SingleSequenceWaveSeg> GetExpandedPeakArray(IEnumerable<SequenceSegBase> segs)
+        {
+            List<SingleSequenceWaveSeg> result = new List<SingleSequenceWaveSeg>();
+            foreach (var item in segs)
+            {
+                if (item is SingleSequenceWaveSeg)
+                {
+                    result.Add(item as SingleSequenceWaveSeg);
+                }
+                if (item is GroupSequenceWaveSeg)
+                {
+                    result.AddRange((item as GroupSequenceWaveSeg).GetSelectedChannelSegs());
+                }
+            }
+            return result;
         }
 
         public NumricDataSeries ChannelWaveData { get; set; }
@@ -44,7 +65,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
             {
                 int segstart = time;
                 int segend = time + item.PeakSpan;
-                if (timestart >= segstart && timeend <= segend && item.WaveValue == WaveValues.One)
+                if (timestart >= segstart && timeend <= segend && item.IsWaveOne())
                 {
                     return true;
                 }
@@ -54,7 +75,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
             return false;
         }
 
-        public void GetSegTime(SequenceWaveSeg seg, out int timestart, out int timeend)
+        public void GetSegTime(SequenceSegBase seg, out int timestart, out int timeend)
         {
             int time = 0;
             for (int i = 0; i < Peaks.Count; i++)
@@ -72,16 +93,16 @@ namespace ODMR_Lab.实验部分.序列编辑器
             return;
         }
 
-        public List<SequenceWaveSeg> GetSegFromTime(int timestart, int timeend)
+        public List<SequenceSegBase> GetSegFromTime(int timestart, int timeend)
         {
-            List<SequenceWaveSeg> res = new List<SequenceWaveSeg>();
+            List<SequenceSegBase> res = new List<SequenceSegBase>();
             int time = 0;
             for (int i = 0; i < Peaks.Count; i++)
             {
                 int start = time;
                 int end = time + Peaks[i].PeakSpan;
                 time += Peaks[i].PeakSpan;
-                if (start >= timestart && end <= timeend && Peaks[i].PeakSpan != 0) 
+                if (start >= timestart && end <= timeend && Peaks[i].PeakSpan != 0)
                     res.Add(Peaks[i]);
             }
             return res;
@@ -102,44 +123,5 @@ namespace ODMR_Lab.实验部分.序列编辑器
             }
             return time;
         }
-    }
-
-    /// <summary>
-    /// 脉冲峰位置
-    /// </summary>
-    public class SequenceWaveSeg
-    {
-        public SequenceChannelData ParentChannel { get; set; } = null;
-
-        /// <summary>
-        /// 脉冲名称
-        /// </summary>
-        public string PeakName { get; set; } = "";
-        /// <summary>
-        /// 起始脉冲时间
-        /// </summary>
-        public int PeakSpan { get; set; } = 0;
-
-        /// <summary>
-        /// 是否是Trigger指令
-        /// </summary>
-        public bool IsTriggerCommand { get; set; } = false;
-
-        public WaveValues WaveValue { get; set; } = WaveValues.Zero;
-
-        public SequenceWaveSeg(string peakName, int peakSpan, WaveValues waveValue, SequenceChannelData parentchannel, bool IsTrigger = false)
-        {
-            PeakName = peakName;
-            PeakSpan = peakSpan;
-            WaveValue = waveValue;
-            ParentChannel = parentchannel;
-            IsTriggerCommand = IsTrigger;
-        }
-    }
-
-    public enum WaveValues
-    {
-        Zero = 0,
-        One = 1
     }
 }

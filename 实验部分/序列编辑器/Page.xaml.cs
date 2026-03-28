@@ -14,6 +14,7 @@ using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.序列编辑器;
+using ODMR_Lab.实验部分.序列编辑器.子控件;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,18 +60,398 @@ namespace ODMR_Lab.序列编辑器
         }
 
         #region 操作
-        private void ResizePlot(object sender, RoutedEventArgs e)
+        private void ResizeMultiPlot(object sender, RoutedEventArgs e)
         {
             chart.RefreshPlotWithAutoScale();
         }
 
-        private void Snap(object sender, RoutedEventArgs e)
+        private void MultiSnap(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chart));
-            TimeWindow window = new TimeWindow();
+            try
+            {
+                Clipboard.SetImage(SnapHelper.GetControlSnap(chart));
+                TimeWindow window = new TimeWindow();
+                window.Owner = Window.GetWindow(this);
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                window.ShowWindow("截图已复制到剪切板");
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void ResizeSinglePlot(object sender, RoutedEventArgs e)
+        {
+            RefreshSingleChannelPlot();
+        }
+
+        private void SnapSinglePlot(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Clipboard.SetImage(SnapHelper.GetControlSnap(singlechart));
+                TimeWindow window = new TimeWindow();
+                window.Owner = Window.GetWindow(this);
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                window.ShowWindow("截图已复制到剪切板");
+            }
+            catch (Exception)
+            {
+            }
+        }
+        #endregion
+
+        #region 序列保存，读取和新建
+        private void NewSequence(object sender, RoutedEventArgs e)
+        {
+            Sequence = new SequenceDataAssemble() { Name = "Newseq" };
+            SingleChannelSequence = new SingleChannelData();
+            SingleChannelSequence.ReadFromSequenceAssemble(Sequence);
+            UpdateSequenceData();
+            OneChannelSequencePannel.Visibility = Visibility.Visible;
+            MultiChannelSequencePannel.Visibility = Visibility.Hidden;
+            TipPanel.Visibility = Visibility.Hidden;
+        }
+
+        private void SaveSequence(object sender, RoutedEventArgs e)
+        {
+            if (TipPanel.Visibility == Visibility.Visible) return;
+            try
+            {
+                string sequencename = "";
+                if (MultiChannelSequencePannel.Visibility == Visibility.Visible)
+                {
+                    if (MultiSequenceName.Text == "" || MultiSequenceName.Text == null) throw new Exception("序列名不能为空");
+                    sequencename = MultiSequenceName.Text;
+                }
+                if (OneChannelSequencePannel.Visibility == Visibility.Visible)
+                {
+                    if (SingleSequenceName.Text == "" || SingleSequenceName.Text == null) throw new Exception("序列名不能为空");
+                    sequencename = SingleSequenceName.Text;
+                }
+
+                //检查是否已存在同名文件
+                DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
+                var files = info.GetFiles("*", SearchOption.AllDirectories);
+                string path = "";
+                foreach (var item in files)
+                {
+                    try
+                    {
+                        var dic = FileObject.ReadDescription(item.FullName);
+                        if (dic.Keys.Contains("SequenceAssembleName") && dic["SequenceAssembleName"] == sequencename)
+                        {
+                            if (MessageWindow.ShowMessageBox("提示", "已存在同名序列，是否覆盖?", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.No)
+                            {
+                                return;
+                            }
+                            path = item.FullName;
+                            break;
+                        }
+                    }
+                    catch (Exception) { }
+                }
+                //读取参数
+                SequenceDataAssemble a = new SequenceDataAssemble();
+                //多通道模式
+                if (MultiChannelSequencePannel.Visibility == Visibility.Visible)
+                {
+                    a.Name = MultiSequenceName.Text;
+                    foreach (var item in Sequence.Channels)
+                    {
+                        a.Channels.Add(item);
+                    }
+                }
+                //单通道模式
+                if (OneChannelSequencePannel.Visibility == Visibility.Visible)
+                {
+                    a = SingleChannelSequence.GenerateSequenceAssemble();
+                    a.Name = SingleSequenceName.Text;
+                }
+                a.WriteToFile(path);
+
+                TipPanel.Visibility = Visibility.Visible;
+                MultiChannelSequencePannel.Visibility = Visibility.Hidden;
+                OneChannelSequencePannel.Visibility = Visibility.Hidden;
+
+                TimeWindow win = new TimeWindow();
+                win.Owner = Window.GetWindow(this);
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                win.ShowWindow("序列已保存");
+            }
+            catch (Exception ex)
+            {
+                MessageWindow.ShowTipWindow("保存未完成:" + ex.Message, Window.GetWindow(this));
+            }
+        }
+
+        private void OpenSequence(object sender, RoutedEventArgs e)
+        {
+            //保存到目标文件夹
+            DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
+            var files = info.GetFiles("*", SearchOption.AllDirectories);
+            List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>();
+            foreach (var item in files)
+            {
+                try
+                {
+                    var dic = FileObject.ReadDescription(item.FullName);
+                    if (dic.Keys.Contains("SequenceAssembleName"))
+                    {
+                        values.Add(new KeyValuePair<string, string>(dic["SequenceAssembleName"], item.FullName));
+                    }
+                }
+                catch (Exception) { }
+            }
+            SequenceFileWindow window = new SequenceFileWindow(values);
             window.Owner = Window.GetWindow(this);
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            window.ShowWindow("截图已复制到剪切板");
+            string path = window.ShowDialog();
+            if (path == "") return;
+            try
+            {
+                Sequence = SequenceDataAssemble.ReadFromFile(FileObject.ReadFromFile(path));
+                Sequence.UpdateGlobalPulsesLength();
+                SingleChannelSequence = new SingleChannelData();
+                SingleChannelSequence.ReadFromSequenceAssemble(Sequence);
+                UpdateSequenceData();
+                SequenceFileName.Content = Sequence.Name;
+                TipPanel.Visibility = Visibility.Hidden;
+                MultiChannelSequencePannel.Visibility = Visibility.Hidden;
+                OneChannelSequencePannel.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                MessageWindow.ShowTipWindow("序列未成功打开，原因:" + ex.Message, Window.GetWindow(this));
+            }
+        }
+
+        private void OpenGroup(object sender, RoutedEventArgs e)
+        {
+            //保存到目标文件夹
+            DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "SequenceGroup"));
+            var files = info.GetFiles("*", SearchOption.AllDirectories);
+            List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>();
+            foreach (var item in files)
+            {
+                try
+                {
+                    var dic = FileObject.ReadDescription(item.FullName);
+                    if (dic.Keys.Contains("GroupName"))
+                    {
+                        values.Add(new KeyValuePair<string, string>(dic["GroupName"], item.FullName));
+                    }
+                }
+                catch (Exception) { }
+            }
+            SequenceFileWindow window = new SequenceFileWindow(values);
+            window.Owner = Window.GetWindow(this);
+            string path = window.ShowDialog();
+            if (path == "") return;
+            try
+            {
+                GroupSequenceWaveSeg seg = new GroupSequenceWaveSeg();
+                seg.ReadFromFile(values.Where(x => x.Value == path).ElementAt(0).Key);
+                Sequence = seg.ConvertToAssemble();
+                Sequence.UpdateGlobalPulsesLength();
+                SingleChannelSequence = new SingleChannelData();
+                SingleChannelSequence.ReadFromSequenceAssemble(Sequence);
+                UpdateSequenceData();
+                SequenceFileName.Content = Sequence.Name;
+                TipPanel.Visibility = Visibility.Hidden;
+                MultiChannelSequencePannel.Visibility = Visibility.Hidden;
+                OneChannelSequencePannel.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                MessageWindow.ShowTipWindow("脉冲组合未成功打开，原因:" + ex.Message, Window.GetWindow(this));
+            }
+        }
+
+        private void SaveGroup(object sender, RoutedEventArgs e)
+        {
+            if (TipPanel.Visibility == Visibility.Visible) return;
+            try
+            {
+                //创建用于保存的序列组合
+                GroupSequenceWaveSeg seg = new GroupSequenceWaveSeg();
+                List<SequenceChannel> channels = new List<SequenceChannel>();
+                if (MultiChannelSequencePannel.Visibility == Visibility.Visible)
+                {
+                    Sequence.CheckCommandFormat();
+                    Sequence.UpdateGlobalPulsesLength(true);
+                    foreach (var item in Sequence.Channels)
+                    {
+                        seg.GroupCollection.Add(new KeyValuePair<string, List<SingleSequenceWaveSeg>>("", SequenceChannelData.GetExpandedPeakArray(item.Peaks)));
+                    }
+                    channels = Sequence.Channels.Select(x => x.ChannelInd).ToList();
+                }
+                if (OneChannelSequencePannel.Visibility == Visibility.Visible)
+                {
+                    var sequence = SingleChannelSequence.GenerateSequenceAssemble();
+                    sequence.CheckCommandFormat();
+                    sequence.UpdateGlobalPulsesLength(true);
+                    foreach (var item in sequence.Channels)
+                    {
+                        seg.GroupCollection.Add(new KeyValuePair<string, List<SingleSequenceWaveSeg>>("", SequenceChannelData.GetExpandedPeakArray(item.Peaks)));
+                    }
+                    channels = sequence.Channels.Select(x => x.ChannelInd).ToList();
+                }
+                GroupChannelEditWindow window = new GroupChannelEditWindow(seg, channels);
+                window.Owner = Window.GetWindow(this);
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                window.ShowDialog();
+                if (window.IsChanged)
+                {
+                    seg.WriteToFile();
+                    TimeWindow w = new TimeWindow();
+                    w.Owner = Window.GetWindow(this);
+                    w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    w.ShowWindow("保存成功");
+                    UpdatePulsesGroupPanel();
+                    TipPanel.Visibility = Visibility.Visible;
+                    MultiChannelSequencePannel.Visibility = Visibility.Hidden;
+                    OneChannelSequencePannel.Visibility = Visibility.Hidden;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageWindow.ShowTipWindow("保存未完成:" + ex.Message, Window.GetWindow(this));
+            }
+        }
+
+        private void OpenGlobalSeqPanel(object sender, RoutedEventArgs e)
+        {
+            GlobalSequenceWindow win = new GlobalSequenceWindow();
+            win.Owner = Window.GetWindow(this);
+            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            win.ShowDialog();
+            UpdateGlobalPulsePanel();
+            UpdatePulsesGroupPanel();
+        }
+
+        SequenceTestWindow seqWin = new SequenceTestWindow();
+        /// <summary>
+        /// 测试序列
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SeuqenceTest(object sender, RoutedEventArgs e)
+        {
+            if (Sequence == null) return;
+            seqWin.Show(Sequence);
+        }
+        #endregion
+
+        #region 刷新全局脉冲选择面板
+
+        public void UpdateGlobalContent()
+        {
+            Sequence.UpdateGlobalPulsesLength();
+            SingleChannelSequence.UpdateGlobalPulsesLength();
+            foreach (var item in MultiChannelWavePanel.Children)
+            {
+                if (item is MultiChannelSequenceControl)
+                {
+                    (item as MultiChannelSequenceControl).UpdateDisplay();
+                }
+            }
+            foreach (var item in SingleChannelWavePanel.Children)
+            {
+                if (item is SingleChannelSequenceControl)
+                {
+                    (item as SingleChannelSequenceControl).UpdateDisplay();
+                }
+            }
+        }
+
+        public void UpdateGlobalPulsePanel()
+        {
+            GlobalPulsesPopPanel.Children.Clear();
+            foreach (var item in GlobalPulseParams.GetGlobalPulses())
+            {
+                DecoratedButton btn = new DecoratedButton() { Text = item, Height = 30, Width = 200 };
+                buttontemplate.CloneStyleTo(btn);
+                btn.Click += new RoutedEventHandler((s, e) =>
+                {
+                    if (SequenceNamePop.Tag is ChannelSequenceControlBase)
+                    {
+                        ((SequenceNamePop.Tag as ChannelSequenceControlBase).ParentWaveSeg as SingleSequenceWaveSeg).PeakName = btn.Text;
+                        ((SequenceNamePop.Tag as ChannelSequenceControlBase).ParentWaveSeg as SingleSequenceWaveSeg).PeakSpan = GlobalPulseParams.GetGlobalPulseLength(btn.Text);
+                        SequenceNamePop.IsOpen = false;
+                        UpdateGlobalContent();
+                    }
+                });
+                GlobalPulsesPopPanel.Children.Add(btn);
+            }
+            GlobalPulsesPopPanel.UpdateLayout();
+        }
+
+        public void UpdatePulsesGroupPanel()
+        {
+            PulsesGroupPanel.Children.Clear();
+            var names = GroupSequenceWaveSeg.EnumerateGroupNames();
+            foreach (var item in names)
+            {
+                DecoratedButton btn = new DecoratedButton() { Text = item, Height = 30, Width = 200 };
+                buttontemplate.CloneStyleTo(btn);
+                btn.Click += new RoutedEventHandler((s, e) =>
+                {
+                    try
+                    {
+                        if (SequenceGroupNamePop.Tag is MultiChannelSequenceControl)
+                        {
+                            var seg = (SequenceGroupNamePop.Tag as ChannelSequenceControlBase).ParentWaveSeg as GroupSequenceWaveSeg;
+                            seg.ReadFromFile(item);
+                            seg.ParentChannel = (SequenceGroupNamePop.Tag as ChannelSequenceControlBase).ParentWaveSeg.ParentChannel;
+                            seg.AttachToChannel(seg.ParentChannel);
+                            (SequenceGroupNamePop.Tag as ChannelSequenceControlBase).SetParentWaveSeg(seg, MultiChannelWavePanel);
+                            SequenceGroupNamePop.IsOpen = false;
+                            UpdateGlobalContent();
+                        }
+                        if (SequenceGroupNamePop.Tag is SingleChannelSequenceControl)
+                        {
+                            var seg = (SequenceGroupNamePop.Tag as SingleChannelSequenceControl).ParentWaveSeg as GroupSequenceWaveSeg;
+                            seg.ReadFromFile(item);
+                            seg.ParentChannel = (SequenceGroupNamePop.Tag as SingleChannelSequenceControl).ParentWaveSeg.ParentChannel;
+                            seg.AttachToChannel(seg.ParentChannel);
+                            (SequenceGroupNamePop.Tag as SingleChannelSequenceControl).SetParentWaveSeg(seg, SingleChannelWavePanel);
+                            SequenceGroupNamePop.IsOpen = false;
+                            UpdateGlobalContent();
+                        }
+                    }
+                    catch (Exception ex) { }
+                });
+                PulsesGroupPanel.Children.Add(btn);
+            }
+            PulsesGroupPanel.UpdateLayout();
+        }
+
+        public void UpdateGroutChannelPanel(GroupSequenceWaveSeg seg)
+        {
+            GroupChannelPanel.Children.Clear();
+            foreach (var item in seg.GroupCollection)
+            {
+                DecoratedButton btn = new DecoratedButton() { Text = item.Key, Height = 30, Width = 200 };
+                buttontemplate.CloneStyleTo(btn);
+                btn.Click += new RoutedEventHandler((s, e) =>
+                {
+                    try
+                    {
+                        if (SequenceGroupChannelPop.Tag is ChannelSequenceControlBase)
+                        {
+                            var groupseg = (SequenceGroupChannelPop.Tag as ChannelSequenceControlBase).ParentWaveSeg as GroupSequenceWaveSeg;
+                            groupseg.SelectChnnelInd = groupseg.GroupCollection.Select(x => x.Key).ToList().IndexOf(item.Key);
+                            (SequenceGroupChannelPop.Tag as ChannelSequenceControlBase).UpdateDisplay();
+                            SequenceGroupChannelPop.IsOpen = false;
+                            UpdateGlobalContent();
+                        }
+                    }
+                    catch (Exception ex) { }
+                });
+                GroupChannelPanel.Children.Add(btn);
+            }
+            GroupChannelPanel.UpdateLayout();
+            scroll2.Height = GroupChannelPanel.ActualHeight;
         }
         #endregion
 
@@ -87,43 +468,86 @@ namespace ODMR_Lab.序列编辑器
             return desc;
         }
 
-        SequenceDataAssemble Sequence { get; set; } = new SequenceDataAssemble();
+        /// <summary>
+        /// 多通道序列数据
+        /// </summary>
+        public SequenceDataAssemble Sequence { get; set; } = new SequenceDataAssemble();
+        /// <summary>
+        /// 单通道序列数据
+        /// </summary>
+        public SingleChannelData SingleChannelSequence { get; set; } = new SingleChannelData();
+
         public void UpdateSequenceData()
         {
+            #region 多通道视图更新
             try
             {
                 #region 刷新通道列表
-                ChannelPanel.ClearItems();
+                MultiChannelPanel.ClearItems();
                 foreach (var item in Sequence.Channels)
                 {
 
                     var desc = GetChannelDescription(item.ChannelInd);
-                    ChannelPanel.AddItem(item, item.ChannelInd, desc, item.IsDisplay);
+                    MultiChannelPanel.AddItem(item, item.ChannelInd, desc, item.IsDisplay);
                 }
                 #endregion
-                SignalPanel.ClearItems();
-                SequenceName.Text = Sequence.Name;
-                RefreshPlot();
+                MultiChannelWavePanel.Children.Clear();
+                MultiSequenceName.Text = Sequence.Name;
             }
             catch { }
+            MultiSequenceName.Text = Sequence.Name;
+            #endregion
+            #region 单通道视图更新
+            try
+            {
+                #region 刷新通道列表
+                SingleChannelPanel.Children.Clear();
+                foreach (var item in SingleChannelSequence.Channels)
+                {
+                    SingleChannelPanel.Children.Add(new SingleChannelBar(item.Key, item.Value, SingleChannelSequence, SingleChannelPanel, this) { Height = 30 });
+                }
+                SingleSequenceName.Text = Sequence.Name;
+                #endregion
+                #region 刷新脉冲列表
+                SingleChannelWavePanel.Children.Clear();
+                var segs = SingleChannelSequence.GetSequences();
+                foreach (var item in segs)
+                {
+                    var control = new SingleChannelSequenceControl(item, SingleChannelSequence) { };
+                    control.SetParentWaveSeg(item, SingleChannelWavePanel);
+                    control.ParentPage = this;
+                    AppendSingleChannelPopEvent(control);
+                    SingleChannelWavePanel.Children.Add(control);
+                }
+                #endregion
+            }
+            catch { }
+            #endregion
+
+            RefreshMultiChannelPlot();
+            UpdateGlobalPulsePanel();
+            UpdatePulsesGroupPanel();
         }
 
-        private void ChannelPanel_ItemSelected(int arg1, object arg2)
+        private void MultiChannelPanel_ItemSelected(int arg1, object arg2)
         {
-            if (ChannelPanel.SelectedIndex != arg1 || SignalPanel.GetRowCount() == 0)
+            if (MultiChannelPanel.SelectedIndex != arg1 || MultiChannelWavePanel.Children.Count == 0)
             {
-                SignalPanel.ClearItems();
+                MultiChannelWavePanel.Children.Clear();
                 SequenceChannelData data = arg2 as SequenceChannelData;
                 var pulses = GlobalPulseParams.GetGlobalPulses();
                 foreach (var item in data.Peaks)
                 {
-                    SignalPanel.AddItem(item, pulses, item.WaveValue, item.PeakSpan, item.IsTriggerCommand);
-                    SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, item.PeakName);
+                    MultiChannelSequenceControl c = new MultiChannelSequenceControl() { HorizontalAlignment = HorizontalAlignment.Stretch };
+                    c.SetParentWaveSeg(item, MultiChannelWavePanel);
+                    c.ParentPage = this;
+                    c.ExternalUpdateEvent += RefreshMultiChannelPlot;
+                    MultiChannelWavePanel.Children.Add(c);
                 }
             }
         }
 
-        private void RefreshPlot()
+        private void RefreshMultiChannelPlot()
         {
             if (Sequence == null) return;
 
@@ -132,10 +556,36 @@ namespace ODMR_Lab.序列编辑器
             double loloc = double.NaN;
             double hiloc = double.NaN;
 
-            SequenceWaveSeg seg = null;
+            SingleSequenceWaveSeg segbefore = null;
+            SingleSequenceWaveSeg segafter = null;
 
-            if (SignalPanel.GetSelectedTag() != null)
-                seg = SignalPanel.GetSelectedTag() as SequenceWaveSeg;
+            foreach (var item in MultiChannelWavePanel.Children)
+            {
+                if (item is ChannelSequenceControlBase)
+                {
+                    if ((item as ChannelSequenceControlBase).IsSelected)
+                    {
+                        var seg = (item as ChannelSequenceControlBase).ParentWaveSeg;
+                        if (seg is SingleSequenceWaveSeg)
+                        {
+                            segbefore = seg as SingleSequenceWaveSeg;
+                            segafter = seg as SingleSequenceWaveSeg;
+                        }
+                        if (seg is GroupSequenceWaveSeg)
+                        {
+                            try
+                            {
+                                segbefore = (seg as GroupSequenceWaveSeg).GetSelectedChannelSegs().First();
+                                segafter = (seg as GroupSequenceWaveSeg).GetSelectedChannelSegs().Last();
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
 
             foreach (var item in Sequence.Channels)
             {
@@ -144,7 +594,8 @@ namespace ODMR_Lab.序列编辑器
                 item.ChannelWaveData.Y.Clear();
                 if (item.Peaks.Count == 0) continue;
                 int timex = 0;
-                foreach (var peak in item.Peaks)
+                var exppeaks = SequenceChannelData.GetExpandedPeakArray(item.Peaks);
+                foreach (var peak in exppeaks)
                 {
                     if (peak.WaveValue == WaveValues.Zero)
                     {
@@ -160,9 +611,12 @@ namespace ODMR_Lab.序列编辑器
                         item.ChannelWaveData.X.Add(timex + peak.PeakSpan);
                         item.ChannelWaveData.Y.Add(1);
                     }
-                    if (seg == peak)
+                    if (segbefore == peak)
                     {
                         loloc = timex;
+                    }
+                    if (segafter == peak)
+                    {
                         hiloc = timex + peak.PeakSpan;
                     }
                     timex += peak.PeakSpan;
@@ -206,305 +660,225 @@ namespace ODMR_Lab.序列编辑器
                 chart.RefreshPlotWithCustomScale(loloc, hiloc);
         }
 
-        public void UpdatePeakData()
-        {
-            try
-            {
-                #region 刷新波形列表
-                SignalPanel.ClearItems();
-                if (ChannelPanel.GetSelectedTag() == null) return;
-                foreach (var seq in (ChannelPanel.GetSelectedTag() as SequenceChannelData).Peaks)
-                {
-                    SignalPanel.AddItem(seq, GlobalPulseParams.GetGlobalPulses(), seq.WaveValue, seq.PeakSpan, seq.IsTriggerCommand);
-                    SignalPanel.SetCelValue(SignalPanel.GetRowCount() - 1, 0, seq.PeakName);
-                }
-                RefreshPlot();
-                #endregion
-            }
-            catch (Exception) { }
-        }
-
-        #region 新建波形和通道
-        private void NewChannel(object sender, RoutedEventArgs e)
+        #region 新建多通道波形和通道
+        private void NewMultiChannel(object sender, RoutedEventArgs e)
         {
             Sequence.Channels.Add(new SequenceChannelData(SequenceChannel.None));
             UpdateSequenceData();
         }
 
-        private void NewPeak(object sender, RoutedEventArgs e)
+        public void AppendMultiChannelPopEvent(MultiChannelSequenceControl c)
         {
-            if (ChannelPanel.GetSelectedTag() == null) return;
-            var channel = ChannelPanel.GetSelectedTag() as SequenceChannelData;
-            channel.Peaks.Add(new SequenceWaveSeg("newseg", 0, WaveValues.Zero, channel));
-            UpdatePeakData();
+            c.SequenceNameSelectionEvent += new Action<ChannelSequenceControlBase>((v) =>
+            {
+                SequenceNamePop.PlacementTarget = v;
+                SequenceNamePop.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+                SequenceNamePop.IsOpen = true;
+                scroll.Height = GlobalPulsesPopPanel.ActualHeight;
+                SequenceNamePop.StaysOpen = false;
+                SequenceNamePop.Tag = v;
+            });
+            c.GroupNameSelectionEvent += new Action<ChannelSequenceControlBase>((v) =>
+            {
+                SequenceGroupNamePop.PlacementTarget = v;
+                SequenceGroupNamePop.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+                SequenceGroupNamePop.IsOpen = true;
+                scroll1.Height = PulsesGroupPanel.ActualHeight;
+                SequenceGroupNamePop.StaysOpen = false;
+                SequenceGroupNamePop.Tag = v;
+            });
+            c.GroupChannelSelectionEvent += new Action<ChannelSequenceControlBase>((v) =>
+            {
+                UpdateGroutChannelPanel(v.ParentWaveSeg as GroupSequenceWaveSeg);
+                SequenceGroupChannelPop.PlacementTarget = v;
+                SequenceGroupChannelPop.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+                SequenceGroupChannelPop.IsOpen = true;
+                SequenceGroupChannelPop.StaysOpen = false;
+                SequenceGroupChannelPop.Tag = v;
+            });
+        }
+
+        private void NewMultiChannelPeak(object sender, RoutedEventArgs e)
+        {
+            if (MultiChannelPanel.GetSelectedTag() == null) return;
+            var channel = MultiChannelPanel.GetSelectedTag() as SequenceChannelData;
+            SingleSequenceWaveSeg newseg = new SingleSequenceWaveSeg("", 0, WaveValues.Zero, channel);
+            channel.Peaks.Add(newseg);
+            MultiChannelSequenceControl control = new MultiChannelSequenceControl() { HorizontalAlignment = HorizontalAlignment.Stretch };
+            control.ParentPage = this;
+            control.SetParentWaveSeg(newseg, MultiChannelWavePanel);
+            control.ExternalUpdateEvent += RefreshMultiChannelPlot;
+            AppendMultiChannelPopEvent(control);
+            MultiChannelWavePanel.Children.Add(control);
+            RefreshMultiChannelPlot();
         }
         #endregion
 
-        private void CurrentLoopIndex_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                try
-                {
-                    RefreshPlot();
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-
-        private void NewSequence(object sender, RoutedEventArgs e)
-        {
-            Sequence = new SequenceDataAssemble() { Name = "Newseq" };
-            UpdateSequenceData();
-            SequencePanel.Visibility = Visibility.Visible;
-            TipPanel.Visibility = Visibility.Hidden;
-        }
-
-        private void SaveSequence(object sender, RoutedEventArgs e)
+        private void MultiChannelPanel_ItemValueChanged(int arg1, int arg2, object arg3)
         {
             try
             {
-                if (SequenceName.Text == "" || SequenceName.Text == null) throw new Exception("序列名不能为空");
-                //检查是否已存在同名文件
-                DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
-                var files = info.GetFiles("*", SearchOption.AllDirectories);
-                string path = "";
-                foreach (var item in files)
-                {
-                    try
-                    {
-                        var dic = FileObject.ReadDescription(item.FullName);
-                        if (dic.Keys.Contains("SequenceAssembleName") && dic["SequenceAssembleName"] == SequenceName.Text)
-                        {
-                            if (MessageWindow.ShowMessageBox("提示", "已存在同名序列，是否覆盖?", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.No)
-                            {
-                                return;
-                            }
-                            path = item.FullName;
-                            break;
-                        }
-                    }
-                    catch (Exception) { }
-                }
-                //读取参数
-                SequenceDataAssemble a = new SequenceDataAssemble();
-                a.Name = SequenceName.Text;
-                foreach (var item in Sequence.Channels)
-                {
-                    a.Channels.Add(item);
-                }
-                a.WriteToFile(path);
-
-                TipPanel.Visibility = Visibility.Visible;
-                SequencePanel.Visibility = Visibility.Hidden;
-
-                TimeWindow win = new TimeWindow();
-                win.Owner = Window.GetWindow(this);
-                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                win.ShowWindow("序列已保存");
-            }
-            catch (Exception ex)
-            {
-                MessageWindow.ShowTipWindow("保存未完成:" + ex.Message, Window.GetWindow(this));
-            }
-        }
-
-        private void OpenSequence(object sender, RoutedEventArgs e)
-        {
-            //保存到目标文件夹
-            DirectoryInfo info = Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "Sequences"));
-            var files = info.GetFiles("*", SearchOption.AllDirectories);
-            List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>();
-            foreach (var item in files)
-            {
-                try
-                {
-                    var dic = FileObject.ReadDescription(item.FullName);
-                    if (dic.Keys.Contains("SequenceAssembleName"))
-                    {
-                        values.Add(new KeyValuePair<string, string>(dic["SequenceAssembleName"], item.FullName));
-                    }
-                }
-                catch (Exception) { }
-            }
-            SequenceFileWindow window = new SequenceFileWindow(values);
-            window.Owner = Window.GetWindow(this);
-            string path = window.ShowDialog();
-            if (path == "") return;
-            try
-            {
-                Sequence = SequenceDataAssemble.ReadFromFile(FileObject.ReadFromFile(path));
-                UpdateSequenceData();
-                SequenceFileName.Content = Sequence.Name;
-            }
-            catch (Exception) { }
-            TipPanel.Visibility = Visibility.Collapsed;
-            SequencePanel.Visibility = Visibility.Visible;
-        }
-
-        private void WaveFormValueChanged(int arg1, int arg2, object arg3)
-        {
-            try
-            {
-                SequenceWaveSeg data = SignalPanel.GetTag(arg1) as SequenceWaveSeg;
-                data.PeakName = SignalPanel.GetCellValue(arg1, 0) as string;
-                data.WaveValue = (WaveValues)Enum.Parse(typeof(WaveValues), SignalPanel.GetCellValue(arg1, 1) as string);
-                data.PeakSpan = int.Parse(SignalPanel.GetCellValue(arg1, 2) as string);
-                data.IsTriggerCommand = (bool)SignalPanel.GetCellValue(arg1, 3);
-                try
-                {
-                    if (data.IsTriggerCommand == true)
-                    {
-                        SignalPanel.SetCelValue(arg1, 2, 20);
-                        data.PeakSpan = 20;
-                        return;
-                    }
-                    int length = GlobalPulseParams.GetGlobalPulseLength(data.PeakName);
-                    if (data.PeakName != "Custom")
-                    {
-                        data.PeakSpan = length;
-                    }
-                    SignalPanel.SetCelValue(arg1, 2, data.PeakSpan);
-                    RefreshPlot();
-                }
-                catch (Exception)
-                {
-                }
-            }
-            catch
-            {
-            }
-        }
-
-        private void ChannelPanel_ItemValueChanged(int arg1, int arg2, object arg3)
-        {
-            try
-            {
-                var channel = ChannelPanel.GetTag(arg1) as SequenceChannelData;
-                channel.ChannelInd = (SequenceChannel)Enum.Parse(typeof(SequenceChannel), ChannelPanel.GetCellValue(arg1, 0) as string);
-                channel.IsDisplay = (bool)ChannelPanel.GetCellValue(arg1, 2);
-                ChannelPanel.SetCelValue(arg1, 1, GetChannelDescription(channel.ChannelInd));
-                RefreshPlot();
+                var channel = MultiChannelPanel.GetTag(arg1) as SequenceChannelData;
+                channel.ChannelInd = (SequenceChannel)Enum.Parse(typeof(SequenceChannel), MultiChannelPanel.GetCellValue(arg1, 0) as string);
+                channel.IsDisplay = (bool)MultiChannelPanel.GetCellValue(arg1, 2);
+                MultiChannelPanel.SetCelValue(arg1, 1, GetChannelDescription(channel.ChannelInd));
+                RefreshMultiChannelPlot();
             }
             catch (Exception) { }
         }
 
-        private void ChannelPanel_ItemContextMenuSelected(int arg1, int arg2, object arg3)
+        private void MultiChannelPanel_ItemContextMenuSelected(int arg1, int arg2, object arg3)
         {
             //删除
             if (arg1 == 0)
             {
                 var seg = arg3 as SequenceChannelData;
                 Sequence.Channels.Remove(seg);
-                ChannelPanel.RemoveItemAt(arg2);
+                MultiChannelPanel.RemoveItemAt(arg2);
             }
         }
 
-        SequenceWaveSeg CopySeg = null;
-
-        private void SignalPanel_ItemContextMenuSelected(int arg1, int arg2, object arg3)
+        #region 切换视图
+        private void ChangeDisplayView(object sender, RoutedEventArgs e)
         {
-            //删除
-            if (arg1 == 0)
+            DecoratedButton btn = sender as DecoratedButton;
+            if (btn.Text == "单通道视图")
             {
-                var seg = arg3 as SequenceWaveSeg;
-                seg.ParentChannel.Peaks.Remove(seg);
-                SignalPanel.RemoveItemAt(arg2);
+                OneChannelSequencePannel.Visibility = Visibility.Visible;
+                MultiChannelSequencePannel.Visibility = Visibility.Hidden;
+                MultiChannelBtn.KeepPressed = false;
             }
-            //上方插入
-            if (arg1 == 1)
+            if (btn.Text == "多通道视图")
             {
-                var seg = arg3 as SequenceWaveSeg;
-                var waveseg = new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel);
-                seg.ParentChannel.Peaks.Insert(arg2 < 0 ? 0 : arg2, waveseg);
-                SignalPanel.InsertItem(arg2 < 0 ? 0 : arg2, waveseg, new List<object>() { GlobalPulseParams.GetGlobalPulses(), waveseg.WaveValue, waveseg.PeakSpan, waveseg.IsTriggerCommand });
-                SignalPanel.SetCelValue(arg2 < 0 ? 0 : arg2, 0, waveseg.PeakName);
+                OneChannelSequencePannel.Visibility = Visibility.Hidden;
+                MultiChannelSequencePannel.Visibility = Visibility.Visible;
+                OneChannelBtn.KeepPressed = false;
             }
-            //下方插入
-            if (arg1 == 2)
-            {
-                var seg = arg3 as SequenceWaveSeg;
-                var waveseg = new SequenceWaveSeg("newseg", 0, WaveValues.Zero, seg.ParentChannel);
-                seg.ParentChannel.Peaks.Insert(arg2 + 1, waveseg);
-                SignalPanel.InsertItem(arg2 + 1, waveseg, new List<object>() { GlobalPulseParams.GetGlobalPulses(), waveseg.WaveValue, waveseg.PeakSpan, waveseg.IsTriggerCommand });
-                SignalPanel.SetCelValue(arg2 + 1, 0, waveseg.PeakName);
-            }
-            //复制
-            if (arg1 == 3)
-            {
-                var seg = arg3 as SequenceWaveSeg;
-                CopySeg = seg;
-            }
-            //粘贴
-            if (arg1 == 4)
-            {
-                if (CopySeg == null) return;
-                var seg = arg3 as SequenceWaveSeg;
-                var waveseg = new SequenceWaveSeg(CopySeg.PeakName, CopySeg.PeakSpan, CopySeg.WaveValue, seg.ParentChannel);
-                seg.ParentChannel.Peaks.Insert(arg2 + 1, waveseg);
-                SignalPanel.InsertItem(arg2 + 1, waveseg, new List<object>() { GlobalPulseParams.GetGlobalPulses(), waveseg.WaveValue, waveseg.PeakSpan, waveseg.IsTriggerCommand });
-                SignalPanel.SetCelValue(arg2 + 1, 0, waveseg.PeakName);
-            }
+            btn.KeepPressed = true;
         }
+        #endregion
 
-        private void SignalPanel_ItemSelected(int arg1, object arg2)
-        {
-            try
-            {
-                RefreshPlot();
-            }
-            catch (Exception)
-            {
-            }
-        }
+        #region 单通道视图
+        ChannelIDSelectWindow window = new ChannelIDSelectWindow();
 
-        private void OpenGlobalSeqPanel(object sender, RoutedEventArgs e)
+        private void NewSingleChannel(object sender, RoutedEventArgs e)
         {
-            GlobalSequenceWindow win = new GlobalSequenceWindow();
-            win.Owner = Window.GetWindow(this);
-            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            win.ShowDialog();
-        }
-
-        private void UpdateGlobals(object sender, RoutedEventArgs e)
-        {
-            PulseName.Items.Clear();
-            PulseName.TemplateButton = PulseName;
-            foreach (var item in GlobalPulseParams.GetGlobalPulses())
+            ///新建通道窗口
+            window.Owner = Window.GetWindow(this);
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.Show(SingleChannelSequence);
+            window.AfterHideEvent = new Action(() =>
             {
-                PulseName.Items.Add(new DecoratedButton() { Text = item });
-            }
-        }
-
-        private void Confirm(object sender, RoutedEventArgs e)
-        {
-            if (PulseName.SelectedItem == null || Sequence == null) return;
-            try
-            {
-                if (MessageBoxResult.Yes == MessageWindow.ShowMessageBox("提示", "此操作将修改全局变量的值,是否继续？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)))
+                if (window.AddedChannel != SequenceChannel.None)
                 {
-                    GlobalPulseParams.SetGlobalPulseLength(PulseName.SelectedItem.Text, int.Parse(PulseValue.Text));
-                    Sequence.ChangeWaveSegSpan(PulseName.SelectedItem.Text, int.Parse(PulseValue.Text));
-                    RefreshPlot();
+                    SingleChannelSequence.AddChannel(window.AddedChannel);
+                    UpdateSequenceData();
                 }
-            }
-            catch (Exception)
-            {
-            }
+            });
         }
 
-        SequenceTestWindow seqWin = new SequenceTestWindow();
-        /// <summary>
-        /// 测试序列
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SeuqenceTest(object sender, RoutedEventArgs e)
+        public void AppendSingleChannelPopEvent(SingleChannelSequenceControl c)
+        {
+            c.SequenceNameSelectionEvent += new Action<ChannelSequenceControlBase>((v) =>
+            {
+                SequenceNamePop.PlacementTarget = v;
+                SequenceNamePop.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+                SequenceNamePop.IsOpen = true;
+                scroll.Height = GlobalPulsesPopPanel.ActualHeight;
+                SequenceNamePop.StaysOpen = false;
+                SequenceNamePop.Tag = v;
+            });
+            c.GroupNameSelectionEvent += new Action<ChannelSequenceControlBase>((v) =>
+            {
+                SequenceGroupNamePop.PlacementTarget = v;
+                SequenceGroupNamePop.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+                SequenceGroupNamePop.IsOpen = true;
+                scroll1.Height = PulsesGroupPanel.ActualHeight;
+                SequenceGroupNamePop.StaysOpen = false;
+                SequenceGroupNamePop.Tag = v;
+            });
+            c.ChannelRelationSetEvent += new Action<ChannelSequenceControlBase>((v) =>
+            {
+                GroupChannelRelationPop.PlacementTarget = v;
+                GroupChannelRelationPop.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+                var group = c.ParentWaveSeg as GroupSequenceWaveSeg;
+                var list = c.ParentData.GetGroupPulseChannelRelations(group);
+                if (list.Count == 0)
+                {
+                    list = c.ParentData.Channels.Select(x => new KeyValuePair<string, SequenceChannel>("", x.Key)).ToList();
+                }
+                GroupChannelRelationPop.Show(c.ParentWaveSeg as GroupSequenceWaveSeg, SingleChannelSequence, list);
+                SequenceGroupNamePop.StaysOpen = false;
+                SequenceGroupNamePop.Tag = v;
+            });
+        }
+
+        private void NewSinglePeak(object sender, RoutedEventArgs e)
+        {
+            if (SingleChannelSequence.Channels.Count == 0) return;
+            SingleSequenceWaveSeg newseg = new SingleSequenceWaveSeg("新序列", 0, WaveValues.Zero, null, false);
+            SingleChannelSequence.AddSeg(newseg, new List<SequenceChannel>());
+            SingleChannelSequenceControl control = new SingleChannelSequenceControl(newseg, SingleChannelSequence);
+            control.SetParentWaveSeg(newseg, SingleChannelWavePanel);
+            control.ParentPage = this;
+            control.ExternalUpdateEvent += RefreshMultiChannelPlot;
+            AppendSingleChannelPopEvent(control);
+            SingleChannelWavePanel.Children.Add(control);
+            RefreshSingleChannelPlot();
+        }
+
+        private void RefreshSingleChannelPlot()
         {
             if (Sequence == null) return;
-            seqWin.Show(Sequence);
+
+            List<int> SeqTimes = new List<int>();
+
+            double loloc = double.NaN;
+            double hiloc = double.NaN;
+
+            SingleSequenceWaveSeg segbefore = null;
+            SingleSequenceWaveSeg segafter = null;
+
+            foreach (var item in SingleChannelWavePanel.Children)
+            {
+                if ((item as SingleChannelSequenceControl).IsSelected)
+                {
+                    var seg = (item as SingleChannelSequenceControl).ParentWaveSeg;
+                    if (seg is SingleSequenceWaveSeg)
+                    {
+                        segbefore = seg as SingleSequenceWaveSeg;
+                        segafter = seg as SingleSequenceWaveSeg;
+                    }
+                    if (seg is GroupSequenceWaveSeg)
+                    {
+                        try
+                        {
+                            segbefore = (seg as GroupSequenceWaveSeg).GetSelectedChannelSegs().First();
+                            segafter = (seg as GroupSequenceWaveSeg).GetSelectedChannelSegs().Last();
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                    break;
+                }
+            }
+            singlechart.DataList.Clear();
+            SingleChannelSequence.UpdatePlotData();
+            foreach (var item in SingleChannelSequence.ChannelWaveDatas)
+            {
+                singlechart.DataList.Add(item);
+            }
+            singlechart.RefreshPlotWithAutoScale();
+
+            if (!double.IsNaN(loloc))
+                singlechart.DataList.Add(new NumricDataSeries("", new List<double>() { loloc, loloc }, new List<double>() { 0, 1.1 * (SingleChannelSequence.ChannelWaveDatas.Count + 1) }) { LineColor = Colors.LightGreen, LineThickness = 2, MarkerSize = 0 });
+            if (!double.IsNaN(hiloc))
+                singlechart.DataList.Add(new NumricDataSeries("", new List<double>() { hiloc, hiloc }, new List<double>() { 0, 1.1 * (SingleChannelSequence.ChannelWaveDatas.Count + 1) }) { LineColor = Colors.LightGreen, LineThickness = 2, MarkerSize = 0 });
+            if (!double.IsNaN(loloc) && !double.IsNaN(hiloc))
+                singlechart.RefreshPlotWithCustomScale(loloc, hiloc);
         }
+
+        #endregion
     }
 }

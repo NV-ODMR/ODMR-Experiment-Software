@@ -31,6 +31,16 @@ namespace ODMR_Lab.实验部分.序列编辑器
         {
         }
 
+        public void UpdateGlobalPulsesLength(bool throwexception = false)
+        {
+            foreach (var item in Channels)
+            {
+                foreach (var peak in item.Peaks)
+                {
+                    peak.UpdateGlobalPulse(throwexception);
+                }
+            }
+        }
 
         /// <summary>
         /// 读取
@@ -45,14 +55,24 @@ namespace ODMR_Lab.实验部分.序列编辑器
             {
                 var peaknames = obj.ExtractString("ChannelName→" + names[i] + "→" + "PeakNames");
                 var peakvalues = obj.ExtractString("ChannelName→" + names[i] + "→" + "PeakValues");
-                var peakspans = obj.ExtractString("ChannelName→" + names[i] + "→" + "Spans").Select(x => int.Parse(x)).ToList();
-                var peaktriggers = obj.ExtractString("ChannelName→" + names[i] + "→" + "IsTrigger").Select(x => bool.Parse(x)).ToList();
+                var peakspans = obj.ExtractString("ChannelName→" + names[i] + "→" + "Spans");
+                var peaktriggers = obj.ExtractString("ChannelName→" + names[i] + "→" + "IsTrigger");
 
                 SequenceChannelData channeldata = new SequenceChannelData((SequenceChannel)Enum.Parse(typeof(SequenceChannel), names[i]));
 
-                for (int j = 0; j < peaknames.Count; j++)
+                for (int j = 0; j < peaktriggers.Count; j++)
                 {
-                    channeldata.Peaks.Add(new SequenceWaveSeg(peaknames[j], peakspans[j], (WaveValues)Enum.Parse(typeof(WaveValues), peakvalues[j]), channeldata, peaktriggers[j]));
+                    if (peaktriggers[j] == "SequenceGroup")
+                    {
+                        GroupSequenceWaveSeg seg = new GroupSequenceWaveSeg();
+                        seg.ReadFromFile(peaknames[j]);
+                        seg.SelectChnnelInd = int.Parse(peakvalues[j]);
+                        channeldata.Peaks.Add(seg);
+                    }
+                    else
+                    {
+                        channeldata.Peaks.Add(new SingleSequenceWaveSeg(peaknames[j], int.Parse(peakspans[j]), (WaveValues)Enum.Parse(typeof(WaveValues), peakvalues[j]), channeldata, bool.Parse(peaktriggers[j])));
+                    }
                 }
 
                 assem.Channels.Add(channeldata);
@@ -82,14 +102,56 @@ namespace ODMR_Lab.实验部分.序列编辑器
             foreach (var item in Channels)
             {
                 string chname = Enum.GetName(item.ChannelInd.GetType(), item.ChannelInd);
-                var peaknames = item.Peaks.Select(x => x.PeakName.ToString()).ToList();
-                var peakvalues = item.Peaks.Select(x => Enum.GetName(typeof(WaveValues), x.WaveValue)).ToList();
-                var ispeaktrigger = item.Peaks.Select(x => x.IsTriggerCommand.ToString()).ToList();
-                var peakspans = item.Peaks.Select(x => x.PeakSpan.ToString()).ToList();
-                obj.WriteStringData("ChannelName→" + chname + "→" + "PeakNames", peaknames);
-                obj.WriteStringData("ChannelName→" + chname + "→" + "PeakValues", peakvalues);
-                obj.WriteStringData("ChannelName→" + chname + "→" + "Spans", peakspans);
-                obj.WriteStringData("ChannelName→" + chname + "→" + "IsTrigger", ispeaktrigger);
+                var peaknames = item.Peaks.Select(x =>
+                {
+                    if (x is SingleSequenceWaveSeg)
+                    {
+                        return (x as SingleSequenceWaveSeg).PeakName;
+                    }
+                    if (x is GroupSequenceWaveSeg)
+                    {
+                        return (x as GroupSequenceWaveSeg).PeakName;
+                    }
+                    return "";
+                }).ToList();
+                var peakvalues = item.Peaks.Select(x =>
+                {
+                    if (x is SingleSequenceWaveSeg)
+                    {
+                        return Enum.GetName(typeof(WaveValues), (x as SingleSequenceWaveSeg).WaveValue);
+                    }
+                    else
+                    {
+                        return (x as GroupSequenceWaveSeg).SelectChnnelInd.ToString();
+                    }
+                }).ToList();
+                var ispeaktrigger = item.Peaks.Select(x =>
+                {
+                    if (x is SingleSequenceWaveSeg)
+                    {
+                        return (x as SingleSequenceWaveSeg).IsTriggerCommand.ToString();
+                    }
+                    else
+                    {
+                        return "SequenceGroup";
+                    }
+                }).ToList();
+                var peakspans = item.Peaks.Select(x =>
+                {
+                    if (x is SingleSequenceWaveSeg)
+                    {
+                        return (x as SingleSequenceWaveSeg).PeakSpan.ToString();
+                    }
+                    else
+                    {
+                        return "SequenceGroup";
+                    }
+                }).ToList();
+
+                obj.WriteStringData(FileHelper.Combine("→", "ChannelName", chname, "PeakNames"), peaknames);
+                obj.WriteStringData(FileHelper.Combine("→", "ChannelName", chname, "PeakValues"), peakvalues);
+                obj.WriteStringData(FileHelper.Combine("→", "ChannelName", chname, "Spans"), peakspans);
+                obj.WriteStringData(FileHelper.Combine("→", "ChannelName", chname, "IsTrigger"), ispeaktrigger);
             }
 
             //保存到目标文件夹
@@ -177,7 +239,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 int time = 0;
                 foreach (var peak in wave.Peaks)
                 {
-                    if (peak.WaveValue == WaveValues.One || peak.IsTriggerCommand)
+                    if (peak.IsWaveOne() || peak.IsTrigger())
                     {
                         OneTimes.Add(time);
                         time += peak.PeakSpan;
@@ -231,12 +293,13 @@ namespace ODMR_Lab.实验部分.序列编辑器
         /// <returns></returns>
         public void CheckCommandFormat()
         {
+            CheckChannelFormat();
             List<int> starttimes = new List<int>();
             List<int> endtimes = new List<int>();
             //Trigger指令必须搭配TriggerWait指令使用
             foreach (var item in Channels)
             {
-                var trigs = item.Peaks.Where(x => x.IsTriggerCommand).Select(x => item.Peaks.IndexOf(x) - 1);
+                var trigs = item.Peaks.Where(x => x.IsTrigger()).Select(x => item.Peaks.IndexOf(x) - 1);
                 foreach (var ind in trigs)
                 {
                     if (ind == -1 || item.Peaks[ind].PeakName != "TriggerWait")
@@ -247,12 +310,12 @@ namespace ODMR_Lab.实验部分.序列编辑器
             }
             foreach (var item in Channels)
             {
-                starttimes.AddRange(item.Peaks.Where(x => x.IsTriggerCommand).Select(x =>
+                starttimes.AddRange(item.Peaks.Where(x => x.IsTrigger()).Select(x =>
                 {
                     item.GetSegTime(x, out int start, out int end);
                     return start;
                 }));
-                endtimes.AddRange(item.Peaks.Where(x => x.IsTriggerCommand).Select(x =>
+                endtimes.AddRange(item.Peaks.Where(x => x.IsTrigger()).Select(x =>
                 {
                     item.GetSegTime(x, out int start, out int end);
                     return end;
@@ -264,6 +327,26 @@ namespace ODMR_Lab.实验部分.序列编辑器
             {
                 throw new Exception("Trigger指令在每个通道中必须具有相同的起始时间和终止时间");
             }
+        }
+
+        /// <summary>
+        /// 检查通道格式，脉冲组合的起始时间必须相同,同时通道总时间必须相同,,出错则报错
+        /// </summary>
+        public void CheckChannelFormat()
+        {
+            var groups = Channels.Select((x) => x.Peaks.Where(s => s is GroupSequenceWaveSeg).ToList()).ToList();
+            var counthashset = groups.Select(x => x.Count).ToHashSet();
+            if (counthashset.Count > 1) throw new Exception("各个通道的脉冲组合数不相同");
+            int count = counthashset.ElementAt(0);
+            for (int i = 0; i < count; i++)
+            {
+                var indexedgroups = groups.Select((x) => x.ElementAt(i));
+                var segsbeforegroup = indexedgroups.Select((x, ind) => Channels[ind].Peaks.GetRange(0, Channels[ind].Peaks.IndexOf(x)));
+                var totaltimes = segsbeforegroup.Select((x) => x.Count == 0 ? 0 : x.Sum(p => p.PeakSpan)).ToHashSet();
+                if (totaltimes.Count > 1) throw new Exception("同一脉冲组合各个通道的起始时间必须相同");
+            }
+            var times = Channels.Select(x => SequenceChannelData.GetExpandedPeakArray(x.Peaks).Sum(y => y.PeakSpan)).ToHashSet();
+            if (times.Count > 1) throw new Exception("各个通道的总时间必须相同");
         }
 
         /// <summary>
@@ -294,7 +377,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
             {
                 try
                 {
-                    res |= item.GetSegFromTime(starttime, endtime)[0].IsTriggerCommand;
+                    res |= item.GetSegFromTime(starttime, endtime)[0].IsTrigger();
                 }
                 catch (Exception)
                 {

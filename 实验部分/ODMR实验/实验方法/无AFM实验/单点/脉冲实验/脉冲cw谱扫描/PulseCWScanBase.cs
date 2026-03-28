@@ -96,14 +96,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
             int ylength = (int)(offsety + corepiy * 1.7678);
 
             int n = 16;
-            GlobalPulseParams.SetGlobalPulseLength("CORPSEPiX", (int)(offsetx + (3 ) * corepix));
+            GlobalPulseParams.SetGlobalPulseLength("CORPSEPiX", (int)(offsetx + (3) * corepix));
             GlobalPulseParams.SetGlobalPulseLength("CORPSEPiY", ylength);
             ExperimentHelper.SetT2SequenceEvolutionPulses(50, 0, 0, 0, 0);
             //GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)(1000));
             var channel = GetDeviceByName("Power") as PowerChannelInfo;
             channel.Channel.Voltage = GetV90();
             #region 一阶序列
-            PulsePhotonPack pack = DoPulseExp("XY-8-2-T2", locvalue, GetRFPower(), GetPulseLoopCount(), 6, GetPointTimeout(), sequenceAction: new Action<SequenceDataAssemble>((seq) => { SetSequenceCount(seq, 1); }));
+            PulsePhotonPack pack = DoPulseExp("XY-8-2-T2", locvalue, GetRFPower(), GetPulseLoopCount(), 6, GetPointTimeout(), sequenceAction: new Action<SequenceDataAssemble>((seq) => { }));
             double signalc = pack.GetPhotonsAtIndex(0).Sum();
             double referencec = pack.GetPhotonsAtIndex(2).Sum();
             double signalc2 = pack.GetPhotonsAtIndex(1).Sum();
@@ -155,52 +155,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
 
             UpdatePlotChartFlow(true);
             return new List<object>();
-        }
-
-        private void SetSequenceCount(SequenceDataAssemble obj, int order)
-        {
-            //传入参数为读取到的序列
-            //查找X:pi脉冲的通道
-            SequenceChannel ind = SequenceChannel.None;
-            foreach (var ch in obj.Channels)
-            {
-                var pilist = ch.Peaks.Where(x => x.PeakName == "PiX");
-                if (pilist.Count() != 0)
-                {
-                    if (pilist.ElementAt(0).WaveValue == WaveValues.One)
-                    {
-                        ind = ch.ChannelInd;
-                    }
-                }
-            }
-
-            #region 为每个通道添加对应阶数的序列
-            if (order > 1)
-            {
-                int det = order - 1;
-                foreach (var ch in obj.Channels)
-                {
-                    ///Pi/2 脉冲的位置
-                    var halfpiys = ch.Peaks.Where((x) => x.PeakName == "CustomYLength" || x.PeakName == "CustomXLength").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                    halfpiys.Sort();
-                    halfpiys.Reverse();
-                    int signalch = halfpiys.Last();
-                    foreach (var item in halfpiys)
-                    {
-                        List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
-                        //for (int i = 0; i < det; i++)
-                        //{
-                        //    segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                        //    segs.Add(new SequenceWaveSeg("T2Step", GlobalPulseParams.GetGlobalPulseLength("T2Step"), WaveValues.Zero, ch));
-                        //    segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind && item == signalch) ? WaveValues.One : WaveValues.Zero, ch));
-                        //    segs.Add(new SequenceWaveSeg("T2Step", GlobalPulseParams.GetGlobalPulseLength("T2Step"), WaveValues.Zero, ch));
-                        //}
-                        //ch.Peaks.InsertRange(item, segs);
-                    }
-                }
-            }
-            #endregion
-
         }
         public abstract List<double> GetScanFrequences();
 

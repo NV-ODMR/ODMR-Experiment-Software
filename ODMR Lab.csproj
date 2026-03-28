@@ -62,19 +62,19 @@
   <ItemGroup>
     <Reference Include="CodeHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
+      <HintPath>..\CodeHelper\bin\Debug\CodeHelper.dll</HintPath>
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
+      <HintPath>..\MathLib\MathLib\bin\Debug\MathLib.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
@@ -90,7 +90,7 @@
     </Reference>
     <Reference Include="PythonHandler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
+      <HintPath>..\PythonPackage\PythonHandler\bin\Debug\PythonHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -345,14 +345,37 @@
     <Compile Include="实验部分\序列编辑器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\序列编辑器\SequenceChannel.cs" />
-    <Compile Include="实验部分\序列编辑器\SequenceData.cs" />
-    <Compile Include="实验部分\序列编辑器\SequenceDataAssemble.cs" />
+    <Compile Include="实验部分\序列编辑器\子控件\SingleChannelBar.xaml.cs">
+      <DependentUpon>SingleChannelBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\序列编辑器\子控件\GroupRelationSelectionPop.xaml.cs">
+      <DependentUpon>GroupRelationSelectionPop.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\序列编辑器\子控件\SingleChannelSequenceControl.xaml.cs">
+      <DependentUpon>SingleChannelSequenceControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\序列编辑器\子窗口\.xaml.cs">
+      <DependentUpon>ChannelIDSelectWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\序列编辑器\子窗口\GroupChannelEditWindow.xaml.cs">
+      <DependentUpon>GroupChannelEditWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\序列编辑器\序列通道类\SingleChannelData.cs" />
+    <Compile Include="实验部分\序列编辑器\序列通道类\SequenceChannelID.cs" />
+    <Compile Include="实验部分\序列编辑器\序列通道类\通道信号类\GroupSequenceWaveSeg.cs" />
+    <Compile Include="实验部分\序列编辑器\序列通道类\通道信号类\SingleSequenceWaveSeg.cs" />
+    <Compile Include="实验部分\序列编辑器\序列通道类\SequenceChannelData.cs" />
+    <Compile Include="实验部分\序列编辑器\序列通道类\通道信号类\SequenceSegBase.cs" />
+    <Compile Include="实验部分\序列编辑器\序列通道类\SequenceDataAssemble.cs" />
     <Compile Include="实验部分\序列编辑器\SequenceFileWindow.xaml.cs">
       <DependentUpon>SequenceFileWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\序列编辑器\SequenceTestWindow.xaml.cs">
       <DependentUpon>SequenceTestWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\序列编辑器\子控件\ChannelSequenceControlBase.cs" />
+    <Compile Include="实验部分\序列编辑器\子控件\MultiChannelSequenceControl.xaml.cs">
+      <DependentUpon>MultiChannelSequenceControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\扫描基方法\扫描任务\二维\CustomScan2DSession.cs" />
     <Compile Include="实验部分\扫描基方法\扫描任务\一维\CustomScan1DLineSession.cs" />
@@ -677,6 +700,30 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\序列编辑器\SequenceTestWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\序列编辑器\子控件\SingleChannelBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\序列编辑器\子控件\GroupRelationSelectionPop.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="实验部分\序列编辑器\子控件\SingleChannelSequenceControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\序列编辑器\子控件\MultiChannelSequenceControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="实验部分\序列编辑器\子窗口\ChannelIDSelectWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\序列编辑器\子窗口\GroupChannelEditWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

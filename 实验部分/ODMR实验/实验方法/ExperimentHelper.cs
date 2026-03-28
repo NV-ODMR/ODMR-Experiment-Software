@@ -53,7 +53,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
                 var pilist = ch.Peaks.Where(x => x.PeakName == "PiX");
                 if (pilist.Count() != 0)
                 {
-                    if (pilist.ElementAt(0).WaveValue == WaveValues.One)
+                    if (pilist.ElementAt(0).IsWaveOne())
                     {
                         ind = ch.ChannelInd;
                     }
@@ -79,14 +79,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
                         halfpiys.Reverse();
                         foreach (var item in halfpiys)
                         {
-                            List<SequenceWaveSeg> segs = new List<SequenceWaveSeg>();
+                            List<SingleSequenceWaveSeg> segs = new List<SingleSequenceWaveSeg>();
                             for (int i = 0; i < det; i++)
                             {
-                                segs.Add(new SequenceWaveSeg("HalfEvolutionTimeX", GlobalPulseParams.GetGlobalPulseLength("HalfEvolutionTimeX"), WaveValues.Zero, ch));
-                                segs.Add(new SequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind) ? WaveValues.One : WaveValues.Zero, ch));
-                                segs.Add(new SequenceWaveSeg("HalfEvolutionTimeX", GlobalPulseParams.GetGlobalPulseLength("HalfEvolutionTimeX"), WaveValues.Zero, ch));
+                                segs.Add(new SingleSequenceWaveSeg("HalfEvolutionTimeX", GlobalPulseParams.GetGlobalPulseLength("HalfEvolutionTimeX"), WaveValues.Zero, ch));
+                                segs.Add(new SingleSequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind) ? WaveValues.One : WaveValues.Zero, ch));
+                                segs.Add(new SingleSequenceWaveSeg("HalfEvolutionTimeX", GlobalPulseParams.GetGlobalPulseLength("HalfEvolutionTimeX"), WaveValues.Zero, ch));
                             }
-                            ch.Peaks.InsertRange(item, segs);
+                            for (int i = 0; i < segs.Count; i++)
+                            {
+                                ch.Peaks.Insert(item + i, segs[i]);
+                            }
                         }
                     }
                 }
