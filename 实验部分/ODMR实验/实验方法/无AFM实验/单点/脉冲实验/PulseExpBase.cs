@@ -69,16 +69,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             //设置序列
             var sequence = SequenceDataAssemble.ReadFromSequenceName(pulsename);
             //设置全局参数
-            foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
-            {
-                sequence.ChangeWaveSegSpan(item.PulseName, item.PulseLength);
-            }
+            sequence.UpdateGlobalPulsesLength();
             sequenceAction?.Invoke(sequence);
             //设置全局参数
-            foreach (var item in GlobalPulseParams.GlobalPulseConfigs)
-            {
-                sequence.ChangeWaveSegSpan(item.PulseName, item.PulseLength);
-            }
+            sequence.UpdateGlobalPulsesLength();
             sequence.LoopCount = loopcount;
             //设置pb
             PulseBlasterInfo pb = GetDeviceByName("PB") as PulseBlasterInfo;

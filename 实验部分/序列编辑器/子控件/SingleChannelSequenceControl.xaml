@@ -23,7 +23,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
         <controls:DecoratedButton ToolTip="信号组名称" Name="SequenceGroupname" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Click="SelectSequenceGroupName" Grid.ColumnSpan="1" FontSize="10" TextAreaRatio="1" IconMargin="4" FontWeight="Thin"  Background="Transparent" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
         <controls:DecoratedButton ToolTip="设置映射关系" Margin="5" Text="设置映射关系" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" Click="SetChannelRelation" Grid.ColumnSpan="1" FontSize="10" TextAreaRatio="1" IconMargin="4" FontWeight="Thin"  Background="#FF2E2E2E" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>

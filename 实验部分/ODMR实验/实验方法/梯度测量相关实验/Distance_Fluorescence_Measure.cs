@@ -158,10 +158,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         {
             //下针到指定距离
             AFMFloatDrop floadrop = new AFMFloatDrop();
-            var result = floadrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"), arg3 * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
+            var result = floadrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit")
+                , arg3 * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000
+                , GetInputParamValueByName("Measure_I")
+                , GetInputParamValueByName("PIDSampleTIme")
+                , arg3 * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000
+                ,null
+            }, GetDeviceByName("LockIn"));
             if (((bool)result[0]) == false) throw new Exception();
             //测量光子计数
-            PulsePhotonPack photonpack = DoPulseExp("DelayCountTest", 2870, -20, GetInputParamValueByName("SeqLoopCount"), 2, GetInputParamValueByName("TimeOut"));
+            PulsePhotonPack photonpack = DoPulseExp("FluorenscenceSampleWithoutRF", 2870, -20, GetInputParamValueByName("SeqLoopCount"), 2, GetInputParamValueByName("TimeOut"));
             double photoncount = photonpack.GetPhotonsAtIndex(0).Sum();
             if (photoncount == 0) photoncount = double.NaN;
             //获取当前高度

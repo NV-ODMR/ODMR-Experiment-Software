@@ -97,17 +97,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
             }
 
             #region 计算Delay等待时间
-            var cha = obj.Channels[0];
-            if (cha.Peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").Count() == 0) return;
-            int triggerind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").First());
-            int countind = cha.Peaks.IndexOf(cha.Peaks.Where((x) => x.PeakName == "CountWait").First());
+            var chan = obj.Channels[0];
+            var peaks = SequenceChannelData.GetExpandedPeakArray(chan.Peaks);
+            if (peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").Count() == 0) return;
+            int triggerind = peaks.IndexOf(peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").First());
+            int countind = peaks.IndexOf(peaks.Where((x) => x.PeakName == "CountWait").First());
             int totalexptime = 0;
 
             List<int> times = new List<int>();
             for (int i = triggerind + 1; i < countind; i++)
             {
-                totalexptime += cha.Peaks[i].PeakSpan;
-                times.Add(cha.Peaks[i].PeakSpan);
+                totalexptime += peaks[i].PeakSpan;
+                times.Add(peaks[i].PeakSpan);
             }
 
 

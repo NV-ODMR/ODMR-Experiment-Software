@@ -234,10 +234,13 @@ namespace ODMR_Lab.实验部分.序列编辑器
             ComandInformation = "";
             //找1脉冲以及Trigger指令的时间点
             HashSet<int> OneTimes = new HashSet<int>() { 0 };
-            foreach (var wave in Channels)
+            SequenceDataAssemble newassem = new SequenceDataAssemble();
+            newassem.Channels = Channels.Select(x => new SequenceChannelData(x.ChannelInd) { Peaks = SequenceChannelData.GetExpandedPeakArray(x.Peaks).Select(y => y as SequenceSegBase).ToList() }).ToList();
+            foreach (var wave in newassem.Channels)
             {
                 int time = 0;
-                foreach (var peak in wave.Peaks)
+                var peaks = wave.Peaks;
+                foreach (var peak in peaks)
                 {
                     if (peak.IsWaveOne() || peak.IsTrigger())
                     {
@@ -256,7 +259,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
             sortedTimes.Sort();
             for (int j = 0; j < sortedTimes.Count - 1; j++)
             {
-                if (IsTrigger(sortedTimes[j], sortedTimes[j + 1]))
+                if (newassem.IsTrigger(sortedTimes[j], sortedTimes[j + 1]))
                 {
                     TriggerLine trigger = new TriggerLine();
                     ComandInformation += "Trigger\n";
@@ -265,7 +268,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 else
                 {
                     List<int> HighChannelIndexes = new List<int>();
-                    foreach (var ch in Channels)
+                    foreach (var ch in newassem.Channels)
                     {
                         if (ch.IsWaveOne(sortedTimes[j], sortedTimes[j + 1]))
                         {

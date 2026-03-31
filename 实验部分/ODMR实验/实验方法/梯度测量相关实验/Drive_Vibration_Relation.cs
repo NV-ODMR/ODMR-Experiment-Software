@@ -100,7 +100,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                      //重新下针
                      AFMFloatDrop floatdrop = new AFMFloatDrop();
                      var result = floatdrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
-                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
+                         GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000,
+                         GetInputParamValueByName("Measure_I"),
+                         GetInputParamValueByName("PIDSampleTIme"),
+                         GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000,
+                         null
+                         }, GetDeviceByName("LockIn"));
                      if ((bool)result[0] == false) throw new Exception();
                      sw.Device.IsOpen = true;
                      RunSubExperimentBlock(1);
@@ -130,6 +135,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 
         private List<object> ScanEvent(object arg1, D1NumricScanRangeBase range, double arg3, List<object> list)
         {
+            AFMFloatDrop floatdrop0 = new AFMFloatDrop();
+            floatdrop0.DistractDistance(new List<object>(){
+                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000 },
+                GetDeviceByName("LockIn"));
             //关闭信号
             //(GetDeviceByName("LockInSignalSwitch") as SwitchInfo).Device.IsOpen = false;
             //设置驱动电压
@@ -141,13 +150,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
             //重新下针
             AFMFloatDrop floatdrop = new AFMFloatDrop();
             var result = floatdrop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
-                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000, GetInputParamValueByName("Measure_I"), GetInputParamValueByName("PIDSampleTIme") }, GetDeviceByName("LockIn"));
+                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000,
+                GetInputParamValueByName("Measure_I"),
+                GetInputParamValueByName("PIDSampleTIme"),
+                GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000,
+                null
+            }, GetDeviceByName("LockIn"));
             if ((bool)result[0] == false) throw new Exception();
 
             //打开信号
-            (GetDeviceByName("LockInSignalSwitch") as SwitchInfo).Device.IsOpen = true;
-            Thread.Sleep(3000);
-
+            //(GetDeviceByName("LockInSignalSwitch") as SwitchInfo).Device.IsOpen = true;
             //测量荧光振动曲线
             var exp = RunSubExperimentBlock(0, true);
             var photons = exp.Get1DChartDataSource("光子数", "Delay测试数据").ToArray().ToList();

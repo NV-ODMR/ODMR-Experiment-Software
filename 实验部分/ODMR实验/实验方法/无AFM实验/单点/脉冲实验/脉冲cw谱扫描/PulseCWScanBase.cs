@@ -96,17 +96,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
             int ylength = (int)(offsety + corepiy * 1.7678);
 
             int n = 16;
-            GlobalPulseParams.SetGlobalPulseLength("CORPSEPiX", (int)(offsetx + (3) * corepix));
+            GlobalPulseParams.SetGlobalPulseLength("CORPSEPiX", (int)(offsetx + (1.5) * corepix));
             GlobalPulseParams.SetGlobalPulseLength("CORPSEPiY", ylength);
             ExperimentHelper.SetT2SequenceEvolutionPulses(50, 0, 0, 0, 0);
             //GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)(1000));
             var channel = GetDeviceByName("Power") as PowerChannelInfo;
             channel.Channel.Voltage = GetV90();
             #region 一阶序列
-            PulsePhotonPack pack = DoPulseExp("XY-8-2-T2", locvalue, GetRFPower(), GetPulseLoopCount(), 6, GetPointTimeout(), sequenceAction: new Action<SequenceDataAssemble>((seq) => { }));
+            PulsePhotonPack pack = DoPulseExp("PulseCW", locvalue, GetRFPower(), GetPulseLoopCount(), 4, GetPointTimeout(), sequenceAction: new Action<SequenceDataAssemble>((seq) => { }));
             double signalc = pack.GetPhotonsAtIndex(0).Sum();
-            double referencec = pack.GetPhotonsAtIndex(2).Sum();
-            double signalc2 = pack.GetPhotonsAtIndex(1).Sum();
+            double referencec = pack.GetPhotonsAtIndex(1).Sum();
+            double signalc2 = pack.GetPhotonsAtIndex(0).Sum();
             double contrast1 = 0;
             double contrast2 = 0;
             try

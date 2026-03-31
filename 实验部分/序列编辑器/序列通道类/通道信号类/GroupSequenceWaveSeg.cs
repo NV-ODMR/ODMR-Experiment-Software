@@ -146,6 +146,10 @@ namespace ODMR_Lab.实验部分.序列编辑器
         public static List<string> EnumerateGroupNames()
         {
             List<string> res = new List<string>();
+            if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "SequenceGroup")) == false)
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "SequenceGroup"));
+            }
             var files = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "SequenceGroup"), "*", SearchOption.AllDirectories);
             foreach (var item in files)
             {

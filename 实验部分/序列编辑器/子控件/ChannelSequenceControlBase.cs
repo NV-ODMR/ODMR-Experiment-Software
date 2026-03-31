@@ -183,7 +183,7 @@ namespace ODMR_Lab.实验部分.序列编辑器.子控件
             {
                 SingleChannelSequenceControl c = new SingleChannelSequenceControl(waveseg, (this as SingleChannelSequenceControl).ParentData);
                 c.ParentPage = ParentPage;
-                (this as SingleChannelSequenceControl).ParentData.InsertSeg(index + 1, waveseg, new List<SequenceChannel>());
+                (this as SingleChannelSequenceControl).ParentData.InsertSeg(index < 0 ? 0 : index, waveseg, new List<SequenceChannel>());
                 c.SetParentWaveSeg(waveseg, ParentPanel);
                 c.ExternalUpdateEvent = ExternalUpdateEvent;
                 c.ParentPage.AppendSingleChannelPopEvent(c);
