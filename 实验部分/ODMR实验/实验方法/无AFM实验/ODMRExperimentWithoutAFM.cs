@@ -25,6 +25,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM
         }
 
         /// <summary>
+        /// 作为AFM子实验时在主实验开始时需要进行的操作
+        /// </summary>
+        public virtual void AFMExpInitMethod() { }
+
+        /// <summary>
+        /// 作为AFM子实验时在主实验结束时需要进行的操作
+        /// </summary>
+        public virtual void AFMExpEndMethod() { }
+
+        /// <summary>
         /// 实验前要进行的操作(不下针)
         /// </summary>
         public abstract void PreExpEventWithoutAFM();

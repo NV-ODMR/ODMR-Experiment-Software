@@ -137,6 +137,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             }
         }
 
+
         public override void ODMRExpWithAFM()
         {
             (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit = GetInputParamValueByName("UpperLimit");
@@ -150,6 +151,13 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             ScanPointCount = ScanPointGap;
             AllowAutoTrace = GetInputParamValueByName("UseAutoTrace");
             #endregion
+
+            if (GetInputParamValueByName("IsFloatScan"))
+            {
+                //移动位移台之前先撤针
+                AFMFloatDrop d = new AFMFloatDrop();
+                d.DistractDistance(new List<object>() { ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")) }, GetDeviceByName("LockIn"));
+            }
 
             PointsScanSession.FirstScanEvent = ScanEvent;
             PointsScanSession.ScanEvent = ScanEvent;
@@ -191,8 +199,6 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             JudgeThreadEndOrResumeAction();
             #endregion
 
-            ScanBeforeDropMethod();
-
             Action tempaction = new Action(() =>
             {
                 ScanAfterDropMethod();
@@ -208,6 +214,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 ++dropgap;
                 if (dropgap == 1)
                 {
+                    ScanBeforeDropMethod();
                     bool re = true;
                     AFMFloatDrop drop = new AFMFloatDrop();
                     var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
@@ -222,8 +229,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     {
                         throw new Exception("下针失败");
                     }
+                    Thread.Sleep(GetInputParamValueByName("TimeWaitAfterDrop"));
                 }
-                Thread.Sleep(GetInputParamValueByName("TimeWaitAfterDrop"));
             }
             else
             {

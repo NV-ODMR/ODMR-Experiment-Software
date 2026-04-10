@@ -12,6 +12,7 @@ using ODMR_Lab.设备部分.射频源_锁相放大器;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.设备部分;
+using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 {
@@ -31,6 +32,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             //撤针
             AFMStopDrop drop = new AFMStopDrop();
             drop.CoreMethod(new List<object>(), GetLockIn());
+
+            //结束子实验
+            SubExpEndMethod();
+
             SetExpState("");
         }
 
@@ -42,6 +47,73 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         protected abstract double GetScannerXRatio();
 
         protected abstract double GetScannerYRatio();
+
+        public void SubExpInitMethod()
+        {
+           GetDevices();
+            foreach (var item in SubExperiments)
+            {
+                InitSubExp(item);
+                (item as ODMRExperimentWithoutAFM).AFMExpInitMethod();
+            }
+        }
+
+        private void InitSubExp(ODMRExpObject subExp)
+        {
+            List<ParamB> inputParams = null;
+
+            //设置子实验参数值
+            IEnumerable<ParamB> inputs;
+            if (IsSubExperiment == false)
+                inputs = InputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            else
+            {
+                inputs = TopExp.InputParams.Where((x) => x.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            }
+            foreach (var item in inputs)
+            {
+                var par = subExp.InputParams.Where(x => x.PropertyName == item.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
+                if (par.Count() != 0)
+                {
+                    if (inputParams != null)
+                    {
+                        var inp = inputParams.Where(x => "Input_" + x.PropertyName == par.ElementAt(0).PropertyName);
+                        if (inp.Count() != 0)
+                        {
+                            //如果在预设参数中设置则优先选择预设参数
+                            ParamB.SetUnknownParamValue(par.ElementAt(0), inp.ElementAt(0).RawValue);
+                            continue;
+                        }
+                    }
+                    ParamB.SetUnknownParamValue(par.ElementAt(0), item.RawValue);
+                }
+            }
+
+            //设置子实验设备
+            IEnumerable<KeyValuePair<DeviceTypes, Param<string>>> devs;
+            if (IsSubExperiment == false)
+                devs = DeviceList.Where((x) => x.Value.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            else
+            {
+                devs = TopExp.DeviceList.Where((x) => x.Value.PropertyName.Contains(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_"));
+            }
+            foreach (var item in devs)
+            {
+                var par = subExp.DeviceList.Where(x => x.Value.PropertyName == item.Value.PropertyName.Replace(subExp.ODMRExperimentGroupName + "_" + subExp.ODMRExperimentName + "_", ""));
+                if (par.Count() != 0)
+                {
+                    ParamB.SetUnknownParamValue(par.ElementAt(0).Value, item.Value.RawValue);
+                }
+            }
+        }
+
+        public void SubExpEndMethod()
+        {
+            foreach (var item in SubExperiments)
+            {
+                (item as ODMRExperimentWithoutAFM).AFMExpEndMethod();
+            }
+        }
 
         public override void PreExpEvent()
         {
@@ -69,6 +141,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             }
 
             PreExpEventBeforeDropWithAFM();
+
+            //初始化子实验
+            SubExpInitMethod();
+
             if (GetAllowMultiDrop())
             {
                 //多次下针
@@ -143,7 +219,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// </summary>
         /// <returns></returns>
         public abstract LockinInfo GetLockIn();
-        
+
         /// <summary>
         /// 从电压(V)转换成高度(nm)
         /// </summary>

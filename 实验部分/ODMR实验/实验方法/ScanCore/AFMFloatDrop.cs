@@ -87,14 +87,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 int time = 0;
                 //撤针以达到指定高度
                 double height = Math.Max(0, initheight - dropheight);
-                while (currentvalue > height && time < 20000)
+                while (currentvalue > height && time < 50000)
                 {
                     Thread.Sleep(20);
                     currentvalue = lockin.Device.PIDValue;
                     time += 20;
                 }
                 //如果超时则返回失败结果
-                if (time >= 20000)
+                if (time >= 50000)
                 {
                     return new List<object>() { false };
                 }
@@ -134,12 +134,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                     lockin.Device.SetPoint = setpoint;
                     //判断是否达到上限,如果达到上限或者小于上限则结束下针
                     time = 0;
-                    while (Math.Abs(lockin.Device.PIDValue - height) > 1e-4 && time < 20000)
+                    while (Math.Abs(lockin.Device.PIDValue - height) > 1e-4 && time < 50000)
                     {
                         Thread.Sleep(50);
                         time += 50;
                     }
-                    if (time >= 20000)
+                    if (time >= 50000)
                     {
                         //如果小于上限则认为已经下到但是接触
                         if (lockin.Device.PIDValue < height)

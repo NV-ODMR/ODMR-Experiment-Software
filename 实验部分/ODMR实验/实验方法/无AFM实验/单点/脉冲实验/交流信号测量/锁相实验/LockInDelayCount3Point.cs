@@ -31,7 +31,7 @@ using ODMR_Lab.设备部分.相机_翻转镜;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
-    class LockInDelayCountTest : LockInExpBase
+    class LockInDelayCount3Point : LockInExpBase
     {
         public override bool Is1DScanExp { get; set; } = false;
         public override bool Is2DScanExp { get; set; } = false;
@@ -43,7 +43,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
         /// </summary>
         private LockInExpBase ParentLockInExp { get; set; } = null;
 
-        public override string ODMRExperimentName { get; set; } = "锁相Delay光子数测量";
+        public override string ODMRExperimentName { get; set; } = "三点锁相Delay光子数测量";
 
         public override string ODMRExperimentGroupName { get; set; } = "点实验";
 
@@ -51,11 +51,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         public override List<ParamB> InputParams { get; set; } = new List<ParamB>()
         {
-            new Param<double>("起点时间(ns)",20,"StartTime"),
-            new Param<int>("Delay点数",20,"DelayCount"),
-            new Param<double>("终点时间(ns)",1000,"EndTime"),
             new Param<int>("测量轮数",1,"LoopCount"){ Helper="每个时间点的重复测量次数" },
             new Param<int>("单序列采样次数",1,"SingleLoopSampleCount"),
+            new Param<double>("点1Delay时间",1000,"Delay1"),
+            new Param<double>("点2Delay时间",1500,"Delay2"),
+            new Param<double>("点3Delay时间",2000,"Delay3"),
             new Param<MultiScanType>("测量循环类型",MultiScanType.正向扫描,"ScanType"){ Helper="重复测量每个时间点的方式" },
             new Param<int>("序列循环次数",100000,"SeqLoopCount"){ Helper="扫描每个频点时板卡序列的内部循环次数" },
             new Param<int>("光子数采样时间(ns)",50,"CountSampleTime"),
@@ -121,35 +121,42 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
                 SetExpState("当前扫描轮数:" + loop.ToString() + ",时间点: " + Math.Round(v, 5).ToString());
             });
-            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("StartTime"), GetInputParamValueByName("EndTime"), GetInputParamValueByName("DelayCount"));
+            D1NumricLinearScanRange range = new D1NumricLinearScanRange(GetInputParamValueByName("Delay1"), GetInputParamValueByName("Delay3"), 3);
 
             Session.StateJudgeEvent = JudgeThreadEndOrResumeAction;
             Session.LoopEndEvent = new Action<int>((ind) => { LoopEndMethod?.Invoke(); });
             Session.BeginScan(GetInputParamValueByName("LoopCount"), GetInputParamValueByName("ScanType"), range, 0, 100);
-
         }
+
+        double light1 = double.NaN;
+
+        double light2 = double.NaN;
+
+        double light3 = double.NaN;
 
         private void PlotEvent(List<MultiLoopScanData> list)
         {
-            (Get1DChartData("时间(ns)", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
-            (Get1DChartData("光子数", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "光子数", "Delay测试数据");
-            (Get1DChartData("光子数均值", "Delay测试数据") as NumricChartData1D).Data = MultiLoopScanData.GetLastData(list, "光子数均值", "Delay测试数据");
-
-            (Get1DChartData("时间(ns)", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetAverageData(list, "时间(ns)", "Delay测试数据");
-            (Get1DChartData("光子数", "方差") as NumricChartData1D).Data = MultiLoopScanData.GetSigmaData(list, "光子数", "Delay测试数据");
-
-            UpdatePlotChart();
-            UpdatePlotChartFlow(true);
-        }
-
-        private double GaussFunc(double x, params double[] ps)
-        {
-            double a = ps[0];
-            double b = ps[1];
-            double c = ps[2];
-            double d = ps[3];
-
-            return a * Math.Exp(-(x - c) * (x - c) * 4 * Math.Log(2) / (b * b)) + d;
+            try
+            {
+                light1 = MultiLoopScanData.GetAverageData(list, "Delay:" + "光子数", "Delay测试数据")[0];
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                light2 = MultiLoopScanData.GetAverageData(list, "Delay:" + "光子数", "Delay测试数据")[1];
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                light3 = MultiLoopScanData.GetAverageData(list, "Delay:" + "光子数", "Delay测试数据")[2];
+            }
+            catch (Exception)
+            {
+            }
         }
 
         List<KeyValuePair<double, List<KeyValuePair<int, int>>>> Statics = new List<KeyValuePair<double, List<KeyValuePair<int, int>>>>();
@@ -160,46 +167,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             Count = 0;
             PulsePhotonPack pack = DoLockInPulseExp("DelayCountTest", 2870, -20, GetInputParamValueByName("SeqLoopCount"), 2 * counts,
              GetInputParamValueByName("TimeOut"), new Action<SequenceDataAssemble>((seq) => { SetCount(seq); }));
-            var packstatic = Enumerable.Range(0, counts).Select(x => pack.GetPhotonStatic(x, 10000)).ToList();
-            var staticsum = new List<KeyValuePair<int, int>>();
-            foreach (var item in packstatic)
-            {
-                staticsum = PulsePhotonPack.AddStatic(staticsum, item);
-            }
-            if (Statics.Where(x => x.Key == arg).Count() == 0)
-            {
-                Statics.Add(new KeyValuePair<double, List<KeyValuePair<int, int>>>(arg, staticsum));
-            }
-            else
-            {
-                var existed = Statics.Where(x => x.Key == arg).ElementAt(0);
-                int index = Statics.IndexOf(existed);
-                staticsum = PulsePhotonPack.AddStatic(existed.Value, staticsum);
-                Statics[index] = new KeyValuePair<double, List<KeyValuePair<int, int>>>(arg, staticsum);
-            }
-
-            string gaussFitExpression = "a*exp(-(x-c)*(x-c)*4*ln(2)/(b*b))+d";
-            try
-            {
-                if (staticsum.Count == 0)
-                {
-                    int b = 1;
-                }
-                int ind = staticsum.Select(x => x.Value).ToList().IndexOf(staticsum.Max(x => x.Value));
-                double max = staticsum[ind].Key;
-                double maxv = staticsum[ind].Value;
-
-                CurveFitting Fitting = new CurveFitting(gaussFitExpression, "x", new List<string>() { "a", "b", "c", "d" });
-                var fitresult1 = Fitting.FitCurve(staticsum.Select(x => (double)x.Key).ToList(), staticsum.Select(x => (double)x.Value).ToList(), new List<double>() { maxv, 2, max, 0 }, new List<double>() { 1, 1, 1, 1 }, AlgorithmType.LevenbergMarquardt, 5000);
-
-                //Count += pack.GetPhotonsAtIndex(0).Sum();
-                //int ind = packstatic.Select(x => x.Value).ToList().IndexOf(packstatic.Max(x => x.Value));
-                statisticCount = fitresult1["c"];
-            }
-            catch (Exception)
-            {
-                statisticCount = double.NaN;
-            }
+            //var packstatic = Enumerable.Range(0, counts).Select(x => pack.GetPhotonStatic(x, 10000)).ToList();
             try
             {
                 var photons = Enumerable.Range(0, counts).Select(x => pack.GetPhotonsAtIndex(x).Sum()).ToList();
@@ -209,6 +177,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
                 Count = double.NaN;
             }
+            statisticCount = 0;
             pack = null;
             GC.Collect();
             JudgeThreadEndOrResumeAction?.Invoke();
@@ -228,8 +197,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                     item.Peaks.Add(peak.Copy());
                 }
             }
-            int time = gruptime - GlobalPulseParams.GetGlobalPulseLength("LockInSequenceDuty");
-            GlobalPulseParams.SetGlobalPulseLength("LockInSequenceDuty", 2000 - time);
+            GlobalPulseParams.SetGlobalPulseLength("LockInSequenceDuty", 2000 - (gruptime - GlobalPulseParams.GetGlobalPulseLength("LockInSequenceDuty")));
             return;
         }
         private List<object> ExpScanEvent(object arg1, D1NumricScanRangeBase arg2, double arg3, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> arg4)
@@ -237,10 +205,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", (int)arg3);
             JudgeThreadEndOrResumeAction();
             CountExp(arg3, out double count, out double statisticCount);
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("时间(ns)", "Delay测试数据", arg3, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("光子数", "Delay测试数据", count, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("光子数均值", "Delay测试数据", statisticCount, new StandardDataProcess()));
-
+            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("Delay:" + "光子数", "Delay测试数据", count, new StandardDataProcess()));
             return new List<object>();
         }
 
@@ -252,15 +217,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             //新建数据集
             D1ChartDatas = new List<ChartData1D>()
             {
-                new NumricChartData1D("时间(ns)","Delay测试数据",ChartDataType.X),
-                new NumricChartData1D("光子数","Delay测试数据",ChartDataType.Y),
-                new NumricChartData1D("光子数均值","Delay测试数据",ChartDataType.Y),
-
-                new NumricChartData1D("时间(ns)","方差",ChartDataType.X),
-                new NumricChartData1D("光子数","方差",ChartDataType.Y)
             };
             UpdatePlotChart();
-            Show1DChartData("Delay测试数据", "时间(ns)", "光子数");
             return;
         }
 
@@ -271,52 +229,15 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
                 (GetSignalSwitch() as SwitchInfo).Device.IsOpen = false;
             }
 
-            //用正弦函数拟合得到的曲线
-            var count = Get1DChartDataSource("光子数", "Delay测试数据");
-            var time = Get1DChartDataSource("时间(ns)", "Delay测试数据");
-            double d_x = count.Average();
-            double a_x = Math.Abs(count.Min() - count.Max()) / 2;
-            double c_x = 10;
-            //Pi脉冲时间
-            double b_x = 1 * 1000;
-            double[] ps_x = CurveFitting.FitCurveWithFunc(time, count, new List<double>() { a_x, b_x, c_x, d_x }, new List<double>() { 10, 10, 10, 10 }, DelayFitFunc, AlgorithmType.LevenbergMarquardt, 20000);
+            OutputParams.Add(new Param<double>("Delay:" + GetInputParamValueByName("Delay1").ToString() + "光子数", light1, "Delay1"));
+            OutputParams.Add(new Param<double>("Delay:" + GetInputParamValueByName("Delay2").ToString() + "光子数", light2, "Delay2"));
+            OutputParams.Add(new Param<double>("Delay:" + GetInputParamValueByName("Delay3").ToString() + "光子数", light3, "Delay3"));
 
-            //设置拟合曲线
-            var ftxs = new D1NumricLinearScanRange(time.Min(), time.Max(), 500).ScanPoints;
-            var fitys_x = ftxs.Select(x => DelayFitFunc(x, ps_x)).ToList();
-            D1FitDatas.Add(new FittedData1D("a*cos(2*pi/b*(x-c))+d", "x", new List<string>() { "a", "b", "c", "d" }, ps_x.ToList(), "时间(ns)", "Delay测试数据", new NumricDataSeries("拟合曲线", ftxs, fitys_x) { LineColor = Colors.LightSkyBlue }));
-            UpdatePlotChart();
-            UpdatePlotChartFlow(true);
-            Show1DFittedData("拟合曲线");
-            Thread.Sleep(1000);
-
-
-            OutputParams.Add(new Param<double>("光子数振幅", Math.Abs(ps_x[0]), "Amplitude"));
-            OutputParams.Add(new Param<double>("光子数平均值", ps_x[3], "Average"));
-            double phase = ps_x[2] + ps_x[1] / 2;
-            if (ps_x[0] < 0) phase = ps_x[2] + ps_x[1];
-            OutputParams.Add(new Param<double>("Delay相位(ns)", phase, "Phase"));
-
-        }
-
-
-        private double DelayFitFunc(double x, double[] ps)
-        {
-            double a = ps[0];
-            double b = ps[1];
-            double c = ps[2];
-            double d = ps[3];
-            return a * Math.Cos(2 * Math.PI / b * (x - c)) + d;
         }
 
         public override List<ParentPlotDataPack> GetD1PlotPacks()
         {
-            return new List<ParentPlotDataPack>() {
-                new ParentPlotDataPack("时间(ns)", "单点Delay曲线", ChartDataType.X, Get1DChartDataSource("时间(ns)", "Delay测试数据"), false),
-                new ParentPlotDataPack("光子数曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("光子数", "Delay测试数据"), true),
-                new ParentPlotDataPack("光子数均值曲线", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("光子数均值", "Delay测试数据"), true),
-                new ParentPlotDataPack("光子数曲线方差", "单点Delay曲线", ChartDataType.Y, Get1DChartDataSource("光子数", "方差"), true)
-            };
+            return new List<ParentPlotDataPack>() { };
         }
 
         protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()

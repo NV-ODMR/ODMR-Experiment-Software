@@ -96,7 +96,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
             int ylength = (int)(offsety + corepiy * 1.7678);
 
             int n = 16;
-            GlobalPulseParams.SetGlobalPulseLength("CORPSEPiX", (int)(offsetx + (1.5) * corepix));
+            GlobalPulseParams.SetGlobalPulseLength("CORPSEPiX", (int)(offsetx + (1) * corepix));
             GlobalPulseParams.SetGlobalPulseLength("CORPSEPiY", ylength);
             ExperimentHelper.SetT2SequenceEvolutionPulses(50, 0, 0, 0, 0);
             //GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)(1000));
@@ -248,12 +248,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
 
         protected List<double> GetFrequences()
         {
-            return (Get1DChartData("频率", "CW对比度数据") as NumricChartData1D).Data;
+            return (Get1DChartData("频率", "对比度数据") as NumricChartData1D).Data;
         }
 
         protected List<double> GetContracts()
         {
-            return (Get1DChartData("对比度", "CW对比度数据") as NumricChartData1D).Data; ;
+            return (Get1DChartData("对比度1", "对比度数据") as NumricChartData1D).Data; ;
         }
 
         protected List<double> GetReferenceCounts()
@@ -263,7 +263,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
 
         protected List<double> GetSignalCounts()
         {
-            return (Get1DChartData("信号总计数", "CW荧光计数") as NumricChartData1D).Data; ;
+            return (Get1DChartData("信号总计数1", "CW荧光计数") as NumricChartData1D).Data; ;
         }
     }
 }

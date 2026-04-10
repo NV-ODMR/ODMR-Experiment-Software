@@ -25,12 +25,58 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
         public static void SetLockInSequenceEvolutionPulses(double frequence, double pix, double piy, double hpix, double hpiy)
         {
             double rawevolutiontime = 1e+3 / frequence / 2;
+
+            GlobalPulseParams.SetGlobalPulseLength("LockInSequenceDuty", (int)rawevolutiontime);
             GlobalPulseParams.SetGlobalPulseLength("RabiTime", 0);
             GlobalPulseParams.SetGlobalPulseLength("HalfEvolutionTimeX", Math.Max(20, (int)(rawevolutiontime / 2 - pix / 2)));
             GlobalPulseParams.SetGlobalPulseLength("HalfEvolutionTimeY", Math.Max(20, (int)(rawevolutiontime / 2 - piy / 2)));
             GlobalPulseParams.SetGlobalPulseLength("EvolutionTimeX-X", Math.Max(20, (int)(rawevolutiontime - pix / 2 - pix / 2)));
             GlobalPulseParams.SetGlobalPulseLength("EvolutionTimeX-Y", Math.Max(20, (int)(rawevolutiontime - pix / 2 - piy / 2)));
             GlobalPulseParams.SetGlobalPulseLength("EvolutionTimeY-Y", Math.Max(20, (int)(rawevolutiontime - piy / 2 - piy / 2)));
+        }
+
+        /// <summary>
+        /// 计算信号角频率振幅(rad/μs)
+        /// </summary>
+        /// <param name="sequencetype"></param>
+        /// <param name="frequence"></param>
+        /// <param name="pix"></param>
+        /// <param name="piy"></param>
+        /// <param name="hpix"></param>
+        /// <param name="hpiy"></param>
+        public static double CalculateSignalAmplitude(SequenceTypes sequencetype, int sequenceorder, double totalphase, double frequence, double pix, double piy, double hpix, double hpiy)
+        {
+            try
+            {
+                double rawevolutiontime = 1e+3 / frequence / 2;
+                double phase_pixx = 1 / (2 * Math.PI * frequence) * (Math.Cos(Math.PI * frequence * pix / 1000) + Math.Cos(Math.PI * frequence * pix / 1000));
+                double phase_pixy = 1 / (2 * Math.PI * frequence) * (Math.Cos(Math.PI * frequence * piy / 1000) + Math.Cos(Math.PI * frequence * pix / 1000));
+                double phase_piyy = 1 / (2 * Math.PI * frequence) * (Math.Cos(Math.PI * frequence * piy / 1000) + Math.Cos(Math.PI * frequence * piy / 1000));
+                double phase_hpix = 1 / (2 * Math.PI * frequence) * (1 - Math.Sin(Math.PI * frequence * pix / 1000));
+                double unitphase = double.NaN;
+                if (sequencetype == SequenceTypes.CMPG)
+                {
+                    unitphase = 2 * phase_hpix + (sequenceorder - 1) * phase_pixx;
+                }
+                if (sequencetype == SequenceTypes.XY4)
+                {
+                    unitphase = 2 * phase_hpix + 2 * phase_pixy + phase_piyy;
+                }
+                if (sequencetype == SequenceTypes.XY8)
+                {
+                    unitphase = 2 * phase_hpix + 6 * phase_pixy + phase_piyy;
+                }
+                if (sequencetype == SequenceTypes.XY8_2)
+                {
+                    unitphase = 2 * phase_hpix + 12 * phase_pixy + 2 * phase_piyy + phase_pixx;
+                }
+                if (unitphase == 0) return double.NaN;
+                return totalphase / unitphase;
+            }
+            catch (Exception)
+            {
+                return double.NaN;
+            }
         }
 
         public static void SetT2SequenceEvolutionPulses(int evotime, double pix, double piy, double hpix, double hpiy)
@@ -69,26 +115,16 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
                     int det = order - 1;
                     foreach (var ch in obj.Channels)
                     {
-                        ///Pi/2 脉冲的位置
-                        var halfpiys = ch.Peaks.Where((x) => x.PeakName == "CustomYLength" || x.PeakName == "CustomXLength").Select((x) => ch.Peaks.IndexOf(x)).ToList();
-                        if (halfpiys.Count == 0)
+                        ///CMPG Core 脉冲的位置
+                        var CMPGS = ch.Peaks.Where((x) => x.PeakName == "CMPG-CorePulse").Select((x) => ch.Peaks.IndexOf(x)).ToList();
+                        CMPGS.Sort();
+                        CMPGS.Reverse();
+                        foreach (var item in CMPGS)
                         {
-                            halfpiys = ch.Peaks.Where((x) => x.PeakName == "HalfPiX" || x.PeakName == "3HalfPiX").Select((x) => ch.Peaks.IndexOf(x)).Where((x) => ch.Peaks[x + 1].PeakName == "CountWait").ToList();
-                        }
-                        halfpiys.Sort();
-                        halfpiys.Reverse();
-                        foreach (var item in halfpiys)
-                        {
-                            List<SingleSequenceWaveSeg> segs = new List<SingleSequenceWaveSeg>();
+                            var cmpgseg = ch.Peaks[item];
                             for (int i = 0; i < det; i++)
                             {
-                                segs.Add(new SingleSequenceWaveSeg("HalfEvolutionTimeX", GlobalPulseParams.GetGlobalPulseLength("HalfEvolutionTimeX"), WaveValues.Zero, ch));
-                                segs.Add(new SingleSequenceWaveSeg("PiX", GlobalPulseParams.GetGlobalPulseLength("PiX"), (ch.ChannelInd == ind) ? WaveValues.One : WaveValues.Zero, ch));
-                                segs.Add(new SingleSequenceWaveSeg("HalfEvolutionTimeX", GlobalPulseParams.GetGlobalPulseLength("HalfEvolutionTimeX"), WaveValues.Zero, ch));
-                            }
-                            for (int i = 0; i < segs.Count; i++)
-                            {
-                                ch.Peaks.Insert(item + i, segs[i]);
+                                ch.Peaks.Insert(item + i, cmpgseg.Copy());
                             }
                         }
                     }
@@ -96,24 +132,20 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
                 #endregion
             }
 
+            double frequency = 1;
+            int time = (int)(frequency * 1000);
+
             #region 计算Delay等待时间
             var chan = obj.Channels[0];
-            var peaks = SequenceChannelData.GetExpandedPeakArray(chan.Peaks);
-            if (peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").Count() == 0) return;
-            int triggerind = peaks.IndexOf(peaks.Where((x) => x.PeakName == "TriggerExpStartDelay").First());
-            int countind = peaks.IndexOf(peaks.Where((x) => x.PeakName == "CountWait").First());
+            var peaks = obj.Channels[0].Peaks;
+            if (peaks.Where((x) => x.PeakName == "Trigger_Delay序列").Count() == 0) return;
+            int triggerind = peaks.IndexOf(peaks.Where((x) => x.PeakName == "Trigger_Delay序列").First());
+            int countind = peaks.IndexOf(peaks.Where((x) => x.PeakName == "光子计数序列").First());
             int totalexptime = 0;
-
-            List<int> times = new List<int>();
-            for (int i = triggerind + 1; i < countind; i++)
-            {
-                totalexptime += peaks[i].PeakSpan;
-                times.Add(peaks[i].PeakSpan);
-            }
-
-
-            int lighttime = totalexptime - GlobalPulseParams.GetGlobalPulseLength("LasetPolar") - GlobalPulseParams.GetGlobalPulseLength("LaserWait");
-            int darktime = lighttime - GlobalPulseParams.GetGlobalPulseLength("PiX");
+            int lighttime = peaks[countind].PeakSpan + GlobalPulseParams.GetGlobalPulseLength("LasetPolar") + GlobalPulseParams.GetGlobalPulseLength("LaserWait");
+            int darktime = lighttime + GlobalPulseParams.GetGlobalPulseLength("PiX");
+            lighttime = (lighttime / time + 1) * time - lighttime;
+            darktime = (darktime / time + 1) * time - darktime;
             GlobalPulseParams.SetGlobalPulseLength("LightHahnechoWaitTime", lighttime);
             GlobalPulseParams.SetGlobalPulseLength("DarkhahnechoWaitTime", darktime);
             #endregion

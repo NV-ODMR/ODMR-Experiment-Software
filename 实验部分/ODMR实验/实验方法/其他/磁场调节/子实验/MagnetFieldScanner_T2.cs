@@ -165,7 +165,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             if (tempCWCount >= GetInputParamValueByName("CWGap"))
             {
                 tempCWCount = 0;
-                //RunSubExperimentBlock(0, true);
+                RunSubExperimentBlock(0, true);
                 MagnetScanTool.ScanCW(this, 1, out List<double> peaks, out List<double> cs, out List<double> fvs, out List<double> cvs, (double)arg5[0], 5, 10, GetInputParamValueByName("CWRev"));
                 if (peaks.Count == 0)
                 {
@@ -186,7 +186,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
         private List<double> GetT2Data(double frequency)
         {
             //设置HahnEchoTime
-            ExperimentHelper.SetT2SequenceEvolutionPulses(GetInputParamValueByName("T2SampleTime"), GlobalPulseParams.GetGlobalPulseLength("PiX"), GlobalPulseParams.GetGlobalPulseLength("PiY"), GlobalPulseParams.GetGlobalPulseLength("HalfPiX"), GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
+            ExperimentHelper.SetT2SequenceEvolutionPulses(GetInputParamValueByName("T2SampleTime"), 0, 0, 0, 0);
 
             string sequenceName = "";
             if (GetInputParamValueByName("SequenceType") == SequenceTypes.CMPG)
