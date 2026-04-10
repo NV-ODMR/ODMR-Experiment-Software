@@ -411,13 +411,16 @@
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\样品定位\TransformStep.cs" />
-    <Compile Include="实验部分\温度监测\TemperatureExpObjecct.cs" />
-    <Compile Include="实验部分\温度监测\Page.xaml.cs">
+    <Compile Include="实验部分\设备参数监测\TemperatureExpObjecct.cs" />
+    <Compile Include="实验部分\设备参数监测\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\温度监测\参数\TemperatureConfigParams.cs" />
-    <Compile Include="实验部分\温度监测\参数\TemperatureExpParams.cs" />
-    <Compile Include="实验部分\温度监测\子窗口\SaveWindow.xaml.cs">
+    <Compile Include="实验部分\设备参数监测\参数\TemperatureConfigParams.cs" />
+    <Compile Include="实验部分\设备参数监测\参数\TemperatureExpParams.cs" />
+    <Compile Include="实验部分\设备参数监测\子控件\DeviceListenerBar.xaml.cs">
+      <DependentUpon>DeviceListenerBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="实验部分\设备参数监测\子窗口\SaveWindow.xaml.cs">
       <DependentUpon>SaveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\激光控制\TraceConfigParams.cs" />
@@ -739,11 +742,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="实验部分\温度监测\Page.xaml">
+    <Page Include="实验部分\设备参数监测\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="实验部分\温度监测\子窗口\SaveWindow.xaml">
+    <Page Include="实验部分\设备参数监测\子控件\DeviceListenerBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="实验部分\设备参数监测\子窗口\SaveWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
