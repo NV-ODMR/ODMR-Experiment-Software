@@ -50,9 +50,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public void SubExpInitMethod()
         {
-           GetDevices();
+            GetDevices();
             foreach (var item in SubExperiments)
             {
+                item.GetDevices();
                 InitSubExp(item);
                 (item as ODMRExperimentWithoutAFM).AFMExpInitMethod();
             }

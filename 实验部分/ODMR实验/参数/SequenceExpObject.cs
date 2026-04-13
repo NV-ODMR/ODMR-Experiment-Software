@@ -692,6 +692,20 @@ namespace ODMR_Lab.ODMR实验
                     infos.Add(res);
                 }
             }
+
+            //设置子实验的设备
+            foreach (var item in SubExperiments)
+            {
+                foreach (var dev in item.DeviceList)
+                {
+                    var target = DeviceList.Where(x => x.Value.PropertyName == FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName, dev.Value.PropertyName));
+                    if (target.Count() != 0)
+                    {
+                        dev.Value.RawValue = target.ElementAt(0).Value.RawValue;
+                        dev.Value.Value = target.ElementAt(0).Value.Value;
+                    }
+                }
+            }
             return infos;
         }
 
