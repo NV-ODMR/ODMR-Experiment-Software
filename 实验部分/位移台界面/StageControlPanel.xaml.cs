@@ -41,42 +41,48 @@ namespace ODMR_Lab.实验部分.位移台界面
             try
             {
                 var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.X, MoverPart);
-                xv = dev.Device.Position.ToString();
+                if (dev != null)
+                    xv = dev.Device.Position.ToString();
             }
             catch (Exception) { }
 
             try
             {
                 var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.Y, MoverPart);
-                yv = dev.Device.Position.ToString();
+                if (dev != null)
+                    yv = dev.Device.Position.ToString();
             }
             catch (Exception) { }
 
             try
             {
                 var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.Z, MoverPart);
-                zv = dev.Device.Position.ToString();
+                if (dev != null)
+                    zv = dev.Device.Position.ToString();
             }
             catch (Exception) { }
 
             try
             {
                 var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleX, MoverPart);
-                axv = dev.Device.Position.ToString();
+                if (dev != null)
+                    axv = dev.Device.Position.ToString();
             }
             catch (Exception) { }
 
             try
             {
                 var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleY, MoverPart);
-                ayv = dev.Device.Position.ToString();
+                if (dev != null)
+                    ayv = dev.Device.Position.ToString();
             }
             catch (Exception) { }
 
             try
             {
                 var dev = DeviceDispatcher.GetMoverDevice(MoverTypes.AngleZ, MoverPart);
-                azv = dev.Device.Position.ToString();
+                if (dev != null)
+                    azv = dev.Device.Position.ToString();
             }
             catch (Exception) { }
 

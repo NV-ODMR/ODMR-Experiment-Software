@@ -24,9 +24,9 @@ namespace ODMR_Lab.设备部分.位移台部分
 
         public override void CreateDeviceInfoBehaviour()
         {
-            foreach (var item in Device.Stages)
+            foreach (var item in Device.Channels)
             {
-                Stages.Add(new NanoStageInfo(this, item));
+                Stages.Add(new NanoStageInfo(this, item as StageBase));
             }
         }
 
@@ -36,13 +36,13 @@ namespace ODMR_Lab.设备部分.位移台部分
         {
             foreach (var item in Stages)
             {
-                if (file.Descriptions.Keys.Contains("AxisPart " + item.Device.AxisName))
+                if (file.Descriptions.Keys.Contains("AxisPart " + item.Device.ChannelName))
                 {
-                    item.PartType = (PartTypes)Enum.Parse(typeof(PartTypes), file.Descriptions["AxisPart " + item.Device.AxisName]);
+                    item.PartType = (PartTypes)Enum.Parse(typeof(PartTypes), file.Descriptions["AxisPart " + item.Device.ChannelName]);
                 }
-                if (file.Descriptions.Keys.Contains("AxisType " + item.Device.AxisName))
+                if (file.Descriptions.Keys.Contains("AxisType " + item.Device.ChannelName))
                 {
-                    item.MoverType = (MoverTypes)Enum.Parse(typeof(MoverTypes), file.Descriptions["AxisType " + item.Device.AxisName]);
+                    item.MoverType = (MoverTypes)Enum.Parse(typeof(MoverTypes), file.Descriptions["AxisType " + item.Device.ChannelName]);
                 }
             }
         }
@@ -51,8 +51,8 @@ namespace ODMR_Lab.设备部分.位移台部分
         {
             foreach (var item in Stages)
             {
-                obj.Descriptions.Add("AxisPart " + item.Device.AxisName, Enum.GetName(item.PartType.GetType(), item.PartType));
-                obj.Descriptions.Add("AxisType " + item.Device.AxisName, Enum.GetName(item.MoverType.GetType(), item.MoverType));
+                obj.Descriptions.Add("AxisPart " + item.Device.ChannelName, Enum.GetName(item.PartType.GetType(), item.PartType));
+                obj.Descriptions.Add("AxisType " + item.Device.ChannelName, Enum.GetName(item.MoverType.GetType(), item.MoverType));
             }
         }
 

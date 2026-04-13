@@ -31,7 +31,7 @@ namespace ODMR_Lab.设备部分.电源
         {
             foreach (var item in Device.Channels)
             {
-                PowerChannelInfo channelinfo = new PowerChannelInfo(this, item, item.ChannelName);
+                PowerChannelInfo channelinfo = new PowerChannelInfo(this, item as PowerChannelBase, item.ChannelName);
                 ChannelsInfo.Add(channelinfo);
             }
         }

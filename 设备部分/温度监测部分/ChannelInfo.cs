@@ -60,7 +60,7 @@ namespace ODMR_Lab.设备部分.温控
 
         public override string GetDeviceDescription()
         {
-            return ParentInfo.Device.ProductName + " " + Channel.Name;
+            return ParentInfo.Device.ProductName + " " + Channel.ChannelName;
         }
     }
 
@@ -88,7 +88,7 @@ namespace ODMR_Lab.设备部分.温控
 
         public override string GetDeviceDescription()
         {
-            return ParentInfo.Device.ProductName + " " + Channel.Name;
+            return ParentInfo.Device.ProductName + " " + Channel.ChannelName;
         }
     }
 
@@ -113,15 +113,18 @@ namespace ODMR_Lab.设备部分.温控
         public override void CreateDeviceInfoBehaviour()
         {
             //添加通道按钮
-            foreach (var item in Device.SensorChannels)
+            foreach (var item in Device.Channels)
             {
-                SensorChannelInfo sensorinfo = new SensorChannelInfo(this, item, item.Name);
-                SensorsInfo.Add(sensorinfo);
-            }
-            foreach (var item in Device.OutputChannels)
-            {
-                OutputChannelInfo outputinfo = new OutputChannelInfo(this, item, item.Name);
-                OutputsInfo.Add(outputinfo);
+                if (item is SensorChannelBase)
+                {
+                    SensorChannelInfo sensorinfo = new SensorChannelInfo(this, item as SensorChannelBase, item.ChannelName);
+                    SensorsInfo.Add(sensorinfo);
+                }
+                if (item is OutputChannelBase)
+                {
+                    OutputChannelInfo outputinfo = new OutputChannelInfo(this, item as OutputChannelBase, item.ChannelName);
+                    OutputsInfo.Add(outputinfo);
+                }
             }
         }
 

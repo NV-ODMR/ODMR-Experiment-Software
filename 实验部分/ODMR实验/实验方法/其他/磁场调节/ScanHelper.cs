@@ -15,7 +15,6 @@ using ODMR_Lab.IO操作;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
-using ODMR_Lab.实验部分.磁场调节;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {

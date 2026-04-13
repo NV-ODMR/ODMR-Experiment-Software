@@ -93,7 +93,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             l = new Label();
             UIUpdater.CloneStyle(LabelTemplate, l);
 
-            l.Content = info.Device.AxisName;
+            l.Content = info.Device.ChannelName;
             grid.Children.Add(l);
             Grid.SetColumn(l, 1);
 

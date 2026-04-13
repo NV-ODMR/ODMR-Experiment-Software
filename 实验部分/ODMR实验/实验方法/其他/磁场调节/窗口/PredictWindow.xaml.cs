@@ -3,7 +3,6 @@ using Controls.Windows;
 using MathNet.Numerics.Distributions;
 using ODMR_Lab.Windows;
 using ODMR_Lab.实验部分.ODMR实验.参数;
-using ODMR_Lab.实验部分.磁场调节;
 using System;
 using System.Collections.Generic;
 using System.IO;

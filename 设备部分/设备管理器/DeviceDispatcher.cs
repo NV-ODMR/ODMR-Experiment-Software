@@ -5,7 +5,6 @@ using HardWares.相机_CCD_;
 using HardWares.端口基类;
 using HardWares.端口基类部分.设备信息;
 using HardWares.纳米位移台;
-using ODMR_Lab.温度监测部分;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.射频源_锁相放大器;

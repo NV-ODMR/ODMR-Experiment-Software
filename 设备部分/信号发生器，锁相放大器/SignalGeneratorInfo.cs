@@ -23,7 +23,7 @@ namespace ODMR_Lab.设备部分.射频源_锁相放大器
             //添加通道按钮
             foreach (var item in Device.Channels)
             {
-                SignalGeneratorChannelInfo sensorinfo = new SignalGeneratorChannelInfo(this, item);
+                SignalGeneratorChannelInfo sensorinfo = new SignalGeneratorChannelInfo(this, item as SignalChannelBase);
                 Channels.Add(sensorinfo);
             }
         }

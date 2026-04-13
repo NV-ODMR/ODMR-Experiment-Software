@@ -93,31 +93,31 @@ namespace ODMR_Lab.设备部分.位移台部分
                 {
                     if (stage.PartType == PartTypes.Probe)
                     {
-                        ProbeMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                        ProbeMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.ChannelName);
                     }
                     if (stage.PartType == PartTypes.Sample)
                     {
-                        SampleMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                        SampleMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.ChannelName);
                     }
                     if (stage.PartType == PartTypes.Magnnet)
                     {
-                        MagnetMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                        MagnetMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.ChannelName);
                     }
                     if (stage.PartType == PartTypes.Microwave)
                     {
-                        MWMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                        MWMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.ChannelName);
                     }
                     if (stage.PartType == PartTypes.Len)
                     {
-                        LenMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                        LenMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.ChannelName);
                     }
                     if (stage.PartType == PartTypes.Scanner)
                     {
-                        ScannerMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                        ScannerMoverList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.ChannelName);
                     }
                     if (stage.PartType == PartTypes.None)
                     {
-                        DeviceList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.AxisName);
+                        DeviceList.AddItem(stage, stage.Parent.Device.ProductName, stage.Device.ChannelName);
                     }
                 }
             }

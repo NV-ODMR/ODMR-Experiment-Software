@@ -1,5 +1,4 @@
-﻿using ODMR_Lab.温度监测部分;
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,7 +50,7 @@ namespace ODMR_Lab
         /// <summary>
         /// 温度曲线
         /// </summary>
-        public static TemperaturePage Exp_TemPeraPage = new TemperaturePage();
+        public static 设备参数监测.DisplayPage Exp_TemPeraPage = new 设备参数监测.DisplayPage();
         /// <summary>
         /// 样品定位
         /// </summary>
@@ -395,7 +394,7 @@ namespace ODMR_Lab
                 PageContent.Children.Clear();
             }
             DecoratedButton btn = sender as DecoratedButton;
-            if (btn.Text == "温度监测")
+            if (btn.Text == "设备参数监测")
             {
                 CurrentPage = Exp_TemPeraPage;
                 AddPageToView(Exp_TemPeraPage);

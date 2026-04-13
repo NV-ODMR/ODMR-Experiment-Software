@@ -66,11 +66,11 @@
     </Reference>
     <Reference Include="Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="HardWares, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\C#Codes\hyyan911\硬件控制\HardWares\bin\Debug\HardWares.dll</HintPath>
+      <HintPath>..\HardWares\HardWares\bin\Debug\HardWares.dll</HintPath>
     </Reference>
     <Reference Include="MathLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -411,17 +411,17 @@
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\样品定位\TransformStep.cs" />
-    <Compile Include="实验部分\设备参数监测\TemperatureExpObjecct.cs" />
+    <Compile Include="实验部分\设备参数监测\DeviceListenInfo.cs" />
+    <Compile Include="实验部分\设备参数监测\DeviceListenerDispatcher.cs" />
     <Compile Include="实验部分\设备参数监测\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\设备参数监测\参数\TemperatureConfigParams.cs" />
-    <Compile Include="实验部分\设备参数监测\参数\TemperatureExpParams.cs" />
-    <Compile Include="实验部分\设备参数监测\子控件\DeviceListenerBar.xaml.cs">
-      <DependentUpon>DeviceListenerBar.xaml</DependentUpon>
+    <Compile Include="实验部分\设备参数监测\参数\ParamListenerConfigParams.cs" />
+    <Compile Include="实验部分\设备参数监测\子控件\ParamBar.xaml.cs">
+      <DependentUpon>ParamBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="实验部分\设备参数监测\子窗口\SaveWindow.xaml.cs">
-      <DependentUpon>SaveWindow.xaml</DependentUpon>
+    <Compile Include="实验部分\设备参数监测\子控件\DeviceNumricBar.xaml.cs">
+      <DependentUpon>DeviceNumricBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\激光控制\TraceConfigParams.cs" />
     <Compile Include="实验部分\激光控制\Page.xaml.cs">
@@ -434,6 +434,9 @@
     <Compile Include="实验部分\自定义算法\算法列表\VectorAngle.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\NVSpecialAxis.cs" />
     <Compile Include="实验部分\自定义算法\算法列表\VerticalMagnetField.cs" />
+    <Compile Include="实验部分\设备参数监测\子窗口\ParamSelectWindow.xaml.cs">
+      <DependentUpon>ParamSelectWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="扩展部分\Python管理器\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
@@ -746,15 +749,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="实验部分\设备参数监测\子控件\DeviceListenerBar.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="实验部分\设备参数监测\子控件\ParamBar.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="实验部分\设备参数监测\子窗口\SaveWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="实验部分\设备参数监测\子控件\DeviceNumricBar.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="实验部分\激光控制\Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="实验部分\设备参数监测\子窗口\ParamSelectWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -966,6 +973,9 @@
     <Resource Include="图片资源\refresh.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="图片资源\warning.png" />
+    <Resource Include="图片资源\invisible.png" />
+    <Resource Include="图片资源\visible.png" />
     <Resource Include="图片资源\transform.png" />
     <Resource Include="图片资源\snap.png" />
     <Resource Include="图片资源\circlerectangle.png" />

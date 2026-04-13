@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ODMR_Lab.温度监测部分;
 using System.IO;
 using ODMR_Lab.设备部分;
 using System.Reflection;

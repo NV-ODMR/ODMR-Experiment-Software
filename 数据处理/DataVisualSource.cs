@@ -2,7 +2,6 @@
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.场效应器件测量;
-using ODMR_Lab.实验部分.磁场调节;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,12 +47,6 @@ namespace ODMR_Lab.数据处理
             if (type == ExperimentFileTypes.自定义数据)
             {
                 UserCustomExpObject obj = new UserCustomExpObject();
-                obj.ReadFromFile(path);
-                return obj.ToDataVisualSource();
-            }
-            if (type == ExperimentFileTypes.温度监测数据)
-            {
-                TemperatureExpObject obj = new TemperatureExpObject();
                 obj.ReadFromFile(path);
                 return obj.ToDataVisualSource();
             }

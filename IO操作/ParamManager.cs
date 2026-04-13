@@ -29,24 +29,38 @@ namespace ODMR_Lab.IO操作
         /// </summary>
         public static void SaveParams(MessageWindow window = null)
         {
+            #region 参数监测配置
+            WindowHelper.SetContent(window, "正在保存: " + "设备参数监测配置");
+
+            if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "DeviceListenerConfig")))
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "DeviceListenerConfig"));
+            }
+            try
+            {
+                MainWindow.Exp_TemPeraPage.ListenDispatcher.WriteToFile(Path.Combine(Environment.CurrentDirectory, "DeviceListenerConfig", "ConfigData.userdat"));
+            }
+            catch (Exception)
+            {
+            }
+
+            #endregion
+
             FileObject fobj = new FileObject();
 
-            WindowHelper.SetContent(window, "正在保存参数: " + "设备参数");
+            WindowHelper.SetContent(window, "正在保存: " + "设备参数");
             #region 设备参数
 
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
             P1.ReadFromPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
             WriteParamToFile(P1, fobj);
+
+            ParamListenerConfigParams PP = new ParamListenerConfigParams();
+            PP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage }, false);
+            WriteParamToFile(PP, fobj);
             #endregion
 
-            WindowHelper.SetContent(window, "正在保存参数: " + "温度监控参数");
-            #region 温度监控参数
-            TemperatureConfigParams TP = new TemperatureConfigParams();
-            TP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage, MainWindow.Exp_TemPeraPage.SetWindow }, false);
-            WriteParamToFile(TP, fobj);
-            #endregion
-
-            WindowHelper.SetContent(window, "正在保存参数: " + "场效应器件测量参数");
+            WindowHelper.SetContent(window, "正在保存: " + "场效应器件测量参数");
             #region 场效应器件测量参数
             IVMeasureConfigParams IVP = new IVMeasureConfigParams();
             IVP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
@@ -56,8 +70,8 @@ namespace ODMR_Lab.IO操作
             WriteParamToFile(VP, fobj);
             #endregion
 
-            WindowHelper.SetContent(window, "正在保存参数: " + "位移台控制参数");
-            #region 
+            WindowHelper.SetContent(window, "正在保存: " + "位移台配置信息");
+            #region 位移台配置信息(是否反转) 
             App.Current.Dispatcher.Invoke(() =>
             {
                 StageControlConfigParams SCP = new StageControlConfigParams();
@@ -78,14 +92,14 @@ namespace ODMR_Lab.IO操作
             });
             #endregion
 
-            WindowHelper.SetContent(window, "正在保存参数: " + "Trace参数");
+            WindowHelper.SetContent(window, "正在保存: " + "Trace参数");
             #region Trace参数
             TraceConfigParams APD1 = new TraceConfigParams();
             APD1.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_TracePage }, false);
             WriteParamToFile(APD1, fobj);
             #endregion
 
-            WindowHelper.SetContent(window, "正在保存参数: " + "ODMR全局参数");
+            WindowHelper.SetContent(window, "正在保存: " + "ODMR全局参数");
             #region ODMR全局参数
             ODMRConfigParams ODMRC = new ODMRConfigParams();
             ODMRC.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_SequencePage }, false);
@@ -129,27 +143,47 @@ namespace ODMR_Lab.IO操作
         /// </summary>
         public static void ReadAndLoadParams(MessageWindow window = null)
         {
+            FileObject fobj = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "UIParam", "Param.userdat"));
+
+            #region 参数监测配置
+            WindowHelper.SetContent(window, "正在读取: " + "设备参数监测配置");
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    MainWindow.Exp_TemPeraPage.ListenDispatcher = new 实验部分.设备参数监控.DeviceListenerDispatcher(MainWindow.Exp_TemPeraPage, Path.Combine(Environment.CurrentDirectory, "DeviceListenerConfig", "ConfigData.userdat"));
+                    MainWindow.Exp_TemPeraPage.ListenDispatcher.StartListen();
+                    MainWindow.Exp_TemPeraPage.ValidateParamBars();
+                }
+                catch (Exception)
+                {
+                    MainWindow.Exp_TemPeraPage.ListenDispatcher = new 实验部分.设备参数监控.DeviceListenerDispatcher(MainWindow.Exp_TemPeraPage, "");
+                    MainWindow.Exp_TemPeraPage.ListenDispatcher.StartListen();
+                    MainWindow.Exp_TemPeraPage.ValidateParamBars();
+                }
+                ParamListenerConfigParams PP = new ParamListenerConfigParams();
+                ReadFromFile(PP, fobj);
+                PP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage }, false);
+                MainWindow.Exp_TemPeraPage.SetSampleConfigs();
+            });
+            #endregion
+
             if (!File.Exists(Path.Combine(Environment.CurrentDirectory, "UIParam", "Param.userdat")))
             {
                 return;
             }
-            FileObject fobj = FileObject.ReadFromFile(Path.Combine(Environment.CurrentDirectory, "UIParam", "Param.userdat"));
 
-            WindowHelper.SetContent(window, "正在读取保存参数:" + "设备参数");
+            WindowHelper.SetContent(window, "正在读取:" + "设备参数");
             #region 设备参数
             PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
             ReadFromFile(P1, fobj);
             P1.LoadToPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
             #endregion
 
-            WindowHelper.SetContent(window, "正在读取保存参数:" + "温度监控参数");
             #region 温度监控参数
-            TemperatureConfigParams TP = new TemperatureConfigParams();
-            ReadFromFile(TP, fobj);
-            TP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_TemPeraPage, MainWindow.Exp_TemPeraPage.SetWindow }, false);
             #endregion
 
-            WindowHelper.SetContent(window, "正在读取保存参数:" + "场效应器件测量参数");
+            WindowHelper.SetContent(window, "正在读取:" + "场效应器件测量参数");
             #region 场效应器件测量参数
             IVMeasureConfigParams IVP = new IVMeasureConfigParams();
             ReadFromFile(IVP, fobj);
@@ -159,7 +193,7 @@ namespace ODMR_Lab.IO操作
             VP.LoadToPage(new FrameworkElement[] { MainWindow.Exp_SourcePage }, false);
             #endregion
 
-            WindowHelper.SetContent(window, "正在读取保存参数:" + "位移台控制参数");
+            WindowHelper.SetContent(window, "正在读取:" + "位移台控制参数");
             #region 位移台控制参数
             App.Current.Dispatcher.Invoke(() =>
             {
@@ -182,7 +216,7 @@ namespace ODMR_Lab.IO操作
             #endregion
 
 
-            WindowHelper.SetContent(window, "正在读取保存参数:" + "ODMR实验");
+            WindowHelper.SetContent(window, "正在读取:" + "ODMR实验");
             #region ODMR实验
             ODMRConfigParams ODMRP = new ODMRConfigParams();
             ReadFromFile(ODMRP, fobj);
@@ -195,7 +229,7 @@ namespace ODMR_Lab.IO操作
             foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
             {
                 string path = Path.Combine(Environment.CurrentDirectory, "ODMRConfig", FileHelper.ProcessFileStr(FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName) + ".userdat"));
-                WindowHelper.SetContent(window, "正在读取保存参数:" + "ODMR实验  " + index.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString() + "个");
+                WindowHelper.SetContent(window, "正在读取:" + "ODMR实验  " + index.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString() + "个");
                 if (File.Exists(path))
                 {
                     FileObject ODMRSaveFile = FileObject.ReadFromFile(path);
@@ -205,7 +239,7 @@ namespace ODMR_Lab.IO操作
             }
             #endregion
 
-            WindowHelper.SetContent(window, "正在读取保存参数:" + "全局序列参数");
+            WindowHelper.SetContent(window, "正在读取:" + "全局序列参数");
             #region 全局序列参数
             GlobalPulseParams.ReadFromFile();
             #endregion

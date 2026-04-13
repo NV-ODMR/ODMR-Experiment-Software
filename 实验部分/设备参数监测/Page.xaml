@@ -1,9 +1,9 @@
-﻿<odmr_lab:ExpPageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab" x:Class="ODMR_Lab.温度监测部分.TemperaturePage"
+﻿<odmr_lab:ExpPageBase  xmlns:odmr_lab="clr-namespace:ODMR_Lab" x:Class="ODMR_Lab.设备参数监测.DisplayPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ODMR_Lab.温度监测部分" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件"
+      xmlns:local="clr-namespace:ODMR_Lab.设备参数监测" xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件"
                     mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       >
@@ -12,48 +12,99 @@
         <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <StackPanel Orientation="Horizontal">
-        <Label Content="采样间隔(s):" Margin="100,5,5,5" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" Canvas.Left="603" Height="48" Canvas.Top="187" Width="88" RenderTransformOrigin="0.614,0.437" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <Label Margin="40,0,0,0" Content="采样间隔(s):" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBox x:Name="SampleTimeText" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
-        <control:DecoratedButton  Margin="5" Click="SetSampleTime" Text="设置" FontWeight="Thin" FontSize="14" Height="20" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <control:DecoratedButton  Margin="30,5,5,5" Click="ExportClick" Text="导出选项" FontWeight="Thin" FontSize="14" Height="20" Width="100" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <Label Margin="10,0,10,0" Content="储存点数:" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBox x:Name="StoredPoints" Margin="5"  BorderThickness="0" FontSize="15" Text="100000" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <Label Margin="10,0,10,0" Content="显示点数:" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBox Margin="10,0,10,0" x:Name="DisplayedPoints" BorderThickness="0" FontSize="15" Text="1000" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
+        <control:DecoratedButton  Margin="5" Click="SetApplied" Text="设置" FontWeight="Thin" FontSize="14" Height="25" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
     </StackPanel>
     <Grid Grid.Row="1">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="150"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
+        <control:AutoScrollViewer Grid.Row="2" Grid.Column="0">
+            <control:AutoScrollViewer.Content>
+                <WrapPanel Orientation="Horizontal">
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="曲线类型" />
+                    <control:ComboBox Name="PlotStyle" FontSize="11" DefaultSelectIndex="0" SelectionChanged="ApplyLineStyle" Width="70" Height="30" Margin="5" PanelWidth="60" TextAreaRatio="0.8" IconMargin="2" ImagePlace="Right" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" IconSource="/图片资源/downArrow.png" Foreground="White" MoveInForeground="White" PressedForeground="White">
+                        <control:ComboBox.Items>
+                            <control:DecoratedButton Height="40" Text="线状图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                            <control:DecoratedButton Height="40" Text="点状图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                            <control:DecoratedButton Height="40" Text="点线图" Background="#FF383838" MoveInColor="#FF4D4D4D" PressedColor="#FF007AD9" Foreground="White" MoveInForeground="White" PressedForeground="White"/>
+                        </control:ComboBox.Items>
+                    </control:ComboBox>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="线宽:"/>
+                    <TextBox x:Name="LineWidth" Text="1" LostFocus="ApplyLineStyle" KeyDown="ApplyLineStyleKey" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="60"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="平滑曲线:"/>
+                    <control:Chooser Name="IsSmooth" Width="30" Selected="ApplyLineStyle" UnSelected="ApplyLineStyle" Height="15" Margin="10"/>
+                    <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" FontSize="11" Margin="2" Content="点尺寸:"/>
+                    <TextBox x:Name="PointSize" Text="10" KeyDown="ApplyLineStyleKey" LostFocus="ApplyLineStyle" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="11" BorderThickness="0" Background="#FF424242" BorderBrush="{x:Null}" Foreground="White" Height="30" Width="60"/>
+                    <Label  Content="当前光标数:" FontSize="12" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5"/>
+                    <Label  Name="CursorCount" FontSize="12" Foreground="White" Width="30" Content="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5"/>
+                    <control:DecoratedButton Margin="7" Width="60" Click="AddCursor" Grid.Row="2" Grid.Column="0" TextAreaRatio="1" ToolTip="新建光标" Text="新建光标" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+                    <control:DecoratedButton Margin="7" Width="80" Click="BringCursorToCenter" Grid.Row="2" Grid.Column="0" TextAreaRatio="1" ToolTip="设置光标到中心位置" Text="设置光标到中心位置" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+                </WrapPanel>
+            </control:AutoScrollViewer.Content>
+        </control:AutoScrollViewer>
+        <Grid Grid.Row="3" Grid.Column="0" Grid.RowSpan="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <control:AutoScrollViewer Name="scr" Background="#FF1A1A1A">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <control:AutoScrollViewer Name="scr" Background="#FF2E2E2E" Margin="5" Grid.Row="2">
                 <control:AutoScrollViewer.Content>
-                    <StackPanel Name="DeviceParamPanel" Width="{Binding ElementName=scr,Path=ActualWidth}"/>
+                    <StackPanel Name="ParamPanel" Width="{Binding ElementName=scr,Path=ActualWidth}"/>
                 </control:AutoScrollViewer.Content>
             </control:AutoScrollViewer>
-            <control:DecoratedButton Grid.Row="1" Margin="5" Click="Confirm" Text="确定" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
-
+            <Popup Name="ColorSelectPop" AllowsTransparency="True" StaysOpen="False" IsOpen="False" Closed="ColorSelectPop_Closed">
+                <Popup.Child>
+                    <control:ColorSelector Name="ColorSelect" Width="100" Height="100"/>
+                </Popup.Child>
+            </Popup>
+            <control:DecoratedButton Grid.Column="1" Margin="5" Click="AddParam" Text="添加参数" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         </Grid>
         <Grid Grid.Row="0" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
-            <control:DecoratedButton Click="ShowNumric" CornerRadius="10,10,0,0" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="数值视图" FontSize="17" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF2E2E2E" Foreground="LightGray" MoveInColor="#FF498ACD" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="235" BorderBrush="#FFE0E0E0"/>
-            <control:DecoratedButton Click="ShowPlot" CornerRadius="10,10,0,0"  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="图表视图" FontSize="17" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF2E2E2E" Foreground="LightGray" MoveInColor="#FF55AAFF" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="417" BorderBrush="#FFE0E0E0" BorderMoveColor="Black"/>
+            <control:DecoratedButton Name="NumBtn" Click="ShowNumric" CornerRadius="10,10,0,0" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="数值视图" FontSize="13" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF2E2E2E" Foreground="LightGray" MoveInColor="#FF498ACD" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="235" BorderBrush="#FFE0E0E0"/>
+            <control:DecoratedButton Name="PlotBtn" KeepPressed="True" Click="ShowPlot" CornerRadius="10,10,0,0"  Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="图表视图" FontSize="13" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF2E2E2E" Foreground="LightGray" MoveInColor="#FF55AAFF" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="417" BorderBrush="#FFE0E0E0" BorderMoveColor="Black"/>
         </Grid>
-        <Grid Name="PlotView" Visibility="Visible" Grid.Column="1" Grid.Row="1" Grid.RowSpan="3">
-            <基本控件:TimeChartViewer1D x:Name="Chart"/>
+        <Grid Name="PlotView" Visibility="Hidden" Grid.Column="1" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <chart:ChartControl Grid.Column="0" Legend="False" x:Name="Chart" SnapsToDevicePixels="True" HorizontalAlignment="Stretch" Title="监测曲线" XAxisName="时间" TitleFontsize="20" AxisFontsize="13" YAxisName="值" VerticalAlignment="Stretch" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" Zoom="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <control:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="1" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
+                    <control:DecoratedButton Margin="7" Click="Snap" Grid.Row="0" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="复制截图到剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
+                    <control:DecoratedButton Margin="7" Click="SaveAsExternal" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="保存为文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/save.png"/>
+                </Grid>
+            </Grid>
         </Grid>
-        <Grid Name="NumricView" Visibility="Hidden" Grid.Column="1" Grid.Row="1" Grid.RowSpan="3">
+        <Grid Name="NumricView" Visibility="Hidden" Grid.Column="1" Grid.Row="1">
             <control:AutoScrollViewer x:Name="autoScrollViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <control:AutoScrollViewer.Content>
-                    <WrapPanel Name="NumricPanel" Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=autoScrollViewer, Mode=OneWay}"/>
+                    <StackPanel Name="NumricPanel" Orientation="Vertical" Width="{Binding ActualWidth, ElementName=autoScrollViewer, Mode=OneWay}"/>
                 </control:AutoScrollViewer.Content>
             </control:AutoScrollViewer>
         </Grid>

@@ -4,7 +4,6 @@ using MathLib.NormalMath.Decimal;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra.Double;
 using ODMR_Lab.Windows;
-using ODMR_Lab.实验部分.磁场调节;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
 using System;
