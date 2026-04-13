@@ -20,7 +20,11 @@ namespace ODMR_Lab.实验部分.温度监测
         public Param<int> StoredPoints { get; set; } = new Param<int>("存储点数", 100000, "StoredPoints");
 
         public Param<int> DisplayedPoints { get; set; } = new Param<int>("存储点数", 1000, "DisplayedPoints");
-        
+
+        public Param<double> FixedDisplayMode { get; set; } = new Param<double>("显示时间长度(分钟)", 2, "FixedDisplayMode");
+
+        public Param<bool> IsFixedTime { get; set; } = new Param<bool>("固定显示时间长度", true, "IsFixedTime");
+
         #endregion
     }
 }

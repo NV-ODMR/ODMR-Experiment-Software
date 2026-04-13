@@ -76,7 +76,40 @@ namespace ODMR_Lab.设备参数监测
         #region 图表操作
         private void ResizePlot(object sender, RoutedEventArgs e)
         {
-            Chart.RefreshPlotWithAutoScale();
+            if (!IsFixedTime.IsSelected)
+                Chart.RefreshPlotWithAutoScale();
+            else
+            {
+                UpdatePlotWithFixedTimeLength();
+            }
+        }
+
+        public void UpdatePlotWithFixedTimeLength()
+        {
+            try
+            {
+                double timeend = (DateTime.Now).ToOADate();
+                double timestart = (DateTime.Now - FixedTimeLength).ToOADate();
+                //获取数据中的时间最大值
+                var dats = Chart.DataList.Where(x => x.IsVisible);
+                if (dats.Count() == 0) return;
+                var maxs = dats.Select(x => (x as TimeDataSeries).X.Last());
+                var mins = dats.Select(x => (x as TimeDataSeries).X.First());
+                if (maxs.Count() != 0 && mins.Count() != 0)
+                {
+                    TimeSpan det = maxs.Max() - mins.Min();
+                    timeend = (maxs.Max()).ToOADate();
+                    timestart = (maxs.Max() - FixedTimeLength).ToOADate();
+                    if (det > FixedTimeLength) Chart.RefreshPlotWithCustomScale(timestart, timeend);
+                    else
+                        Chart.RefreshPlotWithAutoScale();
+                    return;
+                }
+                Chart.RefreshPlotWithCustomScale(timestart, timeend);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private void Snap(object sender, RoutedEventArgs e)
@@ -195,6 +228,11 @@ namespace ODMR_Lab.设备参数监测
         public long SampleGap = 1000;
 
         /// <summary>
+        /// 固定显示时间长度
+        /// </summary>
+        public TimeSpan FixedTimeLength = TimeSpan.FromMinutes(2);
+
+        /// <summary>
         /// 设置参数
         /// </summary>
         /// <param name="sender"></param>
@@ -215,6 +253,14 @@ namespace ODMR_Lab.设备参数监测
                 StoredPointCount = long.Parse(StoredPoints.Text);
                 SampleGap = (int)(double.Parse(SampleTimeText.Text) * 1000);
                 ListenDispatcher.ValidateGap = (int)SampleGap;
+                if (TimeUnit.Text == "s")
+                    FixedTimeLength = TimeSpan.FromSeconds(double.Parse(FixedDisplayMode.Text));
+                if (TimeUnit.Text == "min")
+                    FixedTimeLength = TimeSpan.FromMinutes(double.Parse(FixedDisplayMode.Text));
+                if (TimeUnit.Text == "h")
+                    FixedTimeLength = TimeSpan.FromHours(double.Parse(FixedDisplayMode.Text));
+                if (TimeUnit.Text == "d")
+                    FixedTimeLength = TimeSpan.FromDays(double.Parse(FixedDisplayMode.Text));
             }
             catch (Exception)
             {

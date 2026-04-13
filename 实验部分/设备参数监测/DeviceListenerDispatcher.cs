@@ -126,7 +126,12 @@ namespace ODMR_Lab.实验部分.设备参数监控
                     {
                         App.Current.Dispatcher.Invoke(() =>
                         {
-                            ParentPage.Chart.RefreshPlotWithAutoScaleY();
+                            if (ParentPage.IsFixedTime.IsSelected)
+                            {
+                                ParentPage.UpdatePlotWithFixedTimeLength();
+                            }
+                            else
+                                ParentPage.Chart.RefreshPlotWithAutoScaleY();
                             //更新数据面板
                             foreach (var item in DeviceParameters)
                             {

@@ -11,15 +11,31 @@
         <RowDefinition Height="40"/>
         <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
-    <StackPanel Orientation="Horizontal">
-        <Label Margin="40,0,0,0" Content="采样间隔(s):" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBox x:Name="SampleTimeText" Margin="5" Width="50" BorderThickness="0" FontSize="15" Text="1" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
-        <Label Margin="10,0,10,0" Content="储存点数:" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBox x:Name="StoredPoints" Margin="5"  BorderThickness="0" FontSize="15" Text="100000" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
-        <Label Margin="10,0,10,0" Content="显示点数:" FontSize="13" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBox Margin="10,0,10,0" x:Name="DisplayedPoints" BorderThickness="0" FontSize="15" Text="1000" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
-        <control:DecoratedButton  Margin="5" Click="SetApplied" Text="设置" FontWeight="Thin" FontSize="14" Height="25" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-    </StackPanel>
+    <control:AutoScrollViewer Name="scr0">
+        <control:AutoScrollViewer.Content>
+            <WrapPanel Orientation="Horizontal" Height="{Binding ElementName=scr0,Path=ActualHeight}">
+                <Label Margin="40,0,0,0" Content="采样间隔(s):" FontSize="10" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox x:Name="SampleTimeText" Margin="5" Width="50" BorderThickness="0" FontSize="10" Text="1" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Margin="10,0,10,0" Content="储存点数:" FontSize="10" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox x:Name="StoredPoints" Margin="5"  BorderThickness="0" FontSize="10" Text="100000" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Margin="10,0,10,0" Content="显示点数:" FontSize="10" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox Margin="10,0,10,0" x:Name="DisplayedPoints" BorderThickness="0" FontSize="10" Text="1000" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <Label Margin="3,0,3,0" Content="显示时间长度" FontSize="10" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox Margin="3,0,3,0" x:Name="FixedDisplayMode" BorderThickness="0" Width="30" FontSize="10" Text="1" HorizontalContentAlignment="Center" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}" Foreground="#FFF0F0F0" CaretBrush="White"/>
+                <control:ComboBox Name="TimeUnit" Text="s" Margin="3,0,3,0" FontWeight="Thin" Width="30" FontSize="13" Background="#FF1A1A1A" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <control:ComboBox.Items>
+                        <control:DecoratedButton Text="s" FontWeight="Thin" FontSize="13" Height="25" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <control:DecoratedButton Text="min" FontWeight="Thin" FontSize="13" Height="25" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <control:DecoratedButton Text="h" FontWeight="Thin" FontSize="13" Height="25" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <control:DecoratedButton Text="d" FontWeight="Thin" FontSize="13" Height="25" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </control:ComboBox.Items>
+                </control:ComboBox>
+                <control:DecoratedButton  Margin="5" Click="SetApplied" Text="设置" FontWeight="Thin" FontSize="10" Height="25" Width="50" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Margin="3,0,3,0" Content="固定显示时间长度" FontSize="10" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#FFFAFAFA" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <control:Chooser Margin="3,0,3,0" Height="15" Width="30" x:Name="IsFixedTime" IsSelected="False" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.Left="696" Canvas.Top="187" Background="{x:Null}"/>
+            </WrapPanel>
+        </control:AutoScrollViewer.Content>
+    </control:AutoScrollViewer>
     <Grid Grid.Row="1">
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
@@ -82,7 +98,7 @@
             <control:DecoratedButton Name="NumBtn" Click="ShowNumric" CornerRadius="10,10,0,0" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="数值视图" FontSize="13" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF2E2E2E" Foreground="LightGray" MoveInColor="#FF498ACD" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="235" BorderBrush="#FFE0E0E0"/>
             <control:DecoratedButton Name="PlotBtn" KeepPressed="True" Click="ShowPlot" CornerRadius="10,10,0,0"  Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="图表视图" FontSize="13" BorderThickness="0" IconStretch="Uniform" ImagePlace="Bottom" FontWeight="Bold" TextAreaRatio="1" Canvas.Left="109" Background="#FF2E2E2E" Foreground="LightGray" MoveInColor="#FF55AAFF" PressedColor="#FF3F85CD" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="417" BorderBrush="#FFE0E0E0" BorderMoveColor="Black"/>
         </Grid>
-        <Grid Name="PlotView" Visibility="Hidden" Grid.Column="1" Grid.Row="1">
+        <Grid Name="PlotView" Visibility="Visible" Grid.Column="1" Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
