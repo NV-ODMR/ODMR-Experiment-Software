@@ -88,7 +88,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="40"/>
                 </Grid.ColumnDefinitions>
-                <chart:ChartControl Grid.Column="0" Legend="False" x:Name="Chart" SnapsToDevicePixels="True" HorizontalAlignment="Stretch" Title="监测曲线" XAxisName="时间" TitleFontsize="20" AxisFontsize="13" YAxisName="值" VerticalAlignment="Stretch" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" Zoom="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
+                <chart:ChartControl Grid.Column="0" Legend="False" x:Name="Chart" AllowAutoClip="True" SnapsToDevicePixels="True" HorizontalAlignment="Stretch" Title="监测曲线" XAxisName="时间" TitleFontsize="20" AxisFontsize="13" YAxisName="值" VerticalAlignment="Stretch" LegendFontsize="20" LegendHAlignment="Right" LegendVAlignment="Top" MajorGridThickness="1" GridLineNumber="8" AxisMajorTickColor="Transparent" AxisMinorTickColor="Transparent" PanY="False" MinorGridThickness="0" Zoom="True" ChartBackground="#FF1F1F1F" DataAreaBackground="#FF1F1F1F" MajorGridColor="#FF888A85" MinorGridColor="#FF7C7C7C" EdgeColor="Transparent" LegendBackground="#FF4D4D4D" LegendForeground="#FFFAFAFA"/>
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition/>

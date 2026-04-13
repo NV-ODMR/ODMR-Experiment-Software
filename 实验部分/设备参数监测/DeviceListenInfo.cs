@@ -208,6 +208,19 @@ namespace ODMR_Lab.实验部分.设备参数监控
                 }
             }
         }
+        public void ClearData()
+        {
+            lock (time)
+            {
+                lock (value)
+                {
+                    time.Clear();
+                    value.Clear();
+                    DeviceDisplayData.X = time.ToList();
+                    DeviceDisplayData.Y = value.ToList();
+                }
+            }
+        }
 
         public void GetData(out List<DateTime> t, out List<double> v)
         {

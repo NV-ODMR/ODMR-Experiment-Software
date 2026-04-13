@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using ComboBox = Controls.ComboBox;
+using System.Windows.Media;
 
 namespace ODMR_Lab.实验部分.设备参数监控
 {
@@ -91,7 +92,7 @@ namespace ODMR_Lab.实验部分.设备参数监控
                         {
                             foreach (var item in DeviceParameters)
                             {
-                                item.LastValue = double.NaN;
+                                //item.LastValue = double.NaN;
                                 if (item.IsSample == false) { item.ErrorMessage = ""; continue; }
                                 try
                                 {
@@ -216,6 +217,7 @@ namespace ODMR_Lab.实验部分.设备参数监控
                     DeviceListenInfo info = new DeviceListenInfo(ParentPage, devproductnames[i], devproductidentifiers[i], haschannel[i] ? channelnames[i] : "", parameters[i], parameterdescs[i]);
                     ParentPage.AppendInfoCommands(info);
                     DeviceParameters.Add(info);
+                    info.DisplayColor = (Color)ColorConverter.ConvertFromString(ChannelColor[i]);
 
                     PortObject dev = PortObject.FindDevice(devproductidentifiers[i], devproductnames[i]);
                     if (dev == null) continue;

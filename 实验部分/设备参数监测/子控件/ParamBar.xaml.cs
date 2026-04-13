@@ -1,12 +1,15 @@
 ﻿using CodeHelper;
 using Controls;
+using Controls.Charts;
 using Controls.Windows;
 using HardWares;
 using HardWares.端口基类;
 using HardWares.端口基类部分;
+using ODMR_Lab.Windows;
 using ODMR_Lab.实验部分.设备参数监控;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -62,6 +66,14 @@ namespace ODMR_Lab.实验部分.设备参数监测
             ButtonTemplate.CloneStyleTo(btn);
             btn.Click += RefreshEvent;
             menu.Items.Add(btn);
+            btn = new DecoratedButton() { Text = "导出数据" };
+            ButtonTemplate.CloneStyleTo(btn);
+            btn.Click += ExportEvent;
+            menu.Items.Add(btn);
+            btn = new DecoratedButton() { Text = "清空数据" };
+            ButtonTemplate.CloneStyleTo(btn);
+            btn.Click += ClearDataEvent;
+            menu.Items.Add(btn);
             menu.ItemHeight = 30;
             menu.ApplyToControl(this);
 
@@ -70,6 +82,49 @@ namespace ODMR_Lab.实验部分.设备参数监测
             {
                 MessageWindow.ShowTipWindow(ParentInfo.ErrorMessage, Window.GetWindow(this));
             });
+        }
+
+        private void ClearDataEvent(object sender, RoutedEventArgs e)
+        {
+            ParentInfo.ClearData();
+        }
+
+        private void ExportEvent(object sender, RoutedEventArgs e)
+        {
+            //冻结当前数据
+            var xs = ParentInfo.DeviceDisplayData.X.ToArray().ToList();
+            var ys = ParentInfo.DeviceDisplayData.Y.ToArray().ToList();
+            int count = Math.Min(xs.Count, ys.Count);
+            if (xs.Count != ys.Count)
+            {
+                xs = xs.GetRange(0, count);
+                ys = ys.GetRange(0, count);
+            }
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "文本文件 (*.txt)|*.txt";
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string save = "时间" + "\t" + ParentInfo.GetTotalDevDescription() + " " + ParentInfo.ParamDescription + "\n";
+                    var rs = xs.Zip(ys, (x, y) => { return x.ToString("yyyy/MM/dd HH:mm:ss:fff") + "\t" + y.ToString() + "\n"; });
+                    save += string.Join("", rs);
+                    using (StreamWriter wr = new StreamWriter(new FileStream(dlg.FileName, FileMode.Create)))
+                    {
+                        wr.Write(save);
+                    }
+                    TimeWindow win = new TimeWindow();
+                    win.Owner = Window.GetWindow(this);
+                    win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    win.ShowWindow("文件已保存");
+                }
+                catch (Exception ex)
+                {
+                    MessageWindow.ShowTipWindow("文件未成功保存，原因：" + ex.Message, Window.GetWindow(this));
+                }
+            }
         }
 
         /// <summary>
