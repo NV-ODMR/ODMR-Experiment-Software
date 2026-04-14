@@ -1,6 +1,5 @@
 ﻿using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.光子探测器;
-using ODMR_Lab.设备部分.板卡;
 using System;
 using System.Collections.Generic;
 using System.Linq;

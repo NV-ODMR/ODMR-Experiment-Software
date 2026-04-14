@@ -8,11 +8,11 @@ using System.Windows;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.设备部分.位移台部分;
-using ODMR_Lab.设备部分.射频源_锁相放大器;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
+using ODMR_Lab.设备部分.其他设备;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 {

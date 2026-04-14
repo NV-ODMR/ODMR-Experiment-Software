@@ -29,8 +29,6 @@ namespace ODMR_Lab.实验部分.序列编辑器.子控件
 
         public event Action<ChannelSequenceControlBase> ChannelRelationSetEvent = null;
 
-        public static Label LabelTemplate = new Label() { Cursor = Cursors.Hand, Width = 10, Height = 10, Margin = new Thickness(5), BorderThickness = new Thickness(0.1) };
-
         public Color ChannelUnSelectedColor = (Color)ColorConverter.ConvertFromString("#FF4D4D4D");
 
         public SingleChannelData ParentData = null;
@@ -54,7 +52,7 @@ namespace ODMR_Lab.实验部分.序列编辑器.子控件
             foreach (var item in ParentData.Channels)
             {
                 Label l = new Label() { Margin = new Thickness(5) };
-                UIUpdater.CloneStyle(LabelTemplate, l);
+                UIUpdater.SetDefaultTemplate(l);
                 l.BorderThickness = new Thickness(0.5);
                 l.Tag = item;
                 l.ToolTip = Enum.GetName(typeof(SequenceChannel), item.Key) + " 通道值";

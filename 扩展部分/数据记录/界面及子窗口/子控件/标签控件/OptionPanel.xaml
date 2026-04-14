@@ -24,7 +24,7 @@
     <control:DecoratedButton Name="ColorBtn" Grid.Column="2" Grid.Row="1" Click="ColorSelectorClicked" Grid.RowSpan="2" Background="Transparent" FontSize="20" Text="■" Height="30" Width="30" MoveInColor="#FF424242" PressedColor="#FF0066FF"/>
     <StackPanel Name="OptionDisplayPanel" Grid.Row="1" Grid.ColumnSpan="1" Margin="3" Orientation="Vertical" HorizontalAlignment="Stretch">
     </StackPanel>
-    <TextBox Visibility="Collapsed" Name="TextBoxTemplate" Background="Transparent" BorderThickness="0" BorderBrush="Transparent" Foreground="White" Padding="5" Text="12123111111111111111111111111112121121" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" CaretBrush="White"/>
+    <TextBox Visibility="Collapsed" Background="Transparent" BorderThickness="0" BorderBrush="Transparent" Foreground="White" Padding="5" Text="12123111111111111111111111111112121121" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" CaretBrush="White"/>
     <control:DecoratedButton Name="Addbtn" Grid.Column="0" Grid.Row="2" Margin="10" Click="AddOption" Text="+" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
         <Grid.RowDefinitions>

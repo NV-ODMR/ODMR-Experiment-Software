@@ -85,7 +85,7 @@
                 </control:TimePicker>
                 <control:DecoratedButton Background="#FF383838" Grid.Row="2" Click="CleanEndDate" Grid.Column="2" TextAreaRatio="0" IconSource="/图片资源/clean.png" IconMargin="5" Margin="4" FontSize="9" FontWeight="Bold" MoveInColor="#FF4D4D4D" PressedColor="#FF2E2E2E" PressedForeground="White" MoveInForeground="White" Foreground="White"/>
             </Grid>
-            <TextBlock Name="TextblockTemplate" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Margin="5" Visibility="Collapsed" FontSize="12"/>
+            <TextBlock Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Margin="5" Visibility="Collapsed" FontSize="12"/>
             <control:AutoScrollViewer Grid.Row="3" Name="scroll" Margin="10" Background="#FF2E2E2E">
                 <control:AutoScrollViewer.Content>
                     <StackPanel Name="FilesPanel" Orientation="Vertical" Width="{Binding ElementName=scroll,Path=ActualWidth}">

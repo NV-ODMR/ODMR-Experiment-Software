@@ -36,7 +36,7 @@ namespace ODMR_Lab.ODMR实验
             //刷新显示
             HashSet<string> gnames = new HashSet<string>(ParentPage.ExpObjects.Select(x => x.ODMRExperimentGroupName));
             ExpGroup.Items.Clear();
-            ExpGroup.TemplateButton = ExpGroup;
+            ExpGroup.TemplateButton = UIUpdater.ButtonTemplate;
             foreach (var item in gnames)
             {
                 ExpGroup.Items.Add(new DecoratedButton() { Text = item, Height = 50 });

@@ -7,7 +7,6 @@ using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口.数据拟合;
 using ODMR_Lab.基本控件.一维图表;
-using ODMR_Lab.设备部分.温控;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +30,7 @@ using HardWares.Windows;
 using ODMR_Lab.实验部分.设备参数监测;
 using HardWares.端口基类部分;
 using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分.其他设备;
 
 namespace ODMR_Lab.实验部分.设备参数监测
 {
@@ -59,8 +59,6 @@ namespace ODMR_Lab.实验部分.设备参数监测
         public override void InnerInit()
         {
         }
-
-        List<ChannelInfo> SelectedInfos = new List<ChannelInfo>();
 
         public override void CloseBehaviour()
         {

@@ -31,18 +31,6 @@ namespace ODMR_Lab.实验部分.设备参数监测
     /// </summary>
     public partial class ParamBar : Grid
     {
-
-        protected static DecoratedButton ButtonTemplate = new DecoratedButton()
-        {
-            FontSize = 12,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838")),
-            Foreground = Brushes.White,
-            MoveInColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF424242")),
-            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF39393A")),
-            MoveInForeground = Brushes.White,
-            PressedForeground = Brushes.White,
-        };
-
         public DeviceListenInfo ParentInfo = null;
 
         public event Action<ParamBar> ColorSelectEvent = null;
@@ -58,19 +46,19 @@ namespace ODMR_Lab.实验部分.设备参数监测
             //添加右键菜单
             ContextMenu menu = new ContextMenu();
             DecoratedButton btn = new DecoratedButton() { Text = "删除" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += DeleteEvent;
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "刷新" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += RefreshEvent;
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "导出数据" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += ExportEvent;
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "清空数据" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += ClearDataEvent;
             menu.Items.Add(btn);
             menu.ItemHeight = 30;

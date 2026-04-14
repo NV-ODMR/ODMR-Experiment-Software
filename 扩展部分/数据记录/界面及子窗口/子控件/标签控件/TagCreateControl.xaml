@@ -26,8 +26,8 @@
             </StackPanel>
         </control:AutoScrollViewer.Content>
     </control:AutoScrollViewer>
-    <Label Visibility="Collapsed" Name="LabelTemplate" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="标题" Foreground="White" VerticalAlignment="Center"/>
-    <TextBox Visibility="Collapsed" Name="TextBoxTemplate" BorderThickness="0" BorderBrush="Transparent" Foreground="White" Padding="5" Background= "Transparent" Text="12123111111111111111111111111112121121" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" CaretBrush="White"/>
+    <Label Visibility="Collapsed" FontSize="15" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="标题" Foreground="White" VerticalAlignment="Center"/>
+    <TextBox Visibility="Collapsed" BorderThickness="0" BorderBrush="Transparent" Foreground="White" Padding="5" Background= "Transparent" Text="12123111111111111111111111111112121121" TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Center" CaretBrush="White"/>
     <Grid Grid.Row="1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Name="PureColumn"/>

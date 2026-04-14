@@ -77,8 +77,8 @@ namespace ODMR_Lab.基本控件
         {
             InitializeComponent();
             DataSource.ItemChanged += UpdateDataPanel;
-            MapColorStyle.TemplateButton = MapColorStyle;
-            ChartObject.CursorMenuTemplate = ChartGroups;
+            MapColorStyle.TemplateButton = UIUpdater.ButtonTemplate;
+            ChartObject.CursorMenuTemplate = UIUpdater.ButtonTemplate;
             foreach (var item in Enum.GetNames(typeof(ColorMaps)))
             {
                 MapColorStyle.Items.Add(new DecoratedButton() { Text = item });
@@ -160,7 +160,7 @@ namespace ODMR_Lab.基本控件
                 groups.Add(data.GroupName);
             }
             ChartGroups.Items.Clear();
-            ChartGroups.TemplateButton = ChartGroups;
+            ChartGroups.TemplateButton = UIUpdater.ButtonTemplate;
             foreach (var item in groups)
             {
                 DecoratedButton btn = new DecoratedButton() { Text = item };

@@ -113,7 +113,7 @@ namespace ODMR_Lab.自定义算法
             {
                 TextBlock l = new TextBlock() { Text = item };
                 l.Height = 30;
-                UIUpdater.CloneStyle(TextBlockTemplate, l);
+                UIUpdater.SetDefaultTemplate(l);
                 InputParams.Children.Add(l);
                 var ps = CurrentAngorithm.InputParams.Where(x => x.GroupName == item);
                 foreach (var p in ps)
@@ -133,7 +133,7 @@ namespace ODMR_Lab.自定义算法
             {
                 TextBlock l = new TextBlock() { Text = item };
                 l.Height = 30;
-                UIUpdater.CloneStyle(TextBlockTemplate, l);
+                UIUpdater.SetDefaultTemplate(l);
                 OutputParams.Children.Add(l);
                 var ps = CurrentAngorithm.OutputParams.Where(x => x.GroupName == item);
                 foreach (var p in ps)

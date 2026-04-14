@@ -16,7 +16,7 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.光子探测器;
-using ODMR_Lab.设备部分.板卡;
+using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -245,7 +245,7 @@ namespace ODMR_Lab.激光控制
         private void UpdateAPDDeviceList(object sender, RoutedEventArgs e)
         {
             APDDevice.Items.Clear();
-            APDDevice.TemplateButton = APDDevice;
+            APDDevice.TemplateButton = UIUpdater.ButtonTemplate;
             var APDs = DeviceDispatcher.GetDevice(DeviceTypes.光子计数器);
             foreach (var item in APDs)
             {
@@ -256,7 +256,7 @@ namespace ODMR_Lab.激光控制
         private void UpdatePBDeviceList(object sender, RoutedEventArgs e)
         {
             PBDevice.Items.Clear();
-            PBDevice.TemplateButton = PBDevice;
+            PBDevice.TemplateButton = UIUpdater.ButtonTemplate;
             var pbs = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster);
             foreach (var item in pbs)
             {

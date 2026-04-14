@@ -13,7 +13,7 @@ using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.光子探测器;
-using ODMR_Lab.设备部分.板卡;
+using ODMR_Lab.设备部分.其他设备;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;

@@ -28,17 +28,6 @@ namespace ODMR_Lab.实验部分.设备参数面板
     /// </summary>
     public partial class ParamSetBar : Grid
     {
-        protected static DecoratedButton ButtonTemplate = new DecoratedButton()
-        {
-            FontSize = 12,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838")),
-            Foreground = Brushes.White,
-            MoveInColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF424242")),
-            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF39393A")),
-            MoveInForeground = Brushes.White,
-            PressedForeground = Brushes.White,
-        };
-
         public event Action<ParamSetBar> SelectedEvent = null;
 
         public event Action<ParamSetBar> ParamDeleteEvent = null;
@@ -53,7 +42,7 @@ namespace ODMR_Lab.实验部分.设备参数面板
             //添加右键菜单
             ContextMenu menu = new ContextMenu();
             DecoratedButton btn = new DecoratedButton() { Text = "删除" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += DeleteEvent;
             menu.Items.Add(btn);
             menu.ItemHeight = 30;
@@ -94,7 +83,7 @@ namespace ODMR_Lab.实验部分.设备参数面板
                     foreach (var item in names)
                     {
                         DecoratedButton btn = new DecoratedButton() { Text = item };
-                        ButtonTemplate.CloneStyleTo(btn);
+                        UIUpdater.SetDefaultTemplate(btn);
                         EnumValue.Items.Add(btn);
                     }
                     EnumValue.Select((string)Enum.GetName(ParentParam.TargetParameter.ParamType, ParentParam.TargetParameter.ReadValue()));

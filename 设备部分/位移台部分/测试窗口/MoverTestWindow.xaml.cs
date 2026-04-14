@@ -84,14 +84,14 @@ namespace ODMR_Lab.设备部分.位移台部分
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(40) });
 
             Label l = new Label();
-            UIUpdater.CloneStyle(LabelTemplate, l);
+            UIUpdater.SetDefaultTemplate(l);
 
             l.Content = info.Parent.Device.ProductName;
             grid.Children.Add(l);
             Grid.SetColumn(l, 0);
 
             l = new Label();
-            UIUpdater.CloneStyle(LabelTemplate, l);
+            UIUpdater.SetDefaultTemplate(l);
 
             l.Content = info.Device.ChannelName;
             grid.Children.Add(l);
@@ -99,12 +99,12 @@ namespace ODMR_Lab.设备部分.位移台部分
 
             ComboBox box = new ComboBox();
             box.Margin = new Thickness(5);
-            box.TemplateButton = BtnTemplate;
-            BtnTemplate.CloneStyleTo(box);
-            box.TextAreaRatio = BtnTemplate.TextAreaRatio;
-            box.IconSource = BtnTemplate.IconSource;
-            box.ImagePlace = BtnTemplate.ImagePlace;
-            BtnTemplate.IconMargin = BtnTemplate.IconMargin;
+            box.TemplateButton = UIUpdater.ComboBoxTemplate;
+            UIUpdater.SetDefaultTemplate(box);
+            box.TextAreaRatio = UIUpdater.ComboBoxTemplate.TextAreaRatio;
+            box.IconSource = UIUpdater.ComboBoxTemplate.IconSource;
+            box.ImagePlace = UIUpdater.ComboBoxTemplate.ImagePlace;
+            box.IconMargin =  UIUpdater.ComboBoxTemplate.IconMargin;
             foreach (var item in Enum.GetNames(typeof(MoverTypes)))
             {
                 box.Items.Add(new DecoratedButton() { Text = item });
@@ -114,7 +114,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             Grid.SetColumn(box, 2);
 
             TextBox target = new TextBox();
-            UIUpdater.CloneStyle(TextboxTemplate, target);
+            UIUpdater.SetDefaultTemplate(target);
             target.Margin = new Thickness(5);
             target.IsReadOnly = true;
             target.Tag = info;
@@ -122,14 +122,14 @@ namespace ODMR_Lab.设备部分.位移台部分
             Grid.SetColumn(target, 3);
 
             TextBox text = new TextBox();
-            UIUpdater.CloneStyle(TextboxTemplate, text);
+            UIUpdater.SetDefaultTemplate(text);
             text.Text = "0.01";
             text.Margin = new Thickness(5);
             grid.Children.Add(text);
             Grid.SetColumn(text, 4);
 
             DecoratedButton btn = new DecoratedButton() { Text = "<" };
-            BtnTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Tag = info;
             btn.Click += MoveLeft;
             grid.Children.Add(btn);
@@ -138,7 +138,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             Grid.SetColumn(btn, 5);
 
             btn = new DecoratedButton() { Text = ">" };
-            BtnTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Tag = info;
             btn.Click += MoveRight;
             grid.Children.Add(btn);

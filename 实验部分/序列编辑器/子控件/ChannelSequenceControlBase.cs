@@ -22,17 +22,6 @@ namespace ODMR_Lab.实验部分.序列编辑器.子控件
 
         public event Action ExternalUpdateEvent = null;
 
-        protected static DecoratedButton ButtonTemplate = new DecoratedButton()
-        {
-            FontSize = 12,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838")),
-            Foreground = Brushes.White,
-            MoveInColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF424242")),
-            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF39393A")),
-            MoveInForeground = Brushes.White,
-            PressedForeground = Brushes.White,
-        };
-
         protected static SequenceSegBase copyseg = null;
 
         protected static object segConfig = null;
@@ -84,33 +73,33 @@ namespace ODMR_Lab.实验部分.序列编辑器.子控件
             MouseLeftButtonDown += Select;
             ContextMenu menu = new ContextMenu();
             DecoratedButton btn = new DecoratedButton() { Text = "删除波形" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += DeleteEvent;
             menu.Items.Add(btn);
             menu.ItemHeight = 30;
             btn = new DecoratedButton() { Text = "在上方插入" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += InsrtBeforeEvent;
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "在下方插入" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += InsrtAfterEvent;
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "复制波形" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += CopyEvent;
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "粘贴波形" };
             btn.Click += PasteEvent;
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "切换为脉冲组合" };
             btn.Click += ToGroupPulse;
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             menu.Items.Add(btn);
             btn = new DecoratedButton() { Text = "切换为单脉冲" };
             btn.Click += ToSinglePulse;
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             menu.Items.Add(btn);
             menu.ApplyToControl(this);
         }

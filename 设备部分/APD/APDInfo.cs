@@ -6,7 +6,7 @@ using HardWares.板卡;
 using HardWares.板卡.DAQmxCounterSignalChannel;
 using HardWares.相机_CCD_;
 using ODMR_Lab.实验部分.序列编辑器;
-using ODMR_Lab.设备部分.板卡;
+using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
 using System.Linq;

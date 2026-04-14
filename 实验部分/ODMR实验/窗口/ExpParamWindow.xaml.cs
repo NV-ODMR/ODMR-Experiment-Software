@@ -32,42 +32,6 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
         DisplayPage ParentPage = null;
 
-        private static Label LabelTemplate = new Label() { Name = "LabelTemplate", HorizontalContentAlignment = HorizontalAlignment.Center, Foreground = Brushes.White, VerticalContentAlignment = VerticalAlignment.Center };
-
-        private static TextBlock TextBlockTemplate = new TextBlock() { Foreground = Brushes.White, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap, FontSize = 12 };
-
-        private static ComboBox ComboBoxTemplate = new ComboBox()
-        {
-            Name = "ComboBoxTemplate",
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF4D4D4D")),
-            FontSize = 12,
-            TextAreaRatio = 0.9,
-            ImagePlace = ImagePlace.Right,
-            IconMargin = new Thickness(3),
-            Foreground = Brushes.White,
-            PressedForeground = Brushes.White,
-            MoveInForeground = Brushes.White,
-            MoveInColor = Brushes.Gray,
-            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1B6BDD")),
-            IconSource = new BitmapImage(new Uri("/图片资源/downArrow.png", UriKind.Relative))
-        };
-
-        private static TextBox TextBoxTemplate = new TextBox()
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF4D4D4D")),
-            Foreground = Brushes.White,
-            BorderThickness = new Thickness(0),
-            FontSize = 12,
-            HorizontalContentAlignment = HorizontalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center,
-            BorderBrush = null,
-            CaretBrush = Brushes.White
-        };
-
         bool Isinput = false;
 
         bool Isoutput = false;
@@ -98,7 +62,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     //添加标签
                     ParamPannel.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
                     Label l = new Label() { Content = item };
-                    UIUpdater.CloneStyle(LabelTemplate, l);
+                    UIUpdater.SetDefaultTemplate(l);
                     ParamPannel.Children.Add(l);
                     Grid.SetRow(l, ParamPannel.RowDefinitions.Count - 1);
                     Grid.SetColumnSpan(l, 2);
@@ -127,7 +91,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     //添加标签
                     ParamPannel.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
                     Label l = new Label() { Content = item };
-                    UIUpdater.CloneStyle(LabelTemplate, l);
+                    UIUpdater.SetDefaultTemplate(l);
                     ParamPannel.Children.Add(l);
                     Grid.SetRow(l, ParamPannel.RowDefinitions.Count - 1);
                     Grid.SetColumnSpan(l, 2);
@@ -156,7 +120,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     //添加标签
                     ParamPannel.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
                     Label l = new Label() { Content = item };
-                    UIUpdater.CloneStyle(LabelTemplate, l);
+                    UIUpdater.SetDefaultTemplate(l);
                     ParamPannel.Children.Add(l);
                     Grid.SetRow(l, ParamPannel.RowDefinitions.Count - 1);
                     Grid.SetColumnSpan(l, 2);
@@ -211,7 +175,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             TextBlock tb = new TextBlock() { Text = param.Description, ToolTip = param.Description };
             tb.Margin = new Thickness(5);
             tb.MinWidth = 80;
-            UIUpdater.CloneStyle(TextBlockTemplate, tb);
+            UIUpdater.SetDefaultTemplate(tb);
             g.Children.Add(tb);
             Grid.SetColumn(tb, 0);
 
@@ -231,7 +195,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 || param.ValueType.Name == typeof(float).Name || param.ValueType.Name == typeof(string).Name)
             {
                 TextBox t = new TextBox();
-                UIUpdater.CloneStyle(TextBoxTemplate, t);
+                UIUpdater.SetDefaultTemplate(t);
                 t.MinWidth = 80;
                 ui = t;
                 if (!IsInput)
@@ -240,12 +204,12 @@ namespace ODMR_Lab.实验部分.ODMR实验
             if (typeof(Enum).IsAssignableFrom(param.ValueType))
             {
                 ComboBox c = new ComboBox() { DefaultSelectIndex = 0 };
-                c.TemplateButton = ComboBoxTemplate;
-                ComboBoxTemplate.CloneStyleTo(c);
-                c.TextAreaRatio = ComboBoxTemplate.TextAreaRatio;
-                c.IconSource = ComboBoxTemplate.IconSource;
-                c.IconStretch = ComboBoxTemplate.IconStretch;
-                c.ImagePlace = ComboBoxTemplate.ImagePlace;
+                c.TemplateButton = UIUpdater.ComboBoxTemplate;
+                UIUpdater.SetDefaultTemplate(c);
+                c.TextAreaRatio = UIUpdater.ComboBoxTemplate.TextAreaRatio;
+                c.IconSource = UIUpdater.ComboBoxTemplate.IconSource;
+                c.IconStretch = UIUpdater.ComboBoxTemplate.IconStretch;
+                c.ImagePlace = UIUpdater.ComboBoxTemplate.ImagePlace;
                 c.MinWidth = 80;
 
                 c.Margin = new Thickness(5);
@@ -282,17 +246,17 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
             TextBlock tb = new TextBlock() { Text = param.Description, ToolTip = param.Description };
             tb.Margin = new Thickness(5);
-            UIUpdater.CloneStyle(TextBlockTemplate, tb);
+            UIUpdater.SetDefaultTemplate(tb);
             g.Children.Add(tb);
             Grid.SetColumn(tb, 0);
 
             ComboBox box = new ComboBox() { DefaultSelectIndex = 0 };
-            box.TemplateButton = ComboBoxTemplate;
-            ComboBoxTemplate.CloneStyleTo(box);
-            box.TextAreaRatio = ComboBoxTemplate.TextAreaRatio;
-            box.IconSource = ComboBoxTemplate.IconSource;
-            box.IconStretch = ComboBoxTemplate.IconStretch;
-            box.ImagePlace = ComboBoxTemplate.ImagePlace;
+            box.TemplateButton = UIUpdater.ComboBoxTemplate;
+            UIUpdater.SetDefaultTemplate(box);
+            box.TextAreaRatio = UIUpdater.ComboBoxTemplate.TextAreaRatio;
+            box.IconSource = UIUpdater.ComboBoxTemplate.IconSource;
+            box.IconStretch = UIUpdater.ComboBoxTemplate.IconStretch;
+            box.ImagePlace = UIUpdater.ComboBoxTemplate.ImagePlace;
 
             box.Items.Clear();
             var devs = DeviceDispatcher.GetDevice(type);

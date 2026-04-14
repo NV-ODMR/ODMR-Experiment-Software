@@ -237,7 +237,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 foreach (var item in CurrentExpObject.InterativeButtons)
                 {
                     DecoratedButton btn = new DecoratedButton() { Text = item.Key };
-                    InteractBtnTemplate.CloneStyleTo(btn);
+                    UIUpdater.SetDefaultTemplate(btn);
                     btn.Height = 40;
                     btn.Margin = new Thickness(5);
                     btn.Click += CurrentExpObject.ButtonClickEvent;
@@ -288,7 +288,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     {
                         TextBlock l = new TextBlock() { Text = item };
                         l.Height = 30;
-                        UIUpdater.CloneStyle(TextBlockTemplate, l);
+                        UIUpdater.SetDefaultTemplate(l);
                         InputPanel.Children.Add(l);
                         var ps = CurrentExpObject.InputParams.Where(x => x.GroupName == item);
                         foreach (var p in ps)
@@ -303,7 +303,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     {
                         TextBlock l = new TextBlock() { Text = item };
                         l.Height = 30;
-                        UIUpdater.CloneStyle(TextBlockTemplate, l);
+                        UIUpdater.SetDefaultTemplate(l);
                         OutputPanel.Children.Add(l);
                         var ps = CurrentExpObject.OutputParams.Where(x => x.GroupName == item);
                         foreach (var p in ps)
@@ -319,7 +319,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     {
                         TextBlock l = new TextBlock() { Text = item };
                         l.Height = 30;
-                        UIUpdater.CloneStyle(TextBlockTemplate, l);
+                        UIUpdater.SetDefaultTemplate(l);
                         DevicePanel.Children.Add(l);
                         var ps = CurrentExpObject.DeviceList.Where(x => x.Value.GroupName == item);
                         foreach (var p in ps)

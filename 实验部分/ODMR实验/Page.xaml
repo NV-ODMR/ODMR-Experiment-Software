@@ -66,7 +66,7 @@
                         <control:DecoratedButton Click="ShowExpFiles" TextAreaRatio="1" Text="浏览实验文件" FontSize="12" Margin="30,5,5,5" Width="100" IconMargin="7" FontWeight="Thin" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                         <control:DecoratedButton Click="ShowInWindow" TextAreaRatio="1" Text="显示在独立窗口" FontSize="12" Margin="30,5,5,5" Width="100" IconMargin="7" FontWeight="Thin" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                     </StackPanel>
-                    <TextBlock Name="TextBlockTemplate" Visibility="Hidden" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" TextAlignment="Center" TextWrapping="Wrap"/>
+                    <TextBlock Visibility="Hidden" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" TextAlignment="Center" TextWrapping="Wrap"/>
                     <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="3" FontSize="15" Foreground="White" Content="输入参数"/>
                     <Label HorizontalContentAlignment="Center" Grid.Row="9" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="输出参数"/>
                     <Label HorizontalContentAlignment="Center" Grid.Row="6" VerticalContentAlignment="Center" FontSize="15" Foreground="White" Content="实验设备"/>
@@ -152,7 +152,7 @@
                     </Grid>
                     <Grid Grid.Row="13" Grid.RowSpan="3" Name="gg" Grid.Column="1">
                         <WrapPanel Name="ButtonsPanel" Orientation="Horizontal" Width="{Binding ElementName=gg,Path=ActualWidth}">
-                            <control:DecoratedButton Name="InteractBtnTemplate" Height="40" Margin="5" Visibility="Visible" Grid.Row="7" TextAreaRatio="1" FontSize="12" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                            <control:DecoratedButton Height="40" Margin="5" Visibility="Visible" Grid.Row="7" TextAreaRatio="1" FontSize="12" IconMargin="7" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                         </WrapPanel>
                     </Grid>
                 </Grid>

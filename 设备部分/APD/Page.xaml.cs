@@ -17,7 +17,7 @@ using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.板卡;
+using ODMR_Lab.设备部分.其他设备;
 using ODMR_Lab.设备部分.相机_翻转镜;
 using System;
 using System.Collections.Generic;
@@ -55,8 +55,8 @@ namespace ODMR_Lab.设备部分.光子探测器
         public DevicePage()
         {
             InitializeComponent();
-            TraceSource.TemplateButton = TraceSource;
-            PulseSource.TemplateButton = PulseSource;
+            TraceSource.TemplateButton = UIUpdater.ButtonTemplate;
+            PulseSource.TemplateButton = UIUpdater.ButtonTemplate;
         }
 
         public override void InnerInit()

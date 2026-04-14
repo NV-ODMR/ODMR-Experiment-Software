@@ -50,11 +50,11 @@ namespace ODMR_Lab.基本窗口
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             g.Height = 30;
             TextBlock b = new TextBlock() { Text = content };
-            UIUpdater.CloneStyle(tbTemplate, b);
+            UIUpdater.SetDefaultTemplate(b);
             g.Children.Add(b);
             Grid.SetColumn(b, 0);
             TextBox tb = new TextBox() { Text = value };
-            UIUpdater.CloneStyle(TextTemplate, tb);
+            UIUpdater.SetDefaultTemplate(tb);
             g.Children.Add(tb);
             Grid.SetColumn(tb, 1);
             g.Margin = new Thickness(10);

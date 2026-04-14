@@ -45,7 +45,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <control:DecoratedButton Margin="5" Name="BtnTemplate" Click="ResizeSourcePlot" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/resize.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <control:DecoratedButton Margin="5" Click="ResizeSourcePlot" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/resize.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <control:DecoratedButton Margin="5" Click="OpenSourceImage" Grid.Row="2" Grid.Column="1" IconMargin="4" TextAreaRatio="0" ToolTip="打开图片" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" Canvas.Top="343" IconSource="/图片资源/directory.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
     <Grid Grid.Column="1" Grid.Row="4" Margin="5">
@@ -113,6 +113,6 @@
             </control:ListViewer.ItemContextMenu>
         </control:ListViewer>
     </Grid>
-    <control:DecoratedButton Name="btnTemplate" Margin="5" Click="AddCorrelatePoint" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="添加关联点 " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+    <control:DecoratedButton Name="AddPointBtn" Margin="5" Click="AddCorrelatePoint" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="添加关联点 " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     <control:DecoratedButton Name="PredictBtn" Margin="5" Click="PredictLoc" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="位置预测 " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 </odmr_lab:ExpPageBase>

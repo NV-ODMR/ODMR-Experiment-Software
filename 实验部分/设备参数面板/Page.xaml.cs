@@ -20,7 +20,6 @@ using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.参数设置面板;
 using ODMR_Lab.实验部分.设备参数监测;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.板卡;
 using ODMR_Lab.设备部分.相机_翻转镜;
 using System;
 using System.Collections.Generic;

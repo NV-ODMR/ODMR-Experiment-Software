@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.板卡;
+using ODMR_Lab.设备部分.其他设备;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
 {

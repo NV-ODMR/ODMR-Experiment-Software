@@ -3,7 +3,7 @@ using ODMR_Lab.IO操作;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.设备部分.位移台部分;
-using ODMR_Lab.设备部分.射频源_锁相放大器;
+using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
 using System.Linq;

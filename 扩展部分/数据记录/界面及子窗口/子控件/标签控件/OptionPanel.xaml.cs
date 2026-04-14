@@ -4,7 +4,6 @@ using Controls.Windows;
 using HardWares.Windows;
 using ODMR_Lab.扩展部分.数据记录;
 using ODMR_Lab.数据记录;
-using ODMR_Lab.设备部分.电源;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -216,7 +215,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             c.HasAnimation = false;
             c.Selected += JudgeMultiOption;
             DecoratedButton btn = new DecoratedButton();
-            Addbtn.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Width = 20;
             btn.Height = 20;
             btn.Text = "×";
@@ -225,7 +224,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             btn.Click += new RoutedEventHandler((sender, e) => { OptionDisplayPanel.Children.Remove((sender as DecoratedButton).Tag as Grid); });
             grid.Children.Add(c);
             TextBox textBlock = new TextBox() { Text = optioncontent, ContextMenu = null };
-            UIUpdater.CloneStyle(TextBoxTemplate, textBlock);
+            UIUpdater.SetDefaultTemplate(textBlock);
             grid.Children.Add(textBlock);
             grid.Children.Add(btn);
             Grid.SetColumn(textBlock, 1);

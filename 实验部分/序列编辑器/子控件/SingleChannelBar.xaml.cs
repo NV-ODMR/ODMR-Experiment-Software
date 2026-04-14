@@ -72,27 +72,16 @@ namespace ODMR_Lab.实验部分.序列编辑器.子控件
             ChannelColor = channelcolor;
         }
 
-        protected static DecoratedButton ButtonTemplate = new DecoratedButton()
-        {
-            FontSize = 12,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838")),
-            Foreground = Brushes.White,
-            MoveInColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF424242")),
-            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF39393A")),
-            MoveInForeground = Brushes.White,
-            PressedForeground = Brushes.White,
-        };
-
         protected void SetContextMenu()
         {
             ContextMenu menu = new ContextMenu();
             DecoratedButton btn = new DecoratedButton() { Text = "删除通道" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += DeleteEvent;
             menu.Items.Add(btn);
             menu.ItemHeight = 30;
             btn = new DecoratedButton() { Text = "修改通道序号" };
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Click += ChangeIDEvent;
             menu.Items.Add(btn);
             menu.ApplyToControl(this);

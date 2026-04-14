@@ -3,7 +3,6 @@ using Controls;
 using Controls.Windows;
 using HardWares.Windows;
 using ODMR_Lab.数据记录;
-using ODMR_Lab.设备部分.电源;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,7 +133,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             {
                 ContextMenu menu = new ContextMenu();
                 var deletebtn = new DecoratedButton() { Text = "删除标签" };
-                templatebtn.CloneStyleTo(deletebtn);
+                UIUpdater.SetDefaultTemplate(deletebtn);
                 deletebtn.Click += new RoutedEventHandler((sender, e) =>
                 {
                     if (MessageWindow.ShowMessageBox("删除提示", "确定要删除此标签吗？", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)

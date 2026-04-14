@@ -81,7 +81,7 @@ namespace ODMR_Lab.基本控件
         {
             try
             {
-                int ind= tabPair.IndexOf(tabPair.Where((x) => x.Item1 == tabname).ElementAt(0));
+                int ind = tabPair.IndexOf(tabPair.Where((x) => x.Item1 == tabname).ElementAt(0));
                 tabPair[ind] = newele;
                 UpdateTabs();
             }
@@ -119,12 +119,12 @@ namespace ODMR_Lab.基本控件
             g.ColumnDefinitions.Add(new ColumnDefinition());
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(35) });
             DecoratedButton btn = new DecoratedButton();
-            ButtonTemplate.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Text = "×";
             g.Children.Add(btn);
             Grid.SetColumn(btn, 1);
             Label l = new Label();
-            UIUpdater.CloneStyle(LabelTemplate, l);
+            UIUpdater.SetDefaultTemplate(l);
             g.Children.Add(l);
             Grid.SetColumn(l, 0);
             l.Content = pair.Item1;

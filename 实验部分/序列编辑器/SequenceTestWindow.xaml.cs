@@ -5,7 +5,7 @@ using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using HardWares.板卡;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.板卡;
+using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +72,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
 
         private void UpdatePulseBlaster(object sender, RoutedEventArgs e)
         {
-            Devices.TemplateButton = Devices;
+            Devices.TemplateButton = UIUpdater.ButtonTemplate;
             Devices.UpdateItems(DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster).Select(x =>
             {
                 var dev = x as PulseBlasterInfo;

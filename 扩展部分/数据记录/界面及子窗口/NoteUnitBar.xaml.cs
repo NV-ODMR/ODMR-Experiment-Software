@@ -43,7 +43,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             hel.MouseDoubleClick += DoubleClickEvent;
             ContextMenu menu = new ContextMenu();
             DecoratedButton btn = new DecoratedButton() { };
-            template.CloneStyleTo(btn);
+            UIUpdater.SetDefaultTemplate(btn);
             btn.Text = "删除条目";
             btn.Click += DeleteEvent;
             btn.Tag = this;
@@ -141,7 +141,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.Background = new SolidColorBrush(tag.TagColor);
                 b.ToolTip = tag.GetDescription();
                 TextBox box = new TextBox();
-                UIUpdater.CloneStyle(Time, box);
+                UIUpdater.SetDefaultTemplate(box);
                 box.Text = tag.GetDescription();
                 box.IsReadOnly = true;
                 box.Foreground = Brushes.White;
@@ -160,9 +160,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.Background = new SolidColorBrush(tag.TagColor);
                 b.ToolTip = tag.GetDescription();
                 TextBox box = new TextBox();
-                UIUpdater.CloneStyle(Time, box);
-                box.Foreground = Brushes.White;
-                box.FontWeight = FontWeights.Normal;
+                UIUpdater.SetDefaultTemplate(box);
                 box.Text = tag.GetDescription();
                 box.IsReadOnly = true;
                 b.Child = box;
@@ -179,11 +177,9 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.Background = new SolidColorBrush(tag.TagColor);
                 b.ToolTip = tag.GetDescription();
                 TextBox box = new TextBox();
-                UIUpdater.CloneStyle(Time, box);
+                UIUpdater.SetDefaultTemplate(box);
                 box.Text = tag.GetDescription();
                 box.IsReadOnly = true;
-                box.Foreground = Brushes.White;
-                box.FontWeight = FontWeights.Normal;
                 b.Child = box;
                 box.Padding = new Thickness(5);
                 return new List<Border>() { b };
@@ -199,11 +195,9 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
                 b.Background = new SolidColorBrush(tag.TagColor);
                 b.ToolTip = tag.GetDescription();
                 TextBox box = new TextBox();
-                UIUpdater.CloneStyle(Time, box);
+                UIUpdater.SetDefaultTemplate(box);
                 box.Text = tag.GetDescription();
                 box.IsReadOnly = true;
-                box.Foreground = Brushes.White;
-                box.FontWeight = FontWeights.Normal;
                 b.Child = box;
                 box.Padding = new Thickness(5);
                 results.Add(b);

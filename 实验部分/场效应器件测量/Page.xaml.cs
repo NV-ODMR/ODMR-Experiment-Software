@@ -13,7 +13,8 @@ using ODMR_Lab.基本控件;
 using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验类;
 using ODMR_Lab.实验部分.场效应器件测量;
-using ODMR_Lab.设备部分.源表;
+using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -106,7 +107,7 @@ namespace ODMR_Lab.场效应器件测量
             g.CaretBrush = Brushes.White;
             ContextMenu menu = new ContextMenu();
             DecoratedButton bt = new DecoratedButton();
-            IVBeginBtn.CloneStyleTo(bt);
+            UIUpdater.SetDefaultTemplate(bt);
             bt.Text = "删除";
             bt.Tag = g;
             bt.Click += DeletePoint;
@@ -205,11 +206,11 @@ namespace ODMR_Lab.场效应器件测量
         private void UpdateIVDeviceList(object sender, RoutedEventArgs e)
         {
             IVDevice.Items.Clear();
-            foreach (PowerMeterInfo meter in MainWindow.Dev_PowerMeterPage.PowerMeterList)
+            foreach (PowerMeterInfo meter in DeviceDispatcher.GetDevice(DeviceTypes.源表))
             {
                 DecoratedButton btn = new DecoratedButton();
                 btn.Text = meter.Device.ProductName;
-                IVBeginBtn.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 IVDevice.Items.Add(btn);
                 btn.Tag = meter;
             }
@@ -223,11 +224,11 @@ namespace ODMR_Lab.场效应器件测量
         private void UpdateVoltDeviceList(object sender, RoutedEventArgs e)
         {
             VoltageSetDevice.Items.Clear();
-            foreach (PowerMeterInfo meter in MainWindow.Dev_PowerMeterPage.PowerMeterList)
+            foreach (PowerMeterInfo meter in DeviceDispatcher.GetDevice(DeviceTypes.源表))
             {
                 DecoratedButton btn = new DecoratedButton();
                 btn.Text = meter.Device.ProductName;
-                IVBeginBtn.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 VoltageSetDevice.Items.Add(btn);
                 btn.Tag = meter;
             }
@@ -274,10 +275,6 @@ namespace ODMR_Lab.场效应器件测量
                 {
                     (sender as DecoratedButton).IsEnabled = false;
                 });
-                while (meter.IsMeasuring)
-                {
-                    Thread.Sleep(20);
-                }
                 double result = meter.Device.Measure().Voltage;
                 Dispatcher.Invoke(() =>
                 {
@@ -338,17 +335,11 @@ namespace ODMR_Lab.场效应器件测量
                     (sender as DecoratedButton).IsEnabled = false;
                     VoltageSetState.Content = "正在调整电压...";
                 });
-                meter.AllowAutoMeasure = false;
-                while (meter.IsMeasuring)
-                {
-                    Thread.Sleep(20);
-                }
                 meter.Device.CurrentLimit = currlim;
                 meter.Device.VoltageRampGap = gap;
                 meter.Device.VoltageRampStep = step;
 
                 meter.Device.TargetVoltage = volt;
-                meter.AllowAutoMeasure = true;
                 Dispatcher.Invoke(() =>
                 {
                     (sender as DecoratedButton).IsEnabled = true;

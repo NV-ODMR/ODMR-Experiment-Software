@@ -259,7 +259,7 @@ namespace ODMR_Lab.数据处理
             foreach (var item in OpenedFiles)
             {
                 DecoratedButton btn = new DecoratedButton();
-                RawDataTemplateBtn.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 btn.TextAreaRatio = RawDataTemplateBtn.TextAreaRatio;
                 if (ExperimentObject<ExpParamBase, ConfigBase>.GetExpType(item) == ExperimentFileTypes.自定义数据)
                 {
@@ -278,7 +278,7 @@ namespace ODMR_Lab.数据处理
 
                 ContextMenu menu = new ContextMenu();
                 DecoratedButton it = new DecoratedButton();
-                BtnPlot1D.CloneStyleTo(it);
+                UIUpdater.SetDefaultTemplate(it);
                 it.Text = "关闭文件";
                 it.Tag = Source[OpenedFiles.IndexOf(item)];
                 it.Click += CloseFile;

@@ -492,11 +492,7 @@
       <DependentUpon>DataViewingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\UserCustomFileObject.cs" />
-    <Compile Include="设备部分\PulseBlaster\PulseBlasterDevConfigParams.cs" />
-    <Compile Include="设备部分\PulseBlaster\PulseBlasterInfo.cs" />
-    <Compile Include="设备部分\PulseBlaster\Page.xaml.cs">
-      <DependentUpon>Page.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="设备部分\其他设备\PulseBlaster\PulseBlasterInfo.cs" />
     <Compile Include="设备部分\APD\APDInfo.cs" />
     <Compile Include="设备部分\APD\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
@@ -512,51 +508,35 @@
     <Compile Include="基本窗口\TimeWindow.xaml.cs">
       <DependentUpon>TimeWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\信号发生器，锁相放大器\SignalGeneratorChannelInfo.cs" />
-    <Compile Include="设备部分\信号发生器，锁相放大器\SignalGeneratorInfo.cs" />
-    <Compile Include="设备部分\信号发生器，锁相放大器\LockInInfo.cs" />
-    <Compile Include="设备部分\信号发生器，锁相放大器\设备窗口\Page.xaml.cs">
+    <Compile Include="设备部分\其他设备\信号发生器\SignalGeneratorChannelInfo.cs" />
+    <Compile Include="设备部分\其他设备\信号发生器\SignalGeneratorInfo.cs" />
+    <Compile Include="设备部分\其他设备\源表\PowerMeterInfo.cs" />
+    <Compile Include="设备部分\其他设备\锁相放大器\LockInInfo.cs" />
+    <Compile Include="设备部分\其他设备\温控\TemperatureControllerInfo.cs" />
+    <Compile Include="设备部分\其他设备\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\温度监测部分\ChannelInfo.cs" />
-    <Compile Include="设备部分\温度监测部分\控件\TemperaturePannel.xaml.cs">
-      <DependentUpon>TemperaturePannel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="设备部分\温度监测部分\设备窗口\Page.xaml.cs">
-      <DependentUpon>Page.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="设备部分\源表\PowerMeterDevConfigParams.cs" />
-    <Compile Include="设备部分\源表\PowerMeterInfo.cs" />
-    <Compile Include="设备部分\源表\控件\SourceMeterPannel.xaml.cs">
-      <DependentUpon>SourceMeterPannel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="设备部分\源表\设备窗口\Page.xaml.cs">
-      <DependentUpon>Page.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="设备部分\电源\PowerInfo.cs" />
-    <Compile Include="设备部分\电源\PowerChannelInfo.cs" />
-    <Compile Include="设备部分\电源\设备窗口\Page.xaml.cs">
-      <DependentUpon>Page.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="设备部分\相机，翻转镜，开关\CameraInfo.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\SwitchInfo.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\FlipMotorInfo.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\子窗口\CameraWindow.xaml.cs">
+    <Compile Include="设备部分\其他设备\电源\PowerInfo.cs" />
+    <Compile Include="设备部分\其他设备\电源\PowerChannelInfo.cs" />
+    <Compile Include="设备部分\相机\CameraInfo.cs" />
+    <Compile Include="设备部分\其他设备\开关\SwitchInfo.cs" />
+    <Compile Include="设备部分\其他设备\翻转镜\FlipMotorInfo.cs" />
+    <Compile Include="设备部分\相机\子窗口\CameraWindow.xaml.cs">
       <DependentUpon>CameraWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\相机，翻转镜，开关\子窗口\ImageProcessWindow.xaml.cs">
+    <Compile Include="设备部分\相机\子窗口\ImageProcessWindow.xaml.cs">
       <DependentUpon>ImageProcessWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\相机，翻转镜，开关\标记\CenterCircleMarker.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\标记\MarkerSetWindow.xaml.cs">
+    <Compile Include="设备部分\相机\标记\CenterCircleMarker.cs" />
+    <Compile Include="设备部分\相机\标记\MarkerSetWindow.xaml.cs">
       <DependentUpon>MarkerSetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="设备部分\相机，翻转镜，开关\标记\MarkerBase.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\标记\CircleMarker.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\标记\CenterRectangleMarker.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\标记\RectangleMarker.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\标记\PointMarker.cs" />
-    <Compile Include="设备部分\相机，翻转镜，开关\设备窗口\Page.xaml.cs">
+    <Compile Include="设备部分\相机\标记\MarkerBase.cs" />
+    <Compile Include="设备部分\相机\标记\CircleMarker.cs" />
+    <Compile Include="设备部分\相机\标记\CenterRectangleMarker.cs" />
+    <Compile Include="设备部分\相机\标记\RectangleMarker.cs" />
+    <Compile Include="设备部分\相机\标记\PointMarker.cs" />
+    <Compile Include="设备部分\相机\设备窗口\Page.xaml.cs">
       <DependentUpon>Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="实验部分\设备参数面板\Page.xaml.cs">
@@ -835,10 +815,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="设备部分\PulseBlaster\Page.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="设备部分\APD\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -855,43 +831,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="设备部分\信号发生器，锁相放大器\设备窗口\Page.xaml">
+    <Page Include="设备部分\其他设备\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="设备部分\温度监测部分\控件\TemperaturePannel.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="设备部分\温度监测部分\设备窗口\Page.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="设备部分\源表\控件\SourceMeterPannel.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="设备部分\源表\设备窗口\Page.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="设备部分\电源\设备窗口\Page.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="设备部分\相机，翻转镜，开关\子窗口\CameraWindow.xaml">
+    <Page Include="设备部分\相机\子窗口\CameraWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="设备部分\相机，翻转镜，开关\子窗口\ImageProcessWindow.xaml">
+    <Page Include="设备部分\相机\子窗口\ImageProcessWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="设备部分\相机，翻转镜，开关\标记\MarkerSetWindow.xaml">
+    <Page Include="设备部分\相机\标记\MarkerSetWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="设备部分\相机，翻转镜，开关\设备窗口\Page.xaml">
+    <Page Include="设备部分\相机\设备窗口\Page.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

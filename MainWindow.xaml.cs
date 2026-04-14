@@ -29,21 +29,14 @@ namespace ODMR_Lab
         public static PageBase CurrentPage { get; set; } = null;
 
         #region 设备页面
-        public static 设备部分.温控.DevicePage Dev_TemPeraPage = new 设备部分.温控.DevicePage();
+        public static 设备部分.其他设备.DevicePage Dev_OtherDevPage = new 设备部分.其他设备.DevicePage();
 
         public static 设备部分.位移台部分.DevicePage Dev_MoversPage = new 设备部分.位移台部分.DevicePage();
 
         public static 设备部分.相机_翻转镜.DevicePage Dev_CameraPage = new 设备部分.相机_翻转镜.DevicePage();
 
-        public static 设备部分.电源.DevicePage Dev_PowerPage = new 设备部分.电源.DevicePage();
-
-        public static 设备部分.源表.DevicePage Dev_PowerMeterPage = new 设备部分.源表.DevicePage();
-
-        public static 设备部分.射频源_锁相放大器.DevicePage Dev_RFSource_LockInPage = new 设备部分.射频源_锁相放大器.DevicePage();
-
         public static 设备部分.光子探测器.DevicePage Dev_APDPage = new 设备部分.光子探测器.DevicePage();
 
-        public static 设备部分.板卡.DevicePage Dev_PBPage = new 设备部分.板卡.DevicePage();
         #endregion
 
         #region 实验页面
@@ -366,45 +359,25 @@ namespace ODMR_Lab
                 PageContent.Children.Clear();
             }
             DecoratedButton btn = sender as DecoratedButton;
-            if (btn.Text == "温度控制器")
+            if (btn.Text == "其他设备")
             {
-                CurrentPage = Dev_TemPeraPage;
-                AddPageToView(Dev_TemPeraPage);
+                CurrentPage = Dev_OtherDevPage;
+                AddPageToView(Dev_OtherDevPage);
             }
             if (btn.Text == "位移台")
             {
                 CurrentPage = Dev_MoversPage;
                 AddPageToView(Dev_MoversPage);
             }
-            if (btn.Text == "相机/翻转镜/开关")
+            if (btn.Text == "相机")
             {
                 CurrentPage = Dev_CameraPage;
                 AddPageToView(Dev_CameraPage);
-            }
-            if (btn.Text == "源表")
-            {
-                CurrentPage = Dev_PowerMeterPage;
-                AddPageToView(Dev_PowerMeterPage);
-            }
-            if (btn.Text == "电源")
-            {
-                CurrentPage = Dev_PowerPage;
-                AddPageToView(Dev_PowerPage);
-            }
-            if (btn.Text == "射频源/Lock In")
-            {
-                CurrentPage = Dev_RFSource_LockInPage;
-                AddPageToView(Dev_RFSource_LockInPage);
             }
             if (btn.Text == "光子计数器")
             {
                 CurrentPage = Dev_APDPage;
                 AddPageToView(Dev_APDPage);
-            }
-            if (btn.Text == "PulseBlaster")
-            {
-                CurrentPage = Dev_PBPage;
-                AddPageToView(Dev_PBPage);
             }
         }
 

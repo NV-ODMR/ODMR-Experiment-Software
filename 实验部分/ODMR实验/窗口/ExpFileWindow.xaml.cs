@@ -119,7 +119,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             g.Height = 50;
             g.Focusable = true;
             TextBlock b = new TextBlock();
-            UIUpdater.CloneStyle(TextblockTemplate, b);
+            UIUpdater.SetDefaultTemplate(b);
             b.Text = System.IO.Path.GetFileNameWithoutExtension(filepath);
             g.Children.Add(b);
             g.HorizontalAlignment = HorizontalAlignment.Stretch;

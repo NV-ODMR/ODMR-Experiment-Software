@@ -3,7 +3,6 @@ using Controls;
 using Controls.Windows;
 using HardWares.Windows;
 using ODMR_Lab.数据记录;
-using ODMR_Lab.设备部分.电源;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

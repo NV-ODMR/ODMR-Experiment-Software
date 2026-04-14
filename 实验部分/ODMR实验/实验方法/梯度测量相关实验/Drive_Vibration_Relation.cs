@@ -12,7 +12,7 @@ using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
-using ODMR_Lab.设备部分.射频源_锁相放大器;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +24,7 @@ using ODMR_Lab.设备部分.相机_翻转镜;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using System.Threading;
+using ODMR_Lab.设备部分.其他设备;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
 {

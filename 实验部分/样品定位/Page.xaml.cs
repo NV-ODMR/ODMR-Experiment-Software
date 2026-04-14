@@ -159,7 +159,7 @@ namespace ODMR_Lab.样品定位
                 Dispatcher.Invoke(() =>
                 {
                     PredictBtn.IsEnabled = false;
-                    btnTemplate.IsEnabled = false;
+                    AddPointBtn.IsEnabled = false;
                     //源图片选择关联点
                     SourceName.Text = "源图片(选择关联点,左键点击添加，拖动移动，右键点击确定)";
                     TargetName.Text = "目标图片";
@@ -178,7 +178,7 @@ namespace ODMR_Lab.样品定位
                         SourceName.Text = "源图片";
                         TargetName.Text = "目标图片";
                         PredictBtn.IsEnabled = true;
-                        btnTemplate.IsEnabled = true;
+                        AddPointBtn.IsEnabled = true;
                     });
                     return;
                 }
@@ -205,7 +205,7 @@ namespace ODMR_Lab.样品定位
                         SourceName.Text = "源图片";
                         TargetName.Text = "目标图片";
                         PredictBtn.IsEnabled = true;
-                        btnTemplate.IsEnabled = true;
+                        AddPointBtn.IsEnabled = true;
                     });
                     return;
                 }
@@ -219,7 +219,7 @@ namespace ODMR_Lab.样品定位
                     SourceName.Text = "源图片";
                     TargetName.Text = "目标图片";
                     PredictBtn.IsEnabled = true;
-                    btnTemplate.IsEnabled = true;
+                    AddPointBtn.IsEnabled = true;
                 });
                 return;
 
@@ -251,7 +251,7 @@ namespace ODMR_Lab.样品定位
                     //TargetImage.SelectCursor(TargetPre);
 
                     PredictBtn.IsEnabled = false;
-                    btnTemplate.IsEnabled = false;
+                    AddPointBtn.IsEnabled = false;
                     //源图片选择关联点
                     SourceName.Text = "源图片(选择需要预测的点,左键点击添加，拖动移动，右键退出)";
                     TargetName.Text = "目标图片";
@@ -267,7 +267,7 @@ namespace ODMR_Lab.样品定位
                     SourceName.Text = "源图片";
                     TargetName.Text = "目标图片";
                     PredictBtn.IsEnabled = true;
-                    btnTemplate.IsEnabled = true;
+                    AddPointBtn.IsEnabled = true;
                     IsPredict = false;
                     //SourceImage.RemoveCursour(SourcePre);
                     //TargetImage.RemoveCursour(TargetPre);

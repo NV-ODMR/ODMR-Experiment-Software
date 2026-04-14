@@ -163,7 +163,7 @@ namespace ODMR_Lab.基本控件
             ChartGroups.UpdateItems(groups.Select(x =>
             {
                 DecoratedButton btn = new DecoratedButton() { Text = x };
-                GraphBtn.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 btn.Tag = x;
                 return btn;
             }));
@@ -171,7 +171,7 @@ namespace ODMR_Lab.基本控件
             DataGroups.UpdateItems(groups.Select(x =>
             {
                 DecoratedButton btn = new DecoratedButton() { Text = x };
-                GraphBtn.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 btn.Tag = x;
                 return btn;
             }));

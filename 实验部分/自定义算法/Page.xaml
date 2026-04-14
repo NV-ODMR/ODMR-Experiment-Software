@@ -48,7 +48,7 @@
         <Label HorizontalContentAlignment="Center" Grid.Row="2" Grid.ColumnSpan="2" Content="输出参数" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="White" FontSize="12"/>
         <control:DecoratedButton Name="CalcBtn" Visibility="Hidden" Margin="5" Click="Calculate" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="计算" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <control:DecoratedButton Name="GraphBtn" Visibility="Hidden" Margin="5" Click="ShowGraph" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" IconMargin="4" TextAreaRatio="1" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White" Canvas.Top="343" Text="输出图表预览" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <TextBlock Name="TextBlockTemplate" Visibility="Hidden" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" TextAlignment="Center" TextWrapping="Wrap"/>
+        <TextBlock Visibility="Hidden" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" TextAlignment="Center" TextWrapping="Wrap"/>
         <control:AutoScrollViewer Grid.Row="1" Name="input">
             <control:AutoScrollViewer.Content>
                 <WrapPanel Name="InputParams"  Width="{Binding ElementName= input, Path=ActualWidth}">

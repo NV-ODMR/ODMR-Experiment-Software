@@ -61,6 +61,15 @@ namespace ODMR_Lab.设备部分
         /// </summary>
         /// <returns></returns>
         public abstract string GetDeviceDescription();
+
+        /// <summary>
+        /// 获取通道描述（不是通道则返回空字符串）
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetChannelDescription()
+        {
+            return "";
+        }
     }
 
     public abstract class DeviceInfoBase<T> : InfoBase

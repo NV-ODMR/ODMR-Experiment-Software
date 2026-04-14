@@ -243,7 +243,7 @@
         </Grid.RowDefinitions>
         <control:DecoratedButton Name="ScannerLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
-    <control:FontChangeText Name="TextTemplate" Width="100" Height="40" Visibility="Collapsed" BorderThickness="0">
+    <control:FontChangeText Width="100" Height="40" Visibility="Collapsed" BorderThickness="0">
         <control:FontChangeText.InnerTextBox>
             <TextBox Background="#FF4D4D4D" Text="111" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" CaretBrush="White" Foreground="White"/>
         </control:FontChangeText.InnerTextBox>

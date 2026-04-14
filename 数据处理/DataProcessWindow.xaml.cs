@@ -54,7 +54,7 @@ namespace ODMR_Lab.数据处理
         /// </summary>
         private void UpdateDataGroup(object sender, RoutedEventArgs e)
         {
-            DataGroupName.TemplateButton = DataGroupName;
+            DataGroupName.TemplateButton = UIUpdater.ButtonTemplate;
             HashSet<string> d1names = new HashSet<string>(ParentDataSource.ChartDataSource1D.Select(x => x.GroupName));
             HashSet<string> d2names = new HashSet<string>(ParentDataSource.ChartDataSource2D.Select(x => x.GroupName));
             var btns = d1names.Select(x => new DecoratedButton() { Text = x + "(一维)", Tag = new List<string> { x, "一维" } }).ToList();
@@ -210,7 +210,7 @@ namespace ODMR_Lab.数据处理
 
         private void UpdateD1Group(object sender, RoutedEventArgs e)
         {
-            D1GroupName.TemplateButton = DataGroupName;
+            D1GroupName.TemplateButton = UIUpdater.ButtonTemplate;
             HashSet<string> d1names = new HashSet<string>(ParentDataSource.ChartDataSource1D.Select(x => x.GroupName));
             var btns = d1names.Select(x => new DecoratedButton() { Text = x + "(一维)", Tag = new List<string> { x, "一维" } }).ToList();
             D1GroupName.UpdateItems(btns);
@@ -218,7 +218,7 @@ namespace ODMR_Lab.数据处理
 
         private void UpdateD2Group(object sender, RoutedEventArgs e)
         {
-            D2GroupName.TemplateButton = DataGroupName;
+            D2GroupName.TemplateButton = UIUpdater.ButtonTemplate;
             HashSet<string> d2names = new HashSet<string>(ParentDataSource.ChartDataSource2D.Select(x => x.GroupName));
             var btns = d2names.Select(x => new DecoratedButton() { Text = x + "(二维)", Tag = new List<string> { x, "二维" } }).ToList();
             D2GroupName.UpdateItems(btns);
@@ -625,7 +625,7 @@ namespace ODMR_Lab.数据处理
                 foreach (var item in funcs)
                 {
                     DecoratedButton btn = new DecoratedButton() { Text = item.FuncName };
-                    SimpleBtn.CloneStyleTo(btn);
+                    UIUpdater.SetDefaultTemplate(btn);
                     btn.FontSize = 10;
                     btn.Tag = item;
                     btn.Click += ShowPythonFuncInformation;

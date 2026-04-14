@@ -117,7 +117,7 @@
                         <TextBox BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" CaretBrush="White" Foreground="White"/>
                     </control:ListViewer.EditableBoxTemplate>
                 </control:ListViewer>
-                <control:DecoratedButton Name="buttontemplate" Margin="7" Click="NewMultiChannel" Grid.Row="1" Text="新建通道" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
+                <control:DecoratedButton Margin="7" Click="NewMultiChannel" Grid.Row="1" Text="新建通道" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
             </Grid>
             <Grid Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>

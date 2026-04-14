@@ -370,7 +370,7 @@ namespace ODMR_Lab.序列编辑器
             foreach (var item in GlobalPulseParams.GetGlobalPulses())
             {
                 DecoratedButton btn = new DecoratedButton() { Text = item, Height = 30, Width = 200 };
-                buttontemplate.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 btn.Click += new RoutedEventHandler((s, e) =>
                 {
                     if (SequenceNamePop.Tag is ChannelSequenceControlBase)
@@ -393,7 +393,7 @@ namespace ODMR_Lab.序列编辑器
             foreach (var item in names)
             {
                 DecoratedButton btn = new DecoratedButton() { Text = item, Height = 30, Width = 200 };
-                buttontemplate.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 btn.Click += new RoutedEventHandler((s, e) =>
                 {
                     try
@@ -432,7 +432,7 @@ namespace ODMR_Lab.序列编辑器
             foreach (var item in seg.GroupCollection)
             {
                 DecoratedButton btn = new DecoratedButton() { Text = item.Key, Height = 30, Width = 200 };
-                buttontemplate.CloneStyleTo(btn);
+                UIUpdater.SetDefaultTemplate(btn);
                 btn.Click += new RoutedEventHandler((s, e) =>
                 {
                     try
@@ -458,13 +458,6 @@ namespace ODMR_Lab.序列编辑器
         private string GetChannelDescription(SequenceChannel ChannelInd)
         {
             string desc = "Undefined";
-            if (MainWindow.Dev_PBPage.PBs.Count != 0)
-            {
-                desc = MainWindow.Dev_PBPage.PBs[0].FindDescriptionOfChannel((int)ChannelInd);
-                if (desc == "")
-                    desc = "Undefined";
-            }
-
             return desc;
         }
 

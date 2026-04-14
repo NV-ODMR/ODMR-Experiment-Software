@@ -39,15 +39,15 @@ namespace ODMR_Lab.基本窗口.数据拟合
         public CurveFitWindow()
         {
             InitializeComponent();
-            FitFuncGroup.TemplateButton = FitFuncGroup;
-            FuncName.TemplateButton = FuncName;
-            Algorithm.TemplateButton = Algorithm;
-            FitFuncGroupEdit.TemplateButton = FitFuncGroupEdit;
-            FitFuncGroupNew.TemplateButton = FitFuncGroupNew;
-            FuncNameEdit.TemplateButton = FuncNameEdit;
+            FitFuncGroup.TemplateButton = UIUpdater.ButtonTemplate;
+            FuncName.TemplateButton = UIUpdater.ButtonTemplate;
+            Algorithm.TemplateButton = UIUpdater.ButtonTemplate;
+            FitFuncGroupEdit.TemplateButton = UIUpdater.ButtonTemplate;
+            FitFuncGroupNew.TemplateButton = UIUpdater.ButtonTemplate;
+            FuncNameEdit.TemplateButton = UIUpdater.ButtonTemplate;
 
-            XDataSourceBox.TemplateButton = XDataSourceBox;
-            YDataSourceBox.TemplateButton = YDataSourceBox;
+            XDataSourceBox.TemplateButton = UIUpdater.ButtonTemplate;
+            YDataSourceBox.TemplateButton = UIUpdater.ButtonTemplate;
 
 
             foreach (var item in Enum.GetNames(typeof(AlgorithmType)))

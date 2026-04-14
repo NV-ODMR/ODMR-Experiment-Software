@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.源表;
+using ODMR_Lab.设备部分.其他设备;
 
 namespace ODMR_Lab.实验部分.场效应器件测量
 {
@@ -138,12 +138,6 @@ namespace ODMR_Lab.实验部分.场效应器件测量
             Dev.Device.VoltageRampStep = Config.IVRampStep.Value;
             Dev.Device.CurrentLimit = Config.IVCurrentLimit.Value;
 
-            //停止自动采样
-            Dev.AllowAutoMeasure = false;
-            while (Dev.IsMeasuring)
-            {
-                Thread.Sleep(10);
-            }
             SetProgress(0);
 
 
@@ -204,8 +198,7 @@ namespace ODMR_Lab.实验部分.场效应器件测量
 
             //测量完成后返回0V
             Dev.Device.TargetVoltage = 0;
-            //停止自动采样
-            Dev.AllowAutoMeasure = true;
+
             SetProgress(100);
         }
 

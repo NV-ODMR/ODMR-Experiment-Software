@@ -16,7 +16,6 @@ using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.实验部分.设备参数监测;
 using ODMR_Lab.激光控制;
 using ODMR_Lab.设备部分.光子探测器;
-using ODMR_Lab.设备部分.源表;
 
 namespace ODMR_Lab.IO操作
 {
@@ -64,11 +63,6 @@ namespace ODMR_Lab.IO操作
 
             WindowHelper.SetContent(window, "正在保存: " + "设备参数");
             #region 设备参数
-
-            PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
-            P1.ReadFromPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
-            WriteParamToFile(P1, fobj);
-
             ParamListenerConfigParams PP = new ParamListenerConfigParams();
             PP.ReadFromPage(new FrameworkElement[] { MainWindow.Exp_DevParamListenPage }, false);
             WriteParamToFile(PP, fobj);
@@ -202,9 +196,6 @@ namespace ODMR_Lab.IO操作
 
             WindowHelper.SetContent(window, "正在读取:" + "设备参数");
             #region 设备参数
-            PowerMeterDevConfigParams P1 = new PowerMeterDevConfigParams();
-            ReadFromFile(P1, fobj);
-            P1.LoadToPage(new FrameworkElement[] { MainWindow.Dev_PowerMeterPage }, false);
             #endregion
 
             #region 温度监控参数
