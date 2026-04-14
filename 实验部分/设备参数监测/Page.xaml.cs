@@ -26,13 +26,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 using Clipboard = System.Windows.Clipboard;
-using ODMR_Lab.实验部分.设备参数监控;
 using Controls.Charts;
 using HardWares.Windows;
 using ODMR_Lab.实验部分.设备参数监测;
 using HardWares.端口基类部分;
+using ODMR_Lab.基本窗口;
 
-namespace ODMR_Lab.设备参数监测
+namespace ODMR_Lab.实验部分.设备参数监测
 {
     /// <summary>
     /// Page1.xaml 的交互逻辑
@@ -279,7 +279,7 @@ namespace ODMR_Lab.设备参数监测
             w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             var devresult = w.ShowDialog();
             if (devresult.Key == null && devresult.Value == null) return;
-            ParamSelectWindow win = new ParamSelectWindow();
+            DeviceParamSelectWindow win = new DeviceParamSelectWindow();
             win.Owner = Window.GetWindow(this);
             win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             Parameter target = null;

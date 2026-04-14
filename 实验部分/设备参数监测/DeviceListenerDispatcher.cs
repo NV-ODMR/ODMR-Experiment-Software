@@ -8,7 +8,6 @@ using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.数据处理;
-using ODMR_Lab.设备参数监测;
 using ODMR_Lab.设备部分;
 using OpenCvSharp;
 using System;
@@ -24,7 +23,7 @@ using System.Windows.Threading;
 using ComboBox = Controls.ComboBox;
 using System.Windows.Media;
 
-namespace ODMR_Lab.实验部分.设备参数监控
+namespace ODMR_Lab.实验部分.设备参数监测
 {
     /// <summary>
     /// 设备参数监控类

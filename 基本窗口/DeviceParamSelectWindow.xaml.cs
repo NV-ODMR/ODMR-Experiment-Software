@@ -20,18 +20,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ComboBox = Controls.ComboBox;
 
-namespace ODMR_Lab.实验部分.设备参数监测
+namespace ODMR_Lab.基本窗口
 {
     /// <summary>
     /// 
     /// </summary>
-    public partial class ParamSelectWindow : Window
+    public partial class DeviceParamSelectWindow : Window
     {
         Parameter SelectedParam = null;
 
         bool IsExit = true;
 
-        public ParamSelectWindow()
+        public DeviceParamSelectWindow()
         {
             InitializeComponent();
             WindowResizeHelper helper = new WindowResizeHelper();

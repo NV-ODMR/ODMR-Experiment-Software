@@ -6,7 +6,6 @@ using HardWares;
 using HardWares.端口基类;
 using HardWares.端口基类部分;
 using ODMR_Lab.Windows;
-using ODMR_Lab.实验部分.设备参数监控;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -180,7 +179,6 @@ namespace ODMR_Lab.实验部分.设备参数监测
                 ParamName.Text = info.ParamDescription;
                 ColorLabel.Background = new SolidColorBrush(info.DisplayColor);
             });
-
         }
 
         private void ColorLabel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

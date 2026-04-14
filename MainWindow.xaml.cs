@@ -48,9 +48,15 @@ namespace ODMR_Lab
 
         #region 实验页面
         /// <summary>
-        /// 温度曲线
+        /// 设备参数监测
         /// </summary>
-        public static 设备参数监测.DisplayPage Exp_TemPeraPage = new 设备参数监测.DisplayPage();
+        public static 实验部分.设备参数监测.DisplayPage Exp_DevParamListenPage = new 实验部分.设备参数监测.DisplayPage();
+
+        /// <summary>
+        /// 设备参数设置
+        /// </summary>
+        public static 实验部分.设备参数面板.DisplayPage Exp_DevParamSetPage = new 实验部分.设备参数面板.DisplayPage();
+
         /// <summary>
         /// 样品定位
         /// </summary>
@@ -157,6 +163,21 @@ namespace ODMR_Lab
                       });
                       //保存界面参数
                       ParamManager.SaveParams(win);
+
+                      #region 清除剪切板缓存文件
+                      var files = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "TempPasteFile"), "*", SearchOption.AllDirectories);
+                      foreach (var item in files)
+                      {
+                          try
+                          {
+                              File.Delete(item);
+                          }
+                          catch (Exception)
+                          {
+                          }
+                      }
+                      #endregion
+
                       Dispatcher.Invoke(() =>
                       {
                           win.Close();
@@ -396,8 +417,13 @@ namespace ODMR_Lab
             DecoratedButton btn = sender as DecoratedButton;
             if (btn.Text == "设备参数监测")
             {
-                CurrentPage = Exp_TemPeraPage;
-                AddPageToView(Exp_TemPeraPage);
+                CurrentPage = Exp_DevParamListenPage;
+                AddPageToView(Exp_DevParamListenPage);
+            }
+            if (btn.Text == "设备参数设置")
+            {
+                CurrentPage = Exp_DevParamSetPage;
+                AddPageToView(Exp_DevParamSetPage);
             }
             if (btn.Text == "Trace")
             {
