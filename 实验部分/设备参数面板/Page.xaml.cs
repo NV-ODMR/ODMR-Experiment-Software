@@ -71,32 +71,38 @@ namespace ODMR_Lab.实验部分.设备参数面板
 
         private void NewParam(object sender, RoutedEventArgs e)
         {
-            //选择设备
-            DeviceFindWindow w = new DeviceFindWindow();
-            w.Owner = Window.GetWindow(this);
-            w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            var devresult = w.ShowDialog();
-            if (devresult.Key == null && devresult.Value == null) return;
-            DeviceParamSelectWindow win = new DeviceParamSelectWindow();
-            win.Owner = Window.GetWindow(this);
-            win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            Parameter target = null;
-            if (devresult.Value == null)
+            try
             {
-                target = win.ShowDialog(devresult.Key);
+                //选择设备
+                DeviceFindWindow w = new DeviceFindWindow();
+                w.Owner = Window.GetWindow(this);
+                w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                var devresult = w.ShowDialog();
+                if (devresult.Key == null && devresult.Value == null) return;
+                DeviceParamSelectWindow win = new DeviceParamSelectWindow();
+                win.Owner = Window.GetWindow(this);
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                Parameter target = null;
+                if (devresult.Value == null)
+                {
+                    target = win.ShowDialog(devresult.Key);
+                }
+                else
+                {
+                    target = win.ShowDialog(devresult.Value);
+                }
+                if (target == null) return;
+                //新建参数
+                ParamSetInfo info = new ParamSetInfo(this, devresult.Key, devresult.Value, target);
+                info.ValidateDev(devresult.Key, devresult.Value, target);
+                info.ParamBar.LoadParam();
+                AppendInfoCommands(info);
+                ParamList.Add(info);
+                ParamPanel.Children.Add(info.ParamBar);
             }
-            else
+            catch (Exception)
             {
-                target = win.ShowDialog(devresult.Value);
             }
-            if (target == null) return;
-            //新建参数
-            ParamSetInfo info = new ParamSetInfo(this, devresult.Key, devresult.Value, target);
-            info.ValidateDev(devresult.Key, devresult.Value, target);
-            info.ParamBar.LoadParam();
-            AppendInfoCommands(info);
-            ParamList.Add(info);
-            ParamPanel.Children.Add(info.ParamBar);
         }
 
         public void AppendInfoCommands(ParamSetInfo info)

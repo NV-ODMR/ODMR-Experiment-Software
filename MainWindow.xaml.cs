@@ -119,7 +119,7 @@ namespace ODMR_Lab
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, null, 5, 30);
+            hel.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, null, null, 5, 30);
 
             #region 调用页面的初始化方法
             var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
@@ -158,16 +158,22 @@ namespace ODMR_Lab
                       ParamManager.SaveParams(win);
 
                       #region 清除剪切板缓存文件
-                      var files = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "TempPasteFile"), "*", SearchOption.AllDirectories);
-                      foreach (var item in files)
+                      try
                       {
-                          try
+                          var files = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "TempPasteFile"), "*", SearchOption.AllDirectories);
+                          foreach (var item in files)
                           {
-                              File.Delete(item);
+                              try
+                              {
+                                  File.Delete(item);
+                              }
+                              catch (Exception)
+                              {
+                              }
                           }
-                          catch (Exception)
-                          {
-                          }
+                      }
+                      catch (Exception)
+                      {
                       }
                       #endregion
 

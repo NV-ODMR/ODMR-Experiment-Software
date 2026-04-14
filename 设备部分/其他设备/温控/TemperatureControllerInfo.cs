@@ -16,42 +16,18 @@ using ODMR_Lab.基本控件;
 
 namespace ODMR_Lab.设备部分.其他设备
 {
-    public abstract class ChannelInfo : InfoBase
+    public class TemperatureChannelInfo : DeviceElementInfoBase<TemperatureChannelBase>
     {
         public TemperatureControllerInfo ParentInfo { get; protected set; } = null;
 
-        public bool IsSelected { get; set; } = false;
-
-        public TimeChartData1D Time { get; protected set; } = new TimeChartData1D("", "");
-
-        public NumricChartData1D Value { get; protected set; } = new NumricChartData1D("", "");
-
         public string Name
         { get; set; } = "";
+        public override bool IsLoadParams { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public ChannelInfo(string name)
+        public TemperatureChannelInfo(TemperatureControllerInfo parentinfo, TemperatureChannelBase channel)
         {
-            Name = name;
-        }
-    }
-
-    public class SensorChannelInfo : ChannelInfo
-    {
-        /// <summary>
-        /// 通道
-        /// </summary>
-        public SensorChannelBase Channel { get; private set; } = null;
-
-        public override bool IsLoadParams { get; set; } = false;
-
-
-        public SensorChannelInfo(TemperatureControllerInfo parentinfo, SensorChannelBase channel, string name) : base(name)
-        {
-            Channel = channel;
-            Name = name;
-            Value.Name = name + "温度数据(" + channel.Unit + ")";
-            Value.GroupName = "温度监测数据";
             ParentInfo = parentinfo;
+            Device = channel;
         }
 
         public override void CreateDeviceInfoBehaviour()
@@ -60,44 +36,11 @@ namespace ODMR_Lab.设备部分.其他设备
 
         public override string GetDeviceDescription()
         {
-            return ParentInfo.Device.ProductName + " " + Channel.ChannelName;
+            return ParentInfo.Device.ProductName + " " + Device.ChannelName;
         }
         public override string GetChannelDescription()
         {
-            return Channel.ChannelName;
-        }
-    }
-
-    public class OutputChannelInfo : ChannelInfo
-    {
-        /// <summary>
-        /// 通道
-        /// </summary>
-        public OutputChannelBase Channel { get; private set; } = null;
-
-        public override bool IsLoadParams { get; set; } = false;
-
-        public OutputChannelInfo(TemperatureControllerInfo parentinfo, OutputChannelBase channel, string name) : base(name)
-        {
-            Channel = channel;
-            Name = name;
-            Value.Name = name + "输出数据(" + channel.Unit + ")";
-            Value.GroupName = "温度监测数据";
-            ParentInfo = parentinfo;
-        }
-
-        public override void CreateDeviceInfoBehaviour()
-        {
-        }
-
-        public override string GetDeviceDescription()
-        {
-            return ParentInfo.Device.ProductName + " " + Channel.ChannelName;
-        }
-
-        public override string GetChannelDescription()
-        {
-            return Channel.ChannelName;
+            return Device.ChannelName;
         }
     }
 
@@ -109,9 +52,7 @@ namespace ODMR_Lab.设备部分.其他设备
         {
         }
 
-        public List<SensorChannelInfo> SensorsInfo { get; set; } = new List<SensorChannelInfo>();
-
-        public List<OutputChannelInfo> OutputsInfo { get; set; } = new List<OutputChannelInfo>();
+        public List<TemperatureChannelInfo> ChannelsInfo { get; set; } = new List<TemperatureChannelInfo>();
 
         /// <summary>
         /// 新建一个设备Info
@@ -124,16 +65,8 @@ namespace ODMR_Lab.设备部分.其他设备
             //添加通道按钮
             foreach (var item in Device.Channels)
             {
-                if (item is SensorChannelBase)
-                {
-                    SensorChannelInfo sensorinfo = new SensorChannelInfo(this, item as SensorChannelBase, item.ChannelName);
-                    SensorsInfo.Add(sensorinfo);
-                }
-                if (item is OutputChannelBase)
-                {
-                    OutputChannelInfo outputinfo = new OutputChannelInfo(this, item as OutputChannelBase, item.ChannelName);
-                    OutputsInfo.Add(outputinfo);
-                }
+                TemperatureChannelInfo sensorinfo = new TemperatureChannelInfo(this, item as TemperatureChannelBase);
+                ChannelsInfo.Add(sensorinfo);
             }
         }
 

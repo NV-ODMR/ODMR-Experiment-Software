@@ -24,7 +24,7 @@ namespace ODMR_Lab.基本窗口
         {
             InitializeComponent();
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterCloseWindow(this, null, null, CloseBtn, 5, 30);
+            h.RegisterCloseWindow(this, null, null, CloseBtn, null, 5, 30);
             h.BeforeClose += BeforeClose;
             Title = wintitle;
             title.Content = "     " + wintitle;

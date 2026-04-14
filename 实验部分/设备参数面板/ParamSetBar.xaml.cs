@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using ContextMenu = Controls.ContextMenu;
 using ODMR_Lab.Windows;
 using ODMR_Lab.实验部分.参数设置面板;
+using Controls.Windows;
 
 namespace ODMR_Lab.实验部分.设备参数面板
 {
@@ -52,48 +53,42 @@ namespace ODMR_Lab.实验部分.设备参数面板
         public void LoadParam()
         {
             if (ParentParam.TargetParameter == null) return;
-            try
-            {
-                BoolValue.Visibility = Visibility.Hidden;
-                EnumValue.Visibility = Visibility.Hidden;
-                StringValue.Visibility = Visibility.Hidden;
+            BoolValue.Visibility = Visibility.Hidden;
+            EnumValue.Visibility = Visibility.Collapsed;
+            StringValue.Visibility = Visibility.Collapsed;
 
-                if (ParentParam.TargetParameter.ParamType == typeof(string) ||
-                    ParentParam.TargetParameter.ParamType == typeof(int) ||
-                    ParentParam.TargetParameter.ParamType == typeof(double) ||
-                    ParentParam.TargetParameter.ParamType == typeof(float)
-                    )
-                {
-                    StringValue.Text = ParentParam.TargetParameter.ReadValue().ToString();
-                    StringValue.Visibility = Visibility.Visible;
-                    if (ParentParam.TargetParameter.IsReadOnly) StringValue.IsReadOnly = true;
-                    else StringValue.IsReadOnly = false;
-                }
-                if (ParentParam.TargetParameter.ParamType == typeof(bool))
-                {
-                    BoolValue.IsSelected = ParentParam.TargetParameter.ReadValue();
-                    BoolValue.Visibility = Visibility.Visible;
-                    if (ParentParam.TargetParameter.IsReadOnly) BoolValue.IsEnabled = false;
-                    else BoolValue.IsEnabled = true;
-                }
-                if (ParentParam.TargetParameter.ParamType.IsEnum)
-                {
-                    EnumValue.Items.Clear();
-                    var names = Enum.GetNames(ParentParam.TargetParameter.ParamType);
-                    foreach (var item in names)
-                    {
-                        DecoratedButton btn = new DecoratedButton() { Text = item };
-                        UIUpdater.SetDefaultTemplate(btn);
-                        EnumValue.Items.Add(btn);
-                    }
-                    EnumValue.Select((string)Enum.GetName(ParentParam.TargetParameter.ParamType, ParentParam.TargetParameter.ReadValue()));
-                    EnumValue.Visibility = Visibility.Visible;
-                    if (ParentParam.TargetParameter.IsReadOnly) EnumValue.IsEnabled = false;
-                    else EnumValue.IsEnabled = true;
-                }
-            }
-            catch (Exception)
+            if (ParentParam.TargetParameter.ParamType == typeof(string) ||
+                ParentParam.TargetParameter.ParamType == typeof(int) ||
+                ParentParam.TargetParameter.ParamType == typeof(double) ||
+                ParentParam.TargetParameter.ParamType == typeof(float)
+                )
             {
+                StringValue.Text = ParentParam.TargetParameter.ReadValue().ToString();
+                StringValue.Visibility = Visibility.Visible;
+                if (ParentParam.TargetParameter.IsReadOnly) StringValue.IsReadOnly = true;
+                else StringValue.IsReadOnly = false;
+            }
+            if (ParentParam.TargetParameter.ParamType == typeof(bool))
+            {
+                BoolValue.IsSelected = ParentParam.TargetParameter.ReadValue();
+                BoolValue.Visibility = Visibility.Visible;
+                if (ParentParam.TargetParameter.IsReadOnly) BoolValue.IsEnabled = false;
+                else BoolValue.IsEnabled = true;
+            }
+            if (ParentParam.TargetParameter.ParamType.IsEnum)
+            {
+                EnumValue.Items.Clear();
+                var names = Enum.GetNames(ParentParam.TargetParameter.ParamType);
+                foreach (var item in names)
+                {
+                    DecoratedButton btn = new DecoratedButton() { Text = item };
+                    UIUpdater.SetDefaultTemplate(btn);
+                    EnumValue.Items.Add(btn);
+                }
+                EnumValue.Select((string)Enum.GetName(ParentParam.TargetParameter.ParamType, ParentParam.TargetParameter.ReadValue()));
+                EnumValue.Visibility = Visibility.Visible;
+                if (ParentParam.TargetParameter.IsReadOnly) EnumValue.IsEnabled = false;
+                else EnumValue.IsEnabled = true;
             }
         }
 
@@ -161,6 +156,7 @@ namespace ODMR_Lab.实验部分.设备参数面板
             try
             {
                 UpdateDeviceAttach();
+                LoadParam();
                 ParentParam.ErrorMessage = "";
             }
             catch (Exception ex)
@@ -175,17 +171,20 @@ namespace ODMR_Lab.实验部分.设备参数面板
         {
             try
             {
-                UpdateDeviceAttach();
-                if (ParentParam.TargetParameter == null) throw new Exception("参数不存在");
-                //设置参数
-                ParentParam.TargetParameter.WriteValue(GetSetValue());
-                TimeWindow w = new TimeWindow();
-                w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                w.Owner = Window.GetWindow(this);
-                w.ShowWindow("设置成功");
-                ParentParam.ErrorMessage = "";
-                //读取参数
-                LoadParam();
+                if (MessageWindow.ShowMessageBox("设置参数", "确定要设置参数吗?此操作将忽略设备锁直接改变设备参数,请小心操作避免破坏实验", MessageBoxButton.YesNo, owner: Window.GetWindow(this)) == MessageBoxResult.Yes)
+                {
+                    UpdateDeviceAttach();
+                    if (ParentParam.TargetParameter == null) throw new Exception("参数不存在");
+                    //设置参数
+                    ParentParam.TargetParameter.WriteValue(GetSetValue());
+                    TimeWindow w = new TimeWindow();
+                    w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    w.Owner = Window.GetWindow(this);
+                    w.ShowWindow("设置成功");
+                    ParentParam.ErrorMessage = "";
+                    //读取参数
+                    LoadParam();
+                }
             }
             catch (Exception ex)
             {

@@ -43,7 +43,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterHideWindow(this, null, null, CloseBtn, 0, 40);
+            hel.RegisterHideWindow(this, null, null, CloseBtn, null, 4, 40);
         }
 
         List<KeyValuePair<ParamB, bool>> param = null;

@@ -148,8 +148,7 @@ namespace ODMR_Lab.设备部分
                         {
                             foreach (var dev in temp)
                             {
-                                infos.AddRange((dev as TemperatureControllerInfo).SensorsInfo);
-                                infos.AddRange((dev as TemperatureControllerInfo).OutputsInfo);
+                                infos.AddRange((dev as TemperatureControllerInfo).ChannelsInfo);
                             }
                         }
                         if (type == DeviceTypes.电源)

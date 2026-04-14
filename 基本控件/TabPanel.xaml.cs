@@ -120,6 +120,7 @@ namespace ODMR_Lab.基本控件
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(35) });
             DecoratedButton btn = new DecoratedButton();
             UIUpdater.SetDefaultTemplate(btn);
+            g.Background = btn.Background;
             btn.Text = "×";
             g.Children.Add(btn);
             Grid.SetColumn(btn, 1);

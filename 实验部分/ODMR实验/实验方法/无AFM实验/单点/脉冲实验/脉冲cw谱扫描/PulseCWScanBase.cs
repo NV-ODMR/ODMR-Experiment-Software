@@ -99,7 +99,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲C
             ExperimentHelper.SetT2SequenceEvolutionPulses(50, 0, 0, 0, 0);
             //GlobalPulseParams.SetGlobalPulseLength("RabiTime", (int)(1000));
             var channel = GetDeviceByName("Power") as PowerChannelInfo;
-            channel.Channel.Voltage = GetV90();
+            channel.Device.Voltage = GetV90();
             #region 一阶序列
             PulsePhotonPack pack = DoPulseExp("PulseCW", locvalue, GetRFPower(), GetPulseLoopCount(), 4, GetPointTimeout(), sequenceAction: new Action<SequenceDataAssemble>((seq) => { }));
             double signalc = pack.GetPhotonsAtIndex(0).Sum();

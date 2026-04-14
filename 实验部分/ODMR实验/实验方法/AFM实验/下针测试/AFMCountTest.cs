@@ -1,6 +1,7 @@
 ﻿using Controls.Charts;
 using Controls.Windows;
 using HardWares.Lock_In;
+using HardWares.温度控制器;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
@@ -126,7 +127,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     count.Add(double.NaN);
                 else
                     count.Add(coun);
-                temp.Add((GetDeviceByName("TemperatureController") as SensorChannelInfo).Channel.Temperature);
+                var channel = (GetDeviceByName("TemperatureController") as TemperatureChannelInfo).Device;
+                temp.Add((channel is SensorChannelBase) ? (channel as SensorChannelBase).Temperature : (channel as OutputChannelBase).Power);
                 Thread.Sleep((int)(GetInputParamValueByName("SampleGap") * 1000));
                 JudgeThreadEndOrResumeAction?.Invoke();
                 UpdatePlotChartFlow(false);

@@ -18,7 +18,7 @@ namespace ODMR_Lab.设备部分
     {
         public bool IsWriting { get; private set; } = false;
 
-        protected object SourceDevice { get; set; } = null;
+        public object SourceDevice { get; protected set; } = null;
 
         public abstract bool IsLoadParams { get; set; }
 
@@ -316,6 +316,7 @@ namespace ODMR_Lab.设备部分
     }
 
     public abstract class DeviceElementInfoBase<T> : InfoBase
+        where T : PortElement
     {
         /// <summary>
         /// 设备名

@@ -29,7 +29,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
                 FilesPanel.AddItem(item.Value, item.Key);
             }
             WindowResizeHelper helper = new WindowResizeHelper();
-            helper.RegisterCloseWindow(this, null, null, CloseBtn, 0, 30);
+            helper.RegisterCloseWindow(this, null, null, CloseBtn, null, 4, 30);
             helper.BeforeClose += BeforeClose;
         }
 

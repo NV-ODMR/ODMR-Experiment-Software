@@ -40,7 +40,7 @@ namespace ODMR_Lab.数据处理
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, null, 5, 40);
 
             ParentPage = parentPage;
         }

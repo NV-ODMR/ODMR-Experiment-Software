@@ -40,7 +40,7 @@ namespace ODMR_Lab.扩展部分.数据记录.界面及子窗口
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
             hel.AfterHide += new RoutedEventHandler((sender, e) => HideAction?.Invoke(sender, e));
-            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, null, 5, 40);
             Title = wintitle;
             title.Content = "     " + wintitle;
         }

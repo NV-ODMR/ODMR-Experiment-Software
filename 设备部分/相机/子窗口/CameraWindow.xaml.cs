@@ -52,7 +52,7 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
 
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterCloseWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 30);
+            hel.RegisterCloseWindow(this, MinBtn, MaxBtn, CloseBtn, null, 5, 30);
             hel.BeforeClose += BeforeClose;
 
             try

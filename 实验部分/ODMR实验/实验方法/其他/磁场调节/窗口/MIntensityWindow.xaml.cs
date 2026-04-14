@@ -39,7 +39,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             exp = parentexp;
             InitializeComponent();
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterHideWindow(this, null, null, CloseBtn, 0, 30);
+            h.RegisterHideWindow(this, null, null, CloseBtn, null, 0, 30);
         }
 
         /// <summary>

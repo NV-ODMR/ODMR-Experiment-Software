@@ -34,7 +34,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
         {
             InitializeComponent();
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterHideWindow(this, null, null, CloseBtn, 0, 30);
+            h.RegisterHideWindow(this, null, null, CloseBtn, null, 4, 30);
         }
 
         public new void Show(SequenceDataAssemble sequence)

@@ -43,7 +43,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             InitializeComponent();
 
             WindowResizeHelper helper = new WindowResizeHelper();
-            helper.RegisterCloseWindow(this, null, null, CloseBtn, 5, 30);
+            helper.RegisterCloseWindow(this, null, null, CloseBtn, null, 5, 30);
 
             Isinput = input;
             Isoutput = output;

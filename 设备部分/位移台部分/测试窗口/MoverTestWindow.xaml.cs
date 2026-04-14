@@ -41,7 +41,7 @@ namespace ODMR_Lab.设备部分.位移台部分
                 MoverLists.Children.Add(CreateMoverGridBar(item));
             }
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterCloseWindow(this, null, null, CloseBtn, 5, 30);
+            h.RegisterCloseWindow(this, null, null, CloseBtn, null, 5, 30);
             h.BeforeClose += BeforeClose;
             CreateListenThread();
         }
@@ -104,7 +104,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             box.TextAreaRatio = UIUpdater.ComboBoxTemplate.TextAreaRatio;
             box.IconSource = UIUpdater.ComboBoxTemplate.IconSource;
             box.ImagePlace = UIUpdater.ComboBoxTemplate.ImagePlace;
-            box.IconMargin =  UIUpdater.ComboBoxTemplate.IconMargin;
+            box.IconMargin = UIUpdater.ComboBoxTemplate.IconMargin;
             foreach (var item in Enum.GetNames(typeof(MoverTypes)))
             {
                 box.Items.Add(new DecoratedButton() { Text = item });

@@ -37,7 +37,7 @@ namespace ODMR_Lab.实验部分.序列编辑器
             Channels = channels;
 
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterCloseWindow(this, null, null, CloseBtn, 0, 30);
+            h.RegisterCloseWindow(this, null, null, CloseBtn, null, 4, 30);
             UpdateParams();
         }
 

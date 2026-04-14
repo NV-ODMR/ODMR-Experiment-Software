@@ -16,16 +16,11 @@ using HardWares.电源;
 
 namespace ODMR_Lab.设备部分.其他设备
 {
-    public class PowerChannelInfo : InfoBase
+    public class PowerChannelInfo : DeviceElementInfoBase<PowerChannelBase>
     {
         public override bool IsLoadParams { get; set; } = false;
 
         public PowerInfo ParentInfo { get; protected set; } = null;
-
-        /// <summary>
-        /// 通道
-        /// </summary>
-        public PowerChannelBase Channel { get; private set; } = null;
 
         public string Name
         { get; set; } = "";
@@ -33,7 +28,7 @@ namespace ODMR_Lab.设备部分.其他设备
         public PowerChannelInfo(PowerInfo parent, PowerChannelBase channel, string name)
         {
             ParentInfo = parent;
-            Channel = channel;
+            Device = channel;
             Name = name;
         }
 
@@ -43,11 +38,12 @@ namespace ODMR_Lab.设备部分.其他设备
 
         public override string GetDeviceDescription()
         {
-            return ParentInfo.Device.ProductName + " " + Channel.ChannelName;
+            return ParentInfo.Device.ProductName + " " + Device.ChannelName;
         }
+
         public override string GetChannelDescription()
         {
-            return Channel.ChannelName;
+            return Device.ChannelName;
         }
     }
 }

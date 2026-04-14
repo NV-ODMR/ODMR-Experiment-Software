@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ODMR_Lab.基本窗口
 {
@@ -26,7 +24,7 @@ namespace ODMR_Lab.基本窗口
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, PinBtn, 5, 40);
             hel.BeforeHide += BeforeHide;
             Title = wintitle;
             title.Content = "     " + wintitle;

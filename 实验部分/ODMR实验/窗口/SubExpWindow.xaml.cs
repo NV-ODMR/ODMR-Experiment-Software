@@ -26,7 +26,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
         {
             InitializeComponent();
             h = new WindowResizeHelper();
-            h.RegisterHideWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, 6, 30);
+            h.RegisterHideWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, null, 6, 30);
             var page = new DisplayPage(false);
             page.RawControlsStates = new List<KeyValuePair<FrameworkElement, 实验类.RunningBehaviours>>()
             {

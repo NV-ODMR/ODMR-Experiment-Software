@@ -1,6 +1,7 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
+using HardWares;
 using HardWares.Lock_In;
 using HardWares.Windows;
 using HardWares.仪器列表.电动翻转座;
@@ -63,12 +64,6 @@ namespace ODMR_Lab.设备部分.其他设备
             new KeyValuePair<DeviceTypes, object>(DeviceTypes.源表 , new List<PowerMeterInfo>()),
         };
 
-        /// <summary>
-        /// 当选中数据改变时触发的事件
-        /// </summary>
-        public event Action<List<ChannelInfo>> DataChangedEvent = null;
-
-
         public DevicePage()
         {
             InitializeComponent();
@@ -107,6 +102,7 @@ namespace ODMR_Lab.设备部分.其他设备
             if (type == DeviceTypes.电源) return typeof(PowerBase);
             if (type == DeviceTypes.信号发生器通道) return typeof(SignalGeneratorBase);
             if (type == DeviceTypes.PulseBlaster) return typeof(PulseBlasterBase);
+            if (type == DeviceTypes.源表) return typeof(PowerSourceBase);
             return null;
         }
 
@@ -114,9 +110,8 @@ namespace ODMR_Lab.设备部分.其他设备
         {
             if (type == DeviceTypes.温控)
             {
-                List<ChannelInfo> result = new List<ChannelInfo>();
-                result.AddRange((device as TemperatureControllerInfo).SensorsInfo);
-                result.AddRange((device as TemperatureControllerInfo).OutputsInfo);
+                List<TemperatureChannelInfo> result = new List<TemperatureChannelInfo>();
+                result.AddRange((device as TemperatureControllerInfo).ChannelsInfo);
                 return result;
             }
             if (type == DeviceTypes.翻转镜) return null;
@@ -213,25 +208,8 @@ namespace ODMR_Lab.设备部分.其他设备
         {
         }
 
-        private ContextMenu CreateBtnMenu(ChannelInfo data)
-        {
-            ContextMenu menu = new ContextMenu()
-            {
-                PanelMinWidth = 200,
-                ItemHeight = 30,
-            };
-            DecoratedButton btn = new DecoratedButton();
-            btn.Text = "设置通道参数";
-            UIUpdater.SetDefaultTemplate(btn);
-            btn.Tag = data;
-            menu.Items.Add(btn);
-            btn.Click += OpenChannelWindow;
-            return menu;
-        }
-
         private void OpenChannelWindow(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
         }
 
         private void NewConnect(object sender, RoutedEventArgs e)
@@ -270,7 +248,7 @@ namespace ODMR_Lab.设备部分.其他设备
             }
             if (arg1 == 1)
             {
-                ParameterWindow window = new ParameterWindow(ConvertInfoType(re.Value, re.Key).Device, Window.GetWindow(this));
+                ParameterWindow window = new ParameterWindow(re.Value.SourceDevice as PortObject, Window.GetWindow(this));
                 window.ShowDialog();
             }
         }
@@ -286,7 +264,7 @@ namespace ODMR_Lab.设备部分.其他设备
                 var infos = ConvertInfoListType(DeviceTypeList.Where((x) => x.Key == deviceTypes).ElementAt(0).Value, deviceTypes);
                 foreach (var item in infos)
                 {
-                    DeviceList.AddItem(new KeyValuePair<DeviceTypes, InfoBase>(deviceTypes, item), item.Device.ProductIdentifier + " " + item.Device.ProductName);
+                    DeviceList.AddItem(new KeyValuePair<DeviceTypes, InfoBase>(deviceTypes, item), item.Device.ProductName);
                 }
             }
             catch (Exception)
@@ -304,13 +282,13 @@ namespace ODMR_Lab.设备部分.其他设备
             if (DeviceTypeBox.SelectedItem == null) return;
             DeviceTypes type = (DeviceTypes)Enum.Parse(typeof(DeviceTypes), DeviceTypeBox.SelectedItem.Text);
             DeviceChannelList.ClearItems();
-            var dev = ConvertInfoListType(arg2, type);
+            var dev = ConvertInfoType(((KeyValuePair<DeviceTypes, InfoBase>)arg2).Value, type);
             var chs = GetDeviceChannels(type, dev);
             if (chs == null) return;
             //获取通道列表
             foreach (var item in chs)
             {
-                DeviceChannelList.AddItem(new KeyValuePair<DeviceTypes, InfoBase>(type, item), (item as SensorChannelInfo).GetChannelDescription());
+                DeviceChannelList.AddItem(new KeyValuePair<DeviceTypes, InfoBase>(type, item), item.GetChannelDescription());
             }
         }
 
@@ -321,7 +299,7 @@ namespace ODMR_Lab.设备部分.其他设备
             var dev = ConvertInfoType(re.Value, re.Key);
             if (arg1 == 0)
             {
-                ParameterWindow window = new ParameterWindow(ConvertInfoType(re.Value, re.Key).Device, Window.GetWindow(this));
+                ParameterWindow window = new ParameterWindow(re.Value.SourceDevice as PortElement, Window.GetWindow(this));
                 window.ShowDialog();
             }
         }

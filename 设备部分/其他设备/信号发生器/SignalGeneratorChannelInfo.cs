@@ -11,11 +11,9 @@ using System.Threading.Tasks;
 
 namespace ODMR_Lab.设备部分.其他设备
 {
-    public class SignalGeneratorChannelInfo : InfoBase
+    public class SignalGeneratorChannelInfo : DeviceElementInfoBase<SignalChannelBase>
     {
         public SignalGeneratorInfo ParentInfo { get; set; } = null;
-
-        public SignalChannelBase Device { get; set; } = null;
 
         public override bool IsLoadParams { get; set; } = false;
 

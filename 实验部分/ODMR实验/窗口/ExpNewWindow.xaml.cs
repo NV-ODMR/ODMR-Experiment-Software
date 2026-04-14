@@ -31,7 +31,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
             Exp = exp;
             OriginParentPage = parentpage;
             WindowResizeHelper h = new WindowResizeHelper();
-            h.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, 6, 30);
+            h.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, null, 6, 30);
             h.BeforeClose += BeforeClose;
             SubExpContent.Children.Add(new DisplayPage(false));
             Title = title;

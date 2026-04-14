@@ -36,7 +36,7 @@ namespace ODMR_Lab.共享剪切板
         {
             InitializeComponent();
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, 5, 40);
+            hel.RegisterHideWindow(this, MinBtn, MaxBtn, CloseBtn, null, 5, 40);
             Title = "共享剪切板";
             title.Content = "     " + "共享剪切板";
         }
