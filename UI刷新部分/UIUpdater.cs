@@ -21,7 +21,7 @@ namespace ODMR_Lab
             Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF383838")),
             Foreground = Brushes.White,
             MoveInColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF424242")),
-            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF39393A")),
+            PressedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF808080")),
             MoveInForeground = Brushes.White,
             PressedForeground = Brushes.White,
         };

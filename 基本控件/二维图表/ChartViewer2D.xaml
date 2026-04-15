@@ -49,10 +49,12 @@
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
-            <scroll:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="1" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="缩放至初始尺寸" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/resize.png"/>
+            <scroll:DecoratedButton Margin="7" Click="ResizePlot" Grid.Row="1" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="刷新图表" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/refresh.png"/>
             <scroll:DecoratedButton Margin="7" Click="Snap" Grid.Row="0" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="复制截图到剪切板" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/snap.png"/>
-            <scroll:DecoratedButton Margin="7" Click="SaveAsExternal" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="保存为文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/save.png"/>
+            <scroll:DecoratedButton Margin="7" Click="D1Analyse" Grid.Row="2" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="一维分析" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/D1Analyse.png"/>
+            <scroll:DecoratedButton Margin="7" Click="SaveAsExternal" Grid.Row="3" Grid.Column="0" TextAreaRatio="0" IconMargin="4" ToolTip="保存为文件" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/save.png"/>
         </Grid>
         <scroll:AutoScrollViewer Grid.Row="1" Grid.Column="1">
             <scroll:AutoScrollViewer.Content>

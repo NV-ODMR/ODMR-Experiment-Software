@@ -149,6 +149,24 @@ namespace ODMR_Lab.IO操作
                 ++ind;
             }
             #endregion
+
+            #region 自定义算法参数
+            WindowHelper.SetContent(window, "正在保存参数:" + "自定义算法参数");
+            if (!Directory.Exists(Path.Combine(Environment.CurrentDirectory, "AlgorithmConfig")))
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "AlgorithmConfig"));
+            }
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    MainWindow.Exp_AlgorithmPage.SaveToFile(Path.Combine(Environment.CurrentDirectory, "AlgorithmConfig", "Config.userdat"));
+                }
+                catch (Exception)
+                {
+                }
+            });
+            #endregion
         }
 
         /// <summary>
@@ -270,6 +288,20 @@ namespace ODMR_Lab.IO操作
             WindowHelper.SetContent(window, "正在读取:" + "全局序列参数");
             #region 全局序列参数
             GlobalPulseParams.ReadFromFile();
+            #endregion
+
+            #region 自定义算法参数
+            WindowHelper.SetContent(window, "正在读取:" + "自定义算法参数");
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    MainWindow.Exp_AlgorithmPage.LoadFromFile(Path.Combine(Environment.CurrentDirectory, "AlgorithmConfig", "Config.userdat"));
+                }
+                catch (Exception)
+                {
+                }
+            });
             #endregion
         }
 

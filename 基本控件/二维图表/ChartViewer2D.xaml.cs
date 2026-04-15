@@ -207,6 +207,12 @@ namespace ODMR_Lab.基本控件
             }
         }
 
+        public ChartData2D GetSelectedData()
+        {
+            var chart = DataSet.GetSelectedTag();
+            if (chart == null) return null;
+            return chart as ChartData2D;
+        }
 
         /// <summary>
         /// 从DataSource中同步数据并刷新绘图
@@ -412,6 +418,24 @@ namespace ODMR_Lab.基本控件
                 }
             }
 
+        }
+
+
+        D1AnalyseWindow win = null;
+        /// <summary>
+        /// 一维分析
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void D1Analyse(object sender, RoutedEventArgs e)
+        {
+            if (win == null)
+            {
+                win = new D1AnalyseWindow(this);
+                win.Owner = Window.GetWindow(this);
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            }
+            win.Show();
         }
         #endregion
 

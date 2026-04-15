@@ -388,7 +388,6 @@ namespace ODMR_Lab.实验部分.设备参数监测
             if (e.Key == Key.Enter)
             {
                 StyleParam.ReadFromPage(new FrameworkElement[] { this });
-                Chart1DStyleParams.GlobalChartPlotParam = (Chart1DStyleParams)StyleParam.Copy();
                 ApplyChartStyle(StyleParam);
             }
         }

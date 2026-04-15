@@ -16,6 +16,42 @@ namespace ODMR_Lab.IO操作
 
     public abstract class ParamB
     {
+        /// <summary>
+        /// 转换输入类型
+        /// </summary>
+        public static dynamic ConvertStirngType(Type targettype, string input)
+        {
+            if (targettype == typeof(double))
+            {
+                return double.Parse(input);
+            }
+            if (targettype == typeof(int))
+            {
+                return int.Parse(input);
+            }
+            if (targettype == typeof(float))
+            {
+                return float.Parse(input);
+            }
+            if (targettype == typeof(bool))
+            {
+                return bool.Parse(input);
+            }
+            if (targettype == typeof(string))
+            {
+                return input;
+            }
+            if (targettype == typeof(Color))
+            {
+                return ColorConverter.ConvertFromString(input);
+            }
+            if (targettype.IsEnum)
+            {
+                return Enum.Parse(targettype, input);
+            }
+            return null;
+        }
+
         public static dynamic GetUnknownParamValue(ParamB obj)
         {
             if (obj.RawValue is double)
@@ -368,6 +404,13 @@ namespace ODMR_Lab.IO操作
         {
             Description = description;
             Value = value;
+            ValueType = typeof(T);
+            PropertyName = propertyName;
+        }
+
+        public Param(string description, string propertyName)
+        {
+            Description = description;
             ValueType = typeof(T);
             PropertyName = propertyName;
         }

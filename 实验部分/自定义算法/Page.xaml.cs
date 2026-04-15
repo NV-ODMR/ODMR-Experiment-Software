@@ -40,6 +40,7 @@ using Window = System.Windows.Window;
 using TextBox = System.Windows.Controls.TextBox;
 using ODMR_Lab.实验部分.自定义算法;
 using ODMR_Lab.实验部分.ODMR实验;
+using ODMR_Lab.IO操作;
 
 namespace ODMR_Lab.自定义算法
 {
@@ -240,5 +241,83 @@ namespace ODMR_Lab.自定义算法
             {
             }
         }
+
+        #region 文件操作
+        public void LoadFromFile(string path)
+        {
+            FileObject obj = FileObject.ReadFromFile(path);
+
+            var names = obj.ExtractString("Names");
+
+            foreach (var item in names)
+            {
+                try
+                {
+                    var alg = Algorithms.Where((x) => x.AlgorithmName == item).ElementAt(0);
+                    //设置输入输出参数
+                    var descriptions = obj.ExtractString(FileHelper.Combine("→", item, "Input", "Descriptions"));
+                    var pnames = obj.ExtractString(FileHelper.Combine("→", item, "Input", "PropertyNames"));
+                    var values = obj.ExtractString(FileHelper.Combine("→", item, "Input", "PropertyValues"));
+                    var types = obj.ExtractString(FileHelper.Combine("→", item, "Input", "Types"));
+                    for (int i = 0; i < descriptions.Count; i++)
+                    {
+                        var pa = alg.InputParams.Where(x => x.PropertyName == pnames[i]);
+                        if (pa.Count() != 0)
+                        {
+                            var p = pa.ElementAt(0);
+                            ParamB.SetUnknownParamValue(p, values[i]);
+                        }
+                    }
+
+                    descriptions = obj.ExtractString(FileHelper.Combine("→", item, "Output", "Descriptions"));
+                    pnames = obj.ExtractString(FileHelper.Combine("→", item, "Output", "PropertyNames"));
+                    values = obj.ExtractString(FileHelper.Combine("→", item, "Output", "PropertyValues"));
+                    types = obj.ExtractString(FileHelper.Combine("→", item, "Output", "Types"));
+                    alg.OutputParams.Clear();
+                    for (int i = 0; i < descriptions.Count; i++)
+                    {
+                        ParamB output = Activator.CreateInstance(typeof(Param<>).MakeGenericType(Type.GetType(types[i])), descriptions[i], ParamB.ConvertStirngType(Type.GetType(types[i]), values[i]), pnames[i]) as ParamB;
+                        alg.OutputParams.Add(output);
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            UpdateInputParams();
+            UpdateOutputParams();
+
+        }
+
+        public void SaveToFile(string path)
+        {
+            FileObject obj = new FileObject();
+            var names = Algorithms.Select(x => x.AlgorithmName).ToList();
+            obj.WriteStringData("Names", names);
+            foreach (var item in Algorithms)
+            {
+                string name = item.AlgorithmName;
+                var descriptions = item.InputParams.Select(x => x.Description).ToList();
+                var pnames = item.InputParams.Select(x => x.PropertyName).ToList();
+                var values = item.InputParams.Select(x => ParamB.GetUnknownParamValueToString(x)).ToList();
+                var types = item.InputParams.Select(x => x.ValueType.FullName).ToList();
+                obj.WriteStringData(FileHelper.Combine("→", name, "Input", "Descriptions"), descriptions);
+                obj.WriteStringData(FileHelper.Combine("→", name, "Input", "PropertyNames"), pnames);
+                obj.WriteStringData(FileHelper.Combine("→", name, "Input", "PropertyValues"), values);
+                obj.WriteStringData(FileHelper.Combine("→", name, "Input", "Types"), types);
+
+                descriptions = item.OutputParams.Select(x => x.Description).ToList();
+                pnames = item.OutputParams.Select(x => x.PropertyName).ToList();
+                values = item.OutputParams.Select(x => ParamB.GetUnknownParamValueToString(x)).ToList();
+                types = item.OutputParams.Select(x => x.ValueType.FullName).ToList();
+                obj.WriteStringData(FileHelper.Combine("→", name, "Output", "Descriptions"), descriptions);
+                obj.WriteStringData(FileHelper.Combine("→", name, "Output", "PropertyNames"), pnames);
+                obj.WriteStringData(FileHelper.Combine("→", name, "Output", "PropertyValues"), values);
+                obj.WriteStringData(FileHelper.Combine("→", name, "Output", "Types"), types);
+            }
+            obj.SaveToFile(path);
+        }
+        #endregion
     }
 }
