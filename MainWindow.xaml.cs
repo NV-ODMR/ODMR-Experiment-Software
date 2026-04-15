@@ -140,7 +140,7 @@ namespace ODMR_Lab
         /// <param name="e"></param>
         private void Close(object sender, RoutedEventArgs e)
         {
-            if (MessageWindow.ShowMessageBox("提示", "确定要关闭吗?", MessageBoxButton.YesNo, owner: this) == MessageBoxResult.Yes)
+            if (MessageWindow.ShowMessageBox("提示", "确定要关闭吗?", MessageBoxButton.YesNo, owner: this, AllowKeyboardInput: true, TopMost: true) == MessageBoxResult.Yes)
             {
                 bool canclose = true;
                 Thread t = new Thread(() =>

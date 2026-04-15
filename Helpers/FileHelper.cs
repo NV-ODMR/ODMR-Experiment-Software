@@ -43,6 +43,32 @@ namespace ODMR_Lab
         }
 
         /// <summary>
+        /// 判断文件路径是否合法
+        /// </summary>
+        /// <param name="rawstr"></param>
+        /// <returns></returns>
+        public static bool IsFileStrValid(string filenamestr)
+        {
+            var chars = Path.GetInvalidFileNameChars();
+            var chars1 = Path.GetInvalidPathChars();
+            foreach (var item in chars)
+            {
+                if (Path.GetFileName(filenamestr).Contains(item))
+                {
+                    return false;
+                }
+            }
+            foreach (var item in chars1)
+            {
+                if (Path.GetDirectoryName(filenamestr).Contains(item))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 将字符串用特定字符连接起来
         /// </summary>
         /// <param name="combinestr"></param>

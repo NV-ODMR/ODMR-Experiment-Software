@@ -135,8 +135,13 @@ namespace ODMR_Lab.IO操作
                     WindowHelper.SetContent(window, "正在保存参数: " + "ODMR实验  " + ind.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString());
                     FileObject ODMRSaveFile = new FileObject();
                     item.ReadFromPageAndWriteConfigToFile(ODMRSaveFile);
-                    string path = Path.Combine(Environment.CurrentDirectory, "ODMRConfig", FileHelper.ProcessFileStr(FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName) + ".userdat"));
-                    ODMRSaveFile.SaveToFile(path);
+                    string path = Path.Combine(Environment.CurrentDirectory, "ODMRConfig", FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName + ".userdat"));
+                    if (FileHelper.IsFileStrValid(path))
+                        ODMRSaveFile.SaveToFile(path);
+                    else
+                    {
+                        int k = 0;
+                    }
                 }
                 catch (Exception)
                 {
@@ -246,10 +251,15 @@ namespace ODMR_Lab.IO操作
             int index = 1;
             foreach (var item in MainWindow.Exp_SequencePage.ExpObjects)
             {
-                string path = Path.Combine(Environment.CurrentDirectory, "ODMRConfig", FileHelper.ProcessFileStr(FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName) + ".userdat"));
+                string path = Path.Combine(Environment.CurrentDirectory, "ODMRConfig", FileHelper.Combine("_", item.ODMRExperimentGroupName, item.ODMRExperimentName) + ".userdat");
+                if (!FileHelper.IsFileStrValid(path)) continue;
                 WindowHelper.SetContent(window, "正在读取:" + "ODMR实验  " + index.ToString() + "/" + MainWindow.Exp_SequencePage.ExpObjects.Count.ToString() + "个");
                 if (File.Exists(path))
                 {
+                    if (item.ODMRExperimentName == "退相干时间测量(T2)")
+                    {
+                        int k = 1;
+                    }
                     FileObject ODMRSaveFile = FileObject.ReadFromFile(path);
                     item.ReadFromFileAndLoadToPage(ODMRSaveFile);
                 }
