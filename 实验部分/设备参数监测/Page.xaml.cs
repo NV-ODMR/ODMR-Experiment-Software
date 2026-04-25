@@ -91,8 +91,8 @@ namespace ODMR_Lab.实验部分.设备参数监测
                 //获取数据中的时间最大值
                 var dats = Chart.DataList.Where(x => x.IsVisible);
                 if (dats.Count() == 0) return;
-                var maxs = dats.Select(x => (x as TimeDataSeries).X.Last());
-                var mins = dats.Select(x => (x as TimeDataSeries).X.First());
+                var maxs = dats.Where(x => x.GetXCount() != 0).Select(x => (x as TimeDataSeries).X.Last());
+                var mins = dats.Where(x => x.GetXCount() != 0).Select(x => (x as TimeDataSeries).X.First());
                 if (maxs.Count() != 0 && mins.Count() != 0)
                 {
                     TimeSpan det = maxs.Max() - mins.Min();
@@ -105,7 +105,7 @@ namespace ODMR_Lab.实验部分.设备参数监测
                 }
                 Chart.RefreshPlotWithCustomScale(timestart, timeend);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
             }
         }

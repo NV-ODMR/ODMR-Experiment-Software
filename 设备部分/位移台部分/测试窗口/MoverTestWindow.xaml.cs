@@ -76,7 +76,7 @@ namespace ODMR_Lab.设备部分.位移台部分
             grid.Tag = info;
             grid.Height = 50;
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(60) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(90) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(90) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(60) });

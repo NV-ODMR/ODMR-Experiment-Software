@@ -87,7 +87,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double scancount = 6;
             double countApprox = 0;
             double step = scanrange / (scancount - 1);
-            while (step >= 0.1)
+            while (step >= 0.3)
             {
                 countApprox += scancount;
                 step /= 2;
@@ -105,7 +105,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             double[] param = new double[3];
 
             step = (scanrange) / (scancount - 1);
-            while (step >= 0.1)
+            while (step >= 0.3)
             {
                 session.BeginScan(new D1NumricLinearScanRange(scanmin, scanmax, 6),
                     ind * (progresshi - progresslo) / countApprox + progresslo,

@@ -132,7 +132,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
                 #endregion
             }
 
-            double frequency = 0.8;
+            double frequency = 1.0;
             int time = (int)(1.0 / frequency * 1000);
 
             #region 计算Delay等待时间
