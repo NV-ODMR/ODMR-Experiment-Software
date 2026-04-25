@@ -30,7 +30,7 @@
     <Grid Grid.RowSpan="6">
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <control:ListViewer Name="DeviceList" HeaderHeight="40" Grid.Column="0" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
             <control:ListViewer.ItemContextMenu>
@@ -61,7 +61,7 @@
                 <control:Chooser Width="40" Height="20"/>
             </control:ListViewer.EditableBooleanTemplate>
         </control:ListViewer>
-        <control:DecoratedButton HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch"  Margin="5" Click="NewConnect" Text="新建连接" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Stretch"  Margin="5" Click="NewConnect" Text="新建连接" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <control:ListViewer Name="MagnetMoverList" HeaderHeight="30" ItemHeight="30" Grid.Column="2" Grid.RowSpan="1" ItemContextMenuSelected="ContextMenuEvent" ItemBarBackground="#FF4D4D4D" Background="#FF2E2E2E" ItemBarSelectedColor="#FF2470FC">
         <control:ListViewer.ItemContextMenu>
@@ -211,37 +211,37 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <control:DecoratedButton Name="MagnetLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="MagnetLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <Grid Grid.Row="1" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <control:DecoratedButton Name="PrbeLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="PrbeLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <Grid Grid.Row="2" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <control:DecoratedButton Name="SampleLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="SampleLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <Grid Grid.Row="3" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <control:DecoratedButton Name="MicrowaveLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="MicrowaveLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <Grid Grid.Row="4" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <control:DecoratedButton Name="LenLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="LenLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <Grid Grid.Row="5" Grid.Column="3">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <control:DecoratedButton Name="ScannerLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="14" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="ScannerLabelBtn" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="80" Height="40" Click="OpenLabelWindow" Text="调试窗口" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
     </Grid>
     <control:FontChangeText Width="100" Height="40" Visibility="Collapsed" BorderThickness="0">
         <control:FontChangeText.InnerTextBox>

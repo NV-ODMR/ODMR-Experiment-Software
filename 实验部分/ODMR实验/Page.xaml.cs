@@ -260,13 +260,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
                 if (CurrentExpObject.NewDisplayWindow == null)
                 {
-                    ShowInwindowPanel.Visibility = Visibility.Hidden;
-                    ExpPanel.Visibility = Visibility.Visible;
+                    SetDisplayState(false);
                 }
                 else
                 {
-                    ShowInwindowPanel.Visibility = Visibility.Visible;
-                    ExpPanel.Visibility = Visibility.Hidden;
+                    SetDisplayState(true);
                 }
                 if (CurrentExpObject != null)
                 {
@@ -432,18 +430,35 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 {
                     expobj.NewDisplayWindow.Topmost = true;
                     expobj.NewDisplayWindow.Topmost = false;
-                    ExpPanel.Visibility = Visibility.Collapsed;
-                    ShowInwindowPanel.Visibility = Visibility.Visible;
+                    SetDisplayState(true);
                     CurrentExpObject = expobj;
                 }
                 else
                 {
-                    ExpPanel.Visibility = Visibility.Visible;
-                    ShowInwindowPanel.Visibility = Visibility.Collapsed;
+                    SetDisplayState(false);
                     SelectExp(ExpObjects.IndexOf(expobj));
                 }
             }
         }
+
+        public void SetDisplayState(bool IsInSingleWindow)
+        {
+            if (IsInSingleWindow)
+            {
+                ConfigurationPanel.Visibility = Visibility.Collapsed;
+                PlotPanel.Visibility = Visibility.Collapsed;
+                InteractionButtonPanel.Visibility = Visibility.Collapsed;
+                ShowInwindowPanel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ConfigurationPanel.Visibility = Visibility.Visible;
+                PlotPanel.Visibility = Visibility.Visible;
+                InteractionButtonPanel.Visibility = Visibility.Visible;
+                ShowInwindowPanel.Visibility = Visibility.Collapsed;
+            }
+        }
+
         /// <summary>
         /// 输出
         /// </summary>
@@ -565,8 +580,7 @@ namespace ODMR_Lab.实验部分.ODMR实验
             if (CurrentExpObject == null) return;
             CurrentExpObject.NewDisplayWindow = new ExpNewWindow(CurrentExpObject.ODMRExperimentGroupName + ":" + CurrentExpObject.ODMRExperimentName, CurrentExpObject, CurrentExpObject.ParentPage);
             CurrentExpObject.NewDisplayWindow.Show();
-            ExpPanel.Visibility = Visibility.Hidden;
-            ShowInwindowPanel.Visibility = Visibility.Visible;
+            SetDisplayState(true);
         }
 
         /// <summary>

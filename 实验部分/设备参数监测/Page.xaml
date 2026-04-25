@@ -70,26 +70,30 @@
                 </WrapPanel>
             </control:AutoScrollViewer.Content>
         </control:AutoScrollViewer>
-        <Grid Grid.Row="3" Grid.Column="0" Grid.RowSpan="1">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="40"/>
-            </Grid.ColumnDefinitions>
-            <control:AutoScrollViewer Name="scr" Background="#FF2E2E2E" Margin="5" Grid.Row="2">
-                <control:AutoScrollViewer.Content>
-                    <StackPanel Name="ParamPanel" Width="{Binding ElementName=scr,Path=ActualWidth}"/>
-                </control:AutoScrollViewer.Content>
-            </control:AutoScrollViewer>
-            <Popup Name="ColorSelectPop" AllowsTransparency="True" StaysOpen="False" IsOpen="False" Closed="ColorSelectPop_Closed">
-                <Popup.Child>
-                    <control:ColorSelector Name="ColorSelect" Width="100" Height="100"/>
-                </Popup.Child>
-            </Popup>
-            <control:DecoratedButton Grid.Column="1" Margin="5" Click="AddParam" Text="添加参数" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        </Grid>
+        <control:ExpandableBar BorderThickness="0.5" Margin="3" BarPlacement="Bottom" IsExpand="True" ExpandedText="⌵ ⌵" FrinkedText="检测参数列表" Grid.Row="3" Grid.Column="0" Grid.RowSpan="1" FrinkedLength="20" BorderBrush="#FF707070">
+            <control:ExpandableBar.ButtonTemplate>
+                <control:DecoratedButton HorizontalAlignment="Stretch" TextAreaRatio="1" FontSize="12" Background="Transparent" Foreground="LightGray" MoveInColor="#FF333333" PressedColor="#FF333333" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
+            </control:ExpandableBar.ButtonTemplate>
+            <control:ExpandableBar.ContentPanel>
+                <Grid Height="100">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="40"/>
+                    </Grid.ColumnDefinitions>
+                    <control:AutoScrollViewer Name="scr" Background="#FF2E2E2E" Margin="1" Grid.Row="2">
+                        <control:AutoScrollViewer.Content>
+                            <StackPanel Name="ParamPanel" Width="{Binding ElementName=scr,Path=ActualWidth}"/>
+                        </control:AutoScrollViewer.Content>
+                    </control:AutoScrollViewer>
+                    <Popup Name="ColorSelectPop" AllowsTransparency="True" StaysOpen="False" IsOpen="False" Closed="ColorSelectPop_Closed">
+                        <Popup.Child>
+                            <control:ColorSelector Name="ColorSelect" Width="100" Height="100"/>
+                        </Popup.Child>
+                    </Popup>
+                    <control:DecoratedButton Grid.Column="1" Margin="1" Click="AddParam" Text="添加参数" FontWeight="Thin" FontSize="12" Background="#FF383838" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                </Grid>
+            </control:ExpandableBar.ContentPanel>
+        </control:ExpandableBar>
         <Grid Grid.Row="0" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>

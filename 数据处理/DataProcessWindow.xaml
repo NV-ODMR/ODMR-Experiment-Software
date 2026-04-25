@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ODMR_Lab.数据处理" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件"
+        xmlns:local="clr-namespace:ODMR_Lab.数据处理" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:基本控件="clr-namespace:ODMR_Lab.基本控件" xmlns:control1="clr-namespace:Controls.Algebra;assembly=Controls"
         mc:Ignorable="d"
         Title="数据处理窗口" Height="500" Width="1000" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
@@ -105,7 +105,11 @@
                                     <ColumnDefinition Width="50"/>
                                 </Grid.ColumnDefinitions>
                                 <control:DecoratedButton Grid.Column="0" IconMargin="5" Grid.ColumnSpan="3" TextAreaRatio="0" Grid.Row="0" Click="ShowSimpleMappingInformation" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/information.png" Margin="5"/>
-                                <control:AlgebraBox Name="SimpleMappingBox" Grid.Row="2" Grid.ColumnSpan="3" FontSize="12" Background="#FF2E2E2E" Margin="2" TipBarBackground="#FF4D4D4D" TipBarSelectedColor="#FF0075DA" TipDiscriptionColor="White" Foreground="White" CaretColor="White"/>
+                                <control1:AlgebraBox Name="SimpleMappingBox" Grid.Row="2" Grid.ColumnSpan="3" FontSize="12" Background="#FF2E2E2E" Margin="2" TipBarBackground="#FF4D4D4D" BorderThickness="0" TipBarSelectedColor="#FF0075DA" TipDiscriptionColor="White" Foreground="White" CaretColor="White">
+                                    <control1:AlgebraBox.TipScrollPanel>
+                                        <control:AutoScrollViewer BorderThickness="1" BorderBrush="#FF4D4D4D" Width="200" MaxHeight="400"/>
+                                    </control1:AlgebraBox.TipScrollPanel>
+                                </control1:AlgebraBox>
                                 <Label Grid.Row="1" Content="表达式" FontSize="12" Margin="5" Grid.ColumnSpan="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF1A1A1A" Foreground="#FFFAFAFA"/>
                             </Grid>
                             <Grid Name="PythonPanel" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Collapsed">

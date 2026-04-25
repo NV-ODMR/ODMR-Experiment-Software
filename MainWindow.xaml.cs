@@ -115,7 +115,7 @@ namespace ODMR_Lab
             var dwinhelper = new WindowInteropHelper(this);
             SetCurrentProcessExplicitAppUserModelID("MainWindow");
             InitializeComponent();
-
+            ExpandableBar bar = new ExpandableBar();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             WindowResizeHelper hel = new WindowResizeHelper();
@@ -323,12 +323,10 @@ namespace ODMR_Lab
             if (btn.Text == "设备")
             {
                 DeviceList.Visibility = Visibility.Visible;
-                GeneralGrid.ColumnDefinitions[1].Width = new GridLength(160);
             }
             if (btn.Text == "实验")
             {
                 ExpList.Visibility = Visibility.Visible;
-                GeneralGrid.ColumnDefinitions[1].Width = new GridLength(160);
             }
             if (btn.Text == "数据")
             {
@@ -341,7 +339,6 @@ namespace ODMR_Lab
             if (btn.Text == "扩展")
             {
                 ExternalList.Visibility = Visibility.Visible;
-                GeneralGrid.ColumnDefinitions[1].Width = new GridLength(160);
             }
             if (btn.Text == "共享剪切板")
             {

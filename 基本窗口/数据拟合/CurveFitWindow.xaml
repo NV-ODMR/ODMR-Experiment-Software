@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls"
+        xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:control1="clr-namespace:Controls.Algebra;assembly=Controls"
         mc:Ignorable="d"
         Title="数据拟合" Height="500" Width="600" WindowChrome.IsHitTestVisibleInChrome="False" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
@@ -124,7 +124,7 @@
 
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <control:AlgebraBox Name="FunctionExpreDisplay" IsReadOnly="False" Grid.Row="1" CornerRadius="10" Margin="10" Background="#FF2E2E2E"/>
+                <control1:AlgebraBox Name="FunctionExpreDisplay" IsReadOnly="False" Grid.Row="1" CornerRadius="10" Margin="10" Background="#FF2E2E2E"/>
                 <Label Content="表达式:" Margin="10,0,0,0" Grid.Row="0" VerticalContentAlignment="Center" FontSize="12" Foreground="White"/>
                 <Label Content="描述:" Margin="10,0,0,0" Grid.Row="2" VerticalContentAlignment="Center" FontSize="12" Foreground="White"/>
                 <TextBlock Name="Description" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" Foreground="White"/>
@@ -256,7 +256,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
-                <control:AlgebraBox Name="ExpressionEdit" Cursor="IBeam" IsReadOnly="False" Grid.Row="1" CornerRadius="10" Margin="10" Background="#FF2E2E2E" CaretColor="White" Foreground="White" TipDiscriptionColor="White" TipBarSelectedColor="#FF0080D0" TipBarBackground="#FF4D4D4D"/>
+                <control1:AlgebraBox Name="ExpressionEdit" Cursor="IBeam" IsReadOnly="False" Grid.Row="1" CornerRadius="10" Margin="10" Background="#FF2E2E2E" CaretColor="White" Foreground="White" TipDiscriptionColor="White" TipBarSelectedColor="#FF0080D0" TipBarBackground="#FF4D4D4D"/>
                 <Label Content="表达式:" Margin="10,0,0,0" Grid.Row="0" VerticalContentAlignment="Center" FontSize="12" Foreground="White"/>
                 <Label Content="描述:" Margin="10,0,0,0" Grid.Row="2" VerticalContentAlignment="Center" FontSize="12" Foreground="White"/>
                 <TextBox AcceptsReturn="True" Name="DescriptionEdit" Grid.Row="3" HorizontalAlignment="Stretch" BorderThickness="0" VerticalAlignment="Stretch" Margin="10" FontSize="12" TextAlignment="Left" TextWrapping="Wrap" Foreground="White" Background="#FF2E2E2E"/>
