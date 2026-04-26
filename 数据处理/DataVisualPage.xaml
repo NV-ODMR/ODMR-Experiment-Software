@@ -15,15 +15,15 @@
     <Grid Grid.Row="0" Grid.RowSpan="5" Grid.Column="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <control:AutoScrollViewer  Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" >
             <control:AutoScrollViewer.Content>
                 <StackPanel Name="PlotViewer" Orientation="Horizontal" Height="40" HorizontalAlignment="Left" VerticalAlignment="Stretch">
-                    <control:DecoratedButton Name="BtnPlot1D" KeepPressed="True" Height="34" Width="100" Text="一维图" Margin="3" Click="SelectPanel" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
-                    <control:DecoratedButton Name="BtnPlot2D" Height="34" Width="100" Text="二维图" Margin="3" Click="SelectPanel" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
-                    <control:DecoratedButton Margin="40,3,3,3" Click="OpenDataProcessWindow" Height="34" Width="140" Text="数据处理" IsEnabled="True" FontWeight="Normal" FontSize="14" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                    <control:DecoratedButton Name="BtnPlot1D" KeepPressed="True" Height="30" Width="100" Text="一维图" Margin="3" Click="SelectPanel" IsEnabled="True" FontWeight="Normal" FontSize="11" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                    <control:DecoratedButton Name="BtnPlot2D" Height="30" Width="100" Text="二维图" Margin="3" Click="SelectPanel" IsEnabled="True" FontWeight="Normal" FontSize="11" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                    <control:DecoratedButton Margin="40,3,3,3" Click="OpenDataProcessWindow" Height="30" Width="140" Text="数据处理" IsEnabled="True" FontWeight="Normal" FontSize="11" Background="#FF4D4D4D" Foreground="#FFFAFAFA" MoveInColor="#FF747474" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                 </StackPanel>
             </control:AutoScrollViewer.Content>
         </control:AutoScrollViewer>
@@ -45,14 +45,14 @@
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="0" Grid.RowSpan="5">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="180"/>
+                        <RowDefinition Height="130"/>
                         <RowDefinition Height="40"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Vertical">
-                        <control:DecoratedButton Margin="10" Height="40" Width="100" IconMargin="7" CornerRadius="10" Click="ImportFile" IsEnabled="True" Text="打开" TextAreaRatio="0.6" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/file.png"/>
-                        <control:DecoratedButton Margin="10" Height="40" Width="100" IconMargin="7" CornerRadius="10" Click="SaveFile" IsEnabled="True" Text="保存" TextAreaRatio="0.6" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
-                        <control:DecoratedButton Margin="10" Height="40" Width="100" IconMargin="7" CornerRadius="10" Click="SaveFileAs" IsEnabled="True" Text="另存为" TextAreaRatio="0.6" FontWeight="Thin" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
+                    <StackPanel Orientation="Vertical" Margin="5" VerticalAlignment="Center">
+                        <control:DecoratedButton Margin="3" Height="30" Width="100" IconMargin="7" CornerRadius="3" Click="ImportFile" IsEnabled="True" Text="打开" TextAreaRatio="0.6" FontWeight="Thin" FontSize="11" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/file.png"/>
+                        <control:DecoratedButton Margin="3" Height="30" Width="100" IconMargin="7" CornerRadius="3" Click="SaveFile" IsEnabled="True" Text="保存" TextAreaRatio="0.6" FontWeight="Thin" FontSize="11" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
+                        <control:DecoratedButton Margin="3" Height="30" Width="100" IconMargin="7" CornerRadius="3" Click="SaveFileAs" IsEnabled="True" Text="另存为" TextAreaRatio="0.6" FontWeight="Thin" FontSize="11" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/save.png"/>
                     </StackPanel>
                     <Label Content="已打开文件" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Row="1"/>
                     <control:DecoratedButton  Name="RawDataTemplateBtn" Height="40" IconMargin="5,0,0,0" TextAreaRatio="0.85" FontSize="9" CornerRadius="10" Click="SaveFileAs" IsEnabled="True" Visibility="Collapsed" FontWeight="Thin" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF424242" PressedColor="#FF0066FF" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA" IconSource="/图片资源/exp.png" Margin="0,0,0,0"/>
@@ -78,9 +78,9 @@
                     <control:ListViewer.HeaderLabelTemplate>
                         <Label Content="实验信息" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Grid.Row="0" Grid.Column="1"/>
                     </control:ListViewer.HeaderLabelTemplate>
-                    <control:ListViewer.UnEditableTextTemplate>
-                        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Foreground="White" Grid.Row="0" Grid.Column="1"/>
-                    </control:ListViewer.UnEditableTextTemplate>
+                    <control:ListViewer.TextBoxTemplate>
+                        <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                    </control:ListViewer.TextBoxTemplate>
                 </control:ListViewer>
             </Grid>
         </control:ExpandableBar.ContentPanel>

@@ -32,9 +32,9 @@
                 <control:ListViewer.HeaderLabelTemplate>
                     <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold" Background="#FF1F1F1F"/>
                 </control:ListViewer.HeaderLabelTemplate>
-                <control:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                </control:ListViewer.UnEditableTextTemplate>
+                <control:ListViewer.TextBoxTemplate>
+                    <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                </control:ListViewer.TextBoxTemplate>
                 <control:ListViewer.ItemContextMenu>
                     <control:ContextMenu>
                         <control:ContextMenu.Items>

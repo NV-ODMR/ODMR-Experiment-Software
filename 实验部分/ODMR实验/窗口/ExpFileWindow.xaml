@@ -34,7 +34,7 @@
                         <control:DecoratedButton FontSize="12" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
                     </control:SearchBar.ResultBoxTemplate>
                     <control:SearchBar.TextBoxTemplate>
-                        <TextBox CaretBrush="White" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Background="#FF4D4D4D"/>
+                        <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
                     </control:SearchBar.TextBoxTemplate>
                 </control:SearchBar>
             </Grid>

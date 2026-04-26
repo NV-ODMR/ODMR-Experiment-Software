@@ -70,12 +70,9 @@
                     <controls:ListViewer.HeaderLabelTemplate>
                         <Label FontSize="12" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF1F1F1F"/>
                     </controls:ListViewer.HeaderLabelTemplate>
-                    <controls:ListViewer.EditableBoxTemplate>
-                        <TextBox TextAlignment="Center" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" Foreground="White" CaretBrush="White"/>
-                    </controls:ListViewer.EditableBoxTemplate>
-                    <controls:ListViewer.UnEditableTextTemplate>
-                        <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Foreground="White"/>
-                    </controls:ListViewer.UnEditableTextTemplate>
+                    <controls:ListViewer.TextBoxTemplate>
+                        <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                    </controls:ListViewer.TextBoxTemplate>
                     <controls:ListViewer.DataTemplate>
                         <controls:ViewerTemplate Descriptions="轮廓点坐标X" DataType="Double" DataDisplayWidth="*" Editable="True"/>
                         <controls:ViewerTemplate Descriptions="轮廓点坐标Y" DataType="Double" DataDisplayWidth="*" Editable="True"/>
@@ -171,12 +168,9 @@
                     <controls:ListViewer.HeaderLabelTemplate>
                         <Label FontSize="12" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF1F1F1F"/>
                     </controls:ListViewer.HeaderLabelTemplate>
-                    <controls:ListViewer.EditableBoxTemplate>
-                        <TextBox TextAlignment="Center" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" Foreground="White" CaretBrush="White"/>
-                    </controls:ListViewer.EditableBoxTemplate>
-                    <controls:ListViewer.UnEditableTextTemplate>
-                        <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Foreground="White"/>
-                    </controls:ListViewer.UnEditableTextTemplate>
+                    <controls:ListViewer.TextBoxTemplate>
+                        <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                    </controls:ListViewer.TextBoxTemplate>
                     <controls:ListViewer.DataTemplate>
                         <controls:ViewerTemplate Descriptions="轮廓点坐标X" DataType="Double" DataDisplayWidth="*" Editable="True"/>
                         <controls:ViewerTemplate Descriptions="轮廓点坐标Y" DataType="Double" DataDisplayWidth="*" Editable="True"/>

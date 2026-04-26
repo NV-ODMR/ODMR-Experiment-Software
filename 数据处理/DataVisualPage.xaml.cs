@@ -398,6 +398,7 @@ namespace ODMR_Lab.数据处理
             }
         }
 
+        DataProcessWindow win = null;
         /// <summary>
         /// 打开数据处理窗口
         /// </summary>
@@ -407,10 +408,10 @@ namespace ODMR_Lab.数据处理
         {
             int ind = GetSelectedIndex();
             if (ind == -1) return;
-            DataProcessWindow win = new DataProcessWindow(this);
-            win.ParentDataSource = Source[ind];
-            win.ShowDialog();
-            UpdateFromSource(Source[ind]);
+            if (win == null) win = new DataProcessWindow(this);
+            win.UpdateParentSource(Source[ind]);
+            win.Activate();
+            win.Show();
         }
 
         /// <summary>

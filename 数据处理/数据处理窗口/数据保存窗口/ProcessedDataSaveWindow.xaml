@@ -1,0 +1,61 @@
+﻿<Window x:Class="ODMR_Lab.数据处理.ProcessedDataSaveWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ODMR_Lab.基本窗口" xmlns:control="clr-namespace:Controls;assembly=Controls" Icon="/图片资源/dataviewing.png" xmlns:数据处理="clr-namespace:ODMR_Lab.数据处理"
+        mc:Ignorable="d"
+        Title="保存数据" Height="300" Width="400" BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
+        </Grid.ColumnDefinitions>
+        <Label Name="title" Grid.Row="0" Content="  保存数据" IsHitTestVisible="False" Grid.ColumnSpan="1" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
+        <control:DecoratedButton Name="PinBtn" Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/pin.png"/>
+        <control:DecoratedButton Name="CloseBtn" Grid.Column="4" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Name="MinBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
+        <control:DecoratedButton Name="MaxBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
+        <Grid Name="D1Panel" Margin="5" Visibility="Hidden" Grid.Row="1" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Label Foreground="White" FontSize="11" Content="数据名称" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label Foreground="White" Grid.Row="2" FontSize="11" Content="轴类型" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <TextBox Name="D1DataName" Grid.Column="1" Margin="3" Background="#FF2E2E2E" HorizontalContentAlignment="Center" Foreground="White" FontSize="11" VerticalContentAlignment="Center" Text="1111" BorderThickness="0" BorderBrush="Transparent" CaretBrush="White"/>
+            <control:ComboBox Name="D1AxisTypeBox" Grid.Column="1" Grid.Row="1" Margin="3" Background="#FF2E2E2E" TextAreaRatio="0.9" IconSource="/图片资源/downArrow.png" IconMargin="5" ImagePlace="Right" Foreground="White">
+            </control:ComboBox>
+        </Grid>
+        <Grid Name="D2Panel" Margin="5" Visibility="Visible" Grid.Row="1" Grid.ColumnSpan="5" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Label Foreground="White" Grid.Row="1" FontSize="11" Content="横轴名称" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label Foreground="White" Grid.Row="2" FontSize="11" Content="纵轴名称" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label Foreground="White" Grid.Row="0" FontSize="11" Content="数据名称" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+            <TextBox Name="D2XName" Grid.Column="1" Grid.Row="0" Margin="3" Background="#FF2E2E2E" HorizontalContentAlignment="Center" Foreground="White" FontSize="11" VerticalContentAlignment="Center" BorderThickness="0" BorderBrush="Transparent" CaretBrush="White"/>
+            <TextBox Name="D2YName" Grid.Column="1" Grid.Row="2" Margin="3" Background="#FF2E2E2E" HorizontalContentAlignment="Center" Foreground="White" FontSize="11" VerticalContentAlignment="Center" BorderThickness="0" BorderBrush="Transparent" CaretBrush="White"/>
+            <TextBox Name="D2ZName" Grid.Column="1" Grid.Row="1" Margin="3" Background="#FF2E2E2E" HorizontalContentAlignment="Center" Foreground="White" FontSize="11" VerticalContentAlignment="Center" BorderThickness="0" BorderBrush="Transparent" CaretBrush="White"/>
+        </Grid>
+        <control:DecoratedButton Grid.Column="0" Grid.Row="2" Margin="3" Grid.ColumnSpan="5" IconMargin="7" Text="确认" TextAreaRatio="1" Click="Confirm" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray"/>
+    </Grid>
+</Window>

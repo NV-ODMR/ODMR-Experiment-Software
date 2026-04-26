@@ -54,9 +54,9 @@
             <control:ListViewer.HeaderLabelTemplate>
                 <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
             </control:ListViewer.HeaderLabelTemplate>
-            <control:ListViewer.UnEditableTextTemplate>
-                <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
-            </control:ListViewer.UnEditableTextTemplate>
+            <control:ListViewer.TextBoxTemplate>
+                <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+            </control:ListViewer.TextBoxTemplate>
             <control:ListViewer.EditableBooleanTemplate>
                 <control:Chooser Width="40" Height="20"/>
             </control:ListViewer.EditableBooleanTemplate>
@@ -80,9 +80,9 @@
         <control:ListViewer.HeaderLabelTemplate>
             <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
         </control:ListViewer.HeaderLabelTemplate>
-        <control:ListViewer.UnEditableTextTemplate>
-            <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
-        </control:ListViewer.UnEditableTextTemplate>
+        <control:ListViewer.TextBoxTemplate>
+            <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+        </control:ListViewer.TextBoxTemplate>
         <control:ListViewer.EditableBooleanTemplate>
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
@@ -104,9 +104,9 @@
         <control:ListViewer.HeaderLabelTemplate>
             <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
         </control:ListViewer.HeaderLabelTemplate>
-        <control:ListViewer.UnEditableTextTemplate>
-            <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
-        </control:ListViewer.UnEditableTextTemplate>
+        <control:ListViewer.TextBoxTemplate>
+            <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+        </control:ListViewer.TextBoxTemplate>
         <control:ListViewer.EditableBooleanTemplate>
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
@@ -128,9 +128,9 @@
         <control:ListViewer.HeaderLabelTemplate>
             <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
         </control:ListViewer.HeaderLabelTemplate>
-        <control:ListViewer.UnEditableTextTemplate>
-            <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
-        </control:ListViewer.UnEditableTextTemplate>
+        <control:ListViewer.TextBoxTemplate>
+            <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+        </control:ListViewer.TextBoxTemplate>
         <control:ListViewer.EditableBooleanTemplate>
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
@@ -152,9 +152,9 @@
         <control:ListViewer.HeaderLabelTemplate>
             <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
         </control:ListViewer.HeaderLabelTemplate>
-        <control:ListViewer.UnEditableTextTemplate>
-            <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
-        </control:ListViewer.UnEditableTextTemplate>
+        <control:ListViewer.TextBoxTemplate>
+            <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+        </control:ListViewer.TextBoxTemplate>
         <control:ListViewer.EditableBooleanTemplate>
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
@@ -176,9 +176,9 @@
         <control:ListViewer.HeaderLabelTemplate>
             <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
         </control:ListViewer.HeaderLabelTemplate>
-        <control:ListViewer.UnEditableTextTemplate>
-            <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
-        </control:ListViewer.UnEditableTextTemplate>
+        <control:ListViewer.TextBoxTemplate>
+            <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+        </control:ListViewer.TextBoxTemplate>
         <control:ListViewer.EditableBooleanTemplate>
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>
@@ -200,9 +200,9 @@
         <control:ListViewer.HeaderLabelTemplate>
             <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" FontSize="11" FontWeight="Bold" Foreground="#FFFAFAFA" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{x:Null}"/>
         </control:ListViewer.HeaderLabelTemplate>
-        <control:ListViewer.UnEditableTextTemplate>
-            <TextBlock Foreground="White" Background="#FF1A1A1A" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" FontSize="11"/>
-        </control:ListViewer.UnEditableTextTemplate>
+        <control:ListViewer.TextBoxTemplate>
+            <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+        </control:ListViewer.TextBoxTemplate>
         <control:ListViewer.EditableBooleanTemplate>
             <control:Chooser Width="40" Height="20"/>
         </control:ListViewer.EditableBooleanTemplate>

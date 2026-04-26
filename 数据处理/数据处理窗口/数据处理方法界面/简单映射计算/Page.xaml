@@ -1,0 +1,30 @@
+﻿<local:ProcesspageBase  xmlns:local="clr-namespace:ODMR_Lab.数据处理.数据处理窗口.数据处理方法界面" x:Class="ODMR_Lab.数据处理.数据处理窗口.数据处理方法界面.简单映射计算.ProcessPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:control="clr-namespace:Controls;assembly=Controls" xmlns:control1="clr-namespace:Controls.Algebra;assembly=Controls"
+      mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <local:ProcesspageBase.RowDefinitions>
+        <RowDefinition Height="55"/>
+        <RowDefinition Height="55"/>
+        <RowDefinition/>
+    </local:ProcesspageBase.RowDefinitions>
+    <local:ProcesspageBase.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="2*"/>
+    </local:ProcesspageBase.ColumnDefinitions>
+    <Label Grid.Row="0" Content="表达式" FontSize="12" Margin="5" Grid.ColumnSpan="3" IsHitTestVisible="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF1A1A1A" Foreground="#FFFAFAFA"/>
+    <Grid Grid.Row="1" Grid.ColumnSpan="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <control1:AlgebraBox Name="SimpleMappingBox" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" Grid.Row="0" Grid.Column="0" FontSize="12" Background="#FF2E2E2E" Margin="2" TipBarBackground="#FF4D4D4D" BorderThickness="0" TipBarSelectedColor="#FF0075DA" TipDiscriptionColor="White" Foreground="White" CaretColor="White">
+            <control1:AlgebraBox.TipScrollPanel>
+                <control:AutoScrollViewer BorderThickness="1" BorderBrush="#FF4D4D4D" Width="200" MaxHeight="400"/>
+            </control1:AlgebraBox.TipScrollPanel>
+        </control1:AlgebraBox>
+    </Grid>
+    <TextBlock Margin="10" Grid.Row="2" Foreground="White" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Grid.ColumnSpan="2"><Run Text="1.映射计算的数组必须保证元素个数相同。"/><LineBreak/><Run/><LineBreak/><Run Text="2.映射计算的具体操作为对给定数组中的每个元素进行相同计算，得到的结果构成新的数组"/><Run Text="。"/><LineBreak/><Run/><LineBreak/><Run/><Run Text="3.此功能仅支持简单函数混合映射运算，复杂函数的映射可能会导致计算速度变慢"/></TextBlock>
+</local:ProcesspageBase>

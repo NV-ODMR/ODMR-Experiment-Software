@@ -36,9 +36,9 @@
                 <scroll:ListViewer.HeaderLabelTemplate>
                     <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="10" FontWeight="Bold"/>
                 </scroll:ListViewer.HeaderLabelTemplate>
-                <scroll:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                </scroll:ListViewer.UnEditableTextTemplate>
+                <scroll:ListViewer.TextBoxTemplate>
+                    <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                </scroll:ListViewer.TextBoxTemplate>
                 <scroll:ListViewer.EditableBooleanTemplate>
                     <scroll:Chooser Width="30" Height="15"/>
                 </scroll:ListViewer.EditableBooleanTemplate>

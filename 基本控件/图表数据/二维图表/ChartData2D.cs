@@ -9,7 +9,7 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace ODMR_Lab.基本控件
 {
-    public class ChartData2D
+    public class ChartData2D : ChartDataBase
     {
 
         public ChartData2D(FormattedDataSeries2D data)

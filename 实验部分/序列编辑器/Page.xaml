@@ -97,15 +97,12 @@
                                     </control:ComboBox.TemplateButton>
                                 </control:ComboBox>
                             </control:ListViewer.EnumComboBoxTemplate>
-                            <control:ListViewer.UnEditableTextTemplate>
-                                <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                            </control:ListViewer.UnEditableTextTemplate>
+                            <control:ListViewer.TextBoxTemplate>
+                                <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                            </control:ListViewer.TextBoxTemplate>
                             <control:ListViewer.EditableBooleanTemplate>
                                 <control:Chooser Width="30" Height="15"/>
                             </control:ListViewer.EditableBooleanTemplate>
-                            <control:ListViewer.EditableBoxTemplate>
-                                <TextBox BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" FontSize="11" CaretBrush="White" Foreground="White"/>
-                            </control:ListViewer.EditableBoxTemplate>
                         </control:ListViewer>
                         <control:DecoratedButton Margin="2" Click="NewMultiChannel" Grid.Row="1" Text="新建通道" FontSize="12" Grid.Column="0" TextAreaRatio="1" IconMargin="4" ToolTip="新建波形" FontWeight="Thin"  Background="#FF383838" Foreground="White" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="White" PressedForeground="White"/>
                     </Grid>

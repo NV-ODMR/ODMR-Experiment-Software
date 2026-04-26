@@ -23,12 +23,9 @@
                 <control:ListViewer.DataTemplate>
                     <control:ViewerTemplate Descriptions="算法名称" DataType="String" Editable="False" DataDisplayWidth="*"/>
                 </control:ListViewer.DataTemplate>
-                <control:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="12"/>
-                </control:ListViewer.UnEditableTextTemplate>
-                <control:ListViewer.EditableBoxTemplate>
-                    <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="12" Background="#FF2E2E2E" CaretBrush="White"/>
-                </control:ListViewer.EditableBoxTemplate>
+                <control:ListViewer.TextBoxTemplate>
+                    <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                </control:ListViewer.TextBoxTemplate>
                 <control:ListViewer.HeaderLabelTemplate>
                     <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="White" FontSize="12"/>
                 </control:ListViewer.HeaderLabelTemplate>

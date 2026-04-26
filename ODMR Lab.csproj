@@ -154,6 +154,7 @@
     <Compile Include="共享剪切板\ClipBoardWindow.xaml.cs">
       <DependentUpon>ClipBoardWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="基本控件\图表数据\ChartDataBase.cs" />
     <Compile Include="基本控件\DataListViewer.xaml.cs">
       <DependentUpon>DataListViewer.xaml</DependentUpon>
     </Compile>
@@ -167,24 +168,24 @@
     <Compile Include="基本控件\TabPanel.xaml.cs">
       <DependentUpon>TabPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="基本控件\一维图表\1DFittedData.cs" />
-    <Compile Include="基本控件\一维图表\Chart1DStyleParams.cs" />
-    <Compile Include="基本控件\一维图表\ChartData1D.cs" />
-    <Compile Include="基本控件\一维图表\ChartViewer1D.xaml.cs">
+    <Compile Include="基本控件\图表数据\一维图表\1DFittedData.cs" />
+    <Compile Include="基本控件\图表数据\一维图表\Chart1DStyleParams.cs" />
+    <Compile Include="基本控件\图表数据\一维图表\ChartData1D.cs" />
+    <Compile Include="基本控件\图表数据\一维图表\ChartViewer1D.xaml.cs">
       <DependentUpon>ChartViewer1D.xaml</DependentUpon>
     </Compile>
-    <Compile Include="基本控件\一维图表\FitCurveParamSetWindow.xaml.cs">
+    <Compile Include="基本控件\图表数据\一维图表\FitCurveParamSetWindow.xaml.cs">
       <DependentUpon>FitCurveParamSetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="基本控件\一维图表\TimeChartViewer1D.xaml.cs">
+    <Compile Include="基本控件\图表数据\一维图表\TimeChartViewer1D.xaml.cs">
       <DependentUpon>TimeChartViewer1D.xaml</DependentUpon>
     </Compile>
-    <Compile Include="基本控件\二维图表\Chart2DStyleParams.cs" />
-    <Compile Include="基本控件\二维图表\ChartData2D.cs" />
-    <Compile Include="基本控件\二维图表\ChartViewer2D.xaml.cs">
+    <Compile Include="基本控件\图表数据\二维图表\Chart2DStyleParams.cs" />
+    <Compile Include="基本控件\图表数据\二维图表\ChartData2D.cs" />
+    <Compile Include="基本控件\图表数据\二维图表\ChartViewer2D.xaml.cs">
       <DependentUpon>ChartViewer2D.xaml</DependentUpon>
     </Compile>
-    <Compile Include="基本控件\二维图表\D1AnalyseWindow.xaml.cs">
+    <Compile Include="基本控件\图表数据\二维图表\D1AnalyseWindow.xaml.cs">
       <DependentUpon>D1AnalyseWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="基本窗口\ChartViewerWindow.xaml.cs">
@@ -489,7 +490,7 @@
     <Compile Include="扩展部分\数据记录\记录系统\Note.cs" />
     <Compile Include="扩展部分\数据记录\记录系统\NoteTags.cs" />
     <Compile Include="扩展部分\数据记录\记录系统\NoteAssemble.cs" />
-    <Compile Include="数据处理\DataProcessWindow.xaml.cs">
+    <Compile Include="数据处理\数据处理窗口\DataProcessWindow.xaml.cs">
       <DependentUpon>DataProcessWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\DataVisualSource.cs" />
@@ -500,6 +501,17 @@
       <DependentUpon>DataViewingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="数据处理\UserCustomFileObject.cs" />
+    <Compile Include="数据处理\数据处理窗口\数据保存窗口\ProcessedDataSaveWindow.xaml.cs">
+      <DependentUpon>ProcessedDataSaveWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="数据处理\数据处理窗口\数据处理方法界面\ProcessHelper.cs" />
+    <Compile Include="数据处理\数据处理窗口\数据处理方法界面\ProcesspageBase.cs" />
+    <Compile Include="数据处理\数据处理窗口\数据处理方法界面\Python脚本映射计算\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="数据处理\数据处理窗口\数据处理方法界面\简单映射计算\Page.xaml.cs">
+      <DependentUpon>Page.xaml</DependentUpon>
+    </Compile>
     <Compile Include="设备部分\其他设备\PulseBlaster\PulseBlasterInfo.cs" />
     <Compile Include="设备部分\APD\APDInfo.cs" />
     <Compile Include="设备部分\APD\Page.xaml.cs">
@@ -591,23 +603,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="基本控件\一维图表\ChartViewer1D.xaml">
+    <Page Include="基本控件\图表数据\一维图表\ChartViewer1D.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="基本控件\一维图表\FitCurveParamSetWindow.xaml">
+    <Page Include="基本控件\图表数据\一维图表\FitCurveParamSetWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="基本控件\一维图表\TimeChartViewer1D.xaml">
+    <Page Include="基本控件\图表数据\一维图表\TimeChartViewer1D.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="基本控件\二维图表\ChartViewer2D.xaml">
+    <Page Include="基本控件\图表数据\二维图表\ChartViewer2D.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="基本控件\二维图表\D1AnalyseWindow.xaml">
+    <Page Include="基本控件\图表数据\二维图表\D1AnalyseWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -815,7 +827,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="数据处理\DataProcessWindow.xaml">
+    <Page Include="数据处理\数据处理窗口\DataProcessWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -826,6 +838,18 @@
     <Page Include="数据处理\DataViewingWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="数据处理\数据处理窗口\数据保存窗口\ProcessedDataSaveWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="数据处理\数据处理窗口\数据处理方法界面\Python脚本映射计算\Page.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="数据处理\数据处理窗口\数据处理方法界面\简单映射计算\Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="设备部分\APD\Page.xaml">
       <Generator>MSBuild:Compile</Generator>

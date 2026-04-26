@@ -16,7 +16,7 @@ namespace ODMR_Lab.基本控件
         None = 3
     }
 
-    public abstract class ChartData1D
+    public abstract class ChartData1D : ChartDataBase
     {
         /// <summary>
         /// 名称

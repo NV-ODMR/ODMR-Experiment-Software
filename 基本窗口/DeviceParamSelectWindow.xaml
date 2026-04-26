@@ -32,9 +32,9 @@
                 <Controls:ListViewer.HeaderLabelTemplate>
                     <Label HorizontalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" VerticalContentAlignment="Center" Foreground="White" FontSize="14" FontWeight="Bold" Background="#FF2E2E2E"/>
                 </Controls:ListViewer.HeaderLabelTemplate>
-                <Controls:ListViewer.UnEditableTextTemplate>
-                    <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="White" FontSize="10"/>
-                </Controls:ListViewer.UnEditableTextTemplate>
+                <Controls:ListViewer.TextBoxTemplate>
+                    <TextBox HorizontalAlignment="Stretch" BorderThickness="0" BorderBrush="Transparent" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Foreground="White" FontSize="11" Background="Transparent" CaretBrush="White"/>
+                </Controls:ListViewer.TextBoxTemplate>
             </Controls:ListViewer>
             <Controls:DecoratedButton Grid.Row="1" Click="Confirm" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="确认" FontSize="16" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray"/>
         </Grid>
