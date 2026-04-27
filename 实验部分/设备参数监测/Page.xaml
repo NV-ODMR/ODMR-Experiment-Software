@@ -41,7 +41,7 @@
             <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="150"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -70,12 +70,12 @@
                 </WrapPanel>
             </control:AutoScrollViewer.Content>
         </control:AutoScrollViewer>
-        <control:ExpandableBar BorderThickness="0.5" Margin="3" BarPlacement="Bottom" IsExpand="True" ExpandedText="⌵ ⌵" FrinkedText="检测参数列表" Grid.Row="3" Grid.Column="0" Grid.RowSpan="1" FrinkedLength="20" BorderBrush="#FF707070">
+        <control:ExpandableBar BorderThickness="0.5" Margin="3" BarPlacement="Bottom" IsExpand="True" ExpandedText="⌵ ⌵" FrinkedText="检测参数列表" ExpandedLength="*" Grid.Row="3" Grid.Column="0" Grid.RowSpan="1" FrinkedLength="20" BorderBrush="#FF707070">
             <control:ExpandableBar.ButtonTemplate>
                 <control:DecoratedButton HorizontalAlignment="Stretch" TextAreaRatio="1" FontSize="12" Background="Transparent" Foreground="LightGray" MoveInColor="#FF333333" PressedColor="#FF333333" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
             </control:ExpandableBar.ButtonTemplate>
             <control:ExpandableBar.ContentPanel>
-                <Grid Height="100">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="40"/>
