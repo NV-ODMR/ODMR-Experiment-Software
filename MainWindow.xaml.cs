@@ -119,7 +119,7 @@ namespace ODMR_Lab
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             WindowResizeHelper hel = new WindowResizeHelper();
-            hel.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, null, null, 5, 30);
+            hel.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, null, PinBtn, 5, 30);
 
             #region 调用页面的初始化方法
             var pages = GetType().GetFields().Where(x => typeof(PageBase).IsAssignableFrom(x.FieldType));
@@ -330,6 +330,7 @@ namespace ODMR_Lab
             }
             if (btn.Text == "数据")
             {
+                DataWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 DataWindow.WindowState = WindowState.Normal;
                 DataWindow.Activate();
                 DataWindow.Show();

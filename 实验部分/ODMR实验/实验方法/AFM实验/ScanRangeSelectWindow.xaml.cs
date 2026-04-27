@@ -37,7 +37,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验
             TitleWindow.Content = "扫描范围设置" + "(" + exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName + ")";
             Title = "扫描范围设置" + "(" + exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName + ")";
             WindowResizeHelper helper = new WindowResizeHelper();
-            helper.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, null, 6, 30);
+            helper.RegisterCloseWindow(this, MinimizeBtn, MaximizeBtn, CloseBtn, PinBtn, 6, 30);
             helper.BeforeClose += BeforeClose;
         }
 

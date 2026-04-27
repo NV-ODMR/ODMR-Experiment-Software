@@ -1,9 +1,11 @@
 ﻿using CodeHelper;
+using Controls;
 using Controls.Charts;
 using Controls.Windows;
 using ODMR_Lab.Windows;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -16,6 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Forms;
 
 namespace ODMR_Lab.基本控件
 {
@@ -96,6 +99,9 @@ namespace ODMR_Lab.基本控件
 
             PlotXData.X = xpoints.Select(x => x.X).ToList();
             PlotXData.Y = xpoints.Select(x => x.Y).ToList();
+
+            PlotXData.Name = ChartParent.GetSelectedData().Data.ZName + "Y=" + Math.Round(p.Y, 4).ToString();
+            PlotYData.Name = ChartParent.GetSelectedData().Data.ZName + "X=" + Math.Round(p.X, 4).ToString();
 
             chartX.RefreshPlotWithAutoScale();
             chartY.RefreshPlotWithAutoScale();
@@ -202,7 +208,7 @@ namespace ODMR_Lab.基本控件
         {
             try
             {
-                Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chartY));
+                System.Windows.Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chartY));
                 TimeWindow window = new TimeWindow();
                 window.Owner = Window.GetWindow(this);
                 window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -215,13 +221,98 @@ namespace ODMR_Lab.基本控件
         {
             try
             {
-                Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chartX));
+                System.Windows.Clipboard.SetImage(CodeHelper.SnapHelper.GetControlSnap(chartX));
                 TimeWindow window = new TimeWindow();
                 window.Owner = Window.GetWindow(this);
                 window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 window.ShowWindow("截图已复制到剪切板");
             }
             catch (Exception ex) { }
+        }
+
+        /// <summary>
+        /// 复制X数据到剪切板
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveX(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string save = "";
+                int maxcount = PlotXData.GetXCount();
+
+                string namestr = "";
+                namestr = PlotXData.Name + " X坐标" + "\t" + PlotXData.Name + " Y坐标";
+
+                namestr += "\n";
+
+                save += namestr;
+
+                string datastr = "";
+                for (int i = 0; i < maxcount; i++)
+                {
+                    datastr += PlotXData.X[i].ToString() + "\t" + PlotXData.Y[i].ToString() + "\n";
+                }
+
+                if (datastr != "")
+                {
+                    datastr = datastr.Remove(datastr.Length - 1, 1);
+                }
+                save += datastr;
+                //复制到剪切板
+                System.Windows.Forms.Clipboard.SetText(save);
+                TimeWindow win = new TimeWindow();
+                win.Owner = this;
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                win.ShowWindow("复制成功");
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        /// <summary>
+        /// 复制Y数据到剪切板
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveY(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string save = "";
+                int maxcount = PlotYData.GetXCount();
+
+                string namestr = "";
+                namestr = PlotYData.Name + " X坐标" + "\t" + PlotYData.Name + " Y坐标";
+
+                namestr += "\n";
+
+                save += namestr;
+
+                string datastr = "";
+                for (int i = 0; i < maxcount; i++)
+                {
+                    datastr += PlotYData.X[i].ToString() + "\t" + PlotYData.Y[i].ToString() + "\n";
+                }
+
+                if (datastr != "")
+                {
+                    datastr = datastr.Remove(datastr.Length - 1, 1);
+                }
+                save += datastr;
+                //复制到剪切板
+                System.Windows.Forms.Clipboard.Clear();
+                System.Windows.Forms.Clipboard.SetText(save);
+                TimeWindow win = new TimeWindow();
+                win.Owner = this;
+                win.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                win.ShowWindow("复制成功");
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }

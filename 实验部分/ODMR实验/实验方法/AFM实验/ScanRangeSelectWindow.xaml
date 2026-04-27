@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验" xmlns:controls="clr-namespace:Controls;assembly=Controls"
         xmlns:chart="clr-namespace:Controls.Charts;assembly=Controls"
         mc:Ignorable="d"
-        Title="扫描范围设置"  MinHeight="559" Width="911" WindowChrome.IsHitTestVisibleInChrome="False"  BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
+        Title="扫描范围设置"  MinHeight="350" Width="550" Height="350" WindowChrome.IsHitTestVisibleInChrome="False"  BorderThickness="2" ResizeMode="NoResize" WindowStyle="None" Background="#FF1F1F1F" BorderBrush="#FF0075DA">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -17,51 +17,53 @@
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
-        <controls:DecoratedButton Name="MinimizeBtn" Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
-        <controls:DecoratedButton Name="MaximizeBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
-        <controls:DecoratedButton Name="CloseBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/close.png"/>
+        <controls:DecoratedButton Name="MinimizeBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
+        <controls:DecoratedButton Name="MaximizeBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
+        <controls:DecoratedButton Name="CloseBtn" Grid.Column="4" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/close.png"/>
+        <controls:DecoratedButton Name="PinBtn" Grid.Column="1" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/pin.png"/>
         <Label Background="#FF383838" Content="     扫描范围设置" Name="TitleWindow" Foreground="White"/>
-        <Grid Name="D1Panel" Margin="30" Grid.Row="1" Visibility="Visible" Grid.ColumnSpan="4">
+        <Grid Name="D1Panel" Margin="10" Grid.Row="1" Visibility="Visible" Grid.ColumnSpan="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
-                <controls:DecoratedButton Name="D1Btn1" Click="ChangePannel" KeepPressed="True" Width="150" TextAreaRatio="1" Text="直线扫描" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
-                <controls:DecoratedButton Name="D1Btn2" Click="ChangePannel" Width="150" TextAreaRatio="1" Text="多点扫描" Margin="5" FontWeight="Thin" IconMargin="0" FontSize="14" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <controls:DecoratedButton Name="D1Btn1" Click="ChangePannel" KeepPressed="True" Width="150" TextAreaRatio="1" Text="直线扫描" Margin="3" FontWeight="Thin" IconMargin="0" FontSize="11" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+                <controls:DecoratedButton Name="D1Btn2" Click="ChangePannel" Width="150" TextAreaRatio="1" Text="多点扫描" Margin="3" FontWeight="Thin" IconMargin="0" FontSize="11" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
             </StackPanel>
-            <Grid Name="D1Panel1" Grid.Row="1" HorizontalAlignment="Center" Visibility="Visible" VerticalAlignment="Center">
+            <Grid Name="D1Panel1" Grid.Row="1" HorizontalAlignment="Center" Margin="5" Visibility="Visible" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
                     <RowDefinition Height="50"/>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="30"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="150"/>
                 </Grid.ColumnDefinitions>
                 <Label Foreground="White" Grid.ColumnSpan="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描起始点"/>
                 <Label Foreground="White" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="X:"/>
                 <Label Foreground="White" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Y:"/>
-                <TextBox Name="D1LineStartPointX" Grid.Column="1" Grid.Row="1" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <TextBox Name="D1LineStartPointY" Grid.Column="3" Grid.Row="1" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <Label Foreground="White" Grid.Row="2" Grid.ColumnSpan="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描终止点"/>
-                <Label Foreground="White" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="X:"/>
-                <Label Foreground="White" Grid.Row="3" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Y:"/>
-                <TextBox Name="D1LineEndPointX" Grid.Column="1" Grid.Row="3" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <TextBox Name="D1LineEndPointY" Grid.Column="3" Grid.Row="3" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <Label Foreground="White" Grid.Row="4" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描点数:"/>
-                <TextBox Name="D1LineScanPoints" Grid.Column="1" Grid.Row="4" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="5" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
-                <Label Foreground="White" Grid.Row="4" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="反向扫描:"/>
+                <TextBox Name="D1LineStartPointX" Grid.Column="1" Grid.Row="1" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="3" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <TextBox Name="D1LineStartPointY" Grid.Column="3" Grid.Row="1" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="3" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <Label Foreground="White" Grid.Row="2" FontSize="11" Grid.ColumnSpan="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描终止点"/>
+                <Label Foreground="White" Grid.Row="3" FontSize="11" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="X:"/>
+                <Label Foreground="White" Grid.Row="3" FontSize="11" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="Y:"/>
+                <TextBox Name="D1LineEndPointX" FontSize="11" Grid.Column="1" Grid.Row="3" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="3" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <TextBox Name="D1LineEndPointY" FontSize="11" Grid.Column="3" Grid.Row="3" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="3" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <Label Foreground="White" FontSize="11" Grid.Row="4" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="扫描点数:"/>
+                <TextBox Name="D1LineScanPoints" FontSize="11" Grid.Column="1" Grid.Row="4" BorderThickness="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Margin="3" Background="#FF2E2E2E" Foreground="White" CaretBrush="White" BorderBrush="{x:Null}"/>
+                <Label Foreground="White" FontSize="11" Grid.Row="4" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="反向扫描:"/>
                 <controls:Chooser Name="D1LineScanReverse" Width="30" Height="15" Grid.Column="3" Grid.Row="4" Margin="5" Background="#FF2E2E2E"/>
             </Grid>
-            <Grid Name="D1Panel2" Grid.Row="1" Visibility="Hidden" Margin="20">
+            <Grid Name="D1Panel2" Grid.Row="1" Visibility="Hidden" Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition Height="50"/>
@@ -87,7 +89,7 @@
                 </controls:ListViewer>
                 <controls:DecoratedButton Grid.Row="2" TextAreaRatio="1" Click="AddScanPoint" Text="添加扫描点" FontSize="12" Margin="6" IconMargin="7" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
             </Grid>
-            <controls:DecoratedButton Grid.Row="2" TextAreaRatio="1" Click="Apply" Text="应用" FontSize="12" Margin="6" IconMargin="7" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
+            <controls:DecoratedButton Grid.Row="2" TextAreaRatio="1" Click="Apply" Text="应用" FontSize="11" Margin="6" IconMargin="7" Background="#FF2E2E2E" Foreground="#FFFAFAFA" MoveInColor="#FF1792E5" PressedColor="#FF0088D9" MoveInForeground="#FFFAFAFA" PressedForeground="#FFFAFAFA"/>
         </Grid>
         <Grid Name="D2Panel" Visibility="Hidden" Margin="30" Grid.Row="1" Grid.ColumnSpan="4">
             <Grid.RowDefinitions>

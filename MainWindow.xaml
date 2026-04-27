@@ -20,10 +20,12 @@
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="60"/>
             <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
-        <control:DecoratedButton Grid.Column="4" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
-        <control:DecoratedButton Name="MinimizeBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
-        <control:DecoratedButton Name="MaximizeBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
+        <control:DecoratedButton Grid.Column="5" IconMargin="7" TextAreaRatio="0" Grid.Row="0" HorizontalAlignment="Stretch" Click="Close" VerticalAlignment="Stretch" FontWeight="Thin" FontSize="20" Canvas.Left="1126" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" IconSource="/图片资源/close.png"/>
+        <control:DecoratedButton Name="MinimizeBtn" Grid.Column="3" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/minimize.png" />
+        <control:DecoratedButton Name="MaximizeBtn" Grid.Column="4" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/maximize.png"/>
+        <control:DecoratedButton Name="PinBtn" Grid.Column="2" IconMargin="7" TextAreaRatio="0" Grid.Row="0" FontSize="20" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IconSource="/图片资源/pin.png"/>
         <Label Grid.Row="0" Content="       ODMR Lab" IsHitTestVisible="False" Grid.ColumnSpan="2" FontWeight="ExtraBold" Background="#FF383838" Foreground="#FFFAFAFA"/>
         <control:ExpandableBar BorderThickness="0.5" Margin="3" BarPlacement="Left" IsExpand="True" ExpandedText="&lt;&lt;" FrinkedText="功能菜单选项" Grid.Column="0" FrinkedLength="20" Grid.Row="1" Grid.RowSpan="2" BorderBrush="#FF707070">
             <control:ExpandableBar.ButtonTemplate>
@@ -76,9 +78,9 @@
                 </Grid >
             </control:ExpandableBar.ContentPanel>
         </control:ExpandableBar>
-        <Grid Name="PageContent" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="4">
+        <Grid Name="PageContent" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="5">
         </Grid>
-        <control:DecoratedButton Grid.Column="3" Grid.ColumnSpan="2" IconMargin="7" Margin="5" Text="自动连接" HorizontalAlignment="Stretch" TextAreaRatio="1" Grid.Row="1" Click="AutoConnect" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
-        <control:DecoratedButton Name="DisplayInWindowBtn" Visibility="Visible" Grid.Column="1" Grid.ColumnSpan="2" IconMargin="7" Margin="5" Text="在独立窗口中显示" HorizontalAlignment="Stretch" TextAreaRatio="1" Grid.Row="1" Click="ShowInWindow" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
+        <control:DecoratedButton Grid.Column="4" Grid.ColumnSpan="2" IconMargin="7" Margin="5" Text="自动连接" HorizontalAlignment="Stretch" TextAreaRatio="1" Grid.Row="1" Click="AutoConnect" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
+        <control:DecoratedButton Name="DisplayInWindowBtn" Visibility="Visible" Grid.Column="1" Grid.ColumnSpan="3" IconMargin="7" Margin="5" Text="在独立窗口中显示" HorizontalAlignment="Stretch" TextAreaRatio="1" Grid.Row="1" Click="ShowInWindow" FontSize="12" Background="#FF383838" Foreground="LightGray" MoveInColor="#FF424242" PressedColor="#FF39393A" MoveInForeground="LightGray" PressedForeground="LightGray" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>
