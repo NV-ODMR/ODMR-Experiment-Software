@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using HardWares.Lock_In.Zurich_LockIn;
 using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using HardWares.板卡;
 using ODMR_Lab.实验部分.序列编辑器;
@@ -32,6 +33,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             LockinInfo lockin = devices[0] as LockinInfo;
             //读取SetPoint
             double setpoint = lockin.Device.SetPoint;
+
+            (lockin.Device as LockIn).SourceOutput = true;
+            Thread.Sleep(1000);
+            lockin.Device.PIDOutputLowerLimit = 0;
+
             //开始撤针
             lockin.Device.SetPoint += 0.1;
             while (Math.Abs(lockin.Device.PIDValue) > 1e-9)

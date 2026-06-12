@@ -355,16 +355,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             {
                 double volt = powermeter.Device.TargetVoltage;
                 if (double.IsNaN(volt)) volt = 0;
-                powermeter.Device.VoltageRampStep = Math.Max((double)GetInputParamValueByName("PowerVolt") / 20, volt / 20);
+                powermeter.Device.VoltageRampStep = Math.Max((double)GetInputParamValueByName("PowerVolt") / 40, volt / 40);
                 powermeter.Device.VoltageRampGap = 100;
                 #region 指定电压
                 powermeter.Device.TargetVoltage = (double)GetInputParamValueByName("PowerVolt");
-                powermeter.Device.TargetVoltage = (double)GetInputParamValueByName("PowerVolt");
+                powermeter.Device.Measure();
+                Thread.Sleep(2000);
                 DoLockInExp(outputparams, signalgroupname);
                 #endregion
                 #region 零电压
                 powermeter.Device.TargetVoltage = 0;
-                powermeter.Device.TargetVoltage = 0;
+                powermeter.Device.Measure();
+                Thread.Sleep(2000);
                 DoLockInExp(outputparams, "0V" + "_");
                 #endregion
             }

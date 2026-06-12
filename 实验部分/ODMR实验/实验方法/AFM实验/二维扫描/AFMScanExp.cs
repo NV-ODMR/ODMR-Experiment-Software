@@ -49,6 +49,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             new Param<int>("最大尝试下针次数",5,"DropCount"),
             new Param<double>("尝试下针失败后样品移动量",0.005,"DropDet"),
             new Param<bool>("样品轴升高方向反向",false,"SampleAxisReverse"),
+            new Param<bool>("测量时关闭音叉驱动",false,"CloseDriveWhenMeasure"),
             new Param<bool>("是否悬浮测量",false,"IsFloatScan"),
             new Param<bool>("移动扫描台时撤针",true,"IsJumpMode"),
             new Param<double>("移动扫描台时撤针距离(nm)",100,"JumpModeDistance"),
@@ -121,6 +122,14 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             ScanPointCount = ScanPointGap;
             AllowAutoTrace = GetInputParamValueByName("UseAutoTrace");
             #endregion
+
+            if (GetInputParamValueByName("IsFloatScan"))
+            {
+                //移动位移台之前先撤针
+                AFMFloatDrop d = new AFMFloatDrop();
+                d.DistractDistance(new List<object>() { ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")), GetInputParamValueByName("CloseDriveWhenMeasure") }, GetDeviceByName("LockIn"));
+            }
+
             PointsScanSession.FirstScanEvent = ScanEvent;
             PointsScanSession.ScanEvent = ScanEvent;
             PointsScanSession.StartScanNewLineEvent = ScanEvent;
@@ -168,7 +177,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             {
                 //移动位移台之前先撤针
                 AFMFloatDrop d = new AFMFloatDrop();
-                d.DistractDistance(new List<object>() { ConvertHeightFromDistance(GetInputParamValueByName("JumpModeDistance")) }, GetDeviceByName("LockIn"));
+                d.DistractDistance(new List<object>() { ConvertHeightFromDistance(GetInputParamValueByName("JumpModeDistance")), GetInputParamValueByName("CloseDriveWhenMeasure") }, GetDeviceByName("LockIn"));
             }
 
             #region 移动位移台
@@ -202,7 +211,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                             GetInputParamValueByName("FloatI"),
                             GetInputParamValueByName("PIDSampleTIme"),
                             ConvertHeightFromDistance(GetInputParamValueByName("FloatCoarseHeight")),
-                            tempaction
+                            tempaction,
+                            GetInputParamValueByName("CloseDriveWhenMeasure")
                         }, GetDeviceByName("LockIn"));
                     re = (bool)res[0];
                     if (re == false)
@@ -218,11 +228,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 bool re = true;
                 AFMFloatDrop drop = new AFMFloatDrop();
                 var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
-                            0,
+                            0.0,
                             GetInputParamValueByName("FloatI"),
                             GetInputParamValueByName("PIDSampleTIme"),
                             ConvertHeightFromDistance(GetInputParamValueByName("FloatCoarseHeight")),
-                            tempaction
+                            tempaction,
+                            GetInputParamValueByName("CloseDriveWhenMeasure")
                         }, GetDeviceByName("LockIn"));
                 re = (bool)res[0];
                 if (re == false)

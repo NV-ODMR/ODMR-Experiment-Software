@@ -104,24 +104,34 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
         {
             if (GetInputParamValueByName("IsCalcXYLoc") == true)
             {
-                SetExpState("正在扫描X轴...");
                 //移动Z轴
                 (GetDeviceByName("MagnetZ") as NanoStageInfo).Device.MoveToAndWait(GetInputParamValueByName("ZPlane"), 10000);
+                #region X
+                SetExpState("正在扫描X轴...");
                 JudgeThreadEndOrResumeAction?.Invoke();
                 //旋转台移动到轴向沿Y
                 (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleX(), 60000);
+                //设置Y移动到预估的中心位置
+                List<double> xy = GetTargetOffset(GetAngleX());
+                (GetDeviceByName("MagnetY") as NanoStageInfo).Device.MoveToAndWait(GetInputParamValueByName("YInitLoc") + xy[1], 60000);
                 //X方向扫描
                 ScanX(0, 20);
+                #endregion
                 //OutputParams.Add(new Param<double>("X方向磁场最大位置", 7.787, "XLoc"));
+                #region Y
                 SetExpState("正在扫描Y轴...");
                 //旋转台移动到轴向沿X
                 Thread.Sleep(500);
                 (GetDeviceByName("MagnetAngle") as NanoStageInfo).Device.MoveToAndWait(GetAngleY(), 60000);
+                //设置X移动到预估的中心位置
+                List<double> xy1 = GetTargetOffset(GetAngleY());
+                (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetInputParamValueByName("XInitLoc") + xy1[0], 60000);
                 JudgeThreadEndOrResumeAction?.Invoke();
                 //移动X到最大值
-                (GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("XLoc"), 10000);
+                //(GetDeviceByName("MagnetX") as NanoStageInfo).Device.MoveToAndWait(GetOutputParamValueByName("XLoc"), 10000);
                 //Y方向扫描
                 ScanY(20, 40);
+                #endregion
                 JudgeThreadEndOrResumeAction?.Invoke();
                 SetExpState("正在扫描Z轴...");
             }

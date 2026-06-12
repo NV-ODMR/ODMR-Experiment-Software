@@ -25,7 +25,7 @@ using System.Windows;
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 {
     /// <summary>
-    /// 一维扫描实验
+    /// 变距离扫描实验
     /// </summary>
     public class AFMScanDistanceExp : ODMRExperimentWithAFM
     {
@@ -164,7 +164,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 GetInputParamValueByName("FloatI"),
                 GetInputParamValueByName("PIDSampleTIme"),
                 ConvertHeightFromDistance(GetInputParamValueByName("FloatCoarseHeight")),
-                new Action(()=>ScanAfterDropMethod())
+                new Action(()=>ScanAfterDropMethod()),
+                false
             }, scanner); ;
             JudgeThreadEndOrResumeAction();
 
