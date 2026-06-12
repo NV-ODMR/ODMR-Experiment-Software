@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using HardWares.Lock_In.Zurich_LockIn;
 using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
 using HardWares.板卡;
 using ODMR_Lab.实验部分.序列编辑器;
@@ -20,7 +21,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
     {
 
         /// <summary>
-        /// AFM悬浮下针操作：输入参数：最大限制电压(V),下到针之后抬高的距离(V),参数I,PID采样时间,悬浮操作距离,悬浮操作的方法
+        /// AFM悬浮下针操作：输入参数：最大限制电压(V),下到针之后抬高的距离(V),参数I,PID采样时间,悬浮操作距离,悬浮操作的方法,下针后是否关闭输出
         /// 设备:LockIn
         /// 返回参数:下针结果(Bool,成功为True)
         /// </summary>
@@ -41,7 +42,10 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             //开始下针
             lockin.Device.SetPoint = setpoint;
             lockin.Device.PIDOutput = true;
+            (lockin.Device as LockIn).SourceOutput = true;
+            Thread.Sleep(2000);
             lockin.Device.PIDOutputUpperLimit = (double)InputParams[0];
+            lockin.Device.PIDOutputLowerLimit = 0;
             lockin.Device.I = (double)InputParams[2];
             double pidout1 = lockin.Device.PIDValue;
             Thread.Sleep(50);
@@ -147,13 +151,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                             return new List<object>() { false };
                     }
                 }
-                //持续监控,发现下降则自动降低高度
+                //持续监控,发现下降则自动降低高度,这是,如果选择关闭驱动电压,则进行如下操作:设置LowerLimit和Upperlimit保持一致,然后关闭输出
+                if ((bool)InputParams[6])
+                {
+                    Thread.Sleep(1000);
+                    //设置LowerLimit和Upperlimit保持一致
+                    lockin.Device.PIDOutputLowerLimit = lockin.Device.PIDOutputUpperLimit;
+                    //关闭输出
+                    (lockin.Device as LockIn).SourceOutput = false;
+                    Thread.Sleep(1000);
+                }
                 return new List<object>() { true };
             }
         }
 
         /// <summary>
-        /// 撤针指定距离：输入参数：撤针目标距离
+        /// 撤针指定距离：输入参数：撤针目标距离,下针后是否关闭输出
         /// 设备:LockIn
         /// 返回参数:下针结果(Bool,成功为True)
         /// </summary>
@@ -172,6 +185,12 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             {
                 return new List<object>() { true };
             }
+
+            (lockin.Device as LockIn).SourceOutput = true;
+            Thread.Sleep(2000);
+            //打开驱动输出,同时恢复下限到0
+            lockin.Device.PIDOutputLowerLimit = 0;
+
 
             double initheight = lockin.Device.PIDValue;
             double dropheight = (double)InputParams[0];
@@ -210,7 +229,17 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
                 else
                     return new List<object>() { false };
             }
-            //持续监控,发现下降则自动降低高度
+
+            //持续监控,发现下降则自动降低高度,这是,如果选择关闭驱动电压,则进行如下操作:设置LowerLimit和Upperlimit保持一致,然后关闭输出
+            if ((bool)InputParams[1])
+            {
+                Thread.Sleep(1000);
+                //设置LowerLimit和Upperlimit保持一致
+                lockin.Device.PIDOutputLowerLimit = lockin.Device.PIDOutputUpperLimit;
+                //关闭输出
+                (lockin.Device as LockIn).SourceOutput = false;
+                Thread.Sleep(1000);
+            }
             return new List<object>() { true };
         }
     }

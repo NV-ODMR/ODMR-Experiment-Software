@@ -105,7 +105,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                          GetInputParamValueByName("Measure_I"),
                          GetInputParamValueByName("PIDSampleTIme"),
                          GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000,
-                         null
+                         null,
+                         false
                          }, GetDeviceByName("LockIn"));
                      if ((bool)result[0] == false) throw new Exception();
                      sw.Device.IsOpen = true;
@@ -155,7 +156,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                 GetInputParamValueByName("Measure_I"),
                 GetInputParamValueByName("PIDSampleTIme"),
                 GetInputParamValueByName("MeasureDistance") * GetInputParamValueByName("Voltage_Displacement_Ratio") / 1000,
-                null
+                null,
+                false
             }, GetDeviceByName("LockIn"));
             if ((bool)result[0] == false) throw new Exception();
 

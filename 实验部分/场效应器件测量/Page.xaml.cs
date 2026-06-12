@@ -60,13 +60,10 @@ namespace ODMR_Lab.场效应器件测量
 
         public override void InnerInit()
         {
-            CreateCurrentLimitListener();
         }
 
         public override void CloseBehaviour()
         {
-            CurrentLimitListener.Abort();
-            while (CurrentLimitListener.ThreadState == ThreadState.Running) Thread.Sleep(10);
             IVMeasureObj?.Dispose();
         }
 
@@ -326,7 +323,10 @@ namespace ODMR_Lab.场效应器件测量
                 }
                 catch (Exception)
                 {
-                    MessageWindow.ShowTipWindow("设备正在使用", Window.GetWindow(this));
+                    Dispatcher.Invoke(() =>
+                    {
+                        MessageWindow.ShowTipWindow("设备正在使用", Window.GetWindow(this));
+                    });
                     return;
                 }
 
@@ -351,46 +351,36 @@ namespace ODMR_Lab.场效应器件测量
             t.Start();
         }
 
+        #endregion
 
-        Thread CurrentLimitListener = null;
-
-        private void CreateCurrentLimitListener()
+        private void RefreshLimit(object sender, RoutedEventArgs e)
         {
-            CurrentLimitListener = new Thread(() =>
+            PowerMeterInfo dev = null;
+            Dispatcher.Invoke(() =>
             {
-                while (true)
+                if (VoltageSetDevice.SelectedItem == null)
                 {
-                    PowerMeterInfo dev = null;
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (VoltageSetDevice.SelectedItem == null)
-                        {
-                            LimitState.Background = Brushes.Green;
-                        }
-                        else
-                        {
-                            dev = VoltageSetDevice.SelectedItem.Tag as PowerMeterInfo;
-                        }
-                    });
-                    if (dev == null) continue;
-
-                    bool isLimited = dev.Device.IsCurrentLimited();
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (isLimited)
-                        {
-                            LimitState.Background = Brushes.Red;
-                        }
-                        else
-                        {
-                            LimitState.Background = Brushes.Green;
-                        }
-                    });
-                    Thread.Sleep(50);
+                    LimitState.Background = Brushes.Green;
+                }
+                else
+                {
+                    dev = VoltageSetDevice.SelectedItem.Tag as PowerMeterInfo;
                 }
             });
-            CurrentLimitListener.Start();
+            if (dev == null) return;
+
+            bool isLimited = dev.Device.IsCurrentLimited();
+            Dispatcher.Invoke(() =>
+            {
+                if (isLimited)
+                {
+                    LimitState.Background = Brushes.Red;
+                }
+                else
+                {
+                    LimitState.Background = Brushes.Green;
+                }
+            });
         }
-        #endregion
     }
 }

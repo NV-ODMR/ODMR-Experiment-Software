@@ -98,7 +98,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     I,
                     GetInputParamValueByName("PIDSampleTIme"),
                     ConvertHeightFromDistance(GetInputParamValueByName("FloatHeight")+20),
-                    null
+                    null,
+                    false
                 }, GetDeviceByName("LockIn"));
                 if ((bool)result[0] == false)
                 {
