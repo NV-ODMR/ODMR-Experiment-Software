@@ -80,7 +80,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
             List<CommandBase> Lines = new List<CommandBase>();
             pb.Device.SetCommands(sequence.AddToCommandLine(Lines, out string str));//读脉冲,序列写进板卡
             apd.StartTriggerSample(sequence.LoopCount * LaserCountPulses); //apd开始计数,手动数有8个apd脉冲one，xT1 loop次数
-            Thread.Sleep(50);
+            //Thread.Sleep(50);
             pb.Device.Start();
             List<int> ApdResult = apd.GetTriggerSamples(timeout);//apd读取，判断时间
             apd.EndTriggerSample();//停止计数
@@ -88,31 +88,46 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉�
 
             try
             {
-                //抽取相邻两个的数组
-                List<int> before = ApdResult.Where((x, ind) => ind % 2 == 0).ToList();
-                List<int> after = ApdResult.Where((x, ind) => (ind + 1) % 2 == 0).ToList();
-                //差值
-                List<int> det = after.Zip(before, new Func<int, int, int>((x, y) => x - y)).ToList();
-                //按脉冲实验次数分割
+                int total = ApdResult.Count;
+                if (total % 2 != 0)
+                    throw new Exception("APD 采样点数不是偶数");
+
+                int pulsesPerLoop = LaserCountPulses / 2;
+                int expectedPairs = total / 2;
+
+                // ✅ 预分配结果容器
                 PulsePhotonPack pack = new PulsePhotonPack();
-                int index = 0;
-                var single = new List<int>();
-                for (int j = 0; j < det.Count; j++)
+                pack.PulsesPhotons.Capacity = loopcount;
+
+                // ✅ 当前 loop 的缓冲区
+                List<int> current = new List<int>(pulsesPerLoop);
+                current.Capacity = pulsesPerLoop;
+
+                // ✅ 单次遍历，零 LINQ
+                for (int i = 0; i < expectedPairs; i++)
                 {
-                    single.Add(det[j]);
-                    ++index;
-                    if (index >= LaserCountPulses / 2)
+                    int before = ApdResult[i * 2];
+                    int after = ApdResult[i * 2 + 1];
+                    int diff = after - before;
+
+                    current.Add(diff);
+
+                    if (current.Count == pulsesPerLoop)
                     {
-                        pack.PulsesPhotons.Add(single);
-                        single = new List<int>();
-                        index = 0;
+                        pack.PulsesPhotons.Add(current);
+                        current = new List<int>(pulsesPerLoop);
+                        current.Capacity = pulsesPerLoop;
                     }
                 }
+
+                if (current.Count > 0)
+                    pack.PulsesPhotons.Add(current);
+
                 return pack;
             }
             catch (Exception ex)
             {
-                throw new Exception("APD触发脉冲数必须是偶数");
+                throw new Exception("APD触发脉冲数必须是偶数", ex);
             }
         }
 

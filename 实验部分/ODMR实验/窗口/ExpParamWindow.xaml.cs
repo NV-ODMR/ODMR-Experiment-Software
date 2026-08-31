@@ -68,7 +68,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     Grid.SetColumnSpan(l, 2);
 
                     bool isfirst = true;
-                    var plist = exp.InputParams.Where(x => x.GroupName == item);
+                    var plist = exp.InputParams.Where(x => x.PropertyName.Contains(item + "_Input"));
+                    if (plist.Count() == 0)
+                    {
+                        plist = exp.InputParams.Where(x => x.PropertyName.First() == 'I');
+                    }
                     foreach (var p in plist)
                     {
                         if (isfirst)
@@ -97,7 +101,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     Grid.SetColumnSpan(l, 2);
 
                     bool isfirst = true;
-                    var plist = exp.OutputParams.Where(x => x.GroupName == item);
+                    var plist = exp.OutputParams.Where(x => x.PropertyName.Contains(item + "_Output"));
+                    if (plist.Count() == 0)
+                    {
+                        plist = exp.OutputParams.Where(x => x.PropertyName.First() == 'O');
+                    }
                     foreach (var p in plist)
                     {
                         if (isfirst)
@@ -125,7 +133,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
                     Grid.SetRow(l, ParamPannel.RowDefinitions.Count - 1);
                     Grid.SetColumnSpan(l, 2);
 
-                    var plist = exp.DeviceList.Where(x => x.Value.GroupName == item);
+                    var plist = exp.DeviceList.Where(x => x.Value.GroupName == item && x.Value.PropertyName.Contains(x.Value.GroupName + "_D"));
+                    if (plist.Count() == 0)
+                    {
+                        plist = exp.DeviceList.Where(x => x.Value.PropertyName.First() == 'D');
+                    }
                     foreach (var p in plist)
                     {
                         ParamPannel.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });

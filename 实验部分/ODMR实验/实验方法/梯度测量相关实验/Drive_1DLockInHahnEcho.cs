@@ -25,7 +25,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         public override List<KeyValuePair<DeviceTypes, Param<string>>> PulseExpDevices { get; set; } = new List<KeyValuePair<DeviceTypes, Param<string>>>()
         {
             new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.锁相放大器,new Param<string>("Lock In","","LockIn")),
-            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.信号发生器通道,new Param<string>("锁相信号通道","","LocInSignal")),
+            new KeyValuePair<DeviceTypes, Param<string>>(DeviceTypes.源表,new Param<string>("电源","","LocInPower")),
         };
         public override bool Is1DScanExp { get; set; } = true;
         public override bool Is2DScanExp { get; set; } = false;
