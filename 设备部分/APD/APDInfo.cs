@@ -57,7 +57,7 @@ namespace ODMR_Lab.设备部分.光子探测器
         /// </summary>
         public void StartContinusSample()
         {
-            Device.BeginSample(APDTriggerChannels.Channel1, 2);
+            (Device as APD).StartContinuous(APDTriggerChannels.Channel1, 2);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace ODMR_Lab.设备部分.光子探测器
         {
             var dev = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster, TraceSourceName) as PulseBlasterInfo;
             double freq = (dev.Device as PulseBlaster).PulseFrequency;
-            var cs = Device.GetCounts(5000);
+            var cs = (Device as APD).GetContinuousCount(5000);
             try
             {
                 return (cs[cs.Count - 1] - cs[cs.Count - 2]) * freq;
@@ -84,7 +84,7 @@ namespace ODMR_Lab.设备部分.光子探测器
         /// </summary>
         public void EndContinusSample()
         {
-            Device.EndSample();
+            (Device as APD).StopContinuous();
         }
 
         /// <summary>

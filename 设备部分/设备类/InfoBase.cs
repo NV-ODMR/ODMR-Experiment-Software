@@ -172,7 +172,13 @@ namespace ODMR_Lab.设备部分
             unconnectedDeviceinfo = new List<KeyValuePair<Type, DeviceInfoBase>>();
             List<InfoBase> ConnectDevices = new List<InfoBase>();
             DirectoryInfo info = new DirectoryInfo(ParamFolder);
-            FileInfo[] files = info.GetFiles();
+            List<FileInfo> files = info.GetFiles().ToList();
+            var firsttoconnect = files.Where((x, ind) => x.FullName.Contains("PI E-873.3QTU")).ToList();
+            for (int i = 0; i < firsttoconnect.Count; i++)
+            {
+                files.Remove(firsttoconnect[i]);
+                files.Insert(0, firsttoconnect[i]);
+            }
             foreach (var item in files)
             {
                 if (item.Name.Contains(".userdat"))

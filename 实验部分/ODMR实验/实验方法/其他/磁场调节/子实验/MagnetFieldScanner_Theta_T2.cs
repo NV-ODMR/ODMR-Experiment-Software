@@ -110,7 +110,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
 
         private List<object> StartScanEvent(object arg1, object arg2, D2ScanRangeBase arg3, Point arg4, List<object> arg5)
         {
-            RunSubExperimentBlock(0, true);
+            //RunSubExperimentBlock(0, true);
             return ScanEvent(arg1, arg2, arg3, arg4, arg5);
         }
 
@@ -161,7 +161,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
             if (tempCWCount >= GetInputParamValueByName("CWGap"))
             {
                 tempCWCount = 0;
-                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 5, 30, null);
+                MagnetScanTool.ScanCW(this, 1, out var peaks, out var cs, out var fvs, out var cvs, (double)arg5[0], 5, 20, null);
                 if (peaks.Count == 0)
                 {
 
@@ -180,7 +180,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子�
 
         private List<double> GetT2Data(int t2time, double frequency)
         {
-            GlobalPulseParams.SetGlobalPulseLength("T2Step", t2time);
+            //设置HahnEchoTime
+            ExperimentHelper.SetT2SequenceEvolutionPulses(t2time, 0, 0, 0, 0);
 
             PulsePhotonPack pack = DoPulseExp("T2", frequency, GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 6, GetInputParamValueByName("TimeOut"));
 

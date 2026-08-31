@@ -61,7 +61,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             if ((double)originOutput[1] == 0 && (double)originOutput[2] == 0)
             {
                 //AutoTrace
-                //RunSubExperimentBlock(0, true);
+                RunSubExperimentBlock(0, true);
                 JudgeThreadEndOrResumeAction();
                 TotalCWPeaks2OrException(out List<double> peaks, out freqs, out contracts);
                 JudgeThreadEndOrResumeAction();

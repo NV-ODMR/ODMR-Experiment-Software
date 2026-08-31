@@ -15,6 +15,7 @@ using ODMR_Lab.共享剪切板;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using HardWares.APD.Exclitas_SPCM_AQRH;
+using System.Windows.Threading;
 
 namespace ODMR_Lab
 {
@@ -128,7 +129,7 @@ namespace ODMR_Lab
                 (item.GetValue(this) as PageBase)?.Init();
             }
             #endregion
-
+            Application.Current.Dispatcher.UnhandledException += UnhandledExceptionEvent1;
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
         }
 
@@ -210,6 +211,13 @@ namespace ODMR_Lab
                   });
                 t.Start();
             }
+        }
+
+        private void UnhandledExceptionEvent1(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            PrintStacktrace((Exception)e.Exception);
+            MessageWindow.ShowTipWindow("程序运行出现异常,即将退出,异常原因：\n" + ((Exception)e.Exception).Message, this);
+            e.Handled = true;
         }
 
         private void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)

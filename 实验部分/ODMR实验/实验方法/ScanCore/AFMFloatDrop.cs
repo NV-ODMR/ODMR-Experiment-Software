@@ -70,15 +70,21 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore
             {
                 int sampletime = 0;
                 int Totalsampletime = (int)InputParams[3];
-                List<double> pids = new List<double>();
-                pids.Add(lockin.Device.PIDValue);
+                Queue<double> pids = new Queue<double>();
+                pids.Enqueue(lockin.Device.PIDValue);
                 while (sampletime < Totalsampletime)
                 {
                     double temppid = lockin.Device.PIDValue;
                     if (!double.IsNaN(temppid))
-                        pids.Add(temppid);
+                        pids.Enqueue(temppid);
                     Thread.Sleep(50);
                     sampletime += 50;
+                }
+                while (pids.First() <= pids.Last())
+                {
+                    pids.Enqueue(lockin.Device.PIDValue);
+                    pids.Dequeue();
+                    Thread.Sleep(50);
                 }
 
                 double initheight = pids.Average();

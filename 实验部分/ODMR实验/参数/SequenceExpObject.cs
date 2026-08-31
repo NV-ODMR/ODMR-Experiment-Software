@@ -315,6 +315,11 @@ namespace ODMR_Lab.ODMR实验
                 //获取所有子实验以及子实验的子实验
                 var subexps = AppendSubExp(this, new List<ODMRExpObject>());
 
+                if (ODMRExperimentName == "变电压锁相相位实验")
+                {
+                    int i = 1;
+                }
+
                 //添加子实验参数
                 foreach (var item in subexps)
                 {
@@ -417,6 +422,7 @@ namespace ODMR_Lab.ODMR实验
             List<KeyValuePair<DeviceTypes, Param<string>>> Devices = new List<KeyValuePair<DeviceTypes, Param<string>>>();
             foreach (var p in exp.InputParams)
             {
+                if (p.GroupName != exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName) continue;
                 var pnew = p.Clone();
                 pnew.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + pnew.PropertyName;
                 pnew.GroupName = exp.ODMRExperimentName;
@@ -424,6 +430,7 @@ namespace ODMR_Lab.ODMR实验
             }
             foreach (var p in exp.DeviceList)
             {
+                //if (p.Value.GroupName != exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName) continue;
                 var pnew = p.Value.Clone();
                 pnew.PropertyName = exp.ODMRExperimentGroupName + "_" + exp.ODMRExperimentName + "_" + pnew.PropertyName;
                 pnew.GroupName = exp.ODMRExperimentName;

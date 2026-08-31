@@ -182,18 +182,22 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
             //获取输出参数
             double value = 0;
             Get1DChartDataSource("距离(nm)", "变下针距离扫描数据").Add(currentvalue);
-            foreach (var item in exp.OutputParams)
+            HashSet<string> set = exp.OutputParams.Select(x => x.GroupName).ToHashSet();
+            foreach (var item in set)
             {
-                if (item.GroupName != "")
+                if (item != "")
                 {
-                    var xdata = Get1DChartData("距离(nm)", item.GroupName);
+                    var xdata = Get1DChartData("距离(nm)", item);
                     if (xdata == null)
                     {
-                        xdata = new NumricChartData1D("距离(nm)", item.GroupName, ChartDataType.X);
+                        xdata = new NumricChartData1D("距离(nm)", item, ChartDataType.X);
                         D1ChartDatas.Add(xdata);
                     }
-                   (xdata as NumricChartData1D).Data.Add(currentvalue);
+                (xdata as NumricChartData1D).Data.Add(currentvalue);
                 }
+            }
+            foreach (var item in exp.OutputParams)
+            {
                 if (item.RawValue is bool)
                 {
                     value = (bool)item.RawValue ? 1 : 0;

@@ -177,13 +177,25 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
         }
 
-        string signalgroupname = "";
-        string refgroupname = "0V_";
+        string signalgroupname = "目标电压";
+        string refgroupname = "参考电压";
         string signaloutputprename = "Sig_";
         string refoutputprename = "Ref_";
 
+        bool IsVoltage = false;
+
+        PulseResultPack hpixref = null;
+        PulseResultPack h3pixref = null;
+        PulseResultPack hpiyref = null;
+        PulseResultPack h3piyref = null;
+
+
         private void SequenceExp(out PulseResultPack hpix, out PulseResultPack h3pix, out PulseResultPack hpiy, out PulseResultPack h3piy)
         {
+            bool zeroref = GetInputParamValueByName("UsePowerZeroRef");
+
+            int sequencecount = 24;
+
             //设置HahnEchoTime
             ExperimentHelper.SetLockInSequenceEvolutionPulses(GetInputParamValueByName("SignalFreq"), GlobalPulseParams.GetGlobalPulseLength("PiX"), GlobalPulseParams.GetGlobalPulseLength("PiY"), GlobalPulseParams.GetGlobalPulseLength("HalfPiX"), GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
 
@@ -202,104 +214,225 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             }
             if (GetInputParamValueByName("SequenceType") == SequenceTypes.XY8_2)
             {
-                sequencename = "XY-8-2-Delay4Phase";
+                sequencename = zeroref ? "XY-8-2-Inverse-Delay4Phase" : "XY-8-2-Delay4Phase";
+                if (zeroref) sequencecount = 32;
             }
+
 
             PulsePhotonPack pack = null;
             //GlobalPulseParams.SetGlobalPulseLength("CustomYLength", GlobalPulseParams.GetGlobalPulseLength("HalfPiY"));
-            pack = DoLockInPulseExp(sequencename, GetInputParamValueByName("RFFrequency"), !double.IsNaN(RFHistoryPower) ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), 24,
+            pack = DoLockInPulseExp(sequencename, GetInputParamValueByName("RFFrequency"), !double.IsNaN(RFHistoryPower) ? RFHistoryPower : GetInputParamValueByName("RFAmplitude"), GetInputParamValueByName("SeqLoopCount"), sequencecount,
            GetInputParamValueByName("TimeOut"), sequenceAction: new Action<SequenceDataAssemble>((seq) => { ExperimentHelper.SetSequenceCount(seq, GetInputParamValueByName("SequenceType"), GetInputParamValueByName("SequenceCount")); }));
 
-            double contrast = double.NaN, p = double.NaN, light = double.NaN, dark = double.NaN, signal = double.NaN;
+            double contrast = double.NaN, p = double.NaN, light = double.NaN, dark = double.NaN, signal = double.NaN, signalref = double.NaN;
+            double contrastref = double.NaN, pref = double.NaN;
 
-            #region pi/2 X
-            signal = pack.GetPhotonsAtIndex(0).Sum();
-            light = pack.GetPhotonsAtIndex(1).Sum();
-            dark = pack.GetPhotonsAtIndex(2).Sum();
-            try
+            if (!zeroref)
             {
-                contrast = (signal - light) / (double)light;
-                if (double.IsInfinity(contrast)) contrast = double.NaN;
+                #region pi/2 X
+                signal = pack.GetPhotonsAtIndex(0).Sum();
+                light = pack.GetPhotonsAtIndex(1).Sum();
+                dark = pack.GetPhotonsAtIndex(2).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                hpix = new PulseResultPack(contrast, p, light, dark, signal);
+                #endregion
+                #region 3pi/2 X
+                signal = pack.GetPhotonsAtIndex(3).Sum();
+                light = pack.GetPhotonsAtIndex(4).Sum();
+                dark = pack.GetPhotonsAtIndex(5).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                h3pix = new PulseResultPack(contrast, p, light, dark, signal);
+                #endregion
+                #region pi/2 Y
+                signal = pack.GetPhotonsAtIndex(6).Sum();
+                light = pack.GetPhotonsAtIndex(7).Sum();
+                dark = pack.GetPhotonsAtIndex(8).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                hpiy = new PulseResultPack(contrast, p, light, dark, signal);
+                #endregion
+                #region 3pi/2 Y
+                signal = pack.GetPhotonsAtIndex(9).Sum();
+                light = pack.GetPhotonsAtIndex(10).Sum();
+                dark = pack.GetPhotonsAtIndex(11).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                h3piy = new PulseResultPack(contrast, p, light, dark, signal);
+                #endregion
             }
-            catch (Exception)
+            else
             {
+                #region pi/2 X
+                signal = pack.GetPhotonsAtIndex(0).Sum();
+                signalref = pack.GetPhotonsAtIndex(1).Sum();
+                light = pack.GetPhotonsAtIndex(2).Sum();
+                dark = pack.GetPhotonsAtIndex(3).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                    contrastref = (signalref - light) / (double)light;
+                    if (double.IsInfinity(contrastref)) contrastref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                    pref = (signalref - dark) / (light - dark);
+                    if (double.IsInfinity(pref)) pref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                hpix = new PulseResultPack(contrast, p, light, dark, signal);
+                hpixref = new PulseResultPack(contrastref, pref, light, dark, signalref);
+                #endregion
+                #region 3pi/2 X
+                signal = pack.GetPhotonsAtIndex(4).Sum();
+                signalref = pack.GetPhotonsAtIndex(5).Sum();
+                light = pack.GetPhotonsAtIndex(6).Sum();
+                dark = pack.GetPhotonsAtIndex(7).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                    contrastref = (signalref - light) / (double)light;
+                    if (double.IsInfinity(contrastref)) contrastref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                    pref = (signalref - dark) / (light - dark);
+                    if (double.IsInfinity(pref)) pref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                h3pix = new PulseResultPack(contrast, p, light, dark, signal);
+                h3pixref = new PulseResultPack(contrastref, pref, light, dark, signalref);
+                #endregion
+                #region pi/2 Y
+                signal = pack.GetPhotonsAtIndex(8).Sum();
+                signalref = pack.GetPhotonsAtIndex(9).Sum();
+                light = pack.GetPhotonsAtIndex(10).Sum();
+                dark = pack.GetPhotonsAtIndex(11).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                    contrastref = (signalref - light) / (double)light;
+                    if (double.IsInfinity(contrastref)) contrastref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                    pref = (signalref - dark) / (light - dark);
+                    if (double.IsInfinity(pref)) pref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                hpiy = new PulseResultPack(contrast, p, light, dark, signal);
+                hpiyref = new PulseResultPack(contrastref, pref, light, dark, signalref);
+                #endregion
+                #region 3pi/2 Y
+                signal = pack.GetPhotonsAtIndex(12).Sum();
+                signalref = pack.GetPhotonsAtIndex(13).Sum();
+                light = pack.GetPhotonsAtIndex(14).Sum();
+                dark = pack.GetPhotonsAtIndex(15).Sum();
+                try
+                {
+                    contrast = (signal - light) / (double)light;
+                    if (double.IsInfinity(contrast)) contrast = double.NaN;
+                    contrastref = (signalref - light) / (double)light;
+                    if (double.IsInfinity(contrastref)) contrastref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                try
+                {
+                    p = (signal - dark) / (light - dark);
+                    if (double.IsInfinity(p)) p = double.NaN;
+                    pref = (signalref - dark) / (light - dark);
+                    if (double.IsInfinity(pref)) pref = double.NaN;
+                }
+                catch (Exception)
+                {
+                }
+                h3piy = new PulseResultPack(contrast, p, light, dark, signal);
+                h3piyref = new PulseResultPack(contrastref, pref, light, dark, signalref);
+                #endregion
             }
-            try
-            {
-                p = (signal - dark) / (light - dark);
-                if (double.IsInfinity(p)) p = double.NaN;
-            }
-            catch (Exception)
-            {
-            }
-            hpix = new PulseResultPack(contrast, p, light, dark, signal);
-            #endregion
-            #region 3pi/2 X
-            signal = pack.GetPhotonsAtIndex(3).Sum();
-            light = pack.GetPhotonsAtIndex(4).Sum();
-            dark = pack.GetPhotonsAtIndex(5).Sum();
-            try
-            {
-                contrast = (signal - light) / (double)light;
-                if (double.IsInfinity(contrast)) contrast = double.NaN;
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                p = (signal - dark) / (light - dark);
-                if (double.IsInfinity(p)) p = double.NaN;
-            }
-            catch (Exception)
-            {
-            }
-            h3pix = new PulseResultPack(contrast, p, light, dark, signal);
-            #endregion
-            #region pi/2 Y
-            signal = pack.GetPhotonsAtIndex(6).Sum();
-            light = pack.GetPhotonsAtIndex(7).Sum();
-            dark = pack.GetPhotonsAtIndex(8).Sum();
-            try
-            {
-                contrast = (signal - light) / (double)light;
-                if (double.IsInfinity(contrast)) contrast = double.NaN;
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                p = (signal - dark) / (light - dark);
-                if (double.IsInfinity(p)) p = double.NaN;
-            }
-            catch (Exception)
-            {
-            }
-            hpiy = new PulseResultPack(contrast, p, light, dark, signal);
-            #endregion
-            #region 3pi/2 Y
-            signal = pack.GetPhotonsAtIndex(9).Sum();
-            light = pack.GetPhotonsAtIndex(10).Sum();
-            dark = pack.GetPhotonsAtIndex(11).Sum();
-            try
-            {
-                contrast = (signal - light) / (double)light;
-                if (double.IsInfinity(contrast)) contrast = double.NaN;
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                p = (signal - dark) / (light - dark);
-                if (double.IsInfinity(p)) p = double.NaN;
-            }
-            catch (Exception)
-            {
-            }
-            h3piy = new PulseResultPack(contrast, p, light, dark, signal);
-            #endregion
         }
 
         private void DoLockInExp(List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, string pregroupname)
@@ -320,60 +453,126 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             int delaytime = GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay");
             GlobalPulseParams.SetGlobalPulseLength("TriggerExpStartDelay", delaytime);
 
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y对比度", pregroupname + "对比度数据", rehpiy.Contrast, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y对比度", pregroupname + "对比度数据", reh3piy.Contrast, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X对比度", pregroupname + "对比度数据", rehpix.Contrast, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X对比度", pregroupname + "对比度数据", reh3pix.Contrast, new StandardDataProcess()));
+            pregroupname = "";
+            if (!GetInputParamValueByName("UsePowerZeroRef"))
+            {
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y对比度", pregroupname + "对比度数据", rehpiy.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y对比度", pregroupname + "对比度数据", reh3piy.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X对比度", pregroupname + "对比度数据", rehpix.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X对比度", pregroupname + "对比度数据", reh3pix.Contrast, new StandardDataProcess()));
 
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y布居度", pregroupname + "亮态布居度数据", rehpiy.P, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y布居度", pregroupname + "亮态布居度数据", reh3piy.P, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X布居度", pregroupname + "亮态布居度数据", rehpix.P, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X布居度", pregroupname + "亮态布居度数据", reh3pix.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y布居度", pregroupname + "亮态布居度数据", rehpiy.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y布居度", pregroupname + "亮态布居度数据", reh3piy.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X布居度", pregroupname + "亮态布居度数据", rehpix.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X布居度", pregroupname + "亮态布居度数据", reh3pix.P, new StandardDataProcess()));
 
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 平均光子数", pregroupname + "荧光数据", rehpiy.LightStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 暗态光子数", pregroupname + "荧光数据", rehpiy.DarkStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 信号光子数", pregroupname + "荧光数据", rehpiy.SignalPhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 平均光子数", pregroupname + "荧光数据", rehpiy.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 暗态光子数", pregroupname + "荧光数据", rehpiy.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 信号光子数", pregroupname + "荧光数据", rehpiy.SignalPhoton, new StandardDataProcess()));
 
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 平均光子数", pregroupname + "荧光数据", reh3piy.LightStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 暗态光子数", pregroupname + "荧光数据", reh3piy.DarkStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 信号光子数", pregroupname + "荧光数据", reh3piy.SignalPhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 平均光子数", pregroupname + "荧光数据", reh3piy.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 暗态光子数", pregroupname + "荧光数据", reh3piy.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 信号光子数", pregroupname + "荧光数据", reh3piy.SignalPhoton, new StandardDataProcess()));
 
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 平均光子数", pregroupname + "荧光数据", rehpix.LightStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 暗态光子数", pregroupname + "荧光数据", rehpix.DarkStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 信号光子数", pregroupname + "荧光数据", rehpix.SignalPhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 平均光子数", pregroupname + "荧光数据", rehpix.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 暗态光子数", pregroupname + "荧光数据", rehpix.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 信号光子数", pregroupname + "荧光数据", rehpix.SignalPhoton, new StandardDataProcess()));
 
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 平均光子数", pregroupname + "荧光数据", reh3pix.LightStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 暗态光子数", pregroupname + "荧光数据", reh3pix.DarkStatePhoton, new StandardDataProcess()));
-            outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 信号光子数", pregroupname + "荧光数据", reh3pix.SignalPhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 平均光子数", pregroupname + "荧光数据", reh3pix.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 暗态光子数", pregroupname + "荧光数据", reh3pix.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 信号光子数", pregroupname + "荧光数据", reh3pix.SignalPhoton, new StandardDataProcess()));
+            }
+            else
+            {
+                pregroupname = "目标电压";
+                #region 目标电压
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y对比度", pregroupname + "对比度数据", rehpiy.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y对比度", pregroupname + "对比度数据", reh3piy.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X对比度", pregroupname + "对比度数据", rehpix.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X对比度", pregroupname + "对比度数据", reh3pix.Contrast, new StandardDataProcess()));
 
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y布居度", pregroupname + "亮态布居度数据", rehpiy.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y布居度", pregroupname + "亮态布居度数据", reh3piy.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X布居度", pregroupname + "亮态布居度数据", rehpix.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X布居度", pregroupname + "亮态布居度数据", reh3pix.P, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 平均光子数", pregroupname + "荧光数据", rehpiy.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 暗态光子数", pregroupname + "荧光数据", rehpiy.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 信号光子数", pregroupname + "荧光数据", rehpiy.SignalPhoton, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 平均光子数", pregroupname + "荧光数据", reh3piy.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 暗态光子数", pregroupname + "荧光数据", reh3piy.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 信号光子数", pregroupname + "荧光数据", reh3piy.SignalPhoton, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 平均光子数", pregroupname + "荧光数据", rehpix.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 暗态光子数", pregroupname + "荧光数据", rehpix.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 信号光子数", pregroupname + "荧光数据", rehpix.SignalPhoton, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 平均光子数", pregroupname + "荧光数据", reh3pix.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 暗态光子数", pregroupname + "荧光数据", reh3pix.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 信号光子数", pregroupname + "荧光数据", reh3pix.SignalPhoton, new StandardDataProcess()));
+                #endregion
+
+                pregroupname = "参考电压";
+                #region 参考电压
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y对比度", pregroupname + "对比度数据", hpiyref.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y对比度", pregroupname + "对比度数据", h3piyref.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X对比度", pregroupname + "对比度数据", hpixref.Contrast, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X对比度", pregroupname + "对比度数据", h3pixref.Contrast, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y布居度", pregroupname + "亮态布居度数据", hpiyref.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y布居度", pregroupname + "亮态布居度数据", h3piyref.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X布居度", pregroupname + "亮态布居度数据", hpixref.P, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X布居度", pregroupname + "亮态布居度数据", h3pixref.P, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 平均光子数", pregroupname + "荧光数据", hpiyref.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 暗态光子数", pregroupname + "荧光数据", hpiyref.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 Y 信号光子数", pregroupname + "荧光数据", hpiyref.SignalPhoton, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 平均光子数", pregroupname + "荧光数据", h3piyref.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 暗态光子数", pregroupname + "荧光数据", h3piyref.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 Y 信号光子数", pregroupname + "荧光数据", h3piyref.SignalPhoton, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 平均光子数", pregroupname + "荧光数据", hpixref.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 暗态光子数", pregroupname + "荧光数据", hpixref.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("PI/2 X 信号光子数", pregroupname + "荧光数据", hpixref.SignalPhoton, new StandardDataProcess()));
+
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 平均光子数", pregroupname + "荧光数据", h3pixref.LightStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 暗态光子数", pregroupname + "荧光数据", h3pixref.DarkStatePhoton, new StandardDataProcess()));
+                outputparams.Add(new Tuple<string, string, double, MultiLoopDataProcessBase>("3PI/2 X 信号光子数", pregroupname + "荧光数据", h3pixref.SignalPhoton, new StandardDataProcess()));
+                #endregion
+            }
         }
 
         private List<object> ScanEvent(object device, D1NumricScanRangeBase range, double locvalue, int currrentloop, List<Tuple<string, string, double, MultiLoopDataProcessBase>> outputparams, List<object> inputParams)
         {
             var powermeter = GetDeviceByName("PowerMeter") as PowerMeterInfo;
-            if (GetInputParamValueByName("UsePowerZeroRef") == true)
-            {
-                double volt = powermeter.Device.TargetVoltage;
-                if (double.IsNaN(volt)) volt = 0;
-                powermeter.Device.VoltageRampStep = Math.Max((double)GetInputParamValueByName("PowerVolt") / 40, volt / 40);
-                powermeter.Device.VoltageRampGap = 100;
-                #region 指定电压
-                powermeter.Device.TargetVoltage = (double)GetInputParamValueByName("PowerVolt");
-                powermeter.Device.Measure();
-                Thread.Sleep(2000);
-                DoLockInExp(outputparams, signalgroupname);
-                #endregion
-                #region 零电压
-                powermeter.Device.TargetVoltage = 0;
-                powermeter.Device.Measure();
-                Thread.Sleep(2000);
-                DoLockInExp(outputparams, "0V" + "_");
-                #endregion
-            }
-            else
-            {
-                DoLockInExp(outputparams, "");
-            }
+            //if (GetInputParamValueByName("UsePowerZeroRef") == true)
+            //{
+            //    double volt = powermeter.Device.TargetVoltage;
+            //    if (double.IsNaN(volt)) volt = 0;
+            //    powermeter.Device.VoltageRampStep = Math.Max((double)GetInputParamValueByName("PowerVolt") / 40, volt / 40);
+            //    powermeter.Device.VoltageRampGap = 100;
+            //    #region 指定电压
+            //    //powermeter.Device.TargetVoltage = (double)GetInputParamValueByName("PowerVolt");
+            //    //powermeter.Device.Measure();
+            //    //Thread.Sleep(5000);
+            //    IsVoltage = true;
+            //    DoLockInExp(outputparams, signalgroupname);
+            //    #endregion
+            //    #region 零电压
+            //    //powermeter.Device.TargetVoltage = 0;
+            //    //powermeter.Device.Measure();
+            //    //Thread.Sleep(5000);
+            //    IsVoltage = false;
+            //    DoLockInExp(outputparams, "0V" + "_");
+            //    #endregion
+            //}
+            //else
+            //{
+            //    DoLockInExp(outputparams, "");
+            //}
+            DoLockInExp(outputparams, "");
             return new List<object>();
         }
 
@@ -505,7 +704,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
             OutputParams.Add(new Param<double>("Delay时间", GlobalPulseParams.GetGlobalPulseLength("TriggerExpStartDelay"), "Delay") { GroupName = "脉冲长度" });
 
             #region 设置源表相关参数
-            signalgroupname = ((double)GetInputParamValueByName("PowerVolt")).ToString() + "V" + "_";
+            //signalgroupname = ((double)GetInputParamValueByName("PowerVolt")).ToString() + "V" + "_";
             #endregion
         }
 
@@ -596,9 +795,9 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             if (GetInputParamValueByName("UsePowerZeroRef") == true)
             {
-                SetOutputs(signalgroupname, signaloutputprename);
+                SetOutputs("目标电压", signaloutputprename);
                 #region 零电压
-                SetOutputs(refgroupname, refoutputprename);
+                SetOutputs("参考电压", refoutputprename);
                 #endregion
                 #region 计算混合结果
                 double phase = GetOutputParamValueByName(signaloutputprename + "PPhase");

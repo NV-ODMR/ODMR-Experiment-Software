@@ -185,8 +185,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
         /// <returns></returns>
         public List<object> ScanEvent(NanoStageInfo scannerx, NanoStageInfo scannery, D1PointsScanRangeBase scanPoints, Point currentloc, List<object> inputParams)
         {
+            double height = double.NaN;
+
             if (GetInputParamValueByName("IsJumpMode"))
             {
+                height = (GetDeviceByName("LockIn") as LockinInfo).Device.PIDOutputUpperLimit;
                 //移动位移台之前先撤针
                 AFMFloatDrop d = new AFMFloatDrop();
                 d.DistractDistance(new List<object>() { ConvertHeightFromDistance(GetInputParamValueByName("JumpModeDistance")), GetInputParamValueByName("CloseDriveWhenMeasure") }, GetDeviceByName("LockIn"));
@@ -205,15 +208,61 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 ScanAfterDropMethod();
             });
 
+            //如果是悬浮测量则执行对应程序
+            if (dropgap == GetInputParamValueByName("ReDropGap"))
+            {
+                dropgap = 0;
+            }
+            ++dropgap;
+
             if (GetInputParamValueByName("IsFloatScan"))
             {
-                //如果是悬浮测量则执行对应程序
-                if (dropgap == GetInputParamValueByName("ReDropGap"))
+                //在动位移台之前撤针，现在要还原到原高度
+                if (GetInputParamValueByName("IsJumpMode") && !double.IsNaN(height))
                 {
-                    dropgap = 0;
+                    LockinInfo dev = GetDeviceByName("LockIn") as LockinInfo;
+                    dev.Device.PIDOutputUpperLimit = height;
+                    int time = 0;
+                    double pidout1 = dev.Device.PIDValue;
+                    Thread.Sleep(50);
+                    double pidout2 = dev.Device.PIDValue;
+                    //如果达到上限或者PID输出出现下降(下到针)则结束下针
+                    while (pidout2 < dev.Device.PIDOutputUpperLimit && Math.Abs(pidout2 - dev.Device.PIDOutputUpperLimit) > 1e-3 && pidout2 >= pidout1)
+                    {
+                        pidout1 = dev.Device.PIDValue;
+                        Thread.Sleep(50);
+                        pidout2 = dev.Device.PIDValue;
+                        Thread.Sleep(50);
+                        time += 100;
+                        if (time > 40000)
+                        {
+                            throw new Exception("下针过程异常");
+                        }
+                    }
                 }
-                ++dropgap;
-                if (dropgap == 1)
+
+                bool isredrop = false;
+
+                //如果已经接触则再撤针一定距离
+                LockinInfo lockin = GetDeviceByName("LockIn") as LockinInfo;
+                int sampletime = 0;
+                int Totalsampletime = GetInputParamValueByName("PIDSampleTIme");
+                Queue<double> pids = new Queue<double>();
+                pids.Enqueue(lockin.Device.PIDValue);
+                while (sampletime < Totalsampletime)
+                {
+                    double temppid = lockin.Device.PIDValue;
+                    if (!double.IsNaN(temppid))
+                        pids.Enqueue(temppid);
+                    Thread.Sleep(50);
+                    sampletime += 50;
+                }
+                if (pids.Average() < pids.Max() - 1e-5 || dropgap == 1)
+                {
+                    isredrop = true;
+                }
+
+                if (isredrop)
                 {
                     ScanBeforeDropMethod();
                     bool re = true;
@@ -233,13 +282,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                     }
                     Thread.Sleep(GetInputParamValueByName("TimeWaitAfterDrop"));
                 }
+                else
+                {
+                }
             }
             else
             {
-                //接触扫描
-                bool re = true;
-                AFMFloatDrop drop = new AFMFloatDrop();
-                var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
+                if (dropgap == 1)
+                {
+                    //接触扫描
+                    bool re = true;
+                    AFMFloatDrop drop = new AFMFloatDrop();
+                    var res = drop.CoreMethod(new List<object>() { GetInputParamValueByName("UpperLimit"),
                             -1.0,
                             GetInputParamValueByName("FloatI"),
                             GetInputParamValueByName("PIDSampleTIme"),
@@ -247,10 +301,11 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                             tempaction,
                             GetInputParamValueByName("CloseDriveWhenMeasure")
                         }, GetDeviceByName("LockIn"));
-                re = (bool)res[0];
-                if (re == false)
-                {
-                    throw new Exception("下针失败");
+                    re = (bool)res[0];
+                    if (re == false)
+                    {
+                        throw new Exception("下针失败");
+                    }
                 }
             }
 

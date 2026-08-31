@@ -288,7 +288,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
                         l.Height = 30;
                         UIUpdater.SetDefaultTemplate(l);
                         InputPanel.Children.Add(l);
-                        var ps = CurrentExpObject.InputParams.Where(x => x.GroupName == item);
+                        var ps = CurrentExpObject.InputParams.Where(x => x.PropertyName.Contains(item + "_Input"));
+                        if (ps.Count() == 0)
+                        {
+                            ps = CurrentExpObject.InputParams.Where(x => x.PropertyName.First() == 'I');
+                        }
                         foreach (var p in ps)
                         {
                             Grid g = ExpParamWindow.GenerateControlBar(p, this, true);
@@ -303,7 +307,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
                         l.Height = 30;
                         UIUpdater.SetDefaultTemplate(l);
                         OutputPanel.Children.Add(l);
-                        var ps = CurrentExpObject.OutputParams.Where(x => x.GroupName == item);
+                        var ps = CurrentExpObject.OutputParams.Where(x => x.PropertyName.Contains(item + "_Output"));
+                        if (ps.Count() == 0)
+                        {
+                            ps = CurrentExpObject.OutputParams.Where(x => x.PropertyName.First() == 'O');
+                        }
                         foreach (var p in ps)
                         {
                             Grid g = ExpParamWindow.GenerateControlBar(p, this, true);
@@ -319,7 +327,11 @@ namespace ODMR_Lab.实验部分.ODMR实验
                         l.Height = 30;
                         UIUpdater.SetDefaultTemplate(l);
                         DevicePanel.Children.Add(l);
-                        var ps = CurrentExpObject.DeviceList.Where(x => x.Value.GroupName == item);
+                        var ps = CurrentExpObject.DeviceList.Where(x => x.Value.GroupName == item && x.Value.PropertyName.Contains(x.Value.GroupName + "_D"));
+                        if (ps.Count() == 0)
+                        {
+                            ps = CurrentExpObject.DeviceList.Where(x => x.Value.PropertyName.First() == 'D');
+                        }
                         foreach (var p in ps)
                         {
                             Grid g = win.GenerateDeviceBar(p.Key, p.Value, this);
