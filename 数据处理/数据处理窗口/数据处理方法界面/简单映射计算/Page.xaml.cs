@@ -1,25 +1,9 @@
 ﻿using Controls.Charts;
-using Controls.Windows;
 using MathLib.NormalMath.Decimal.Function;
 using ODMR_Lab.基本控件;
-using PythonHandler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace ODMR_Lab.数据处理.数据处理窗口.数据处理方法界面.简单映射计算
 {

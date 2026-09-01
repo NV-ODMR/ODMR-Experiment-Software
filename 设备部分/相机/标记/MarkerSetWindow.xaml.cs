@@ -1,34 +1,17 @@
 ﻿using CodeHelper;
-using System.Windows;
 using Controls;
-using HardWares.Windows;
-using HardWares.相机_CCD_;
-using HardWares.端口基类;
 using ODMR_Lab.IO操作;
-using ODMR_Lab.Windows;
-using ODMR_Lab.基本控件;
-using ODMR_Lab.基本窗口;
+using ODMR_Lab.设备部分.相机_翻转镜_开关;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Brushes = System.Windows.Media.Brushes;
-using ColorConverter = System.Windows.Media.ColorConverter;
 using ComboBox = Controls.ComboBox;
-using ContextMenu = Controls.ContextMenu;
-using Cursors = System.Windows.Input.Cursors;
-using Image = System.Windows.Controls.Image;
 using Label = System.Windows.Controls.Label;
-using Point = System.Windows.Point;
 using TextBox = System.Windows.Controls.TextBox;
-using System.Collections.Generic;
-using ODMR_Lab.设备部分.相机_翻转镜_开关;
-using System.Linq;
 
 namespace ODMR_Lab.设备部分.相机_翻转镜
 {

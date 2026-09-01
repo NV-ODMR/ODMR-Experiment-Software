@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using Controls.Charts;
+﻿using Controls.Charts;
 using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
-using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
@@ -18,6 +11,10 @@ using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子实验
 {

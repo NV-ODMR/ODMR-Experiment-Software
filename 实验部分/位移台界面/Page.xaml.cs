@@ -1,43 +1,5 @@
-﻿using CodeHelper;
-using Controls;
-using HardWares.温度控制器.SRS_PTC10;
-using HardWares.纳米位移台.PI;
-using ODMR_Lab.Windows;
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using ODMR_Lab.设备部分.位移台部分;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static System.Net.WebRequestMethods;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-using System.Xml.Linq;
-using Path = System.IO.Path;
-using MathNet.Numerics.Distributions;
-using System.Diagnostics.Contracts;
-using MathNet.Numerics;
-using System.Windows.Forms;
-using ContextMenu = Controls.ContextMenu;
-using ODMR_Lab.实验部分.样品定位;
-using Label = System.Windows.Controls.Label;
-using ODMR_Lab.基本控件;
-using Clipboard = System.Windows.Clipboard;
-using Controls.Windows;
-using Window = System.Windows.Window;
-using ODMR_Lab.设备部分.位移台部分;
 
 namespace ODMR_Lab.位移台界面
 {

@@ -2,16 +2,7 @@
 using Controls;
 using Controls.Charts;
 using Controls.Windows;
-using HardWares.仪器列表.板卡.Spincore_PulseBlaster;
-using HardWares.温度控制器;
-using HardWares.温度控制器.SRS_PTC10;
-using HardWares.端口基类;
-using HardWares.端口基类部分;
-using HardWares.纳米位移台;
-using HardWares.纳米位移台.PI;
 using ODMR_Lab.Windows;
-using ODMR_Lab.基本控件;
-using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
 using ODMR_Lab.实验部分.序列编辑器;
 using ODMR_Lab.实验部分.序列编辑器.子控件;
@@ -19,19 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ContextMenu = Controls.ContextMenu;
 using Path = System.IO.Path;
 
 namespace ODMR_Lab.序列编辑器

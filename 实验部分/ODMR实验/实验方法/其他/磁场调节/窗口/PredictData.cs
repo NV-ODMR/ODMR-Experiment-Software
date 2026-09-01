@@ -1,11 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
+﻿namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {
     public class PredictData
     {

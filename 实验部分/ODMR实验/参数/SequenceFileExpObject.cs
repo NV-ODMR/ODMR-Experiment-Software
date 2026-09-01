@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CodeHelper;
+﻿using CodeHelper;
 using Controls.Charts;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
@@ -11,6 +6,9 @@ using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ODMR_Lab.实验部分.ODMR实验.参数
 {

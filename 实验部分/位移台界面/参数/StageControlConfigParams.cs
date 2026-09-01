@@ -1,10 +1,4 @@
 ﻿using ODMR_Lab.IO操作;
-using ODMR_Lab.实验部分.场效应器件测量;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ODMR_Lab.实验部分.位移台界面.参数
 {

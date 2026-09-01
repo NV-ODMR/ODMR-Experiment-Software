@@ -6,9 +6,6 @@ using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验

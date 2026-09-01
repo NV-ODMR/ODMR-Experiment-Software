@@ -1,21 +1,9 @@
-﻿using System;
-using System.IO;
-using MathNet.Numerics;
-using System.Security.Cryptography;
-using MathNet.Numerics.RootFinding;
-using System.Windows.Interop;
-using System.Windows.Documents;
-using System.Collections.Generic;
-using static System.Net.WebRequestMethods;
-using System.Linq;
-using PythonHandler;
-using System.Windows;
+﻿using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
-using ODMR_Lab.IO操作;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
-using ODMR_Lab.基本控件;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.通用方法;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {

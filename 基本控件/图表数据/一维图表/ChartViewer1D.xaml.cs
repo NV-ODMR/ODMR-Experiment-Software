@@ -1,31 +1,19 @@
-﻿using CodeHelper;
-using Controls;
+﻿using Controls;
 using Controls.Charts;
 using Controls.Windows;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.基本窗口.数据拟合;
-using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Clipboard = System.Windows.Clipboard;
-using Label = System.Windows.Controls.Label;
 using Window = System.Windows.Window;
 
 namespace ODMR_Lab.基本控件
@@ -725,7 +713,8 @@ namespace ODMR_Lab.基本控件
                 {
                     DataPanel.Children.Remove(item as DataListViewer);
                     return;
-                };
+                }
+                ;
             }
         }
         #endregion

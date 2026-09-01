@@ -1,16 +1,7 @@
-﻿using Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using ComboBox = Controls.ComboBox;
-using Label = System.Windows.Controls.Label;
-using TextBox = System.Windows.Controls.TextBox;
 
 namespace ODMR_Lab.IO操作
 {

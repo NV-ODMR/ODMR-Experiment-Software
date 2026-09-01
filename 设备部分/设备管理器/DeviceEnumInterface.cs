@@ -1,20 +1,13 @@
-﻿using HardWares.纳米位移台;
-using HardWares.温度控制器;
-using HardWares.相机_CCD_;
-using HardWares.仪器列表.电动翻转座;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using ODMR_Lab.设备部分;
-using System.Reflection;
-using HardWares.端口基类部分.设备信息;
+﻿using HardWares.端口基类部分.设备信息;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.光子探测器;
-using ODMR_Lab.设备部分.相机_翻转镜;
 using ODMR_Lab.设备部分.其他设备;
+using ODMR_Lab.设备部分.相机_翻转镜;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace ODMR_Lab.设备部分
 {

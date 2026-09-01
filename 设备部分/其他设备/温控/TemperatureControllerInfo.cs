@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HardWares.温度控制器.SRS_PTC10;
-using System.Windows.Media;
-using Controls.Charts;
+﻿using CodeHelper;
 using HardWares.温度控制器;
-using Controls;
-using ODMR_Lab.Windows;
-using System.Windows;
-using CodeHelper;
-using System.IO;
-using ODMR_Lab.基本控件;
+using System;
+using System.Collections.Generic;
 
 namespace ODMR_Lab.设备部分.其他设备
 {

@@ -2,22 +2,12 @@
 using Controls.Charts;
 using Controls.Windows;
 using ODMR_Lab.ODMR实验;
-using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
-using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Point = System.Windows.Point;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验

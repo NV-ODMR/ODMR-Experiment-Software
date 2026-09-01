@@ -1,11 +1,8 @@
-﻿using Controls.Charts;
-using Controls.Windows;
-using HardWares.Lock_In;
+﻿using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
-using ODMR_Lab.基本窗口;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.其他;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
@@ -17,9 +14,6 @@ using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM

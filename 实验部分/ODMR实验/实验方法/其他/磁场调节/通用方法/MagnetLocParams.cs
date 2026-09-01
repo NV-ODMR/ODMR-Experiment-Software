@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ODMR_Lab.实验部分.ODMR实验.参数;
+﻿using ODMR_Lab.实验部分.ODMR实验.参数;
+using System;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.通用方法
 {

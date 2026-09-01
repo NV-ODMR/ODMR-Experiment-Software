@@ -1,36 +1,20 @@
-﻿using CodeHelper;
-using Controls;
+﻿using Controls;
+using Controls.Charts;
 using Controls.Windows;
-using HardWares.温度控制器.SRS_PTC10;
-using HardWares.纳米位移台.PI;
+using HardWares.Windows;
+using HardWares.端口基类部分;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
-using ODMR_Lab.基本窗口.数据拟合;
-using ODMR_Lab.基本控件.一维图表;
+using ODMR_Lab.基本窗口;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Forms;
 using Clipboard = System.Windows.Clipboard;
-using Controls.Charts;
-using HardWares.Windows;
-using ODMR_Lab.实验部分.设备参数监测;
-using HardWares.端口基类部分;
-using ODMR_Lab.基本窗口;
-using ODMR_Lab.设备部分.其他设备;
 
 namespace ODMR_Lab.实验部分.设备参数监测
 {

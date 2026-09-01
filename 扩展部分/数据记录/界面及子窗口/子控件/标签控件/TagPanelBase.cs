@@ -1,11 +1,4 @@
-﻿using ODMR_Lab.扩展部分.数据记录.界面及子窗口;
-using ODMR_Lab.数据记录;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 

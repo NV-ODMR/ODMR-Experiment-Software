@@ -1,23 +1,7 @@
-﻿using System;
+﻿using PythonHandler;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using MathNet.Numerics;
-using PythonHandler;
 using System.IO;
-using OpenCvSharp.Dnn;
-using MathLib;
-using System.Net;
-using System.Windows.Documents;
-using MathNet.Numerics.RootFinding;
-using MathLib.NormalMath.Decimal.Integral;
-using MathNet.Numerics.LinearAlgebra;
-using NetTopologySuite.Operation.Distance;
-using NetTopologySuite.Algorithm;
-using NetTopologySuite.Utilities;
-using MathNet.Numerics.Distributions;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {

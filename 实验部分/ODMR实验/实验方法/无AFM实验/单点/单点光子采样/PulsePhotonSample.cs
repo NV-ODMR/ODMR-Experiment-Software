@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using Controls.Windows;
-using HardWares.射频源.Rigol_DSG_3060;
-using MathLib.NormalMath.Decimal;
-using ODMR_Lab.IO操作;
+﻿using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.ScanCore;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
-using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.光子探测器;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验
 {

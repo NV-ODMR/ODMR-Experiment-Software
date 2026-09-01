@@ -1,10 +1,5 @@
-﻿using ODMR_Lab.IO操作;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Controls.Charts;
+﻿using Controls.Charts;
+using ODMR_Lab.IO操作;
 
 namespace ODMR_Lab.基本控件
 {

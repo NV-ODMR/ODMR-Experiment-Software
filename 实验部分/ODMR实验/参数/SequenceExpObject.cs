@@ -1,7 +1,6 @@
 ﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
-using HardWares.纳米位移台.PI;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.实验类;
@@ -11,22 +10,16 @@ using ODMR_Lab.实验部分.ODMR实验.实验方法;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
-using ODMR_Lab.实验部分.扫描基方法;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace ODMR_Lab.ODMR实验
 {

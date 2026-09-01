@@ -1,5 +1,4 @@
 ﻿using CodeHelper;
-using HardWares.仪器列表.电动翻转座;
 using HardWares.继电器模块;
 
 namespace ODMR_Lab.设备部分.其他设备
