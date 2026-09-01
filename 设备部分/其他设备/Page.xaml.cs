@@ -1,5 +1,4 @@
-﻿using CodeHelper;
-using Controls;
+﻿using Controls;
 using Controls.Windows;
 using HardWares;
 using HardWares.Lock_In;
@@ -8,37 +7,14 @@ using HardWares.仪器列表.电动翻转座;
 using HardWares.射频源;
 using HardWares.板卡;
 using HardWares.温度控制器;
-using HardWares.温度控制器.SRS_PTC10;
 using HardWares.源表;
 using HardWares.电源;
 using HardWares.端口基类;
-using HardWares.端口基类部分;
-
-using HardWares.纳米位移台.PI;
 using HardWares.继电器模块;
-using ODMR_Lab.Windows;
-using ODMR_Lab.基本窗口;
-using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.设备部分.其他设备
 {

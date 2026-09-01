@@ -1,16 +1,11 @@
 ﻿using CodeHelper;
 using HardWares;
-using HardWares.相机_CCD_;
 using HardWares.端口基类;
 using HardWares.端口基类部分.设备信息;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ODMR_Lab.设备部分
 {

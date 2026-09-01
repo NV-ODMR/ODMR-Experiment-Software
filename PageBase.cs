@@ -1,13 +1,6 @@
 ﻿using ODMR_Lab.基本窗口;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Brushes = System.Windows.Media.Brushes;
 
 namespace ODMR_Lab

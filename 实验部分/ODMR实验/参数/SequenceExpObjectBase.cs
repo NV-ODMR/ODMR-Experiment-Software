@@ -2,16 +2,9 @@
 using ODMR_Lab.IO操作;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
-using ODMR_Lab.实验部分.ODMR实验.参数;
-using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Windows;
-using System.Windows.Threading;
 
 namespace ODMR_Lab.ODMR实验
 {

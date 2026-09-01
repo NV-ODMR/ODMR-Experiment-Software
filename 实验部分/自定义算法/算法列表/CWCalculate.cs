@@ -1,14 +1,6 @@
-﻿using Controls.Windows;
-using MathLib.NormalMath.Decimal;
-using MathNet.Numerics.Distributions;
-using ODMR_Lab.IO操作;
+﻿using ODMR_Lab.IO操作;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media.Media3D;
 
 namespace ODMR_Lab.实验部分.自定义算法.算法列表
 {

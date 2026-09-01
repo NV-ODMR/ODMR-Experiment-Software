@@ -1,26 +1,11 @@
 ﻿using CodeHelper;
-using Controls;
 using HardWares;
 using HardWares.端口基类;
 using HardWares.端口基类部分;
-using ODMR_Lab.IO操作;
-using ODMR_Lab.Windows;
-using ODMR_Lab.基本控件;
-using ODMR_Lab.实验部分.温度监测;
-using ODMR_Lab.数据处理;
-using ODMR_Lab.设备部分;
-using OpenCvSharp;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using ComboBox = Controls.ComboBox;
 using System.Windows.Media;
 
 namespace ODMR_Lab.实验部分.设备参数监测

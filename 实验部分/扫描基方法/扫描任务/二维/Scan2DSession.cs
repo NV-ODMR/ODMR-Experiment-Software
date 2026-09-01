@@ -1,10 +1,7 @@
-﻿using System;
+﻿using ODMR_Lab.实验部分.扫描基方法.扫描范围;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 
 namespace ODMR_Lab.实验部分.扫描基方法
 {

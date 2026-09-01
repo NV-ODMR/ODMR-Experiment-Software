@@ -4,16 +4,14 @@ using HardWares.源表;
 using ODMR_Lab.场效应器件测量;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.数据处理;
+using ODMR_Lab.设备部分;
+using ODMR_Lab.设备部分.其他设备;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
-using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.其他设备;
+using System.Windows.Controls;
 
 namespace ODMR_Lab.实验部分.场效应器件测量
 {

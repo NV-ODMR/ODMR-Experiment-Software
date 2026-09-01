@@ -3,7 +3,6 @@ using Controls;
 using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
-using ODMR_Lab.Windows;
 using ODMR_Lab.实验类;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
@@ -11,14 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using static System.Windows.Forms.AxHost;
 using Label = System.Windows.Controls.Label;
 
 namespace ODMR_Lab

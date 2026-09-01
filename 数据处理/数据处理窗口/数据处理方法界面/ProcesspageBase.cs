@@ -1,9 +1,4 @@
 ﻿using ODMR_Lab.基本控件;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace ODMR_Lab.数据处理.数据处理窗口.数据处理方法界面

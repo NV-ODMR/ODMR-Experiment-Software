@@ -1,20 +1,20 @@
-﻿using System;
+﻿using CodeHelper;
+using Controls;
+using Controls.Windows;
+using ODMR_Lab.IO操作;
+using ODMR_Lab.共享剪切板;
+using ODMR_Lab.数据处理;
+using ODMR_Lab.设备部分;
+using ODMRLab.Services;
+using System;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using CodeHelper;
-using Controls;
-using System.IO;
-using System.Threading;
-using ODMR_Lab.数据处理;
-using ODMR_Lab.IO操作;
-using Controls.Windows;
-using ODMR_Lab.设备部分;
-using ODMR_Lab.共享剪切板;
-using System.Runtime.InteropServices;
 using System.Windows.Interop;
-using HardWares.APD.Exclitas_SPCM_AQRH;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace ODMR_Lab
@@ -24,6 +24,10 @@ namespace ODMR_Lab
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// AI通讯服务
+        /// </summary>
+        public static AIService _ai = new AIService(port: 5000);
 
         public static MainWindow Handle { get; set; } = null;
 
@@ -131,6 +135,9 @@ namespace ODMR_Lab
             #endregion
             Application.Current.Dispatcher.UnhandledException += UnhandledExceptionEvent1;
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionEvent;
+
+            //启动AI通讯
+            _ai.Start();
         }
 
 
@@ -201,6 +208,7 @@ namespace ODMR_Lab
                               }
                               #endregion
                               Close();
+                              _ai.Stop();
                               Environment.Exit(0);
                           }
                           else
@@ -218,6 +226,7 @@ namespace ODMR_Lab
             PrintStacktrace((Exception)e.Exception);
             MessageWindow.ShowTipWindow("程序运行出现异常,即将退出,异常原因：\n" + ((Exception)e.Exception).Message, this);
             e.Handled = true;
+            _ai.Stop();
         }
 
         private void UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs e)
@@ -234,6 +243,7 @@ namespace ODMR_Lab
                 (item.GetValue(this) as PageBase).CloseBehaviour();
             }
             #endregion
+            _ai.Stop();
         }
 
         private void PrintStacktrace(Exception e)

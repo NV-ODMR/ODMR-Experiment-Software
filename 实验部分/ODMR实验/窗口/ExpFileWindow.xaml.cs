@@ -1,26 +1,14 @@
 ﻿using CodeHelper;
-using Controls;
-using Controls.Windows;
-using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.Windows;
-using ODMR_Lab.设备部分;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Xml.Linq;
-using ComboBox = Controls.ComboBox;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace ODMR_Lab.实验部分.ODMR实验

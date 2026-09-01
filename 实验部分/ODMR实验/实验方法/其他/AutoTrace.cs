@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using Controls.Charts;
-using Controls.Windows;
-using HardWares.射频源.Rigol_DSG_3060;
+﻿using Controls.Charts;
 using MathLib.NormalMath.Decimal;
-using MathLib.NormalMath.Decimal.Function;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
@@ -24,6 +13,11 @@ using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
 using ODMR_Lab.设备部分.光子探测器;
 using ODMR_Lab.设备部分.其他设备;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Windows.Media;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {
@@ -250,7 +244,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
             d = fitresult1["d"];
 
             OutputParams.Add(new Param<double>("Y方向峰值位置", c, "YPeak"));
-            l = locs.Select(x => Math.Abs(x - c)).ToList();         
+            l = locs.Select(x => Math.Abs(x - c)).ToList();
             OutputParams.Add(new Param<double>("Y方向峰值计数", counts[l.IndexOf(l.Min())], "YValue"));
             //设置拟合线
             fitx = new D1NumricLinearScanRange(pos - range / 2, pos + range / 2, 500).ScanPoints;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ODMR_Lab
+﻿namespace ODMR_Lab
 {
     /// <summary>
     /// 实验文件类型

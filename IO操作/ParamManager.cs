@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using CodeHelper;
+﻿using CodeHelper;
 using Controls.Windows;
 using ODMR_Lab.实验部分.ODMR实验.参数;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
@@ -15,7 +7,10 @@ using ODMR_Lab.实验部分.场效应器件测量;
 using ODMR_Lab.实验部分.温度监测;
 using ODMR_Lab.实验部分.设备参数监测;
 using ODMR_Lab.激光控制;
-using ODMR_Lab.设备部分.光子探测器;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows;
 
 namespace ODMR_Lab.IO操作
 {

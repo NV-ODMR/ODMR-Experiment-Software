@@ -1,31 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using Controls.Charts;
 using Controls.Windows;
-using HardWares.射频源.Rigol_DSG_3060;
 using MathLib.NormalMath.Decimal;
+using MathNet.Numerics.IntegralTransforms;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.脉冲实验;
-using ODMR_Lab.实验部分.序列编辑器;
-using ODMR_Lab.实验部分.扫描基方法;
-using ODMR_Lab.实验部分.扫描基方法.扫描范围;
-using ODMR_Lab.设备部分;
-
-using MathNet.Numerics;
-using MathNet.Numerics.IntegralTransforms;
-using Window = System.Windows.Window;
-using Controls.Charts;
-using System.Windows.Media;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描;
 using ODMR_Lab.实验部分.扫描基方法.扫描任务.多轮一维扫描.数据处理方法;
+using ODMR_Lab.实验部分.扫描基方法.扫描范围;
+using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.其他设备;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
+using Window = System.Windows.Window;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲实验
 {
@@ -259,7 +252,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.脉冲�
 
             PlotData.Add(new ParentPlotDataPack("微波驱动时间(ns)", "Rabi荧光数据", ChartDataType.X, Get1DChartDataSource("微波驱动时间(ns)", "Rabi荧光数据"), false));
             PlotData.Add(new ParentPlotDataPack("通道X 平均光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道X 平均光子数", "Rabi荧光数据"), true));
-            PlotData.Add(new ParentPlotDataPack("通道X 信号光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道X 信号光子数", "Rabi荧光数据"), true));return PlotData;
+            PlotData.Add(new ParentPlotDataPack("通道X 信号光子数", "Rabi荧光数据", ChartDataType.Y, Get1DChartDataSource("通道X 信号光子数", "Rabi荧光数据"), true)); return PlotData;
         }
 
         protected override List<KeyValuePair<string, Action>> AddPulseInteractiveButtons()

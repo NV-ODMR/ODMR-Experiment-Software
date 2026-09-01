@@ -1,28 +1,19 @@
 ﻿using Controls;
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Reflection;
+using Controls.Windows;
 using ODMR_Lab.IO操作;
-using TextBox = System.Windows.Controls.TextBox;
-using ComboBox = Controls.ComboBox;
-using ODMR_Lab.设备部分;
-using ODMR_Lab.实验类;
-using System.Windows.Forms;
-using ODMR_Lab.实验部分.ODMR实验.参数;
-using ODMR_Lab.实验部分.ODMR实验;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM;
-using System.Linq;
 using ODMR_Lab.ODMR实验;
-using System.IO;
 using ODMR_Lab.Windows;
+using ODMR_Lab.实验类;
+using ODMR_Lab.实验部分.ODMR实验.实验方法;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.AFM实验;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.二维扫描;
-using Controls.Windows;
-using ODMR_Lab.实验部分.ODMR实验.实验方法;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
 using Clipboard = System.Windows.Clipboard;
 
 namespace ODMR_Lab.实验部分.ODMR实验

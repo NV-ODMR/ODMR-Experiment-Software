@@ -1,27 +1,10 @@
 ﻿using CodeHelper;
 using Controls.Windows;
 using MathLib.NormalMath.Decimal;
-using MathNet.Numerics.Distributions;
-using MathNet.Numerics.LinearAlgebra.Double;
-using ODMR_Lab.Windows;
-using ODMR_Lab.设备部分;
-using ODMR_Lab.设备部分.位移台部分;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
 using Vector = System.Windows.Vector;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他

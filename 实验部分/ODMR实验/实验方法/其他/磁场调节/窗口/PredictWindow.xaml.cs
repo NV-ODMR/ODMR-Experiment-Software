@@ -1,29 +1,13 @@
 ﻿using CodeHelper;
 using Controls.Windows;
-using MathNet.Numerics.Distributions;
-using ODMR_Lab.Windows;
 using ODMR_Lab.实验部分.ODMR实验.参数;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Path = System.IO.Path;
 using ODMR_Lab.设备部分;
 using ODMR_Lab.设备部分.位移台部分;
+using System;
 using System.Threading;
-using ODMR_Lab.实验部分.ODMR实验.实验方法.其他.磁场调节.子实验;
+using System.Windows;
+using System.Windows.Forms;
+using Path = System.IO.Path;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 {

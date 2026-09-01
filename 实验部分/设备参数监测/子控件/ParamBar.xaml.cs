@@ -1,27 +1,18 @@
 ﻿using CodeHelper;
 using Controls;
-using Controls.Charts;
 using Controls.Windows;
 using HardWares;
 using HardWares.端口基类;
 using HardWares.端口基类部分;
 using ODMR_Lab.Windows;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ContextMenu = Controls.ContextMenu;
 
 namespace ODMR_Lab.实验部分.设备参数监测

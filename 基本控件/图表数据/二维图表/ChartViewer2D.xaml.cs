@@ -1,26 +1,17 @@
-﻿using Controls.Windows;
-using Controls;
+﻿using Controls;
+using Controls.Charts;
+using Controls.Windows;
 using ODMR_Lab.Windows;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Clipboard = System.Windows.Clipboard;
-using System.Data;
-using System.Threading;
-using Controls.Charts;
 
 namespace ODMR_Lab.基本控件
 {

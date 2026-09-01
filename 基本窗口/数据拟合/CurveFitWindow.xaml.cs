@@ -3,24 +3,13 @@ using Controls;
 using Controls.Windows;
 using MathLib.NormalMath.Decimal;
 using MathLib.NormalMath.Decimal.Function;
-using ODMR_Lab.Properties;
 using ODMR_Lab.Windows;
 using ODMR_Lab.基本控件;
 using ODMR_Lab.基本控件.一维图表;
-using OpenCvSharp.Aruco;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ComboBox = Controls.ComboBox;
 
 namespace ODMR_Lab.基本窗口.数据拟合

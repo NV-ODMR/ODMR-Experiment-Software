@@ -1,17 +1,8 @@
 ﻿using CodeHelper;
 using Controls.Charts;
-using ODMR_Lab.基本控件;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using static HardWares.示波器.汉泰.OscilloScope;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 

@@ -1,13 +1,9 @@
 ﻿using ODMR_Lab.IO操作;
-using ODMR_Lab.基本控件;
 using ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM.点实验.CW谱扫描;
 using ODMR_Lab.实验部分.扫描基方法.扫描范围;
 using ODMR_Lab.实验部分.自定义算法.算法列表;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ODMR_Lab.实验部分.ODMR实验.实验方法.无AFM实验.单点.CW谱扫描
 {

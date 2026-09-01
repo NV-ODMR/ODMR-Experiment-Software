@@ -1,9 +1,6 @@
 ﻿using MathLib.NormalMath.Decimal;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
 namespace ODMR_Lab.实验部分.自定义算法.算法列表
