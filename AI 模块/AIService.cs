@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -28,7 +28,14 @@ namespace ODMRLab.Services
     {
         public string Name { get; }
         public string Description { get; }
-        public AiCommandAttribute(string name, string description = "") { Name = name; Description = description; }
+        /// <summary>指令参数说明（help 中显示）</summary>
+        public string Parameters { get; }
+        public AiCommandAttribute(string name, string description = "", string parameters = "")
+        {
+            Name = name;
+            Description = description;
+            Parameters = parameters;
+        }
     }
 
     #endregion
@@ -36,18 +43,20 @@ namespace ODMRLab.Services
     /// <summary>
     /// AI 控制服务（AIService）
     /// - 通过 HTTP(localhost) 接收外部指令（bat / curl / AI Agent / Python）
-    /// - 特性 + 反射自动注册指令
-    /// - 统一 JSON 返回（success / cmd / message / time）
+    /// - 特性 + 反射自动注册指令（含 partial 各分部文件）
+    /// - 统一 JSON 返回（success / message / time）
     /// - 日志分级 + 最近错误缓存（get-logs 可查）
-    /// - 参数自动绑定（BindParams&lt;T&gt;）
+    /// - 安全模式：危险指令（写设备参数 / 开激光 / 启动AFM实验）需 confirm=true
+    /// - 业务指令拆分文件：AIService.Experiments.cs / AIService.Devices.cs / AIService.Data.cs
     /// </summary>
-    public class AIService
+    public partial class AIService
     {
         // 指令委托：参数字典 -> JSON 响应
         private delegate string CommandHandler(Dictionary<string, string> args);
 
         private readonly Dictionary<string, CommandHandler> _commands = new Dictionary<string, CommandHandler>();
         private readonly Dictionary<string, string> _descriptions = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
 
         // 日志缓存
         private readonly List<LogEntry> _recentLogs = new List<LogEntry>();
@@ -59,6 +68,16 @@ namespace ODMRLab.Services
         private readonly int _port;
 
         public bool IsRunning { get; private set; }
+
+        /// <summary>
+        /// 安全模式：
+        /// safe(默认) - 危险指令需带 confirm=true 才能执行
+        /// full       - 完全信任模式（AI 已获人工授权），危险指令免确认
+        /// 切换为 full 本身需要 confirm=yes，防止 AI 自行解除保护
+        /// </summary>
+        public string SafeMode { get; private set; } = "safe";
+
+        public bool IsSafeMode { get { return SafeMode != "full"; } }
 
         public AIService(int port = 5000)
         {
@@ -106,7 +125,41 @@ namespace ODMRLab.Services
                 var handler = (CommandHandler)Delegate.CreateDelegate(typeof(CommandHandler), this, method);
                 _commands[attr.Name] = handler;
                 _descriptions[attr.Name] = attr.Description;
+                _parameters[attr.Name] = attr.Parameters ?? "";
             }
+        }
+
+        #endregion
+
+        #region 安全保护
+
+        /// <summary>取参数值（缺失时返回 def）</summary>
+        protected string GetArg(Dictionary<string, string> args, string key, string def = "")
+        {
+            string v = null;
+            return args != null && args.TryGetValue(key, out v) ? v : def;
+        }
+
+        /// <summary>是否带了确认标志（confirm=true / 1 / yes）</summary>
+        protected bool HasConfirm(Dictionary<string, string> args)
+        {
+            if (args == null) return false;
+            string v;
+            if (!args.TryGetValue("confirm", out v)) return false;
+            v = v.Trim().ToLower();
+            return v == "true" || v == "1" || v == "yes";
+        }
+
+        /// <summary>
+        /// 危险操作门禁：返回 null 表示放行；
+        /// 安全模式下未带 confirm=true 时返回错误 JSON。
+        /// 危险指令开头必须：string b = NeedConfirm(args, "操作名"); if (b != null) return b;
+        /// </summary>
+        protected string NeedConfirm(Dictionary<string, string> args, string opname)
+        {
+            if (!IsSafeMode || HasConfirm(args)) return null;
+            Log($"安全模式拦截危险操作：{opname}（需要 confirm=true）", LogLevel.Warning);
+            return Err($"当前为安全模式(safe)。「{opname}」是危险操作，需人工确认后在请求中加 confirm=true 重新发送。");
         }
 
         #endregion
@@ -127,27 +180,87 @@ namespace ODMRLab.Services
             }
         }
 
-        [AiCommand("help", "列出所有可用指令及其描述，无参数")]
+        [AiCommand("help", "列出所有可用指令及其描述和参数说明", "无参数")]
         private string Help(Dictionary<string, string> args)
         {
             var list = _descriptions
                 .OrderBy(x => x.Key)
-                .Select(x => new { cmd = x.Key, desc = x.Value })
+                .Select(x => new
+                {
+                    cmd = x.Key,
+                    desc = x.Value,
+                    parameters = _parameters.ContainsKey(x.Key) ? _parameters[x.Key] : ""
+                })
                 .ToList();
-            return Json(new { success = true, commands = list });
+            return Json(new { success = true, safeMode = SafeMode, commands = list });
         }
 
         [AiCommand("ping", "心跳检测，无参数，返回 pong")]
         private string Ping(Dictionary<string, string> args)
             => Ok("pong");
 
-        // ====== 以下是你的业务指令区，按需增删 ======
-        //[AiCommand("engage", "进针")]
-        //private string Engage(Dictionary<string, string> args)
-        //{
-        //    // TODO: 调用硬件
-        //    return Ok("Engaged");
-        //}
+        [AiCommand("app-status", "查询程序当前状态：当前页面/当前实验/运行状态/安全模式", "无参数")]
+        private string AppStatus(Dictionary<string, string> args)
+        {
+            var seqpage = ODMR_Lab.MainWindow.Exp_SequencePage;
+            var exp = seqpage != null ? seqpage.CurrentExpObject : null;
+            object expinfo = null;
+            if (exp != null)
+            {
+                expinfo = new
+                {
+                    name = exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName,
+                    running = !exp.IsExpEnd,
+                    paused = exp.IsExpResume,
+                    state = exp.GetExpState(),
+                    failed = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null
+                };
+            }
+            return Ok(new
+            {
+                page = ODMR_Lab.MainWindow.CurrentPage != null ? ODMR_Lab.MainWindow.CurrentPage.GetType().Name : (string)null,
+                safeMode = SafeMode,
+                port = _port,
+                experiment = expinfo
+            });
+        }
+
+        [AiCommand("set-safe-mode", "切换安全模式", "mode=safe|full。切到 full 会解除全部确认保护，必须带 confirm=yes（仅在人工明确指示时执行）")]
+        private string SetSafeMode(Dictionary<string, string> args)
+        {
+            string mode = GetArg(args, "mode").Trim().ToLower();
+            if (mode != "safe" && mode != "full")
+                return Err("mode 必须是 safe 或 full。当前模式：" + SafeMode);
+            if (mode == "full" && !HasConfirm(args))
+                return Err("切换到完全信任模式(full)将解除全部危险操作确认保护，属于高危操作，必须带 confirm=yes。AI 不得自行切换，仅在人工明确指示时执行。");
+            SafeMode = mode;
+            Log($"安全模式切换为：{mode}", mode == "full" ? LogLevel.Error : LogLevel.Warning);
+            return Ok("当前安全模式：" + SafeMode + (mode == "full" ? "（完全信任，危险操作免确认）" : "（危险操作需 confirm=true）"));
+        }
+
+        [AiCommand("estop", "紧急停止：停止运行中的实验；若无实验运行则关闭激光。任何时候都允许执行", "无参数")]
+        private string EStop(Dictionary<string, string> args)
+        {
+            var seqpage = ODMR_Lab.MainWindow.Exp_SequencePage;
+            var exp = seqpage != null ? seqpage.CurrentExpObject : null;
+            if (exp != null && !exp.IsExpEnd)
+            {
+                try
+                {
+                    exp.Stop();
+                    Log("E-STOP：AI 指令停止实验 " + exp.ODMRExperimentName, LogLevel.Error);
+                    return Ok("已发送停止指令，实验将在下一个检查点结束并释放设备。");
+                }
+                catch (Exception ex)
+                {
+                    return Err("发送停止指令失败：" + ex.Message);
+                }
+            }
+            string msg;
+            bool ok = LaserOffInternal("", out msg);
+            Log("E-STOP：无运行实验，" + msg, LogLevel.Error);
+            return Ok("当前无运行中实验。" + msg);
+        }
 
         #endregion
 
