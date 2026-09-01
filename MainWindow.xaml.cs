@@ -7,6 +7,7 @@ using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
 using ODMRLab.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -505,6 +506,52 @@ namespace ODMR_Lab
             PageContent.Children.Add(page);
             return;
         }
+
+        #region AI 界面控制入口
+
+        /// <summary>
+        /// AI 可打开的页面名称（与菜单按钮文字一致）
+        /// </summary>
+        public static readonly List<string> AIPageNames = new List<string>
+        {
+            "其他设备", "位移台", "相机", "光子计数器",
+            "设备参数监测", "设备参数设置", "Trace", "序列编辑器", "ODMR实验",
+            "位移台控制界面", "样品定位", "场效应器件测量", "自定义算法",
+            "Python管理器", "数据记录", "数据", "共享剪切板"
+        };
+
+        /// <summary>
+        /// AI 指令入口：打开指定页面（模拟菜单按钮点击，复用现有切换逻辑，必须在 UI 线程调用）
+        /// </summary>
+        public bool OpenPage(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+            var e = new RoutedEventArgs();
+            string category;
+            if (name == "其他设备" || name == "位移台" || name == "相机" || name == "光子计数器")
+                category = "设备";
+            else if (name == "设备参数监测" || name == "设备参数设置" || name == "Trace" || name == "序列编辑器"
+                || name == "ODMR实验" || name == "位移台控制界面" || name == "样品定位"
+                || name == "场效应器件测量" || name == "自定义算法")
+                category = "实验";
+            else if (name == "Python管理器" || name == "数据记录")
+                category = "扩展";
+            else if (name == "数据" || name == "共享剪切板")
+                category = name;
+            else
+                return false;
+
+            ShowSubMenu(new DecoratedButton { Text = category }, e);
+            if (category == "设备")
+                ShowDeviceContent(new DecoratedButton { Text = name }, e);
+            else if (category == "实验")
+                ShowExpContent(new DecoratedButton { Text = name }, e);
+            else if (category == "扩展")
+                ShowExternalContent(new DecoratedButton { Text = name }, e);
+            return true;
+        }
+
+        #endregion
 
         private void AutoConnect(object sender, RoutedEventArgs e)
         {
