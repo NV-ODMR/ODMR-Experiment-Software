@@ -190,6 +190,9 @@
     <Compile Include="AI 模块\AIService.Data.cs" />
     <Compile Include="AI 模块\AIService.UI.cs" />
     <Compile Include="AI 模块\AIService.Sequence.cs" />
+    <Content Include="AI 模块\ODMR结构信息.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Helpers\WindowHelper.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\FileHelper.cs" />

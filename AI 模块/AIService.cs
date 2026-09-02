@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -213,6 +214,7 @@ namespace ODMRLab.Services
                     running = !exp.IsExpEnd,
                     paused = exp.IsExpResume,
                     state = exp.GetExpState(),
+                    progress = Math.Round(exp.GetProgress(), 1),
                     failed = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null
                 };
             }
@@ -260,6 +262,60 @@ namespace ODMRLab.Services
             bool ok = LaserOffInternal("", out msg);
             Log("E-STOP：无运行实验，" + msg, LogLevel.Error);
             return Ok("当前无运行中实验。" + msg);
+        }
+
+        /// <summary>结构信息记忆库文件路径（exe 目录下 AI 模块\ODMR结构信息.md，随程序分发，可被 AI 更新）</summary>
+        private static string MemoryPath()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AI 模块", "ODMR结构信息.md");
+        }
+
+        [AiCommand("read-odmr-memory", "读取 ODMR 结构信息记忆库（markdown），含程序架构/实验生命周期/设备模型/数据保存/进度与数据文件反馈约定/安全约束等，供 AI 分析程序行为时参考", "无参数。返回完整 markdown 内容（超 10 万字符截断）")]
+        private string ReadOdmrMemory(Dictionary<string, string> args)
+        {
+            string path = MemoryPath();
+            if (!File.Exists(path))
+                return Err("记忆库文件不存在：" + path + "（可用 update-odmr-memory 创建/重建）");
+            string content;
+            try
+            {
+                content = File.ReadAllText(path);
+            }
+            catch (Exception ex)
+            {
+                return Err("读取记忆库失败：" + ex.Message);
+            }
+            bool truncated = content.Length > 100000;
+            if (truncated) content = content.Substring(0, 100000);
+            return Ok(new { file = path, size = content.Length, truncated, content });
+        }
+
+        [AiCommand("update-odmr-memory", "更新 ODMR 结构信息记忆库（markdown，整文件替换）。当 read-odmr-memory 读到的内容与实际情况不符时，AI 可修正/补充后写回，保持知识库与实际一致。完整 markdown 经 POST 请求体传输（勿放 URL）", "content=<完整的新 markdown 内容，走 POST 请求体，不要放 query string>。整文件替换：修改前请先 read-odmr-memory 读取原文，保留仍正确的部分只做增量修正。写操作，安全模式需 confirm=true")]
+        private string UpdateOdmrMemory(Dictionary<string, string> args)
+        {
+            string block = NeedConfirm(args, "更新 ODMR 结构信息记忆库");
+            if (block != null) return block;
+
+            string content;
+            if (!args.TryGetValue("content", out content) || content == null)
+                return Err("缺少 content 参数（完整的新 markdown 内容）。建议先 read-odmr-memory 读取原文再修改");
+            if (content.Length > 100000)
+                return Err("内容过大（>10 万字符），请精简后再写");
+
+            string path = MemoryPath();
+            try
+            {
+                string dir = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                File.WriteAllText(path, content);
+                Log("update-odmr-memory 已更新记忆库：" + path + "（" + content.Length + " 字符）", LogLevel.Warning);
+                return Ok(new { file = path, size = content.Length, hint = "记忆库已更新，下次 read-odmr-memory 读取即为新内容" });
+            }
+            catch (Exception ex)
+            {
+                return Err("写入记忆库失败：" + ex.Message);
+            }
         }
 
         #endregion
@@ -323,7 +379,21 @@ namespace ODMRLab.Services
                         args[key] = req.QueryString[key];
                 }
 
-                Log($"Received: {cmd} args={string.Join(",", args.Select(x => $"{x.Key}={x.Value}"))}", LogLevel.Info);
+                // POST body 作为 content 参数（如 update-odmr-memory 的整段 markdown），
+                // 避免大内容走 GET query string 触发 HTTP.sys 请求行长度上限（约 16KB）。
+                if (req.HttpMethod == "POST" && req.HasEntityBody)
+                {
+                    string body;
+                    using (var reader = new StreamReader(req.InputStream, Encoding.UTF8))
+                        body = reader.ReadToEnd();
+                    if (!string.IsNullOrEmpty(body))
+                        args["content"] = body;
+                }
+
+                // 日志不打印 content 全文（可能是整份 markdown），只记其长度。
+                string argSummary = string.Join(",", args.Select(x =>
+                    x.Key + "=" + (x.Value == null ? "" : (x.Key == "content" ? "<" + x.Value.Length + " 字符>" : x.Value))));
+                Log("Received: " + cmd + " args=" + argSummary, LogLevel.Info);
 
                 string result = Dispatch(cmd, args);
 

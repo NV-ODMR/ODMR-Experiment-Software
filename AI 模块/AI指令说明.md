@@ -1,7 +1,7 @@
 # ODMR-Lab AI 控制指令说明
 
 > 供 AI Agent 通过 HTTP 控制 ODMR-Lab 程序的全部指令文档。
-> 生成时间:2026-09-01 · 指令总数:37 条 · 全部编译通过
+> 生成时间:2026-09-01 · 指令总数:39 条 · 全部编译通过
 
 ## 1. 服务概览
 
@@ -42,7 +42,7 @@
 | `ping` | 无 | 心跳,返回 pong |
 | `help` | 无 | 列出全部指令+参数说明,含当前 safeMode |
 | `get-logs` | 无 | 最近错误日志(100 条环形缓存) |
-| `app-status` | 无 | 当前页面/当前实验/运行状态/安全模式 |
+| `app-status` | 无 | 当前页面/当前实验(running/paused/state/progress 进度百分比)/安全模式 |
 | `set-safe-mode` | `mode=safe\|full`,full 需 `confirm=yes` | 切换安全模式 |
 | `estop` | 无 | 紧急停止:有运行实验则停止之,否则关激光 |
 
@@ -63,7 +63,7 @@
 | `get-exp-params` | 无 | 输入参数(可改,含 name/desc/value/type)/输出参数/设备选择 |
 | `set-exp-param` | `param=` `value=` | 修改输入参数;会同步写回界面面板(实验启动时 ReadConfig 从面板读值);运行中禁止 |
 | `start-experiment` | AFM 类需 `confirm=true` | 后台线程异步启动,立即返回;AFM 类实验会弹人工确认框 |
-| `exp-status` | 无 | 运行状态(running/paused/state/error) + `dataFile`:实验结束后返回已保存的数据文件完整路径(自动保存时存于 `保存路径\组名\实验名\实验名+时间戳.userdat`,路径来自实验页「保存路径」设置);运行中/自动保存关闭时为 null |
+| `exp-status` | 无 | 运行状态:`running`/`paused`/`state`(状态文本)/`progress`(进度条百分比 0-100,扫描实验实时更新;无需定时轮询,用户询问进度时查询即可,仅进度变化时才向用户汇报)/`dataFile`(实验结束后返回已保存的数据文件完整路径,自动保存时存于 `保存路径\组名\实验名\实验名+时间戳.userdat`,路径来自实验页「保存路径」设置;运行中/自动保存关闭时为 null) |
 | `stop-experiment` | 无 | 软停止,实验在检查点退出并自动释放设备、保存数据文件,永远允许;停止后轮询 exp-status,`dataFile` 即返回文件路径 |
 | `resume-experiment` | 无 | 恢复已暂停实验 |
 | `get-exp-outputs` | 无 | 输出参数值 + 拟合信息(公式/组) + `dataFile`:本次运行已保存的数据文件路径 |
@@ -109,6 +109,15 @@ DeviceTypes 枚举值(中文):相机、翻转镜、源表、位移台、探针�
 | `list-seq-vars` | 无 | 全部全局脉冲变量:`name`(脉冲名)/`length`(长度,ns)/`locked`(锁定标志,仅表示删除时是否警告,不影响长度修改) |
 | `set-seq-var` | `name=<脉冲名>` `length=<非负整数,ns>`,safe 需 `confirm=true` | 设置全局脉冲长度,自动写入 `GlobalPulses.userdat`,含该脉冲的序列下次运行即生效;实验运行中禁止修改(并发读写保护) |
 
+### 3.7 记忆库指令(2)
+
+ODMR 结构信息记忆库是一个 markdown 文件(`AI 模块\ODMR结构信息.md`,随程序分发,运行时位于 exe 目录下),供 AI 在分析程序行为时查阅程序架构、实验生命周期、设备模型、数据保存、进度/数据文件反馈约定与安全约束,AI 可自我修正保持其与实际一致。
+
+| 指令 | 参数 | 说明 |
+|---|---|---|
+| `read-odmr-memory` | 无 | 读取结构信息记忆库的完整 markdown 内容(超 10 万字符截断)。分析 ODMR 程序结构/行为、不确定某功能机制时先查;永远允许 |
+| `update-odmr-memory` | `content=<完整新 markdown>`,safe 需 `confirm=true` | 更新记忆库(**整文件替换**)。修改前请先 `read-odmr-memory` 读原文,保留仍正确部分只做增量修正,使知识库与实际程序一致 |
+
 ## 4. 典型工作流
 
 ```bash
@@ -122,7 +131,7 @@ curl "http://localhost:5000/?cmd=get-exp-params"
 curl "http://localhost:5000/?cmd=set-exp-param&param=<name字段>&value=500"
 curl "http://localhost:5000/?cmd=start-experiment"
 
-# 2. 轮询进度 → 读结果 → 导出 CSV(实验结束后 exp-status 的 dataFile 返回数据文件路径)
+# 2. 查进度/状态(用户询问时查 exp-status,无需主动轮询;结束后 dataFile 返回数据文件路径) → 读结果 → 导出 CSV
 curl "http://localhost:5000/?cmd=exp-status"
 curl "http://localhost:5000/?cmd=get-exp-outputs"
 curl "http://localhost:5000/?cmd=export-data&file=<exp-status 返回的 dataFile>"
@@ -152,19 +161,24 @@ curl "http://localhost:5000/?cmd=click-exp-button&button=设置全局脉冲参�
 curl "http://localhost:5000/?cmd=read-exp-source"
 curl "http://localhost:5000/?cmd=list-seq-vars"
 curl "http://localhost:5000/?cmd=set-seq-var&name=RabiTime&length=300&confirm=true"
+
+# 8. 结构信息记忆库(分析程序行为时查阅;内容与实际不符时修正/补充)
+curl "http://localhost:5000/?cmd=read-odmr-memory"
+curl "http://localhost:5000/?cmd=update-odmr-memory&content=<完整新markdown>&confirm=true"
 ```
 
 ## 5. 代码位置与构建
 
 | 文件 | 内容 |
 |---|---|
-| `AI 模块/AIService.cs` | 主类:HTTP 服务、反射注册、安全模式、系统指令 |
+| `AI 模块/AIService.cs` | 主类:HTTP 服务、反射注册、安全模式、系统指令 + 记忆库 2 条(read-odmr-memory / update-odmr-memory) |
 | `AI 模块/AIService.Experiments.cs` | 实验管理 12 条(含 list-exp-buttons / click-exp-button / read-exp-source) |
 | `AI 模块/AIService.Devices.cs` | 设备控制 9 条(含相机预览/自动连接) |
 | `AI 模块/AIService.Data.cs` | 数据诊断 5 条 |
 | `AI 模块/AIService.UI.cs` | 界面控制 3 条 |
 | `AI 模块/AIService.Sequence.cs` | 序列全局脉冲变量 2 条(list-seq-vars / set-seq-var) |
 | `AI 模块/ODMR数据文件格式报告.md` | `.userdat` 全格式说明(FileObject 语法/序列/全局脉冲表/实验结果/ODMRConfig/笔记/自定义数据),供编写解析 Skill 用 |
+| `AI 模块/ODMR结构信息.md` | **结构信息记忆库**(markdown,csproj 已设 CopyToOutput 随构建/安装分发,运行时在 exe 目录下)。含程序架构/实验生命周期/设备模型/数据保存/进度与数据文件反馈约定/安全约束;供 AI 用 read-odmr-memory 查阅、update-odmr-memory 自修正 |
 | `MainWindow.xaml.cs` | 新增 `OpenPage()` 与 `AIPageNames`(复用界面按钮逻辑) |
 
 **加新指令**:在任一 partial 文件写 `[AiCommand("名字", "描述", "参数说明")] private string Xxx(Dictionary<string,string> args)` 即可,反射自动注册;若是新文件需在 `ODMR Lab.csproj` 加 `<Compile Include>`。
@@ -188,5 +202,6 @@ curl "http://localhost:5000/?cmd=set-seq-var&name=RabiTime&length=300&confirm=tr
 - `read-exp-source` 有源码目录时返回的是**源码文件**,与 exe 不同步时内容可能滞后于实际运行行为;打包安装时自动反编译运行中的程序集,返回的就是**实际运行的代码**(最准确),但反编译大类的请求可能耗时数秒;`only=1` 可只取具体类减少返回量;
 - `click-exp-button` 返回时按钮操作可能仍在后台线程执行;若按钮弹窗口(参数设置/文件选择等),AI 无法代替窗口内输入,需人工完成;
 - `set-seq-var` 只改全局脉冲表中已有脉冲的长度,不能新增/删除脉冲(避免破坏序列合法性);
+- `update-odmr-memory` 是**整文件替换**:AI 必须先 `read-odmr-memory` 读全文、保留仍正确内容后整体写回,否则会丢失原有信息;记忆库文件随程序分发,重新编译/安装时用 `PreserveNewest` 复制(源码未变则不覆盖 AI 的本地修改);
 - 建议实测一轮:`help → app-status → list-pages → open-page → list-experiments → select-exp → get-exp-params → list-exp-buttons → start-experiment → exp-status → get-exp-outputs`;
 - 后续可扩展:实验参数批量设置、多实验排队、CSV 导出加 X 轴实际值列、指令执行历史查询。

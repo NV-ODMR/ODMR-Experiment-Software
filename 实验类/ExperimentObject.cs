@@ -546,6 +546,14 @@ namespace ODMR_Lab
                 }
             });
         }
+
+        /// <summary>
+        /// 获取当前进度(0-100)，供外部(如 AI 服务)查询
+        /// </summary>
+        public double GetProgress()
+        {
+            return CurrentProgress;
+        }
         #endregion
 
         /// <summary>

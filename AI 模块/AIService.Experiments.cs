@@ -250,7 +250,7 @@ namespace ODMRLab.Services
             });
         }
 
-        [AiCommand("exp-status", "查询当前实验运行状态（实验结束后 dataFile 字段返回已保存的数据文件路径）", "无参数")]
+        [AiCommand("exp-status", "查询当前实验运行状态:progress(0-100 进度条百分比,扫描实验实时更新)、state(状态文本),实验结束后 dataFile 返回已保存数据文件路径。无需定时轮询,建议在用户询问进度时查询本指令", "无参数")]
         private string ExpStatus(Dictionary<string, string> args)
         {
             var exp = CurrentExp();
@@ -262,13 +262,14 @@ namespace ODMRLab.Services
                 running = !exp.IsExpEnd,
                 paused = exp.IsExpResume,
                 state = exp.GetExpState(),
+                progress = Math.Round(exp.GetProgress(), 1),
                 error = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null,
                 dataFile,
                 hint = exp.IsExpEnd
                     ? (dataFile != null
                         ? "实验已结束且数据文件已保存，用 export-data file=<dataFile> 可导出 CSV"
                         : "实验已结束但无数据文件（自动保存被关闭或未设置保存路径），可用 list-data-files 查找数据文件")
-                    : "实验运行中，请轮询本指令直到 running=false，届时 dataFile 将返回数据文件路径"
+                    : "实验运行中，progress 为进度条百分比(0-100)，state 为当前状态文本。用户询问进度时可查询本指令（仅进度有变化时向用户汇报即可）；running=false 表示实验结束，届时 dataFile 将返回数据文件路径"
             });
         }
 
