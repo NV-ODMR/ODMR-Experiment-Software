@@ -116,7 +116,7 @@ ODMR 结构信息记忆库是一个 markdown 文件(`AI 模块\ODMR结构信息.
 | 指令 | 参数 | 说明 |
 |---|---|---|
 | `read-odmr-memory` | 无 | 读取结构信息记忆库的完整 markdown 内容(超 10 万字符截断)。分析 ODMR 程序结构/行为、不确定某功能机制时先查;永远允许 |
-| `update-odmr-memory` | `content=<完整新 markdown>`,safe 需 `confirm=true` | 更新记忆库(**整文件替换**)。修改前请先 `read-odmr-memory` 读原文,保留仍正确部分只做增量修正,使知识库与实际程序一致 |
+| `update-odmr-memory` | `content`=<完整新 markdown，**经 POST 请求体传输，勿放 URL**>，safe 需 `confirm=true` | 更新记忆库(**整文件替换**)。修改前请先 `read-odmr-memory` 读原文,保留仍正确部分只做增量修正,使知识库与实际程序一致;完整内容走 POST body,不受 URL 长度限制 |
 
 ## 4. 典型工作流
 
@@ -164,7 +164,8 @@ curl "http://localhost:5000/?cmd=set-seq-var&name=RabiTime&length=300&confirm=tr
 
 # 8. 结构信息记忆库(分析程序行为时查阅;内容与实际不符时修正/补充)
 curl "http://localhost:5000/?cmd=read-odmr-memory"
-curl "http://localhost:5000/?cmd=update-odmr-memory&content=<完整新markdown>&confirm=true"
+# 更新:完整新 markdown 放请求体(--data-binary @文件 或 -d),不要放 URL
+curl -X POST "http://localhost:5000/?cmd=update-odmr-memory&confirm=true" -H "Content-Type: text/plain" --data-binary @新markdown.md
 ```
 
 ## 5. 代码位置与构建
@@ -202,6 +203,6 @@ curl "http://localhost:5000/?cmd=update-odmr-memory&content=<完整新markdown>&
 - `read-exp-source` 有源码目录时返回的是**源码文件**,与 exe 不同步时内容可能滞后于实际运行行为;打包安装时自动反编译运行中的程序集,返回的就是**实际运行的代码**(最准确),但反编译大类的请求可能耗时数秒;`only=1` 可只取具体类减少返回量;
 - `click-exp-button` 返回时按钮操作可能仍在后台线程执行;若按钮弹窗口(参数设置/文件选择等),AI 无法代替窗口内输入,需人工完成;
 - `set-seq-var` 只改全局脉冲表中已有脉冲的长度,不能新增/删除脉冲(避免破坏序列合法性);
-- `update-odmr-memory` 是**整文件替换**:AI 必须先 `read-odmr-memory` 读全文、保留仍正确内容后整体写回,否则会丢失原有信息;记忆库文件随程序分发,重新编译/安装时用 `PreserveNewest` 复制(源码未变则不覆盖 AI 的本地修改);
+- `update-odmr-memory` 是**整文件替换**:AI 必须先 `read-odmr-memory` 读全文、保留仍正确内容后整体写回,否则会丢失原有信息;完整内容经 **POST 请求体**传输(不占 URL,无 ~16KB 请求行上限,实测 6.6KB 记忆库逐字符完整往返);记忆库文件随程序分发,重新编译/安装时用 `PreserveNewest` 复制(源码未变则不覆盖 AI 的本地修改);
 - 建议实测一轮:`help → app-status → list-pages → open-page → list-experiments → select-exp → get-exp-params → list-exp-buttons → start-experiment → exp-status → get-exp-outputs`;
 - 后续可扩展:实验参数批量设置、多实验排队、CSV 导出加 X 轴实际值列、指令执行历史查询。

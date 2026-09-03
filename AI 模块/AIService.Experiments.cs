@@ -440,19 +440,10 @@ namespace ODMRLab.Services
             }
         }
 
-        [AiCommand("read-exp-source", "读取当前选定实验类的源代码，便于 AI 理解实验实现细节（输入输出参数、设备用法、算法）。有源码目录时返回源文件；打包安装没有源码时自动用 ILSpy 引擎从运行中的程序集反编译出 C# 代码；两者都不可用时降级为反射结构概览", "srcdir=<源码根目录,可省略,默认从程序目录自动向上查找 .csproj> only=1 只取具体类（默认含基类链，核心逻辑常在基类中）。反编译结果可能较大，单类超 8 万字符截断")]
+        [AiCommand("read-exp-source", "读取类的源代码,便于 AI 理解实验实现细节。支持读取当前实验类或任意指定类。有源码目录时返回源文件;打包安装时自动用 ILSpy 反编译;两者都不可用时降级为反射结构概览", "class=<类名,支持部分匹配,可省略,省略时读取当前实验类> list=1 列出所有可用类 srcdir=<源码根目录,可省略,默认从程序目录自动向上查找 .csproj> only=1 只取具体类(默认含基类链)。反编译结果可能较大,单类超 8 万字符截断")]
         private string ReadExpSource(Dictionary<string, string> args)
         {
-            var exp = CurrentExp();
-            if (exp == null) return Err("没有当前实验，请先 select-exp");
-            Type t = exp.GetType();
-
-            // 收集要尝试的类（具体类 + 基类链，基类中往往包含核心逻辑）
-            var typechain = new List<Type> { t };
-            for (Type b = t.BaseType; b != null && b != typeof(object); b = b.BaseType)
-                typechain.Add(b);
-
-            // 自动定位源码根目录：从 exe 目录向上找含 .csproj 的目录（bin\Debug → 项目根）
+            // 自动定位源码根目录
             string srcdir = GetArg(args, "srcdir");
             bool srcdirAuto = string.IsNullOrEmpty(srcdir);
             if (srcdirAuto)
@@ -470,6 +461,42 @@ namespace ODMRLab.Services
                 }
             }
 
+            // 列出所有可用类
+            if (GetArg(args, "list") == "1")
+            {
+                return ListAllClasses(srcdir, args);
+            }
+
+            // 确定要读取的类
+            string className = GetArg(args, "class");
+            Type targetType = null;
+            List<Type> typechain = null;
+
+            if (!string.IsNullOrEmpty(className))
+            {
+                // 按类名查找
+                targetType = FindTypeByName(className, srcdir);
+                if (targetType == null)
+                {
+                    return Err("未找到类:" + className + "。用 list=1 查看所有可用类,或检查类名拼写");
+                }
+                // 构建类型链(具体类 + 基类链)
+                typechain = new List<Type> { targetType };
+                for (Type b = targetType.BaseType; b != null && b != typeof(object); b = b.BaseType)
+                    typechain.Add(b);
+            }
+            else
+            {
+                // 读取当前实验类(原有行为)
+                var exp = CurrentExp();
+                if (exp == null) return Err("没有当前实验,请先 select-exp,或指定 class 参数");
+                targetType = exp.GetType();
+                typechain = new List<Type> { targetType };
+                for (Type b = targetType.BaseType; b != null && b != typeof(object); b = b.BaseType)
+                    typechain.Add(b);
+            }
+
+            // 尝试从源码目录查找
             string foundfile = null;
             Type foundtype = null;
             if (!string.IsNullOrEmpty(srcdir) && Directory.Exists(srcdir))
@@ -477,7 +504,7 @@ namespace ODMRLab.Services
                 foundfile = FindSourceFile(srcdir, typechain, out foundtype);
             }
 
-            // 找到源码：返回文件内容
+            // 找到源码:返回文件内容
             if (foundfile != null)
             {
                 string content;
@@ -493,7 +520,7 @@ namespace ODMRLab.Services
                 }
                 catch (Exception ex)
                 {
-                    return Err("读取源码文件失败：" + ex.Message);
+                    return Err("读取源码文件失败:" + ex.Message);
                 }
                 Log("read-exp-source " + foundtype.Name + " -> " + foundfile, LogLevel.Info);
                 return Ok(new
@@ -505,13 +532,13 @@ namespace ODMRLab.Services
                     truncated,
                     content,
                     baseTypes = typechain.Skip(1).Select(x => x.FullName).ToList(),
-                    hint = truncated ? "文件过大已截断到 20 万字符，可用 read-exp-source 结合其他指令分段了解" : "完整文件"
+                    hint = truncated ? "文件过大已截断到 20 万字符,可用 read-exp-source 结合其他指令分段了解" : "完整文件"
                 });
             }
 
-            // 没有源码（打包安装形式）：尝试用 ILSpy 引擎从运行中的程序集反编译出 C# 代码
+            // 没有源码:尝试用 ILSpy 反编译
             string assemblyPath = null;
-            try { assemblyPath = t.Assembly.Location; } catch { }
+            try { assemblyPath = targetType.Assembly.Location; } catch { }
 
             if (!string.IsNullOrEmpty(assemblyPath) && File.Exists(assemblyPath))
             {
@@ -532,7 +559,7 @@ namespace ODMRLab.Services
                         }
                         catch (Exception ex)
                         {
-                            sources.Add(new { type = bt.FullName, content = "", error = "反编译该类失败：" + ex.Message });
+                            sources.Add(new { type = bt.FullName, content = "", error = "反编译该类失败:" + ex.Message });
                             continue;
                         }
                         bool tr = code.Length > 80000;
@@ -541,36 +568,221 @@ namespace ODMRLab.Services
                         sources.Add(new { type = bt.FullName, content = code, truncated = tr });
                         if (total > 250000) { anyTruncated = true; break; }
                     }
-                    Log("read-exp-source 反编译 " + t.Name + "（" + assemblyPath + "）", LogLevel.Info);
+                    Log("read-exp-source 反编译 " + targetType.Name + "(" + assemblyPath + ")", LogLevel.Info);
                     return Ok(new
                     {
                         found = false,
                         decompiled = true,
-                        type = t.FullName,
+                        type = targetType.FullName,
                         assembly = assemblyPath,
                         baseTypes = typechain.Skip(1).Select(x => x.FullName).ToList(),
                         sources,
-                        hint = "无源码文件，以下为从运行程序集反编译的 C# 代码（与编译版本一致）"
-                            + (anyTruncated ? "；部分类内容已截断（单类 8 万字符/总计 25 万字符），可带 only=1 只取具体类" : "")
-                            + (concreteOnly ? "" : "；带 only=1 可只取具体类")
+                        hint = "无源码文件,以下为从运行程序集反编译的 C# 代码(与编译版本一致)"
+                            + (anyTruncated ? ";部分类内容已截断(单类 8 万字符/总计 25 万字符),可带 only=1 只取具体类" : "")
+                            + (concreteOnly ? "" : ";带 only=1 可只取具体类")
                     });
                 }
                 catch (Exception ex)
                 {
-                    Log("read-exp-source 反编译失败，降级反射概览：" + ex.Message, LogLevel.Warning);
+                    Log("read-exp-source 反编译失败,降级反射概览:" + ex.Message, LogLevel.Warning);
                 }
             }
 
-            // 反编译也不可用（程序集无磁盘位置或反编译异常）：降级为反射结构概览
-            Log("read-exp-source 无源码且反编译不可用，返回反射概览：" + t.FullName, LogLevel.Info);
+            // 反编译也不可用:降级为反射结构概览
+            Log("read-exp-source 无源码且反编译不可用,返回反射概览:" + targetType.FullName, LogLevel.Info);
             return Ok(new
             {
                 found = false,
                 decompiled = false,
-                type = t.FullName,
+                type = targetType.FullName,
                 baseTypes = typechain.Skip(1).Select(x => x.FullName).ToList(),
-                methods = BuildReflectionMethods(t),
-                hint = "未找到源码文件" + (srcdirAuto ? "（当前为打包安装形式，无源码目录）" : "（在 " + srcdir + " 下未找到）") + "，反编译也不可用，已返回该类的反射结构概览（仅方法名/签名）；如需完整源码请在开发环境部署后带 srcdir 参数重试"
+                methods = BuildReflectionMethods(targetType),
+                hint = "未找到源码文件" + (srcdirAuto ? "(当前为打包安装形式,无源码目录)" : "(在 " + srcdir + " 下未找到)") + ",反编译也不可用,已返回该类的反射结构概览(仅方法名/签名);如需完整源码请在开发环境部署后带 srcdir 参数重试"
+            });
+        }
+
+        /// <summary>按类名查找类型(支持部分匹配)</summary>
+        private Type FindTypeByName(string className, string srcdir)
+        {
+            // 1. 先尝试从当前加载的程序集中查找精确匹配
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var asm in assemblies)
+            {
+                try
+                {
+                    foreach (var type in asm.GetTypes())
+                    {
+                        if (type.Name == className || type.FullName == className)
+                            return type;
+                    }
+                }
+                catch { } // 忽略无法加载的程序集
+            }
+
+            // 2. 精确匹配失败,尝试部分匹配
+            var matches = new List<Type>();
+            foreach (var asm in assemblies)
+            {
+                try
+                {
+                    foreach (var type in asm.GetTypes())
+                    {
+                        if (type.Name.IndexOf(className, StringComparison.OrdinalIgnoreCase) >= 0)
+                            matches.Add(type);
+                    }
+                }
+                catch { }
+            }
+
+            // 如果只有一个匹配,返回它
+            if (matches.Count == 1) return matches[0];
+
+            // 多个匹配时,优先返回实验类
+            if (matches.Count > 1)
+            {
+                var expMatch = matches.FirstOrDefault(t => t.Name.Contains("Exp") || t.Name.Contains("CW") || t.Name.Contains("Rabi") || t.Name.Contains("T1") || t.Name.Contains("T2"));
+                if (expMatch != null) return expMatch;
+                return matches[0]; // 返回第一个
+            }
+
+            // 3. 从源码目录查找(如果有的话)
+            if (!string.IsNullOrEmpty(srcdir) && Directory.Exists(srcdir))
+            {
+                var files = new List<string>();
+                try
+                {
+                    foreach (var f in Directory.EnumerateFiles(srcdir, "*.cs", SearchOption.AllDirectories))
+                    {
+                        string lower = f.ToLowerInvariant();
+                        if (lower.Contains("\\bin\\") || lower.Contains("\\obj\\") || lower.Contains("\\packages\\")
+                            || lower.Contains("\\.git\\") || lower.Contains("\\devparamdir\\"))
+                            continue;
+                        files.Add(f);
+                        if (files.Count > 3000) break;
+                    }
+                }
+                catch { }
+
+                foreach (var f in files)
+                {
+                    try
+                    {
+                        string fileContent = File.ReadAllText(f);
+                        // 查找 class 声明
+                        var match = System.Text.RegularExpressions.Regex.Match(fileContent, @"\bclass\s+([\w_]+)\b");
+                        if (match.Success)
+                        {
+                            string foundClassName = match.Groups[1].Value;
+                            if (foundClassName.IndexOf(className, StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                // 找到匹配的类名,尝试从程序集中找到对应的 Type
+                                foreach (var asm in assemblies)
+                                {
+                                    try
+                                    {
+                                        foreach (var type in asm.GetTypes())
+                                        {
+                                            if (type.Name == foundClassName)
+                                                return type;
+                                        }
+                                    }
+                                    catch { }
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>列出所有可用的类</summary>
+        private string ListAllClasses(string srcdir, Dictionary<string, string> args)
+        {
+            var classes = new List<object>();
+            var seen = new HashSet<string>();
+
+            // 1. 从源码目录扫描
+            if (!string.IsNullOrEmpty(srcdir) && Directory.Exists(srcdir))
+            {
+                try
+                {
+                    foreach (var f in Directory.EnumerateFiles(srcdir, "*.cs", SearchOption.AllDirectories))
+                    {
+                        string lower = f.ToLowerInvariant();
+                        if (lower.Contains("\\bin\\") || lower.Contains("\\obj\\") || lower.Contains("\\packages\\")
+                            || lower.Contains("\\.git\\") || lower.Contains("\\devparamdir\\"))
+                            continue;
+
+                        try
+                        {
+                            string content = File.ReadAllText(f);
+                            // 查找所有 class 声明
+                            var matches = System.Text.RegularExpressions.Regex.Matches(content, @"\bclass\s+([\w_]+)\b");
+                            foreach (System.Text.RegularExpressions.Match match in matches)
+                            {
+                                string className = match.Groups[1].Value;
+                                if (!seen.Contains(className))
+                                {
+                                    seen.Add(className);
+                                    classes.Add(new
+                                    {
+                                        name = className,
+                                        source = "file",
+                                        file = Path.GetFileName(f)
+                                    });
+                                }
+                            }
+                        }
+                        catch { }
+
+                        if (classes.Count > 500) break; // 限制数量
+                    }
+                }
+                catch { }
+            }
+
+            // 2. 从运行中的程序集扫描(补充源码中没有的类)
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var asm in assemblies)
+            {
+                try
+                {
+                    // 只扫描 ODMR_Lab 命名空间下的类
+                    if (!asm.FullName.Contains("ODMR") && !asm.FullName.Contains("ODMR_Lab"))
+                        continue;
+
+                    foreach (var type in asm.GetTypes())
+                    {
+                        if (type.IsClass && !type.IsAbstract && !type.IsInterface && !seen.Contains(type.Name))
+                        {
+                            seen.Add(type.Name);
+                            classes.Add(new
+                            {
+                                name = type.Name,
+                                fullname = type.FullName,
+                                source = "assembly",
+                                assembly = asm.GetName().Name
+                            });
+                        }
+                    }
+                }
+                catch { }
+
+                if (classes.Count > 1000) break; // 限制总数
+            }
+
+            // 按名称排序
+            classes = classes.OrderBy(c => ((dynamic)c).name).ToList();
+
+            Log("list-all-classes: 找到 " + classes.Count + " 个类", LogLevel.Info);
+            return Ok(new
+            {
+                count = classes.Count,
+                classes,
+                hint = "用 read-exp-source class=<类名> 读取指定类的源码;支持部分匹配(如 class=CW 会匹配 TotalCW)"
             });
         }
 
