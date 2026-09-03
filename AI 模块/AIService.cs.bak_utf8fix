@@ -441,7 +441,7 @@ namespace ODMRLab.Services
                 // HttpListener 的 QueryString 按系统默认编码（中文系统为 GBK）解码，
                 // 客户端按 HTTP 规范用 UTF-8 编码的中文参数（设备类型/描述/按钮名等）会被读成乱码。
                 // 改为从原始 URL 的查询部分按 UTF-8 重新解析。
-                string rawQuery = req.Url?.Query ?? "";
+                string rawQuery = req.Url?.AbsolutePath ?? "";
                 int qIdx = rawQuery.IndexOf('?');
                 string query = qIdx >= 0 ? rawQuery.Substring(qIdx + 1) : "";
                 var cmd = ParseQueryValue(query, "cmd");
