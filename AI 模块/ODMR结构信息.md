@@ -7,16 +7,18 @@
 
 ## 1. 程序总览
 - ODMR-Lab：WPF .NET Framework 4.7.2（C# 7.3，x86）。光学检测磁共振（ODMR）/ NV 色心实验控制平台，涉及激光、微波、光子计数器（APD）、位移台、AFM 扫描台、锁相放大器、源表等设备。
-- AI 控制：`AIService` 在 `localhost:5000`（仅本机回环）提供 HTTP GET 指令，格式 `?cmd=指令名&参数=值`，统一 JSON 返回 `{success, data/message, time}`，反射 `[AiCommand]` 自动注册，safe/full 安全模式。
+- AI 控制：`AIService` 在 `localhost:5000`（仅本机回环）提供 HTTP 指令，格式 `?cmd=指令名&参数=值`（默认 GET；**`update-odmr-memory` 的完整 markdown 走 POST 请求体**，避免大内容触发约 16KB 请求行上限），统一 JSON 返回 `{success, data/message, time}`，反射 `[AiCommand]` 自动注册，safe/full 安全模式。
 - 主窗口 `MainWindow`；实验页 `MainWindow.Exp_SequencePage`（含 `ExpObjects` 实验列表 + `CurrentExpObject` 当前实验对象）。
 
 ## 2. AI 服务（AIService）
 - `AIService.cs`（partial 主类：HTTP 监听、反射注册、安全模式、系统指令）+ 分部文件：
-  - `.Experiments.cs` 实验管理（list/select/get-params/set-param/start/stop/resume/status/outputs/buttons/click-button/read-source）
+  - .Experiments.cs 实验管理（list/select/get-params/set-param/start/stop/resume/status/outputs/buttons/click-button/read-exp-source）
   - `.Devices.cs` 设备控制（device-list/get/set、apd-sample、laser-on/off、camera-open/close、auto-connect）
   - `.Data.cs` 数据诊断（list-data-files/export-data/read-errlog/save-params/load-params）
   - `.UI.cs` 界面（window-control/list-pages/open-page）
   - `.Sequence.cs` 序列（list-seq-vars/set-seq-var）
+  - 记忆库 2 条（在主类 `AIService.cs`）：`read-odmr-memory` 读本文件全文（GET）；`update-odmr-memory` 整文件替换（**content 走 POST 请求体**，safe 需 `confirm=true`，须先读原文保留正确部分）
+- 本文件运行时位于 `exe目录\AI 模块\ODMR结构信息.md`，csproj 用 `PreserveNewest` 复制（源码未变则不覆盖 AI 的本地修改）。
 - 安全模型：safe（默认）危险指令需 `confirm=true`；切 full 需 `confirm=yes`（AI 不得自行解除保护）。
 - **永久禁止（任何模式都拦截）**：位移台/探针台等 `Target` 参数写入；名称含「移动」的实验按钮；AFM 下针（程序自带人工确认弹窗，AI 无法绕过）。
 - 加新指令：任一 partial 文件写 `[AiCommand("名","描述","参数")] private string Xxx(Dictionary<string,string> args)`，反射自动注册；新文件需在 csproj 加 `<Compile Include>`。
@@ -55,3 +57,13 @@
 - AFM 下针等物理接触操作：程序自带人工确认弹窗，AI 不能绕过。
 - 默认 safe 模式；危险操作（写设备 / 开激光 / 开相机 / 自动连接 / 点实验按钮 / 改序列 / 启动 AFM 类实验）需 `confirm=true`。
 - `estop` / `stop-experiment` / `laser-off` / `camera-close` 及所有查询类指令永远允许。
+
+## 9. read-exp-source 指令详情
+- **功能**：读取 ODMR 程序的 C# 源码（从源码文件或反编译程序集）。
+- **参数**：
+  - 不带参数：读取当前选定的实验类源码（需先 select-exp）。
+  - `class=<类名>`：按类名读取任意类，支持部分匹配（如 `class=CW` 匹配 `TotalCW`），优先匹配实验类。
+  - `list=1`：列出源码目录和运行中程序集（ODMR_Lab 命名空间）的所有可用类，按类名排序，最多返回 1000 个。
+  - `only=1`：只返回具体实验类（不含基类）。
+- **查找逻辑**：先精确匹配程序集中的类型 → 部分匹配（类名包含指定字符串）→ 扫描源码目录的 .cs 文件。
+- **源码目录**：自动从运行中程序集路径推断（向上查找 `D:\C#Codes\ODMR-Lab\`）。
