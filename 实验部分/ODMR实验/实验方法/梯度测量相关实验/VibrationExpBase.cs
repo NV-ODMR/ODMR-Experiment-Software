@@ -67,6 +67,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
         {
             //下针信息确认
             bool iscontinue = true;
+            if (!SkipPreConfirm)
+            {
             App.Current.Dispatcher.Invoke(() =>
             {
                 if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + lockin.Device.DemodR.ToString() + "\n" + "设定点:" + lockin.Device.SetPoint.ToString() + "\n"
@@ -75,6 +77,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.梯度测量相关实验
                     iscontinue = false;
                 }
             });
+            }
             if (!iscontinue) return false;
             //添加下针参数到输出参数栏
             OutputParams.Add(new Param<double>("下针参数P", lockin.Device.P, "DropP"));

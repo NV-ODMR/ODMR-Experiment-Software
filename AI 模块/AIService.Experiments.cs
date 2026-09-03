@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -208,7 +208,7 @@ namespace ODMRLab.Services
             });
         }
 
-        [AiCommand("start-experiment", "启动当前实验（异步，立即返回；用 exp-status 轮询进度）", "AFM 类实验在安全模式下必须带 confirm=true；AFM 实验启动后程序会弹出人工确认框，需人工点击")]
+        [AiCommand("start-experiment", "启动当前实验（异步，立即返回；用 exp-status 轮询进度）", "AFM 类实验在安全模式下必须带 confirm=true")]
         private string StartExperiment(Dictionary<string, string> args)
         {
             var page = MainWindow.Exp_SequencePage;
@@ -231,12 +231,18 @@ namespace ODMRLab.Services
                 {
                     // 必须在后台线程调用：AFM 实验的 PreConfirmProcedure 会在 UI 线程弹人工确认框，
                     // 阻塞 HTTP 线程会导致整个 AI 服务无响应
+                    // AI 启动实验时跳过 PreConfirmProcedure 弹框
+                    ExperimentObject<ExpParamBase, ConfigBase>.SetSkipPreConfirm(true);
                     exp.Start();
                     Log("实验启动流程完成：" + exp.ODMRExperimentName, LogLevel.Info);
                 }
                 catch (Exception ex)
                 {
                     Log("实验启动失败：" + ex.Message, LogLevel.Error);
+                }
+                finally
+                {
+                    ExperimentObject<ExpParamBase, ConfigBase>.SetSkipPreConfirm(false);
                 }
             }) { IsBackground = true, Name = "AiStartExp" };
             t.Start();
