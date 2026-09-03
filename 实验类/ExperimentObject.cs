@@ -47,6 +47,29 @@ namespace ODMR_Lab
         public static List<char> InvaliidChars = new List<char>() { '$' };
 
         /// <summary>
+        /// AI 启动实验时设为 true，跳过 PreConfirmProcedure 弹框。
+        /// 由 AIService 在调用 Start() 前后自动管理，外部不应手动设置。
+        /// </summary>
+        public static volatile bool SkipPreConfirm = false;
+
+        /// <summary>
+        /// SkipPreConfirm 设置时间，用于超时自动重置
+        /// </summary>
+        private static DateTime skipPreConfirmSetTime = DateTime.MinValue;
+
+        /// <summary>
+        /// 设置 SkipPreConfirm 标志（AI 专用）
+        /// </summary>
+        public static void SetSkipPreConfirm(bool value)
+        {
+            SkipPreConfirm = value;
+            if (value)
+            {
+                skipPreConfirmSetTime = DateTime.Now;
+            }
+        }
+
+        /// <summary>
         /// 实验文件类型
         /// </summary>
         public abstract ExperimentFileTypes ExpType { get; protected set; }
@@ -692,7 +715,21 @@ namespace ODMR_Lab
                 {
                     try
                     {
-                        IsContinue = PreConfirmProcedure();
+                        // 检查是否需要跳过确认框（带60秒超时保护）
+                        if (SkipPreConfirm)
+                        {
+                            // 检查是否超时（60秒）
+                            if ((DateTime.Now - skipPreConfirmSetTime).TotalSeconds > 60)
+                            {
+                                SkipPreConfirm = false;
+                                IsContinue = PreConfirmProcedure();
+                            }
+                            // 否则跳过确认框，IsContinue 保持 true
+                        }
+                        else
+                        {
+                            IsContinue = PreConfirmProcedure();
+                        }
                     }
                     catch (Exception ex)
                     {
