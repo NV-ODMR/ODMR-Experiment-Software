@@ -163,6 +163,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.其他
 
         public override bool PreConfirmProcedure()
         {
+            if (SkipPreConfirm) return true;
+
             if (MessageWindow.ShowMessageBox("提示", "历史数据将被清除,是否要继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) == MessageBoxResult.Yes)
             {
                 return true;

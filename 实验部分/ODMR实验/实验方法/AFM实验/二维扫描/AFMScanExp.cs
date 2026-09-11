@@ -354,6 +354,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override bool PreConfirmProcedure()
         {
+            if (SkipPreConfirm) return true;
+
             if (D2ScanRange == null)
             {
                 MessageWindow.ShowTipWindow("扫描范围未设置", Window.GetWindow(ParentPage));

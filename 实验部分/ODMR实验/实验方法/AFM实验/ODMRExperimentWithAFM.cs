@@ -121,14 +121,18 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
                 LockinInfo info = GetLockIn();
                 //下针信息确认
                 bool iscontinue = true;
-                App.Current.Dispatcher.Invoke(() =>
+                // AI 控制时跳过下针确认弹窗，直接继续
+                if (!AIControlled)
                 {
-                    if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + info.Device.DemodR.ToString() + "\n" + "设定点:" + info.Device.SetPoint.ToString() + "\n"
-                        + "P:" + info.Device.P.ToString() + "\n" + "I:" + info.Device.I.ToString() + "\n" + "D:" + info.Device.D.ToString() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+                    App.Current.Dispatcher.Invoke(() =>
                     {
-                        iscontinue = false;
-                    }
-                });
+                        if (MessageWindow.ShowMessageBox("下针信息确认", "当前振幅:" + info.Device.DemodR.ToString() + "\n" + "设定点:" + info.Device.SetPoint.ToString() + "\n"
+                            + "P:" + info.Device.P.ToString() + "\n" + "I:" + info.Device.I.ToString() + "\n" + "D:" + info.Device.D.ToString() + "\n" + "是否继续?", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
+                        {
+                            iscontinue = false;
+                        }
+                    });
+                }
                 if (!iscontinue) throw new Exception("实验已停止");
 
                 //添加下针参数到输出参数栏

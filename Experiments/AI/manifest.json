@@ -1,0 +1,15 @@
+{
+  "experiments": [
+    {
+      "id": "179dce6b",
+      "name": "AI计数器实验",
+      "description": "一个简单的计数实验，演示动态实验功能",
+      "fileName": "179dce6b.cs",
+      "status": "pending",
+      "createdAt": "2026-09-03T22:00:00",
+      "approvedAt": null,
+      "compiledAssemblyPath": null,
+      "typeName": "ODMR_Lab.ODMR实验.AI实验.SampleCounterExp"
+    }
+  ]
+}

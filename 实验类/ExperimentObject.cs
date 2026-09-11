@@ -58,6 +58,13 @@ namespace ODMR_Lab
         private static DateTime skipPreConfirmSetTime = DateTime.MinValue;
 
         /// <summary>
+        /// AI 控制实验期间为 true，抑制实验启动/运行/异常流程中的弹窗（ShowTipWindow / ShowMessageBox）。
+        /// 由 AIService 在 start-experiment 时设为 true，实验结束（SetStopState）时自动重置为 false。
+        /// 用户直接操作时此标志始终为 false，所有弹窗行为不受影响。
+        /// </summary>
+        public static volatile bool AIControlled = false;
+
+        /// <summary>
         /// 设置 SkipPreConfirm 标志（AI 专用）
         /// </summary>
         public static void SetSkipPreConfirm(bool value)
@@ -642,6 +649,8 @@ namespace ODMR_Lab
 
         private void SetStopState()
         {
+            // 实验结束时自动重置 AI 控制标志，确保下次用户操作时弹窗正常显示
+            AIControlled = false;
             App.Current.Dispatcher.Invoke(() =>
             {
                 SetPanelStopState();
@@ -715,26 +724,14 @@ namespace ODMR_Lab
                 {
                     try
                     {
-                        // 检查是否需要跳过确认框（带60秒超时保护）
-                        if (SkipPreConfirm)
-                        {
-                            // 检查是否超时（60秒）
-                            if ((DateTime.Now - skipPreConfirmSetTime).TotalSeconds > 60)
-                            {
-                                SkipPreConfirm = false;
-                                IsContinue = PreConfirmProcedure();
-                            }
-                            // 否则跳过确认框，IsContinue 保持 true
-                        }
-                        else
-                        {
-                            IsContinue = PreConfirmProcedure();
-                        }
+                        // 始终调用 PreConfirmProcedure，让各实验内部自行判断 SkipPreConfirm 来跳过弹窗
+                        // 这样既保留了副作用操作（如 GetDevices、DropConfirm 等），又避免了弹窗阻塞
+                        IsContinue = PreConfirmProcedure();
                     }
                     catch (Exception ex)
                     {
                         IsContinue = false;
-                        MessageWindow.ShowTipWindow("实验未成功进行:\n" + ex.Message, MainWindow.Handle);
+                        if (!AIControlled) MessageWindow.ShowTipWindow("实验未成功进行:\n" + ex.Message, MainWindow.Handle);
                     }
                 }
             });
@@ -763,7 +760,7 @@ namespace ODMR_Lab
                     }
                     catch (Exception ex)
                     {
-                        MessageWindow.ShowTipWindow("参数设置存在错误:\n" + ex.Message, MainWindow.Handle);
+                        if (!AIControlled) MessageWindow.ShowTipWindow("参数设置存在错误:\n" + ex.Message, MainWindow.Handle);
                         ErrorStateEvent?.Invoke();
                         SetStopState();
                         return;
@@ -780,7 +777,7 @@ namespace ODMR_Lab
                     }
                     catch (Exception ex)
                     {
-                        MessageWindow.ShowTipWindow("设备获取失败:\n" + ex.Message, MainWindow.Handle);
+                        if (!AIControlled) MessageWindow.ShowTipWindow("设备获取失败:\n" + ex.Message, MainWindow.Handle);
                         ErrorStateEvent?.Invoke();
                         SetStopState();
                         return;
@@ -834,7 +831,7 @@ namespace ODMR_Lab
                     {
                         if (!IsSubExperiment)
                         {
-                            MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
+                            if (!AIControlled) MessageWindow.ShowTipWindow("实验已被停止", MainWindow.Handle);
                         }
                     }
                     else
@@ -846,7 +843,7 @@ namespace ODMR_Lab
                             expFailedException = ex;
                         }
                         else
-                            MessageWindow.ShowTipWindow("实验发生异常,已结束：\n" + ex.Message, MainWindow.Handle);
+                            if (!AIControlled) MessageWindow.ShowTipWindow("实验发生异常,已结束：\n" + ex.Message, MainWindow.Handle);
                     }
                     expFailedException = ex;
                     //设置结束状态

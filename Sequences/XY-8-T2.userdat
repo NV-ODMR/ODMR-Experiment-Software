@@ -1,0 +1,37 @@
+SequenceAssembleLoopCount★0
+SequenceAssembleName★XY-8-T2
+userdata description ending line
+data name line★ChannelName→Ch_2→IsTrigger★ChannelName→Ch_2→PeakNames★ChannelName→Ch_2→PeakValues★ChannelName→Ch_2→Spans★ChannelName→Ch_3→IsTrigger★ChannelName→Ch_3→PeakNames★ChannelName→Ch_3→PeakValues★ChannelName→Ch_3→Spans★ChannelName→Ch_4→IsTrigger★ChannelName→Ch_4→PeakNames★ChannelName→Ch_4→PeakValues★ChannelName→Ch_4→Spans★ChannelName→Ch_5→IsTrigger★ChannelName→Ch_5→PeakNames★ChannelName→Ch_5→PeakValues★ChannelName→Ch_5→Spans★ChannelNames
+SequenceGroup★激光初始化序列组★One★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★Ch_2
+False★HalfPiX★Zero★66★False★HalfPiX★One★66★False★HalfPiX★Zero★66★False★HalfPiX★Zero★66★Ch_3
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★Ch_4
+SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★Ch_5
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★❤
+False★3HalfPiX★Zero★201★False★3HalfPiX★One★201★False★3HalfPiX★Zero★201★False★3HalfPiX★Zero★201★❤
+SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★❤
+SequenceGroup★激光初始化序列组★One★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★❤
+False★HalfPiX★Zero★66★False★HalfPiX★One★66★False★HalfPiX★Zero★66★False★HalfPiX★Zero★66★❤
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★❤
+SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★❤
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★❤
+False★HalfPiX★Zero★66★False★HalfPiX★One★66★False★HalfPiX★Zero★66★False★HalfPiX★Zero★66★❤
+SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★❤
+SequenceGroup★激光初始化序列组★One★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★❤
+SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★❤
+SequenceGroup★激光初始化序列组★One★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★❤
+False★HalfPiX★Zero★66★False★HalfPiX★One★66★False★HalfPiX★Zero★66★False★HalfPiX★Zero★66★❤
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★❤
+SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★❤
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★❤
+False★3HalfPiX★Zero★201★False★3HalfPiX★One★201★False★3HalfPiX★Zero★201★False★3HalfPiX★Zero★201★❤
+SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★❤
+SequenceGroup★激光初始化序列组★One★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★❤
+False★HalfPiX★Zero★66★False★HalfPiX★One★66★False★HalfPiX★Zero★66★False★HalfPiX★Zero★66★❤
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★❤
+SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★SequenceGroup★XY8_core★Zero★SequenceGroup★❤
+False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★False★HalfEvolutionTimeX★Zero★200★❤
+False★HalfPiX★Zero★66★False★HalfPiX★One★66★False★HalfPiX★Zero★66★False★HalfPiX★Zero★66★❤
+SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★❤
+SequenceGroup★激光初始化序列组★One★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★SequenceGroup★激光初始化序列组★Zero★SequenceGroup★❤
+SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★SequenceGroup★光子计数序列★Zero★SequenceGroup★❤
+end of file

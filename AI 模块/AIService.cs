@@ -264,60 +264,6 @@ namespace ODMRLab.Services
             return Ok("当前无运行中实验。" + msg);
         }
 
-        /// <summary>结构信息记忆库文件路径（exe 目录下 AI 模块\ODMR结构信息.md，随程序分发，可被 AI 更新）</summary>
-        private static string MemoryPath()
-        {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AI 模块", "ODMR结构信息.md");
-        }
-
-        [AiCommand("read-odmr-memory", "读取 ODMR 结构信息记忆库（markdown），含程序架构/实验生命周期/设备模型/数据保存/进度与数据文件反馈约定/安全约束等，供 AI 分析程序行为时参考", "无参数。返回完整 markdown 内容（超 10 万字符截断）")]
-        private string ReadOdmrMemory(Dictionary<string, string> args)
-        {
-            string path = MemoryPath();
-            if (!File.Exists(path))
-                return Err("记忆库文件不存在：" + path + "（可用 update-odmr-memory 创建/重建）");
-            string content;
-            try
-            {
-                content = File.ReadAllText(path);
-            }
-            catch (Exception ex)
-            {
-                return Err("读取记忆库失败：" + ex.Message);
-            }
-            bool truncated = content.Length > 100000;
-            if (truncated) content = content.Substring(0, 100000);
-            return Ok(new { file = path, size = content.Length, truncated, content });
-        }
-
-        [AiCommand("update-odmr-memory", "更新 ODMR 结构信息记忆库（markdown，整文件替换）。当 read-odmr-memory 读到的内容与实际情况不符时，AI 可修正/补充后写回，保持知识库与实际一致。完整 markdown 经 POST 请求体传输（勿放 URL）", "content=<完整的新 markdown 内容，走 POST 请求体，不要放 query string>。整文件替换：修改前请先 read-odmr-memory 读取原文，保留仍正确的部分只做增量修正。写操作，安全模式需 confirm=true")]
-        private string UpdateOdmrMemory(Dictionary<string, string> args)
-        {
-            string block = NeedConfirm(args, "更新 ODMR 结构信息记忆库");
-            if (block != null) return block;
-
-            string content;
-            if (!args.TryGetValue("content", out content) || content == null)
-                return Err("缺少 content 参数（完整的新 markdown 内容）。建议先 read-odmr-memory 读取原文再修改");
-            if (content.Length > 100000)
-                return Err("内容过大（>10 万字符），请精简后再写");
-
-            string path = MemoryPath();
-            try
-            {
-                string dir = Path.GetDirectoryName(path);
-                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-                File.WriteAllText(path, content);
-                Log("update-odmr-memory 已更新记忆库：" + path + "（" + content.Length + " 字符）", LogLevel.Warning);
-                return Ok(new { file = path, size = content.Length, hint = "记忆库已更新，下次 read-odmr-memory 读取即为新内容" });
-            }
-            catch (Exception ex)
-            {
-                return Err("写入记忆库失败：" + ex.Message);
-            }
-        }
-
         #endregion
 
         #region 参数自动绑定
@@ -453,15 +399,56 @@ namespace ODMRLab.Services
                         args[kv.Key] = kv.Value;
                 }
 
-                // POST body 作为 content 参数（如 update-odmr-memory 的整段 markdown），
-                // 避免大内容走 GET query string 触发 HTTP.sys 请求行长度上限（约 16KB）。
+                // POST body 支持多种格式传递参数，避免大内容走 GET query string 触发 HTTP.sys 请求行长度上限（约 16KB）。
+                // 支持格式：
+                // 1. application/x-www-form-urlencoded: key1=value1&key2=value2（参数可覆盖 URL 中的同名参数）
+                // 2. application/json: {"key1":"value1","key2":"value2"}
+                // 3. 纯文本/其他: 映射到 content 参数（向后兼容）
                 if (req.HttpMethod == "POST" && req.HasEntityBody)
                 {
                     string body;
                     using (var reader = new StreamReader(req.InputStream, Encoding.UTF8))
                         body = reader.ReadToEnd();
                     if (!string.IsNullOrEmpty(body))
-                        args["content"] = body;
+                    {
+                        string contentType = req.ContentType ?? "";
+                        if (contentType.Contains("application/x-www-form-urlencoded"))
+                        {
+                            // 表单格式：解析为多个参数，覆盖 URL 中的同名参数
+                            foreach (var kv in SplitQuery(body))
+                            {
+                                if (!string.IsNullOrEmpty(kv.Key))
+                                    args[kv.Key] = kv.Value;
+                            }
+                        }
+                        else if (contentType.Contains("application/json"))
+                        {
+                            // JSON 格式：解析为多个参数
+                            try
+                            {
+                                var jsonArgs = JsonSerializer.Deserialize<Dictionary<string, string>>(body);
+                                if (jsonArgs != null)
+                                {
+                                    foreach (var kv in jsonArgs)
+                                    {
+                                        if (!string.IsNullOrEmpty(kv.Key))
+                                            args[kv.Key] = kv.Value;
+                                    }
+                                }
+                            }
+                            catch (Exception jsonEx)
+                            {
+                                Log("JSON body 解析失败: " + jsonEx.Message, LogLevel.Warning);
+                                // JSON 解析失败时，仍作为 content 参数
+                                args["content"] = body;
+                            }
+                        }
+                        else
+                        {
+                            // 纯文本或其他格式：映射到 content 参数（向后兼容）
+                            args["content"] = body;
+                        }
+                    }
                 }
 
                 // 日志不打印 content 全文（可能是整份 markdown），只记其长度。
@@ -522,6 +509,7 @@ namespace ODMRLab.Services
         protected string Ok(object data) => Json(new { success = true, data, time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
         protected string Ok(string message) => Json(new { success = true, message, time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
         protected string Err(string message) => Json(new { success = false, message, time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
+        protected string Err(object data) => Json(new { success = false, data, time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
 
         private static string Json(object obj) => JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = false });
 

@@ -159,7 +159,7 @@ namespace ODMRLab.Services
             });
         }
 
-        [AiCommand("set-exp-param", "设置当前实验的一个输入参数（写入参数面板，下次启动实验时生效）", "param=<参数名> value=<值>。参数名来自 get-exp-params 的 name 字段")]
+        [AiCommand("set-exp-param", "设置当前实验的一个输入参数或设备参数（写入参数面板，下次启动实验时生效）", "param=<参数名> value=<值>。参数名来自 get-exp-params 的 name 字段（inputs 或 devices）")]
         private string SetExpParam(Dictionary<string, string> args)
         {
             var exp = CurrentExp();
@@ -173,10 +173,25 @@ namespace ODMRLab.Services
             if (!args.TryGetValue("value", out value)) return Err("缺少 value 参数");
 
             ParamB p = null;
+            bool isDevice = false;
+            
+            // 先在 InputParams 中查找
             if (exp.InputParams != null)
                 p = exp.InputParams.FirstOrDefault(x => x.PropertyName == param);
+            
+            // 如果没找到，再在 DeviceList 中查找
+            if (p == null && exp.DeviceList != null)
+            {
+                var dev = exp.DeviceList.FirstOrDefault(x => x.Value.PropertyName == param);
+                if (dev.Value != null)
+                {
+                    p = dev.Value;
+                    isDevice = true;
+                }
+            }
+            
             if (p == null)
-                return Err("未找到参数：" + param + "。用 get-exp-params 查看参数名");
+                return Err("未找到参数：" + param + "。用 get-exp-params 查看参数名（inputs 或 devices）");
 
             try
             {
@@ -199,14 +214,17 @@ namespace ODMRLab.Services
                 Log("警告：参数未同步到界面面板：" + ex.Message, LogLevel.Warning);
             }
 
-            Log("set-exp-param " + param + "=" + value + "（实验 " + exp.ODMRExperimentName + "）", LogLevel.Info);
+            string paramType = isDevice ? "设备" : "输入";
+            Log($"set-exp-param [{paramType}] {param}={value}（实验 {exp.ODMRExperimentName}）", LogLevel.Info);
             return Ok(new
             {
                 param,
                 value = ParamB.GetUnknownParamValueToString(p),
-                hint = "已写入参数面板，下次启动实验时生效"
+                isDevice,
+                hint = $"已写入{paramType}参数面板，下次启动实验时生效"
             });
         }
+
 
         [AiCommand("start-experiment", "启动当前实验（异步，立即返回；用 exp-status 轮询进度）", "AFM 类实验在安全模式下必须带 confirm=true")]
         private string StartExperiment(Dictionary<string, string> args)
@@ -231,8 +249,9 @@ namespace ODMRLab.Services
                 {
                     // 必须在后台线程调用：AFM 实验的 PreConfirmProcedure 会在 UI 线程弹人工确认框，
                     // 阻塞 HTTP 线程会导致整个 AI 服务无响应
-                    // AI 启动实验时跳过 PreConfirmProcedure 弹框
-                    ExperimentObject<ExpParamBase, ConfigBase>.SetSkipPreConfirm(true);
+                    // AI 启动实验时跳过 PreConfirmProcedure 弹框，并抑制实验流程中的弹窗
+                    typeof(ODMRExpObjectBase).BaseType.GetField("SkipPreConfirm", BindingFlags.Public | BindingFlags.Static).SetValue(null, true);
+                    typeof(ODMRExpObjectBase).BaseType.GetField("AIControlled", BindingFlags.Public | BindingFlags.Static).SetValue(null, true);
                     exp.Start();
                     Log("实验启动流程完成：" + exp.ODMRExperimentName, LogLevel.Info);
                 }
@@ -242,7 +261,9 @@ namespace ODMRLab.Services
                 }
                 finally
                 {
-                    ExperimentObject<ExpParamBase, ConfigBase>.SetSkipPreConfirm(false);
+                    typeof(ODMRExpObjectBase).BaseType.GetField("SkipPreConfirm", BindingFlags.Public | BindingFlags.Static).SetValue(null, false);
+                    // AIControlled 不在此处重置，由 SetStopState() 在实验结束时自动重置
+                    // 因为 exp.Start() 是异步的，Start() 返回时实验可能还在运行
                 }
             }) { IsBackground = true, Name = "AiStartExp" };
             t.Start();
@@ -256,12 +277,14 @@ namespace ODMRLab.Services
             });
         }
 
-        [AiCommand("exp-status", "查询当前实验运行状态:progress(0-100 进度条百分比,扫描实验实时更新)、state(状态文本),实验结束后 dataFile 返回已保存数据文件路径。无需定时轮询,建议在用户询问进度时查询本指令", "无参数")]
+        [AiCommand("exp-status", "查询当前实验运行状态:progress(0-100 进度条百分比,扫描实验实时更新)、state(状态文本),实验结束后 dataFile 返回已保存数据文件路径。无需定时轮询,建议在用户询问进度时查询本指令", "stacktrace=true(可选,返回错误堆栈信息)")]
         private string ExpStatus(Dictionary<string, string> args)
         {
             var exp = CurrentExp();
             if (exp == null) return Ok("没有当前实验");
             string dataFile = GetExpDataFile(exp);
+            bool includeStackTrace = GetArg(args, "stacktrace", "").ToLower() == "true";
+
             return Ok(new
             {
                 name = exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName,
@@ -270,6 +293,7 @@ namespace ODMRLab.Services
                 state = exp.GetExpState(),
                 progress = Math.Round(exp.GetProgress(), 1),
                 error = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null,
+                errorStackTrace = includeStackTrace && exp.ExpFailedException != null ? exp.ExpFailedException.StackTrace : (string)null,
                 dataFile,
                 hint = exp.IsExpEnd
                     ? (dataFile != null
@@ -277,6 +301,72 @@ namespace ODMRLab.Services
                         : "实验已结束但无数据文件（自动保存被关闭或未设置保存路径），可用 list-data-files 查找数据文件")
                     : "实验运行中，progress 为进度条百分比(0-100)，state 为当前状态文本。用户询问进度时可查询本指令（仅进度有变化时向用户汇报即可）；running=false 表示实验结束，届时 dataFile 将返回数据文件路径"
             });
+        }
+
+
+        [AiCommand("wait-experiment", "阻塞等待当前实验完成。期间只占用当前请求的线程池线程，不影响 UI、实验运行或其他 AI 指令响应。", "timeout=<超时秒数,默认600> interval=<轮询间隔毫秒,默认1000> stacktrace=true(可选,返回错误堆栈信息)")]
+        private string WaitExperiment(Dictionary<string, string> args)
+        {
+            int timeoutSec;
+            if (!int.TryParse(GetArg(args, "timeout", "600"), out timeoutSec) || timeoutSec <= 0)
+                timeoutSec = 600;
+            int intervalMs;
+            if (!int.TryParse(GetArg(args, "interval", "1000"), out intervalMs) || intervalMs <= 0)
+                intervalMs = 1000;
+            bool includeStackTrace = GetArg(args, "stacktrace", "").ToLower() == "true";
+
+            var exp = CurrentExp();
+            if (exp == null) return Err("没有当前实验，请先 select-exp");
+
+            // 实验已经结束，直接返回
+            if (exp.IsExpEnd)
+            {
+                string dataFile = GetExpDataFile(exp);
+                return Ok(new
+                {
+                    message = "实验已结束（无需等待）",
+                    name = exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName,
+                    running = false,
+                    progress = Math.Round(exp.GetProgress(), 1),
+                    state = exp.GetExpState(),
+                    error = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null,
+                    errorStackTrace = includeStackTrace && exp.ExpFailedException != null ? exp.ExpFailedException.StackTrace : (string)null,
+                    dataFile
+                });
+            }
+
+            Log("wait-experiment: 开始等待实验 " + exp.ODMRExperimentName + " 完成（超时 " + timeoutSec + " 秒）", LogLevel.Info);
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            while (sw.ElapsedMilliseconds < timeoutSec * 1000L)
+            {
+                if (exp.IsExpEnd)
+                {
+                    sw.Stop();
+                    string dataFile = GetExpDataFile(exp);
+                    Log("wait-experiment: 实验完成，耗时 " + sw.Elapsed.TotalSeconds.ToString("F1") + " 秒", LogLevel.Info);
+                    return Ok(new
+                    {
+                        message = "实验完成",
+                        name = exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName,
+                        running = false,
+                        progress = Math.Round(exp.GetProgress(), 1),
+                        state = exp.GetExpState(),
+                        error = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null,
+                        errorStackTrace = includeStackTrace && exp.ExpFailedException != null ? exp.ExpFailedException.StackTrace : (string)null,
+                        dataFile,
+                        waitSeconds = Math.Round(sw.Elapsed.TotalSeconds, 1),
+                        hint = dataFile != null
+                            ? "实验已结束且数据文件已保存，用 export-data file=<dataFile> 可导出 CSV"
+                            : "实验已结束但无数据文件"
+                    });
+                }
+                Thread.Sleep(intervalMs);
+            }
+
+            // 超时
+            sw.Stop();
+            Log("wait-experiment: 等待超时（" + timeoutSec + " 秒），实验仍在运行", LogLevel.Warning);
+            return Err("等待超时（" + timeoutSec + " 秒），实验仍在运行中。可用 exp-status 查看当前状态，或增大 timeout 参数重试");
         }
 
         [AiCommand("stop-experiment", "停止当前实验（软停止：实验在下一个检查点结束并自动释放设备，任何时候都允许）", "无参数")]
@@ -334,12 +424,14 @@ namespace ODMRLab.Services
                 foreach (var f in exp.D1FitDatas)
                     fits.Add(new { xAxis = f.XAxisName, expr = f.Expression, group = f.GroupName });
             string dataFile = GetExpDataFile(exp);
+            bool includeStackTrace = GetArg(args, "stacktrace", "").ToLower() == "true";
             return Ok(new
             {
                 experiment = exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName,
                 running = !exp.IsExpEnd,
                 state = exp.GetExpState(),
                 error = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null,
+                errorStackTrace = includeStackTrace && exp.ExpFailedException != null ? exp.ExpFailedException.StackTrace : (string)null,
                 dataFile,
                 outputs,
                 fits,
@@ -883,6 +975,161 @@ namespace ODMRLab.Services
                 });
             }
             return res;
+        }
+
+
+        [AiCommand("set-scan-range", "设置扫描实验的扫描范围（一维或二维）", "二维: xlo=<X起点> xhi=<X终点> xcount=<X点数> ylo=<Y起点> yhi=<Y终点> ycount=<Y点数>; 一维: sx=<起点X> sy=<起点Y> ex=<终点X> ey=<终点Y> count=<点数>; 可选: reverse=true/false, xfast=true/false(二维), reverse1d=true(一维)")]
+        private string SetScanRange(Dictionary<string, string> args)
+        {
+            var exp = CurrentExp();
+            if (exp == null) return Err("没有当前实验，请先 select-exp");
+            if (!exp.IsExpEnd)
+                return Err("实验运行中不能修改扫描范围，请先 stop-experiment");
+
+            string block = NeedConfirm(args, "设置扫描范围");
+            if (block != null) return block;
+
+            try
+            {
+                // 判断是一维还是二维扫描
+                bool is2D = exp.Is2DScanExp;
+                bool is1D = exp.Is1DScanExp;
+
+                if (is2D)
+                {
+                    // 二维扫描范围
+                    double xlo, xhi, ylo, yhi;
+                    int xcount, ycount;
+                    
+                    if (!double.TryParse(GetArg(args, "xlo"), out xlo))
+                        return Err("二维扫描需要 xlo 参数");
+                    if (!double.TryParse(GetArg(args, "xhi"), out xhi))
+                        return Err("二维扫描需要 xhi 参数");
+                    if (!int.TryParse(GetArg(args, "xcount"), out xcount))
+                        return Err("二维扫描需要 xcount 参数");
+                    if (!double.TryParse(GetArg(args, "ylo"), out ylo))
+                        return Err("二维扫描需要 ylo 参数");
+                    if (!double.TryParse(GetArg(args, "yhi"), out yhi))
+                        return Err("二维扫描需要 yhi 参数");
+                    if (!int.TryParse(GetArg(args, "ycount"), out ycount))
+                        return Err("二维扫描需要 ycount 参数");
+
+                    bool reverseX = GetArg(args, "reversex", "false").ToLower() == "true";
+                    bool reverseY = GetArg(args, "reversey", "false").ToLower() == "true";
+                    bool isXFast = GetArg(args, "xfast", "true").ToLower() == "true";
+
+                    var range = new ODMR_Lab.实验部分.扫描基方法.扫描范围.D2LinearScanRange(
+                        xlo, xhi, xcount, ylo, yhi, ycount, reverseX, reverseY, isXFast);
+                    exp.D2ScanRange = range;
+
+                    Log($"set-scan-range 2D: X[{xlo},{xhi}]×{xcount}, Y[{ylo},{yhi}]×{ycount}", LogLevel.Info);
+                    return Ok(new
+                    {
+                        type = "2D",
+                        xlo, xhi, xcount,
+                        ylo, yhi, ycount,
+                        reverseX, reverseY, isXFast,
+                        description = range.GetDescription(),
+                        hint = "二维扫描范围已设置，下次启动实验时生效"
+                    });
+                }
+                else if (is1D)
+                {
+                    // 一维扫描范围
+                    double sx, sy, ex, ey;
+                    int count;
+
+                    if (!double.TryParse(GetArg(args, "sx"), out sx))
+                        return Err("一维扫描需要 sx 参数（起点X）");
+                    if (!double.TryParse(GetArg(args, "sy"), out sy))
+                        return Err("一维扫描需要 sy 参数（起点Y）");
+                    if (!double.TryParse(GetArg(args, "ex"), out ex))
+                        return Err("一维扫描需要 ex 参数（终点X）");
+                    if (!double.TryParse(GetArg(args, "ey"), out ey))
+                        return Err("一维扫描需要 ey 参数（终点Y）");
+                    if (!int.TryParse(GetArg(args, "count"), out count))
+                        return Err("一维扫描需要 count 参数（点数）");
+
+                    bool reverse = GetArg(args, "reverse1d", "false").ToLower() == "true";
+
+                    var start = new System.Windows.Point(sx, sy);
+                    var end = new System.Windows.Point(ex, ey);
+                    var range = new ODMR_Lab.实验部分.扫描基方法.扫描范围.D1PointsLinearScanRange(
+                        start, end, count, reverse);
+                    exp.D1ScanRange = range;
+
+                    Log($"set-scan-range 1D: ({sx},{sy})->({ex},{ey}) ×{count}", LogLevel.Info);
+                    return Ok(new
+                    {
+                        type = "1D",
+                        startPoint = new { x = sx, y = sy },
+                        endPoint = new { x = ex, y = ey },
+                        count,
+                        reverse,
+                        description = range.GetDescription(),
+                        hint = "一维扫描范围已设置，下次启动实验时生效"
+                    });
+                }
+                else
+                {
+                    return Err("当前实验不是扫描实验，没有扫描范围");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Err("设置扫描范围失败：" + ex.Message);
+            }
+        }
+
+        [AiCommand("get-scan-range", "获取当前实验的扫描范围设置", "无参数")]
+        private string GetScanRange(Dictionary<string, string> args)
+        {
+            var exp = CurrentExp();
+            if (exp == null) return Err("没有当前实验，请先 select-exp");
+
+            bool is2D = exp.Is2DScanExp;
+            bool is1D = exp.Is1DScanExp;
+
+            if (is2D && exp.D2ScanRange != null)
+            {
+                var range = exp.D2ScanRange;
+                return Ok(new
+                {
+                    type = "2D",
+                    xlo = range.XLo,
+                    xhi = range.XHi,
+                    xcount = range.XCount,
+                    ylo = range.YLo,
+                    yhi = range.YHi,
+                    ycount = range.YCount,
+                    reverseX = range.ReverseX,
+                    reverseY = range.ReverseY,
+                    isXFastAxis = range.IsXFastAxis,
+                    description = range.GetDescription()
+                });
+            }
+            else if (is1D && exp.D1ScanRange != null)
+            {
+                var range = exp.D1ScanRange as ODMR_Lab.实验部分.扫描基方法.扫描范围.D1PointsScanRangeBase;
+                if (range != null)
+                {
+                    return Ok(new
+                    {
+                        type = "1D",
+                        startPoint = new { x = range.StartPoint.X, y = range.StartPoint.Y },
+                        endPoint = new { x = range.EndPoint.X, y = range.EndPoint.Y },
+                        description = range.GetDescription()
+                    });
+                }
+            }
+
+            return Ok(new
+            {
+                type = "none",
+                message = "当前实验未设置扫描范围",
+                is1DScanExp = is1D,
+                is2DScanExp = is2D
+            });
         }
 
         #endregion

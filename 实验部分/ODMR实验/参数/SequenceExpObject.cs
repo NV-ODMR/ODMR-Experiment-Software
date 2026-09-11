@@ -1,4 +1,4 @@
-﻿using CodeHelper;
+using CodeHelper;
 using Controls;
 using Controls.Windows;
 using ODMR_Lab.IO操作;
@@ -33,6 +33,26 @@ namespace ODMR_Lab.ODMR实验
         public bool IsAutoSave { get; set; } = true;
 
         public virtual bool IsDisplayAsExp { get; set; } = true;
+
+        #region 动态实验属性
+
+        /// <summary>
+        /// 是否是动态实验（AI创建的实验）
+        /// </summary>
+        public virtual bool IsDynamicExperiment { get; set; } = false;
+
+        /// <summary>
+        /// 动态实验的唯一标识ID
+        /// </summary>
+        public virtual string DynamicExperimentId { get; set; } = null;
+
+        /// <summary>
+        /// 是否是内置实验（非动态实验）
+        /// </summary>
+        public bool IsBuiltInExperiment => !IsDynamicExperiment;
+
+        #endregion
+
 
         /// <summary>
         /// 实验描述
@@ -548,7 +568,7 @@ namespace ODMR_Lab.ODMR实验
                     //刷新输出参数到窗口
                     UpdateOutputParams();
                 }
-                catch (Exception e) { }
+                catch (Exception e) { throw e; }
                 throw ex;
             }
         }

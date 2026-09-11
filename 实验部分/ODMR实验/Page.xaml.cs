@@ -1,4 +1,4 @@
-﻿using Controls;
+using Controls;
 using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Clipboard = System.Windows.Clipboard;
+using ODMRLab.AI.DynamicExperiments;
 
 namespace ODMR_Lab.实验部分.ODMR实验
 {
@@ -134,6 +135,27 @@ namespace ODMR_Lab.实验部分.ODMR实验
                 ExpObjects.Add(afmdistance);
                 #endregion
             }
+
+
+            #region 加载动态实验（AI创建的实验）
+            try
+            {
+                var dynamicExperiments = DynamicExperimentManager.Instance.LoadAllApprovedExperiments();
+                foreach (var exp in dynamicExperiments)
+                {
+                    exp.ParentPage = this;
+                    ExpObjects.Add(exp);
+                }
+                if (dynamicExperiments.Count > 0)
+                {
+                    MessageLogger.LogInfo($"加载了 {dynamicExperiments.Count} 个动态实验");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageLogger.LogError($"加载动态实验失败: {ex.Message}");
+            }
+            #endregion
 
             ExpObjects.Sort((e1, e2) => e1.ODMRExperimentName.CompareTo(e2.ODMRExperimentName));
             foreach (var item in ExpObjects)

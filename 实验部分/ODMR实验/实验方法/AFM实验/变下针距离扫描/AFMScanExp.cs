@@ -277,6 +277,8 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法.AFM
 
         public override bool PreConfirmProcedure()
         {
+            if (SkipPreConfirm) return true;
+
             if (MessageWindow.ShowMessageBox("提示", "是否要继续?此操作将清除原先的实验数据,并且将执行下针操作", MessageBoxButton.YesNo, owner: Window.GetWindow(ParentPage)) != MessageBoxResult.Yes)
             {
                 return false;
