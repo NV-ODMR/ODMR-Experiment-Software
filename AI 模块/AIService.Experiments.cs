@@ -35,6 +35,64 @@ namespace ODMRLab.Services
         }
 
         /// <summary>
+        /// ★ 多实验并行改造（2026-09-20）新增：解析目标实验对象，支持多实验寻址。
+        /// <para>不传 exp 参数 → 返回当前【显示】的实验（向后兼容原行为）；
+        /// 传 exp 参数 → 按【实验名】或【序号】(来自 list-experiments 的 index) 在当前实验列表中查找。</para>
+        /// 这样并行运行两个实验时，exp-status / stop-experiment / wait-experiment 等
+        /// 都能明确指定操作哪一个，而不是只能操作"当前显示的那个"。
+        /// </summary>
+        private ODMRExpObject ResolveExp(Dictionary<string, string> args, out string error)
+        {
+            error = null;
+            var page = MainWindow.Exp_SequencePage;
+            if (page == null || page.ExpObjects == null) { error = "ODMR 实验页面不可用"; return null; }
+            string sel = GetArg(args, "exp");
+            if (string.IsNullOrEmpty(sel)) return page.CurrentExpObject;
+            sel = sel.Trim();
+            int idx;
+            if (int.TryParse(sel, out idx))
+            {
+                if (idx < 0 || idx >= page.ExpObjects.Count)
+                {
+                    error = "exp 序号超出范围：" + idx + "（有效 0 ~ " + (page.ExpObjects.Count - 1) + "，用 list-experiments 查看）";
+                    return null;
+                }
+                return page.ExpObjects[idx];
+            }
+            var match = page.ExpObjects.Where(e => e.ODMRExperimentName == sel).ToList();
+            if (match.Count == 0) { error = "未找到实验：" + sel + "（用 list-experiments 查看）"; return null; }
+            if (match.Count > 1) { error = "实验名不唯一：" + sel + "，请改用序号（exp=<index>）"; return null; }
+            return match[0];
+        }
+
+        /// <summary>
+        /// ★ 多实验并行改造（2026-09-20）新增：列出当前所有【正在运行】的实验。
+        /// 并行上限 2 个，超出时 start-experiment 会拒绝。current 标记当前显示的那个。
+        /// </summary>
+        private List<object> RunningExpsInfo()
+        {
+            var list = new List<object>();
+            var page = MainWindow.Exp_SequencePage;
+            if (page == null || page.ExpObjects == null) return list;
+            for (int i = 0; i < page.ExpObjects.Count; i++)
+            {
+                var e = page.ExpObjects[i];
+                if (e == null || e.IsExpEnd) continue;
+                list.Add(new
+                {
+                    index = i,
+                    name = e.ODMRExperimentName,
+                    group = e.ODMRExperimentGroupName,
+                    state = e.GetExpState(),
+                    progress = Math.Round(e.GetProgress(), 1),
+                    paused = e.IsExpResume,
+                    current = (e == page.CurrentExpObject)
+                });
+            }
+            return list;
+        }
+
+        /// <summary>
         /// 本次运行保存的数据文件完整路径（未保存返回 null）。
         /// 实验结束时 SaveFile() 自动保存到 保存路径\组名\实验名\实验名+时间戳.userdat，
         /// 并记录在实验对象的 SavedFilePath/SavedFileName；开始新运行时 SavedFileName 会被清空，
@@ -98,8 +156,11 @@ namespace ODMRLab.Services
             if (index < 0 || index >= page.ExpObjects.Count)
                 return Err("index 超出范围：" + index + "（有效 0 ~ " + (page.ExpObjects.Count - 1) + "）");
 
-            if (page.CurrentExpObject != null && !page.CurrentExpObject.IsExpEnd)
-                return Err("当前实验正在运行，请先 stop-experiment 或等待其结束，再切换实验");
+            // ★ 多实验并行改造（2026-09-20）：原实现在此【禁止运行中切换实验】，
+            //   这正是"一次只能开一个实验"的直接原因 —— A 在跑就无法 select B，也就无法启动 B。
+            //   现在放开：切换显示不影响任何运行中实验的 ExpThread（异步线程独立运行），
+            //   运行中实验不会被解绑控件（见 ExperimentObject.DisConnectOuterControl 的运行中守卫），
+            //   其进度/结果仍可用 exp-status exp=<名|序号> 查询。
 
             try
             {
@@ -231,9 +292,23 @@ namespace ODMRLab.Services
         {
             var page = MainWindow.Exp_SequencePage;
             if (page == null) return Err("ODMR 实验页面不可用");
-            var exp = page.CurrentExpObject;
-            if (exp == null) return Err("没有当前实验，请先 select-exp");
-            if (!exp.IsExpEnd) return Err("当前实验正在运行或停止中");
+            string resolveErr = null;
+            var exp = ResolveExp(args, out resolveErr);
+            if (exp == null) return Err(resolveErr ?? "没有当前实验，请先 select-exp");
+            // ★ 多实验并行改造（2026-09-20）：只拦截【同一个实验对象】重复启动。
+            //   不同实验允许并行 —— 是否真正能并行由 DeviceDispatcher 按【每台设备】的占用标记裁决：
+            //   两个实验用不同设备 → 都成功；用到同一台设备 → 后启动的那个在设备获取阶段失败并回滚，
+            //   且【不影响已在运行的实验】。
+            if (!exp.IsExpEnd)
+                return Err("该实验（" + exp.ODMRExperimentName + "）已在运行或停止中，不能重复启动。"
+                    + "如需并行请 select-exp 选择另一个实验（需使用不同设备）");
+
+            // ★ 多实验并行：上限 2 个，防止设备争抢与界面混乱
+            const int MaxParallelExperiments = 2;
+            var runningNow = RunningExpsInfo();
+            if (runningNow.Count >= MaxParallelExperiments)
+                return Err("已有 " + runningNow.Count + " 个实验在运行（并行上限 " + MaxParallelExperiments
+                    + " 个）。请用 exp-status 查看运行中实验，等待其中一个结束后再启动新实验");
 
             // AFM / 下针类实验：物理接触样品，误操作会损坏探针与样品
             bool isAfmdangerous = ODMRExpObject.IsAFMScanExperiment(exp)
@@ -249,9 +324,11 @@ namespace ODMRLab.Services
                 {
                     // 必须在后台线程调用：AFM 实验的 PreConfirmProcedure 会在 UI 线程弹人工确认框，
                     // 阻塞 HTTP 线程会导致整个 AI 服务无响应
-                    // AI 启动实验时跳过 PreConfirmProcedure 弹框，并抑制实验流程中的弹窗
-                    typeof(ODMRExpObjectBase).BaseType.GetField("SkipPreConfirm", BindingFlags.Public | BindingFlags.Static).SetValue(null, true);
-                    typeof(ODMRExpObjectBase).BaseType.GetField("AIControlled", BindingFlags.Public | BindingFlags.Static).SetValue(null, true);
+                    // AI 启动实验时跳过 PreConfirmProcedure 弹框，并抑制实验流程中的弹窗。
+                    // ★ 多实验并行改造（2026-09-20）：原先用反射写【静态】字段 SkipPreConfirm/AIControlled，
+                    //   并行运行时后启动的实验会覆盖先启动实验的标志，且 finally 会把仍在运行的
+                    //   实验标志提前清掉（→ 该实验异常时弹窗阻塞 UI 线程）。改为按实验对象实例设置。
+                    exp.SetAIControl(true);
                     exp.Start();
                     Log("实验启动流程完成：" + exp.ODMRExperimentName, LogLevel.Info);
                 }
@@ -261,9 +338,12 @@ namespace ODMRLab.Services
                 }
                 finally
                 {
-                    typeof(ODMRExpObjectBase).BaseType.GetField("SkipPreConfirm", BindingFlags.Public | BindingFlags.Static).SetValue(null, false);
-                    // AIControlled 不在此处重置，由 SetStopState() 在实验结束时自动重置
-                    // 因为 exp.Start() 是异步的，Start() 返回时实验可能还在运行
+                    // ★ 多实验并行改造（2026-09-20）：只清【本实验对象】的 SkipPreConfirm
+                    //   （此时 PreConfirmProcedure 已执行完毕，无需再跳过确认框）。
+                    //   AIControlled 保留给实验运行期间抑制弹窗，由本实验的 SetStopState()
+                    //   在实验真正结束时自行清除 —— 不能再像旧代码那样清全局静态字段，
+                    //   否则会误伤并行运行的其他实验。
+                    exp.SkipPreConfirm = false;
                 }
             }) { IsBackground = true, Name = "AiStartExp" };
             t.Start();
@@ -277,16 +357,20 @@ namespace ODMRLab.Services
             });
         }
 
-        [AiCommand("exp-status", "查询当前实验运行状态:progress(0-100 进度条百分比,扫描实验实时更新)、state(状态文本),实验结束后 dataFile 返回已保存数据文件路径。无需定时轮询,建议在用户询问进度时查询本指令", "stacktrace=true(可选,返回错误堆栈信息)")]
+        [AiCommand("exp-status", "查询实验运行状态:progress(0-100 进度条百分比,扫描实验实时更新)、state(状态文本),实验结束后 dataFile 返回已保存数据文件路径。无需定时轮询,建议在用户询问进度时查询本指令", "exp=<实验名|序号,可省略(省略=当前显示的实验)> stacktrace=true(可选,返回错误堆栈信息)。返回值 runningExperiments 列出全部正在运行的实验")]
         private string ExpStatus(Dictionary<string, string> args)
         {
-            var exp = CurrentExp();
+            string resolveErr = null;
+            var exp = ResolveExp(args, out resolveErr);
+            if (exp == null && !string.IsNullOrEmpty(resolveErr)) return Err(resolveErr);
             if (exp == null) return Ok("没有当前实验");
             string dataFile = GetExpDataFile(exp);
             bool includeStackTrace = GetArg(args, "stacktrace", "").ToLower() == "true";
 
             return Ok(new
             {
+                // ★ 多实验并行：列出所有正在运行的实验（并行时 AI 需要看到全部）
+                runningExperiments = RunningExpsInfo(),
                 name = exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName,
                 running = !exp.IsExpEnd,
                 paused = exp.IsExpResume,
@@ -304,7 +388,7 @@ namespace ODMRLab.Services
         }
 
 
-        [AiCommand("wait-experiment", "阻塞等待当前实验完成。期间只占用当前请求的线程池线程，不影响 UI、实验运行或其他 AI 指令响应。", "timeout=<超时秒数,默认600> interval=<轮询间隔毫秒,默认1000> stacktrace=true(可选,返回错误堆栈信息)")]
+        [AiCommand("wait-experiment", "阻塞等待指定实验完成。期间只占用当前请求的线程池线程，不影响 UI、实验运行或其他 AI 指令响应。", "exp=<实验名|序号,可省略(省略=当前显示的实验)> timeout=<超时秒数,默认600> interval=<轮询间隔毫秒,默认1000> stacktrace=true(可选,返回错误堆栈信息)")]
         private string WaitExperiment(Dictionary<string, string> args)
         {
             int timeoutSec;
@@ -369,11 +453,12 @@ namespace ODMRLab.Services
             return Err("等待超时（" + timeoutSec + " 秒），实验仍在运行中。可用 exp-status 查看当前状态，或增大 timeout 参数重试");
         }
 
-        [AiCommand("stop-experiment", "停止当前实验（软停止：实验在下一个检查点结束并自动释放设备，任何时候都允许）", "无参数")]
+        [AiCommand("stop-experiment", "停止指定实验（软停止：实验在下一个检查点结束并自动释放设备，任何时候都允许）", "exp=<实验名|序号,可省略(省略=当前显示的实验)>。并行运行多个实验时可逐个停止")]
         private string StopExperiment(Dictionary<string, string> args)
         {
-            var exp = CurrentExp();
-            if (exp == null) return Err("没有当前实验");
+            string resolveErr = null;
+            var exp = ResolveExp(args, out resolveErr);
+            if (exp == null) return Err(resolveErr ?? "没有当前实验");
             if (exp.IsExpEnd) return Ok("当前实验未在运行");
             try
             {
@@ -391,11 +476,12 @@ namespace ODMRLab.Services
             }
         }
 
-        [AiCommand("resume-experiment", "恢复已暂停的实验", "无参数")]
+        [AiCommand("resume-experiment", "恢复已暂停的实验", "exp=<实验名|序号,可省略(省略=当前显示的实验)>")]
         private string ResumeExperiment(Dictionary<string, string> args)
         {
-            var exp = CurrentExp();
-            if (exp == null) return Err("没有当前实验");
+            string resolveErr = null;
+            var exp = ResolveExp(args, out resolveErr);
+            if (exp == null) return Err(resolveErr ?? "没有当前实验");
             if (exp.IsExpEnd) return Err("当前实验未在运行");
             if (!exp.IsExpResume) return Ok("实验未处于暂停状态");
             try
@@ -410,11 +496,12 @@ namespace ODMRLab.Services
             }
         }
 
-        [AiCommand("get-exp-outputs", "读取当前实验的输出参数值/拟合信息（实验完成后使用）", "无参数")]
+        [AiCommand("get-exp-outputs", "读取指定实验的输出参数值/拟合信息（实验完成后使用）", "exp=<实验名|序号,可省略(省略=当前显示的实验)>")]
         private string GetExpOutputs(Dictionary<string, string> args)
         {
-            var exp = CurrentExp();
-            if (exp == null) return Err("没有当前实验");
+            string resolveErr = null;
+            var exp = ResolveExp(args, out resolveErr);
+            if (exp == null) return Err(resolveErr ?? "没有当前实验");
             var outputs = new List<object>();
             if (exp.OutputParams != null)
                 foreach (var p in exp.OutputParams)

@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# --- 追加（2026-10-05）：本地编辑备份 / 旧库副本，避免混入提交 ---
+*.bak*
+*.old-*
+*.taskbar_*
+*.memarch_*
+*_20[0-9][0-9][0-9][0-9][0-9][0-9]

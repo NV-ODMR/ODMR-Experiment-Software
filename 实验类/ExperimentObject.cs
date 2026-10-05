@@ -47,33 +47,50 @@ namespace ODMR_Lab
         public static List<char> InvaliidChars = new List<char>() { '$' };
 
         /// <summary>
-        /// AI 启动实验时设为 true，跳过 PreConfirmProcedure 弹框。
-        /// 由 AIService 在调用 Start() 前后自动管理，外部不应手动设置。
+        /// ★ 多实验并行改造（2026-09-20）：由 static 改为【实例字段】。
+        /// <para>原因：static 字段被所有实验对象共享，实验A结束时 SetStopState() 会把它清零，
+        /// 导致并行运行的实验B丢失 AI 标志 → 异常时弹窗阻塞 UI 线程；
+        /// AIService 的 finally 也会把 B 正在用的标志提前清掉。</para>
+        /// <para>改为实例字段后各实验对象互相隔离，48 处实例方法内的读取点自动解析为 this.SkipPreConfirm，
+        /// 无需改动。</para>
+        /// AI 启动本实验时设为 true，跳过 PreConfirmProcedure 弹框。
         /// </summary>
-        public static volatile bool SkipPreConfirm = false;
+        public volatile bool SkipPreConfirm = false;
 
         /// <summary>
-        /// SkipPreConfirm 设置时间，用于超时自动重置
+        /// SkipPreConfirm 设置时间，用于超时自动重置（实例字段，随实验对象隔离）
         /// </summary>
-        private static DateTime skipPreConfirmSetTime = DateTime.MinValue;
+        private DateTime skipPreConfirmSetTime = DateTime.MinValue;
 
         /// <summary>
-        /// AI 控制实验期间为 true，抑制实验启动/运行/异常流程中的弹窗（ShowTipWindow / ShowMessageBox）。
-        /// 由 AIService 在 start-experiment 时设为 true，实验结束（SetStopState）时自动重置为 false。
+        /// ★ 多实验并行改造（2026-09-20）：由 static 改为【实例字段】。
+        /// AI 控制本实验期间为 true，抑制实验启动/运行/异常流程中的弹窗（ShowTipWindow / ShowMessageBox）。
+        /// 改为实例字段后，实验A结束（SetStopState）不再污染并行运行的实验B。
         /// 用户直接操作时此标志始终为 false，所有弹窗行为不受影响。
         /// </summary>
-        public static volatile bool AIControlled = false;
+        public volatile bool AIControlled = false;
 
         /// <summary>
-        /// 设置 SkipPreConfirm 标志（AI 专用）
+        /// 设置 SkipPreConfirm 标志（AI 专用）。实例方法，仅作用于本实验对象。
         /// </summary>
-        public static void SetSkipPreConfirm(bool value)
+        public void SetSkipPreConfirm(bool value)
         {
             SkipPreConfirm = value;
             if (value)
             {
                 skipPreConfirmSetTime = DateTime.Now;
             }
+        }
+
+        /// <summary>
+        /// ★ 多实验并行新增：一次性设置【本实验对象】的 AI 控制标志。
+        /// 替代原先 AIService 通过反射写静态字段的写法（静态字段无法区分并行实验）。
+        /// </summary>
+        public void SetAIControl(bool value)
+        {
+            AIControlled = value;
+            SkipPreConfirm = value;
+            if (value) skipPreConfirmSetTime = DateTime.Now;
         }
 
         /// <summary>
@@ -435,9 +452,23 @@ namespace ODMR_Lab
         private Label ExpStartTimeLabel { get; set; } = null;
         private Label ExpEndTimeLabel { get; set; } = null;
 
-        public void ConnectOuterControl(DecoratedButton StartBtn, DecoratedButton StopBtn, DecoratedButton ResumeBtn, Label StartTimeLabel, Label EndTimeLabel, TextBlock ThreadState, ProgressBar ThreadProgress, List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlPanels)
+        /// <summary>
+        /// ★ 多实验并行：本实验运行期间因用户切到别的实验标签而被"解绑显示"。
+        /// 为 true 时不再向已转交的控件写状态（避免污染当前显示实验的界面）。
+        /// </summary>
+        private volatile bool _uiDetached = false;
+
+        /// <param name="takeDisplayOwnership">
+        /// ★ 多实验并行（2026-09-20）：true 表示本实验【重新获得显示权】，需强制解绑旧控件后重挂，
+        /// 防止事件重复挂载（如两次 Click += StartEvent）。
+        /// false（默认，兼容原有 8 种调用方式）= 不解绑，直接重挂 —— 但若之前调用过
+        /// DetachForOtherExperiment，也会一并清掉残留引用。
+        /// </param>
+        public void ConnectOuterControl(DecoratedButton StartBtn, DecoratedButton StopBtn, DecoratedButton ResumeBtn, Label StartTimeLabel, Label EndTimeLabel, TextBlock ThreadState, ProgressBar ThreadProgress, List<KeyValuePair<FrameworkElement, RunningBehaviours>> ControlPanels, bool takeDisplayOwnership = false)
         {
-            DisConnectOuterControl();
+            // ★ 多实验并行：重新获得显示权时强制清掉旧绑定（防止事件重复挂载）后再挂新控件
+            DisConnectOuterControl(takeDisplayOwnership);
+            _uiDetached = false;
             Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 if (StartBtn != null)
@@ -498,8 +529,32 @@ namespace ODMR_Lab
             });
         }
 
+        /// <summary>
+        /// 解绑与外部控件的连接（默认：运行中的实验【不】解绑，见下）
+        /// </summary>
         public void DisConnectOuterControl()
         {
+            DisConnectOuterControl(false);
+        }
+
+        /// <summary>
+        /// 解绑与外部控件的连接。
+        /// <para>★ 多实验并行改造（2026-09-20）：新增 force 参数。
+        /// 原实现无条件清空全部控件引用，导致"实验A运行中，用户切到实验B标签"时
+        /// A 的控件引用被置 null —— 但 A 的 ExpThread 仍在调用 SetExpState/SetProgress/
+        /// SetPanelStopState，进而去操作【B 的按钮与进度条】，造成界面状态错乱。</para>
+        /// <para>现在：实验仍在运行（ExpThread 存活）时只标记 _uiDetached（停止写 UI，保留引用），
+        /// 等实验结束自然释放；force=true 用于重新绑定和实验结束后的强制清理。</para>
+        /// </summary>
+        public void DisConnectOuterControl(bool force)
+        {
+            // 运行中的实验保留控件引用，仅切换"不再写 UI"的标记
+            if (!force && !IsExpEnd && ExpThread != null && ExpThread.IsAlive)
+            {
+                _uiDetached = true;
+                return;
+            }
+            _uiDetached = false;
             if (startButton != null)
             {
                 startButton.Click -= StartEvent;
@@ -526,6 +581,41 @@ namespace ODMR_Lab
             ControlStates = new List<KeyValuePair<FrameworkElement, RunningBehaviours>>();
         }
 
+        /// <summary>
+        /// ★ 多实验并行新增（2026-09-20）：把"界面显示权"转交给另一个实验时调用。
+        /// <para>为什么不能直接用 DisConnectOuterControl：运行中的实验需要保留进度条等引用
+        /// 以便切回标签页时恢复显示，但【按钮必须解绑】—— 因为按钮池（StartBtn/StopBtn/ResumeBtn）
+        /// 是页面共享的，若运行中的实验 A 不解绑，另一个实验 B 再挂一次，用户点一次"开始"
+        /// 会同时触发 A 和 B 的 StartEvent，造成严重误操作。</para>
+        /// <para>解绑按钮后 _uiDetached=true，A 的 ExpThread 仍正常跑，但不再写共享 UI。</para>
+        /// </summary>
+        public void DetachForOtherExperiment()
+        {
+            // 实验已结束：直接彻底解绑即可
+            if (IsExpEnd || ExpThread == null || !ExpThread.IsAlive)
+            {
+                DisConnectOuterControl(true);
+                return;
+            }
+            // 运行中：标记不再写 UI，保留进度/状态引用，但必须解绑共享按钮
+            _uiDetached = true;
+            if (startButton != null)
+            {
+                startButton.Click -= StartEvent;
+                startButton = null;
+            }
+            if (stopButton != null)
+            {
+                stopButton.Click -= StopEvent;
+                stopButton = null;
+            }
+            if (resumeButton != null)
+            {
+                resumeButton.Click -= ResumeEvent;
+                resumeButton = null;
+            }
+        }
+
         public void DisConnectODMRParentExperiment()
         {
             JudgeThreadEndOrResumeAction = JudgeThreadEndOrResume;
@@ -543,6 +633,8 @@ namespace ODMR_Lab
         public void SetExpState(string state)
         {
             CurrentexpState = state;
+            // ★ 多实验并行：控件已转交给其他实验显示时只更新内存状态，不写 UI
+            if (_uiDetached) return;
             App.Current.Dispatcher.Invoke(() =>
             {
                 if (CurrentexpStateTextBlock != null)
@@ -568,6 +660,8 @@ namespace ODMR_Lab
         public void SetProgress(double value)
         {
             CurrentProgress = value;
+            // ★ 多实验并行：控件已转交给其他实验显示时只更新内存进度，不写 UI
+            if (_uiDetached) return;
             App.Current.Dispatcher.Invoke(() =>
             {
                 if (CurrentProgressBar != null)
@@ -632,6 +726,8 @@ namespace ODMR_Lab
 
         public void SetPanelResumeState()
         {
+            // ★ 多实验并行：显示权已转交其他实验时不碰共享控件
+            if (_uiDetached) return;
             App.Current.Dispatcher.Invoke(() =>
             {
                 TrySetState(startButton, true);
@@ -662,6 +758,10 @@ namespace ODMR_Lab
 
         public void SetPanelStopState()
         {
+            // ★ 多实验并行：显示权已转交其他实验时不碰共享控件（避免把别人正在运行的
+            //   实验的「开始」按钮重新启用，导致误触重启）。
+            //   切回本实验标签时 ConnectOuterControl 会重新应用停止态。
+            if (_uiDetached) return;
             App.Current.Dispatcher.Invoke(() =>
             {
                 TrySetState(startButton, true);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -218,12 +218,34 @@ namespace ODMRLab.Services
                     failed = exp.ExpFailedException != null ? exp.ExpFailedException.Message : (string)null
                 };
             }
+            // ★ 多实验并行改造（2026-09-20）：列出全部正在运行的实验（并行上限 2 个）
+            var runningExps = new System.Collections.Generic.List<object>();
+            if (seqpage != null && seqpage.ExpObjects != null)
+            {
+                for (int i = 0; i < seqpage.ExpObjects.Count; i++)
+                {
+                    var e = seqpage.ExpObjects[i];
+                    if (e == null || e.IsExpEnd) continue;
+                    runningExps.Add(new
+                    {
+                        index = i,
+                        name = e.ODMRExperimentName,
+                        group = e.ODMRExperimentGroupName,
+                        state = e.GetExpState(),
+                        progress = Math.Round(e.GetProgress(), 1),
+                        paused = e.IsExpResume,
+                        current = (e == seqpage.CurrentExpObject)
+                    });
+                }
+            }
             return Ok(new
             {
                 page = ODMR_Lab.MainWindow.CurrentPage != null ? ODMR_Lab.MainWindow.CurrentPage.GetType().Name : (string)null,
                 safeMode = SafeMode,
                 port = _port,
-                experiment = expinfo
+                experiment = expinfo,
+                runningCount = runningExps.Count,
+                runningExperiments = runningExps
             });
         }
 
@@ -244,19 +266,31 @@ namespace ODMRLab.Services
         private string EStop(Dictionary<string, string> args)
         {
             var seqpage = ODMR_Lab.MainWindow.Exp_SequencePage;
-            var exp = seqpage != null ? seqpage.CurrentExpObject : null;
-            if (exp != null && !exp.IsExpEnd)
+            // ★ 多实验并行改造（2026-09-20）：紧急停止必须停掉【全部】正在运行的实验，
+            //   旧实现只停"当前显示的那个"，并行时会漏掉另一个实验（危险）。
+            var runningExps = new System.Collections.Generic.List<object>();
+            if (seqpage != null && seqpage.ExpObjects != null)
             {
-                try
+                for (int i = 0; i < seqpage.ExpObjects.Count; i++)
                 {
-                    exp.Stop();
-                    Log("E-STOP：AI 指令停止实验 " + exp.ODMRExperimentName, LogLevel.Error);
-                    return Ok("已发送停止指令，实验将在下一个检查点结束并释放设备。");
+                    var e = seqpage.ExpObjects[i];
+                    if (e == null || e.IsExpEnd) continue;
+                    try
+                    {
+                        e.Stop();
+                        runningExps.Add(e.ODMRExperimentName);
+                        Log("E-STOP：AI 指令停止实验 " + e.ODMRExperimentName, LogLevel.Error);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("E-STOP：停止实验 " + e.ODMRExperimentName + " 失败：" + ex.Message, LogLevel.Error);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    return Err("发送停止指令失败：" + ex.Message);
-                }
+            }
+            if (runningExps.Count > 0)
+            {
+                return Ok("已向 " + runningExps.Count + " 个运行中实验（" + string.Join("、", runningExps)
+                    + "）发送停止指令，实验将在下一个检查点结束并释放设备。");
             }
             string msg;
             bool ok = LaserOffInternal("", out msg);
@@ -483,8 +517,11 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                Log(ex.Message, LogLevel.Error);
-                return Err(ex.Message);
+                // ★ 2026-09-21：兜底路径同样展开完整原因（原只回 ex.Message，
+                //   若为 AggregateException 则只剩「发生一个或多个错误。」）
+                string detail = DescribeException(ex, "指令 " + cmd);
+                Log(detail, LogLevel.Error);
+                return Err(detail);
             }
         }
 
@@ -500,6 +537,107 @@ namespace ODMRLab.Services
                 _recentLogs.Add(entry);
                 if (_recentLogs.Count > MaxLogCount) _recentLogs.RemoveAt(0);
             }
+        }
+
+        #endregion
+
+        #region 异常展开（★ 2026-09-21 新增）
+
+        /// <summary>
+        /// 把异常展开成【Agent 能看懂】的完整文本。
+        ///
+        /// <para>【为什么必须有】本服务大量使用 <c>xxxAsync(...).Result</c> / <c>.Wait()</c> 同步等待。
+        /// 此时内部 async 抛出的异常会被包装成 <see cref="AggregateException"/>，
+        /// 而它的 <c>Message</c> 永远是固定文案「发生一个或多个错误。」——
+        /// 真正的原因（哪个方法、哪一行、什么消息）全部藏在 InnerException 里。
+        /// 只返回 <c>ex.Message</c> 会让 Agent 收到一句毫无信息量的报错，完全无法自我修正。</para>
+        ///
+        /// <para>【本方法做什么】递归展开 InnerException / AggregateException.InnerExceptions：
+        /// ① 取最内层异常的类型名 + Message（最关键）
+        /// ② 附上完整链条（外层 → 内层）
+        /// ③ 附上堆栈中【属于本程序】的前几行（过滤掉 System.* 框架帧，避免噪音）</para>
+        /// </summary>
+        /// <param name="ex">捕获到的异常（可能是 AggregateException）</param>
+        /// <param name="context">业务上下文，如 "创建实验"</param>
+        /// <param name="maxFrames">最多保留几条业务堆栈帧</param>
+        protected static string DescribeException(Exception ex, string context = null, int maxFrames = 6)
+        {
+            if (ex == null) return (context ?? "") + "：未知异常（null）";
+
+            var sb = new StringBuilder();
+            if (!string.IsNullOrEmpty(context))
+                sb.Append(context).Append("失败：");
+
+            // ① 找到真正的根因
+            Exception root = ex;
+            var chain = new List<string>();
+            Exception cursor = ex;
+            int guard = 0;
+            while (cursor != null && guard++ < 16)
+            {
+                string msg = cursor.Message;
+                if (!string.IsNullOrWhiteSpace(msg))
+                    chain.Add(cursor.GetType().Name + ": " + msg);
+
+                if (cursor is AggregateException agg && agg.InnerExceptions != null && agg.InnerExceptions.Count > 0)
+                {
+                    foreach (var ie in agg.InnerExceptions)
+                        if (ie != null) chain.Add("  → " + ie.GetType().Name + ": " + ie.Message);
+                }
+
+                cursor = cursor.InnerException;
+                if (cursor != null) root = cursor;
+            }
+
+            sb.Append(root.GetType().Name).Append(": ").Append(root.Message);
+
+            // ② 多层包装时附上完整链条
+            if (chain.Count > 1)
+            {
+                sb.Append("\n【异常链】");
+                for (int i = 0; i < chain.Count; i++)
+                    sb.Append("\n  ").Append(i == 0 ? "" : "└ ").Append(chain[i]);
+            }
+
+            // ③ 业务堆栈（只保留本程序帧，过滤 System.*/Microsoft.* 噪音）
+            try
+            {
+                string stack = root.StackTrace;
+                if (!string.IsNullOrEmpty(stack))
+                {
+                    var frames = stack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(f => f.Trim())
+                        .Where(f => f.Length > 0
+                                    && !f.StartsWith("at System.", StringComparison.Ordinal)
+                                    && !f.StartsWith("at Microsoft.", StringComparison.Ordinal)
+                                    && !f.Contains("System.Runtime.CompilerServices")
+                                    && !f.Contains("System.Threading."))
+                        .Take(maxFrames)
+                        .ToList();
+                    if (frames.Count > 0)
+                    {
+                        sb.Append("\n【出错位置】");
+                        foreach (var f in frames) sb.Append("\n  ").Append(f);
+                    }
+                }
+            }
+            catch { }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 统一「写日志 + 返回详细错误」。
+        /// <para>【两条路都要通】原实现只 return Err(ex.Message)：
+        /// ① 工具响应里没有根因 → Agent 无法自我修正；
+        /// ② 日志里也没有 → 事后用 get-logs 也查不到（本次排查困难的直接原因）。
+        /// 本方法同时写日志缓存（get-logs 可读）并返回完整详情。</para>
+        /// </summary>
+        protected string ErrWithLog(Exception ex, string context)
+        {
+            string detail = DescribeException(ex, context);
+            Log(detail, LogLevel.Error);
+            return Err(detail);
         }
 
         #endregion

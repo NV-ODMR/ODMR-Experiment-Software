@@ -1,4 +1,4 @@
-using Controls;
+﻿using Controls;
 using Controls.Windows;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
@@ -196,10 +196,21 @@ namespace ODMR_Lab.实验部分.ODMR实验
             {
                 if (index > ExpObjects.Count - 1 || index < 0) return;
 
-                CurrentExpObject?.DisConnectOuterControl();
+                // ★ 多实验并行改造（2026-09-20）：
+                //   转交"界面显示权"用 DetachForOtherExperiment —— 运行中的实验会保留进度/状态引用
+                //   （便于切回标签页恢复显示），但【必须解绑共享按钮】（否则两个实验的 StartEvent
+                //   同时挂在 StartBtn 上，点一次会启动两个实验）。
+                //   注意：此处【不能】改用强制解绑(force=true)，那会清空运行中实验的控价引用，
+                //   导致其 ExpThread 里 SetExpState/SetProgress 操作到别的实验的界面上。
+                CurrentExpObject?.DetachForOtherExperiment();
 
                 //存储上一个实验的参数
-                if (CurrentExpObject != null && !CurrentExpObject.IsSubExperiment)
+                // ★ 多实验并行改造（2026-09-20）：运行中的实验【跳过】回读！
+                //   并行时用户/AI 可能已 select-exp 切到另一个实验，此时界面面板上显示的
+                //   是【另一个实验】的值；若对运行中的实验执行 ReadFromPage，会把别的实验的
+                //   面板值回写进正在运行的实验对象，污染其参数。
+                //   运行中实验的参数在启动时已由 ReadConfig() 快照，无需（也不应）再回读。
+                if (CurrentExpObject != null && CurrentExpObject.IsExpEnd && !CurrentExpObject.IsSubExperiment)
                 {
                     foreach (var item in CurrentExpObject.InputParams)
                     {
@@ -265,7 +276,9 @@ namespace ODMR_Lab.实验部分.ODMR实验
 
                 var ControlStates = GetControlsStates();
 
-                CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlStates);
+                // ★ 多实验并行：最后一个参数 takeDisplayOwnership=true 表示本实验重新获得显示权，
+                //   会先强制解绑旧控件再重挂，避免事件重复挂载（如重复 Click += StartEvent）。
+                CurrentExpObject.ConnectOuterControl(StartBtn, StopBtn, ResumeBtn, StartTime, EndTime, ProgressTitle, Progress, ControlStates, true);
 
                 //刷新图表
 

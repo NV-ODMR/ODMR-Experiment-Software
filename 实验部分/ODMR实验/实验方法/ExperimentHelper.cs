@@ -25,7 +25,7 @@ namespace ODMR_Lab.实验部分.ODMR实验.实验方法
             double rawevolutiontime = 1e+3 / frequence / 2;
 
             GlobalPulseParams.SetGlobalPulseLength("LockInSequenceDuty", (int)rawevolutiontime);
-            GlobalPulseParams.SetGlobalPulseLength("RabiTime", 0);
+            GlobalPulseParams.SetGlobalPulseLength("RabiTime", 20);
             GlobalPulseParams.SetGlobalPulseLength("HalfEvolutionTimeX", Math.Max(20, (int)(rawevolutiontime / 2 - pix / 2)));
             GlobalPulseParams.SetGlobalPulseLength("HalfEvolutionTimeY", Math.Max(20, (int)(rawevolutiontime / 2 - piy / 2)));
             GlobalPulseParams.SetGlobalPulseLength("EvolutionTimeX-X", Math.Max(20, (int)(rawevolutiontime - pix / 2 - pix / 2)));

@@ -49,7 +49,10 @@ namespace ODMRLab.Services
                 }
 
                 var manager = DynamicExperimentManager.Instance;
-                var expInfo = manager.CreateExperimentAsync(name, code, description).Result;
+                // ★ 2026-09-21：原为 .Result —— 会把内部 async 异常包装成 AggregateException，
+                //   导致 catch 里只能拿到「发生一个或多个错误。」这句无信息量的固定文案。
+                //   改用 GetAwaiter().GetResult() 可直接抛出原始异常，根因一眼可见。
+                var expInfo = manager.CreateExperimentAsync(name, code, description).GetAwaiter().GetResult();
 
                 if (expInfo.IsCompiled)
                 {
@@ -76,7 +79,10 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"创建实验失败: {ex.Message}");
+                // ★ 2026-09-21：原来只返回 ex.Message —— 若异常经 .Result/.Wait() 包装成
+                //   AggregateException，Agent 只会看到「发生一个或多个错误。」，无法自我修正。
+                //   DescribeException 会展开最内层根因 + 异常链 + 业务堆栈。
+                return ErrWithLog(ex, "创建实验");
             }
         }
 
@@ -103,7 +109,8 @@ namespace ODMRLab.Services
                 }
 
                 var manager = DynamicExperimentManager.Instance;
-                manager.ReviewExperimentAsync(id, approve, comment).Wait();
+                // ★ 2026-09-21：.Wait() → GetAwaiter().GetResult()，避免 AggregateException 包装
+                manager.ReviewExperimentAsync(id, approve, comment).GetAwaiter().GetResult();
 
                 string status = approve ? "已批准" : "已拒绝";
                 return Ok(new
@@ -115,7 +122,7 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"审核实验失败: {ex.Message}");
+                return ErrWithLog(ex, "审核实验");
             }
         }
 
@@ -135,7 +142,8 @@ namespace ODMRLab.Services
                 }
 
                 var manager = DynamicExperimentManager.Instance;
-                manager.DeleteExperimentAsync(id).Wait();
+                // ★ 2026-09-21：.Wait() → GetAwaiter().GetResult()，避免 AggregateException 包装
+                manager.DeleteExperimentAsync(id).GetAwaiter().GetResult();
 
                 return Ok(new
                 {
@@ -145,7 +153,7 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"删除实验失败: {ex.Message}");
+                return ErrWithLog(ex, "删除实验");
             }
         }
 
@@ -191,7 +199,7 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"列出实验失败: {ex.Message}");
+                return ErrWithLog(ex, "列出实验");
             }
         }
 
@@ -237,7 +245,7 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"获取实验详情失败: {ex.Message}");
+                return ErrWithLog(ex, "获取实验详情");
             }
         }
 
@@ -301,7 +309,7 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"重新编译失败: {ex.Message}");
+                return ErrWithLog(ex, "重新编译实验");
             }
         }
 
@@ -417,7 +425,7 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"加载实验失败: {ex.Message}");
+                return ErrWithLog(ex, "加载实验");
             }
         }
 
@@ -500,7 +508,7 @@ namespace ODMRLab.Services
             }
             catch (Exception ex)
             {
-                return Err($"刷新实验失败: {ex.Message}");
+                return ErrWithLog(ex, "刷新实验列表");
             }
         }
 
