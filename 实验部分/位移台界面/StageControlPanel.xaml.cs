@@ -17,8 +17,42 @@ namespace ODMR_Lab.实验部分.位移台界面
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 在 UI 线程判定本控件是否可见（页面被切走 / 独立窗口隐藏 / 宿主窗口最小化时返回 false）。
+        /// WPF 可视性只能在 UI 线程安全读取，故非 UI 线程经 Dispatcher 询问。
+        /// </summary>
+        private bool CanPollDevice()
+        {
+            try
+            {
+                if (Dispatcher.CheckAccess()) return CheckVisibleCore();
+                return Dispatcher.Invoke(new Func<bool>(CheckVisibleCore));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 可见性判定本体（必须运行在 UI 线程）
+        /// </summary>
+        private bool CheckVisibleCore()
+        {
+            if (!IsVisible) return false;
+            Window w = Window.GetWindow(this);
+            if (w != null && w.WindowState == WindowState.Minimized) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// 读取并显示位移台位置（5 个面板 × 最多 6 轴 × 每轴 1 次设备读）。
+        /// 轮询治理（2026-10-05）：加入可见性门控 —— 控件不可见时直接返回，不读任何设备（判据 V6）；
+        /// 刷新间隔同时由 Page.xaml.cs 的 ListenerGapMs 从 50ms 放宽到 200ms。
+        /// </summary>
         public void UpdateListenerState()
         {
+            if (!CanPollDevice()) return;
             string xv = "";
             string yv = "";
             string zv = "";

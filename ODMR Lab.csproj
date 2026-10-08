@@ -187,6 +187,7 @@
     <Compile Include="AI 模块\AIService.cs" />
     <Compile Include="AI 模块\AIService.Experiments.cs" />
     <Compile Include="AI 模块\AIService.Devices.cs" />
+    <Compile Include="AI 模块\AIService.DeviceHotLoad.cs" />
     <Compile Include="AI 模块\AIService.Data.cs" />
     <Compile Include="AI 模块\AIService.UI.cs" />
     <Compile Include="AI 模块\AIService.Sequence.cs" />
@@ -198,6 +199,8 @@
     <Compile Include="AI 模块\AIService.Reflection.cs" />
         <Compile Include="AI 模块\AIService.SequenceFiles.cs" />
     <Compile Include="AI 模块\AIService.SequenceGroups.cs" />
+    <Compile Include="AI 模块\HostClient.cs" />
+    <Compile Include="AI 模块\DeviceMirror.cs" />
 
     <Content Include="AI 模块\ODMR结构信息.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -632,6 +635,7 @@
     </Compile>
     <Compile Include="实验部分\设备参数面板\ParamSetInfo.cs" />
     <Compile Include="设备部分\设备类\InfoBase.cs" />
+    <Compile Include="设备部分\设备类\DeviceCatalog.cs" />
     <Compile Include="设备部分\设备管理器\DeviceDispatcher.cs" />
     <Compile Include="设备部分\设备管理器\DeviceEnumInterface.cs" />
     <Compile Include="设备部分\设备管理器\DeviceTypes.cs" />

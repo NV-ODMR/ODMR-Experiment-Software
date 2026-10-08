@@ -205,6 +205,14 @@ namespace ODMR_Lab.设备部分.相机_翻转镜
 
         private void SetParams(object sender, RoutedEventArgs e)
         {
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备同样允许打开参数编辑窗口
+            string catreason;
+            if (!DeviceCatalog.EnsureInCatalog(Camera, out catreason))
+            {
+                MessageLogger.LogError("参数编辑窗口被拒绝（清单外设备）：" + catreason, "DeviceCatalog");
+                MessageWindow.ShowTipWindow(catreason, Window.GetWindow(this));
+                return;
+            }
             ParameterWindow window = new ParameterWindow(Camera.Device, Window.GetWindow(this));
             window.Owner = this;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;

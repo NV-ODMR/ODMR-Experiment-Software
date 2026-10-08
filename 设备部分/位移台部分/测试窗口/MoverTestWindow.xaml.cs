@@ -148,6 +148,35 @@ namespace ODMR_Lab.设备部分.位移台部分
 
         Thread listenthread = null;
         bool IsthreadEnd = false;
+
+        /// <summary>
+        /// 位移台位置刷新间隔（毫秒）。
+        /// 轮询治理（2026-10-05）：原为 100ms（窗口一打开即以 10Hz 读取全部位移台位置），
+        /// 现放宽 3 倍至 300ms；窗口不可见 / 最小化时不读设备（门控见 CanPollDevice）。
+        /// </summary>
+        private const int ListenGapMs = 300;
+
+        /// <summary>
+        /// 在 UI 线程判定本窗口是否可见（最小化视为不可见）
+        /// </summary>
+        private bool CanPollDevice()
+        {
+            try
+            {
+                if (Dispatcher.CheckAccess()) return CheckVisibleCore();
+                return Dispatcher.Invoke(new Func<bool>(CheckVisibleCore));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private bool CheckVisibleCore()
+        {
+            return IsVisible && WindowState != WindowState.Minimized;
+        }
+
         private void CreateListenThread()
         {
             listenthread = new Thread(() =>
@@ -156,25 +185,29 @@ namespace ODMR_Lab.设备部分.位移台部分
                 {
                     try
                     {
-                        List<NanoStageInfo> movers = DeviceDispatcher.GetMoverDevice(part);
-                        foreach (var item in movers)
+                        if (CanPollDevice())
                         {
-                            double pos = item.Device.Position;
-                            Dispatcher.Invoke(() =>
+                            List<NanoStageInfo> movers = DeviceDispatcher.GetMoverDevice(part);
+                            foreach (var item in movers)
                             {
-                                TextBox text = GetTextbox(item);
-                                if (text != null)
+                                double pos = item.Device.Position;
+                                Dispatcher.Invoke(() =>
                                 {
-                                    text.Text = pos.ToString();
-                                }
-                            });
+                                    TextBox text = GetTextbox(item);
+                                    if (text != null)
+                                    {
+                                        text.Text = pos.ToString();
+                                    }
+                                });
+                            }
                         }
 
-                        Thread.Sleep(100);
+                        Thread.Sleep(ListenGapMs);
                     }
                     catch (Exception ex) { }
                 }
             });
+            listenthread.IsBackground = true;
             listenthread.Start();
         }
 

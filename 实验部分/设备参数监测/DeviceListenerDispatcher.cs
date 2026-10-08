@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows.Media;
+using ODMR_Lab.设备部分;
 
 namespace ODMR_Lab.实验部分.设备参数监测
 {
@@ -23,6 +24,12 @@ namespace ODMR_Lab.实验部分.设备参数监测
         public List<DeviceListenInfo> DeviceParameters = new List<DeviceListenInfo>();
 
         private int validategap = 100;
+
+        /// <summary>
+        /// 无任何监控项勾选"采样"时的空转间隔（毫秒）。
+        /// 该状态下循环体不产生任何设备 I/O（IsSample==false 即 continue），故把空转唤醒频率由 10Hz 降到 2Hz。
+        /// </summary>
+        private const int IdleValidateGap = 500;
         /// <summary>
         /// 参数更新周期（毫秒，最小值30ms）
         /// </summary>
@@ -72,12 +79,23 @@ namespace ODMR_Lab.实验部分.设备参数监测
                     {
                         IsLoopEnd = false;
                         List<Tuple<DeviceListenInfo, DateTime, double>> values = new List<Tuple<DeviceListenInfo, DateTime, double>>();
+                        // 轮询治理（2026-10-05）：仅当存在"已勾选采样"的监控项时才访问设备；
+                        // 全部未勾选（IsSample 默认 false，见 DeviceListenInfo.cs:152）时循环体零设备 I/O（判据 V5）。
+                        bool anysampled = false;
                         lock (Lock)
                         {
                             foreach (var item in DeviceParameters)
                             {
                                 //item.LastValue = double.NaN;
                                 if (item.IsSample == false) { item.ErrorMessage = ""; continue; }
+                                // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备同样读值（默认口径一律放行）
+                                string catreason;
+                                if (!DeviceCatalog.EnsureInCatalog(item.Device, out catreason))
+                                {
+                                    item.ErrorMessage = "设备不在清单内";
+                                    continue;
+                                }
+                                anysampled = true;
                                 try
                                 {
                                     if (!PortObject.IsDeviceConnected(item.Device))
@@ -98,7 +116,8 @@ namespace ODMR_Lab.实验部分.设备参数监测
                             }
                         }
                         IsLoopEnd = true;
-                        Thread.Sleep(ValidateGap);
+                        // 有监控项在采样时按 ValidateGap（默认 100ms）节拍；无采样项时空转间隔放宽到 IdleValidateGap
+                        Thread.Sleep(anysampled ? ValidateGap : IdleValidateGap);
                     }
                 });
                 listehthread.IsBackground = true;
@@ -210,6 +229,13 @@ namespace ODMR_Lab.实验部分.设备参数监测
 
                     PortObject dev = PortObject.FindDevice(devproductidentifiers[i], devproductnames[i]);
                     if (dev == null) continue;
+                    // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：配置里残留的清单外设备同样按已连接处理（默认口径）
+                    string catreason;
+                    if (!DeviceCatalog.EnsureInCatalog(dev, out catreason))
+                    {
+                        MessageLogger.LogError("监控配置中的清单外设备已跳过：" + catreason, "DeviceCatalog");
+                        continue;
+                    }
                     PortElement channel = null;
                     if (haschannel[i])
                     {

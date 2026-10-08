@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -42,6 +42,17 @@ namespace ODMRLab.Services
             catch { return "?"; }
         }
 
+        /// <summary>
+        /// 设备清单只作「已连接记录 / 自动连接依据」，不作连接准入：默认口径（EnforceAsWhitelist=false）下恒返回 null（不阻断）；仅在排障开关打开时才可能返回拒绝文案。
+        /// </summary>
+        private string EnsureCatalogOrErr(InfoBase info)
+        {
+            string reason;
+            if (DeviceCatalog.EnsureInCatalog(info, out reason)) return null;
+            Log("清单外设备访问已拒绝：" + reason, LogLevel.Error);
+            return reason;
+        }
+
         /// <summary>是否位移台类设备（任何移动都视为危险，目标位置写入永远禁止）</summary>
         private static bool IsStageType(DeviceTypes t)
         {
@@ -74,7 +85,12 @@ namespace ODMRLab.Services
             if (all.Count == 0) { errmsg = "未发现该类型设备：" + t; return null; }
             if (string.IsNullOrEmpty(desc))
             {
-                if (all.Count == 1) return all[0];
+                if (all.Count == 1)
+                {
+                    // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）
+                    errmsg = EnsureCatalogOrErr(all[0]);
+                    return errmsg == null ? all[0] : null;
+                }
                 errmsg = "该类型设备有多个，必须带 desc 参数：" + string.Join(" / ", all.Select(SafeDesc));
                 return null;
             }
@@ -84,13 +100,18 @@ namespace ODMRLab.Services
                 errmsg = "未找到设备：" + desc + "。可用：" + string.Join(" / ", all.Select(SafeDesc));
                 return null;
             }
-            return m;
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备同样返回值（不拒绝）
+            errmsg = EnsureCatalogOrErr(m);
+            return errmsg == null ? m : null;
         }
 
         /// <summary>展开设备所有可读写参数（主设备 + 各通道）</summary>
         private List<DeviceParamRef> FlattenParams(InfoBase info, DeviceTypes dtype)
         {
             var list = new List<DeviceParamRef>();
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备同样展开参数（不阻断读写）
+            string catreason;
+            if (!DeviceCatalog.EnsureInCatalog(info, out catreason)) return list;
             string desc = SafeDesc(info);
             var el = info.SourceDevice as PortElement;
             if (el != null)
@@ -117,6 +138,9 @@ namespace ODMRLab.Services
 
         private DeviceParamRef FindParam(InfoBase info, DeviceTypes dtype, string prop)
         {
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）
+            string catreason;
+            if (!DeviceCatalog.EnsureInCatalog(info, out catreason)) return null;
             foreach (var r in FlattenParams(info, dtype))
             {
                 if (r.Param != null && (r.Param.ParameterName == prop || r.Param.Description == prop))
@@ -307,6 +331,9 @@ namespace ODMRLab.Services
             var info = string.IsNullOrEmpty(desc) ? all[0] : all.FirstOrDefault(x => SafeDesc(x) == desc);
             if (info == null)
                 return Err("未找到 APD：" + desc + "。可用：" + string.Join(" / ", all.Select(SafeDesc)));
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外 APD 同样放行
+            var apdcerr = EnsureCatalogOrErr(info);
+            if (apdcerr != null) return Err(apdcerr);
             var apd = info as APDInfo;
             if (apd == null) return Err("APD 信息类型不正确");
             if (info.IsWriting) return Err("APD 正被使用（可能有实验在运行），请待其结束后重试");
@@ -413,8 +440,11 @@ namespace ODMRLab.Services
             try { all = DeviceDispatcher.GetDevice(DeviceTypes.PulseBlaster) ?? new List<InfoBase>(); }
             catch { return null; }
             if (all.Count == 0) return null;
-            if (string.IsNullOrEmpty(desc)) return all[0] as PulseBlasterInfo;
-            return all.FirstOrDefault(x => SafeDesc(x) == desc) as PulseBlasterInfo;
+            InfoBase hit = string.IsNullOrEmpty(desc) ? all[0] : all.FirstOrDefault(x => SafeDesc(x) == desc);
+            if (hit == null) return null;
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外 PulseBlaster 同样放行
+            if (EnsureCatalogOrErr(hit) != null) return null;
+            return hit as PulseBlasterInfo;
         }
 
         [AiCommand("camera-open", "打开相机实时预览窗口（打开后会独占相机设备直到窗口关闭；若相机正被实验使用则拒绝）", "desc=<相机描述,单台可省略> confirm=true(安全模式下必需)")]
@@ -518,7 +548,12 @@ namespace ODMRLab.Services
             }
             if (string.IsNullOrEmpty(desc))
             {
-                if (all.Count == 1) return all[0] as CameraInfo;
+                if (all.Count == 1)
+                {
+                    // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）
+                    errmsg = EnsureCatalogOrErr(all[0]);
+                    return errmsg == null ? all[0] as CameraInfo : null;
+                }
                 errmsg = "该类型设备有多个，必须带 desc 参数：" + string.Join(" / ", all.Select(SafeDesc));
                 return null;
             }
@@ -528,7 +563,9 @@ namespace ODMRLab.Services
                 errmsg = "未找到相机：" + desc + "。可用：" + string.Join(" / ", all.Select(SafeDesc));
                 return null;
             }
-            return m as CameraInfo;
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）
+            errmsg = EnsureCatalogOrErr(m);
+            return errmsg == null ? m as CameraInfo : null;
         }
 
         [AiCommand("auto-connect", "自动连接设备：重新搜索并连接全部已配置设备（等同主界面右上角「自动连接」按钮；会替换当前设备列表）", "无参数。安全模式下需 confirm=true；实验运行中或任何设备被占用时禁止。注意：请求可能阻塞 30~60 秒，调用方超时请设 120 秒以上")]
@@ -544,6 +581,32 @@ namespace ODMRLab.Services
             var busy = FindInUseDevice();
             if (busy != null)
                 return Err("有设备正在使用（" + SafeDesc(busy) + "，可能是相机预览窗口或 APD 采样等），请先关闭（如 camera-close / 停止采样）再重试");
+
+            // ★ 宿主总闸（HostClient.Enabled 默认 false，此时无影响）：
+            //   开启代理后宿主不可达则拒绝，严禁降级为本地直连。
+            string hostgate;
+            if (!HostClient.AllowLocalConnect(out hostgate))
+                return Err(hostgate);
+
+            // ★ 代理接线（方案 §5.4）：开启宿主代理时，改由宿主完成连接并返回差异告警；
+            //   HostClient.Enabled 默认 false ⇒ 本分支不进入，行为与改造前一致。
+            if (HostClient.Enabled)
+            {
+                string herr;
+                List<string> hdetails;
+                int hn = HostClient.PrepareAndConnectAll(out herr, out hdetails);
+                if (!string.IsNullOrEmpty(herr)) return Err(herr);
+                string hsummary = string.Join(" | ", hdetails);
+                Log("auto-connect（经宿主）完成：" + hsummary, LogLevel.Info);
+                // ★ 路径 B′：事件驱动上报只读设备镜像（非轮询；DeviceMirror.Enabled 默认 false 时为空操作）
+                DeviceMirror.Publish();
+                return Ok(new
+                {
+                    result = "已通过设备宿主连接 " + hn + " 台清单内设备",
+                    details = hdetails,
+                    hint = "已连接设备列表可用 device-list 查看"
+                });
+            }
 
             string result;
             try

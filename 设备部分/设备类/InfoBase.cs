@@ -185,6 +185,25 @@ namespace ODMR_Lab.设备部分
                         if (obj.Descriptions.Values.Contains("DeviceParamsFile"))
                         {
                             //文件是设备参数的文件类型
+                            // ★ 设备清单目录（不设备准入）：文件本身必须是能通过入库校验的条目（校验只丢弃坏文件）；
+                            //   非法条目跳过并记日志；清单外设备不受影响（默认口径一律放行）。
+                            string catalogkey = Path.GetFileNameWithoutExtension(item.FullName);
+                            string catalogdesc = obj.Descriptions.ContainsKey("DevName") ? obj.Descriptions["DevName"] : "";
+                            string catalogreason;
+                            if (!DeviceCatalog.ContainsKey(catalogkey)
+                                && !DeviceCatalog.EnsureInCatalog(catalogdesc, out catalogreason))
+                            {
+                                MessageLogger.LogError("清单外条目已拒绝连接：" + item.Name + "（"
+                                    + DeviceCatalog.RejectMessage(catalogkey) + "）", "DeviceCatalog");
+                                continue;
+                            }
+                            // ★ 宿主总闸（HostClient.Enabled 默认 false，此时无影响）：
+                            //   开启代理后宿主不可达则拒绝，严禁降级为本地直连。
+                            if (!HostClient.AllowLocalConnect(catalogdesc, out catalogreason))
+                            {
+                                MessageLogger.LogError("连接被拒绝：" + item.Name + " → " + catalogreason, "HostClient");
+                                continue;
+                            }
                             Dictionary<string, Type> devicetypes = PortObject.GetDeviceNamesWithSameBase(typeof(T));
                             foreach (var device in devicetypes)
                             {
@@ -266,6 +285,12 @@ namespace ODMR_Lab.设备部分
         public static DeviceInfoBase<T> OpenAndLoadParams(string filepath, Type deviceType, bool LoadParams = false)
         {
             FileObject obj = FileObject.ReadFromFile(filepath);
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：允许重新打开任意设备参数文件
+            string openkey = Path.GetFileNameWithoutExtension(filepath);
+            string openname = obj.Descriptions.ContainsKey("DevName") ? obj.Descriptions["DevName"] : "";
+            string openreason;
+            if (!DeviceCatalog.ContainsKey(openkey) && !DeviceCatalog.EnsureInCatalog(openname, out openreason))
+                throw new Exception(DeviceCatalog.RejectMessage(openname + " / " + openkey));
             //找到确定的设备类型
             //打开设备
             PortType port = (PortType)Enum.Parse(typeof(PortType), obj.Descriptions["PortType"]);

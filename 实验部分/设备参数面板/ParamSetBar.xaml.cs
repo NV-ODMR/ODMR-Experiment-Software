@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ContextMenu = Controls.ContextMenu;
+using ODMR_Lab.设备部分;
 
 namespace ODMR_Lab.实验部分.设备参数面板
 {
@@ -43,6 +44,13 @@ namespace ODMR_Lab.实验部分.设备参数面板
         public void LoadParam()
         {
             if (ParentParam.TargetParameter == null) return;
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备同样读值、同样显示
+            string catreason;
+            if (!DeviceCatalog.EnsureInCatalog(ParentParam.Device, out catreason))
+            {
+                ParentParam.ErrorMessage = "设备不在清单内（不读取）";
+                return;
+            }
             BoolValue.Visibility = Visibility.Hidden;
             EnumValue.Visibility = Visibility.Collapsed;
             StringValue.Visibility = Visibility.Collapsed;
@@ -165,6 +173,10 @@ namespace ODMR_Lab.实验部分.设备参数面板
                 {
                     UpdateDeviceAttach();
                     if (ParentParam.TargetParameter == null) throw new Exception("参数不存在");
+                    // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备同样允许写入（S3 红线仍独立生效）
+                    string catreason;
+                    if (!DeviceCatalog.EnsureInCatalog(ParentParam.Device, out catreason))
+                        throw new Exception(catreason);
                     //设置参数
                     ParentParam.TargetParameter.WriteValue(GetSetValue());
                     TimeWindow w = new TimeWindow();

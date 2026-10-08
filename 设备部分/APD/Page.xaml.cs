@@ -5,6 +5,8 @@ using HardWares.Windows;
 using ODMR_Lab.设备部分.其他设备;
 using System.Collections.Generic;
 using System.Windows;
+using System;
+using HardWares.端口基类;
 
 namespace ODMR_Lab.设备部分.光子探测器
 {
@@ -44,11 +46,29 @@ namespace ODMR_Lab.设备部分.光子探测器
             bool res = window.ShowDialog(Window.GetWindow(this));
             if (res == true)
             {
+                // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备一律放行入册（不阻断连接，仅记日志告警）
+                string catreason;
+                if (!DeviceCatalog.EnsureInCatalog(window.ConnectedDevice as PortObject, out catreason))
+                {
+                    try { (window.ConnectedDevice as PortObject)?.Dispose(); } catch (Exception) { }
+                    MessageLogger.LogError("手动连接被拒绝（清单外设备）：" + catreason, "DeviceCatalog");
+                    MessageWindow.ShowTipWindow(catreason, Window.GetWindow(this));
+                    return;
+                }
+                // ★ 宿主总闸（HostClient.Enabled 默认 false，此时无影响）
+                if (!HostClient.AllowLocalConnect(window.ConnectedDevice == null ? "" : window.ConnectedDevice.ProductName, out catreason))
+                {
+                    try { (window.ConnectedDevice as PortObject)?.Dispose(); } catch (Exception) { }
+                    MessageWindow.ShowTipWindow(catreason, Window.GetWindow(this));
+                    return;
+                }
                 APDInfo apd = new APDInfo() { Device = window.ConnectedDevice as APDBase, ConnectInfo = window.ConnectInfo };
                 apd.CreateDeviceInfoBehaviour();
 
                 APDs.Add(apd);
                 RefreshPanels();
+                // ★ 路径 B′：事件驱动上报只读设备镜像（非轮询；DeviceMirror.Enabled 默认 false 时为空操作）
+                DeviceMirror.Publish();
             }
             else
             {
@@ -90,6 +110,14 @@ namespace ODMR_Lab.设备部分.光子探测器
             #region 参数设置
             if (arg1 == 1)
             {
+                // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外设备同样允许打开参数编辑窗口
+                string catreason;
+                if (!DeviceCatalog.EnsureInCatalog(inf, out catreason))
+                {
+                    MessageLogger.LogError("参数编辑窗口被拒绝（清单外设备）：" + catreason, "DeviceCatalog");
+                    MessageWindow.ShowTipWindow(catreason, Window.GetWindow(this));
+                    return;
+                }
                 ParameterWindow window = new ParameterWindow(inf.Device, Window.GetWindow(this));
                 window.ShowDialog();
             }

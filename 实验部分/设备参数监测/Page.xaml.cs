@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using Clipboard = System.Windows.Clipboard;
+using ODMR_Lab.设备部分;
 
 namespace ODMR_Lab.实验部分.设备参数监测
 {
@@ -261,6 +262,22 @@ namespace ODMR_Lab.实验部分.设备参数监测
             w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             var devresult = w.ShowDialog();
             if (devresult.Key == null && devresult.Value == null) return;
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：设备列表可出现任意已连接设备，此处判定默认一律放行
+            if (devresult.Key != null)
+            {
+                string catreason;
+                if (!DeviceCatalog.EnsureInCatalog(devresult.Key, out catreason))
+                {
+                    MessageLogger.LogError("新增参数被拒绝（清单外设备）：" + catreason, "DeviceCatalog");
+                    MessageWindow.ShowTipWindow(catreason, Window.GetWindow(this));
+                    return;
+                }
+                if (!HostClient.AllowLocalConnect(devresult.Key.ProductName, out catreason))
+                {
+                    MessageWindow.ShowTipWindow(catreason, Window.GetWindow(this));
+                    return;
+                }
+            }
             DeviceParamSelectWindow win = new DeviceParamSelectWindow();
             win.Owner = Window.GetWindow(this);
             win.WindowStartupLocation = WindowStartupLocation.CenterOwner;

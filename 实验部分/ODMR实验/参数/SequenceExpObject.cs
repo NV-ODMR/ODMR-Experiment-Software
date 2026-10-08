@@ -1,4 +1,4 @@
-using CodeHelper;
+﻿using CodeHelper;
 using Controls;
 using Controls.Windows;
 using ODMR_Lab.IO操作;
@@ -690,7 +690,25 @@ namespace ODMR_Lab.ODMR实验
                 if (!IsSubExperiment)
                     item.Value.ReadFromPage(new FrameworkElement[] { ParentPage.DevicePanel }, true);
                 var res = DeviceDispatcher.GetDevice(item.Key, item.Value.Value);
-                if (res == null) throw new Exception("设备未找到:" + item.Value.Description);
+                if (res == null)
+                {
+                    // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：枚举不再被清单过滤，此处区分「清单外」与「真找不到」，让原因可诊断
+                    bool isstagetype = item.Key == DeviceTypes.位移台 || item.Key == DeviceTypes.探针位移台
+                        || item.Key == DeviceTypes.样品位移台 || item.Key == DeviceTypes.微波位移台
+                        || item.Key == DeviceTypes.镜头位移台 || item.Key == DeviceTypes.磁铁位移台
+                        || item.Key == DeviceTypes.AFM扫描台;
+                    if (!isstagetype)
+                    {
+                        string creason2;
+                        if (!DeviceCatalog.EnsureInCatalog(item.Value.Value, out creason2))
+                            throw new Exception("设备未在清单内，已拒绝启动实验：" + item.Value.Description + " → " + creason2);
+                    }
+                    throw new Exception("设备未找到:" + item.Value.Description);
+                }
+                // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：实验可用任意已连接设备，清单外设备同样放行（默认口径）
+                string catreason;
+                if (!DeviceCatalog.EnsureInCatalog(res, out catreason))
+                    throw new Exception("设备未在清单内，已拒绝启动实验：" + item.Value.Description + " → " + catreason);
                 ExperimentDevices.Add(new KeyValuePair<string, InfoBase>(item.Value.PropertyName, res));
                 //如果是子程序那么遇到和主程序相同的设备时不用连接 
                 if (ParentExp != null)

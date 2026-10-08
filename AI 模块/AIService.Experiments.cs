@@ -14,6 +14,7 @@ using ICSharpCode.Decompiler.TypeSystem;
 using ODMR_Lab;
 using ODMR_Lab.IO操作;
 using ODMR_Lab.ODMR实验;
+using ODMR_Lab.设备部分;
 
 namespace ODMRLab.Services
 {
@@ -316,6 +317,30 @@ namespace ODMRLab.Services
                 || (exp.ODMRExperimentGroupName != null && (exp.ODMRExperimentGroupName.IndexOf("AFM", StringComparison.OrdinalIgnoreCase) >= 0 || exp.ODMRExperimentGroupName.IndexOf("下针") >= 0));
             string block = NeedConfirm(args, "启动AFM/下针类实验");
             if (block != null && isAfmdangerous) return block;
+
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：启动前预校验实验所选设备。此处拿不到设备句柄，按「设备描述」判定；
+            //   位移台/扫描台的描述是轴标签（Probe:X 之类）无法按名判定，交由连接层在 GetDevices 阶段
+            //   用【句柄】判定兜底 —— 那一层会抛异常并让本次启动失败，且不会占用任何设备。
+            try
+            {
+                foreach (var devItem in exp.DeviceList)
+                {
+                    if (devItem.Value == null) continue;
+                    string selected = devItem.Value.Value;
+                    if (string.IsNullOrEmpty(selected)) continue;
+                    if (DeviceCatalog.MatchesDescription(selected)) continue;
+                    if (IsStageType(devItem.Key)) continue;
+                    // ★ 默认口径（EnforceAsWhitelist=false）：清单只作已连接记录、不作准入 ⇒ 放行
+                    if (!DeviceCatalog.EnforceAsWhitelist) continue;
+                    return Err("实验所选设备不在清单内，已拒绝启动：" + selected
+                        + "（类型 " + devItem.Key + "）。" + DeviceCatalog.RejectMessage(selected));
+                }
+            }
+            catch (Exception) { }
+
+            // ★ 宿主总闸（HostClient.Enabled 默认 false，此时无影响）
+            string hostgate;
+            if (!HostClient.AllowLocalConnect(out hostgate)) return Err(hostgate);
 
             Log("start-experiment: " + exp.ODMRExperimentGroupName + ":" + exp.ODMRExperimentName + " (afm=" + isAfmdangerous + ")", LogLevel.Info);
             Thread t = new Thread(() =>

@@ -58,6 +58,9 @@ namespace ODMR_Lab.设备部分
                 if (canclose == false) return canclose;
             }
 
+            // ★ 路径 B′：事件驱动上报只读设备镜像（非轮询；DeviceMirror.Enabled 默认 false 时为空操作）
+            //   设备已全部成功关闭 ⇒ 镜像同步收缩（关闭失败会提前返回，镜像保持原状，语义正确）
+            DeviceMirror.Publish();
             return canclose;
         }
 
@@ -175,7 +178,15 @@ namespace ODMR_Lab.设备部分
                     }
                 }
             }
-            return infos;
+            // ★ 设备清单（仅作已连接记录与自动连接依据，不作连接准入）：清单外的设备同样出现在枚举结果里。
+            //   此处静默过滤——真正的拒绝与日志发生在连接层，本方法被高频调用，不宜记日志。
+            List<InfoBase> allowed = new List<InfoBase>();
+            foreach (var info in infos)
+            {
+                string catreason;
+                if (DeviceCatalog.EnsureInCatalog(info, out catreason)) allowed.Add(info);
+            }
+            return allowed;
         }
 
         /// <summary>

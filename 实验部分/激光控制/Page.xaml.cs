@@ -118,6 +118,15 @@ namespace ODMR_Lab.激光控制
                 MainWindow.Dev_APDPage.UpdateSourceState();
                 return;
             }
+            // ★ 轮询治理说明（2026-10-05）：本采样循环属于【按需触发】，不是自动轮询 ——
+            //   线程仅在用户点击"开始采样"后才创建，IsSampleEnd=true（点击"结束采样"）即退出；
+            //   页面切走不会中断已开始的采集（数据采集 ≠ 界面刷新，故此处刻意不加可见性门控）。
+            //   其次，其节拍由 DAQ 硬件采样时钟决定：CurrentAPD.GetContinusSampleRatio() 每次阻塞读取
+            //   2 个采样点（HardWares\仪器列表\apd\Exclitas SPCM-AQRH\APD.cs:103/126/190-195，
+            //   采样时钟 = 脉冲输出频率，见本页 line100: dev.Device.PulseFrequency = ConfigParam.SampleFreq.Value）。
+            //   ⇒ 这里【不得】加入毫秒级固定 Sleep：消费端一旦慢于生产端，DAQ 缓冲（仅 2 点）立即溢出，
+            //     采集会以 -200279 报错中断。需要降低采集速率时，正确做法是调小界面"采样频率"
+            //     （ConfigParam.SampleFreq，默认 100Hz），时间轴 i/freq 仍自洽。
             IsSampleEnd = false;
 
             SampleThread = new Thread(() =>
@@ -139,6 +148,7 @@ namespace ODMR_Lab.激光控制
                     }
                 }
             });
+            SampleThread.IsBackground = true;
             SampleThread.Start();
             PlotThread = new Thread(() =>
             {
@@ -169,6 +179,7 @@ namespace ODMR_Lab.激光控制
                     Thread.Sleep(150);
                 }
             });
+            PlotThread.IsBackground = true;
             PlotThread.Start();
         }
 

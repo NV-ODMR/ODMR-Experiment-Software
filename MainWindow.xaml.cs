@@ -5,6 +5,7 @@ using ODMR_Lab.IO操作;
 using ODMR_Lab.共享剪切板;
 using ODMR_Lab.数据处理;
 using ODMR_Lab.设备部分;
+using HardWares.设备管理层.热加载;
 using ODMRLab.Services;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,9 @@ namespace ODMR_Lab
         public static MainWindow Handle { get; set; } = null;
 
         public static PageBase CurrentPage { get; set; } = null;
+
+        /// <summary>插件目录本次是否已加载（同一进程只做一次，避免重复审计噪声）。</summary>
+        private static bool _pluginsLoaded = false;
 
         #region 设备页面
         public static 设备部分.其他设备.DevicePage Dev_OtherDevPage = new 设备部分.其他设备.DevicePage();
@@ -281,6 +285,18 @@ namespace ODMR_Lab
                         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                         window.Show();
                     });
+                    // ★ 统一插件仓库：必须在 ScanDevices 之前加载型号扩展驱动 dll。
+                    //   原因：型号枚举（PortObject.GetSubClassTypes → AppDomain.CurrentDomain.GetAssemblies()）
+                    //   只认「本进程已加载的程序集」，加载晚于扫描 ⇒ 本次仍看不到新型号（须再扫一次）。
+                    //   目录：统一目录 %ProgramData%\HardWares.AI\plugins（可用 HARDWARES_AI_PLUGINS_DIR 覆盖）；
+                    //   旧目录 <本 exe 目录>\DeviceDrivers 仅在统一目录不存在时回退。
+                    //   loader 逐条失败只记录不抛，此处再兜一层保证插件问题不阻断设备连接。
+                    if (!_pluginsLoaded)
+                    {
+                        _pluginsLoaded = true;
+                        try { DeviceDriverHotLoader.LoadPluginsDirectory("ODMR.Lab"); }
+                        catch (Exception) { }
+                    }
                     string connectresult = DeviceDispatcher.ScanDevices(window);
                     Dispatcher.Invoke(() =>
                     {
@@ -294,6 +310,8 @@ namespace ODMR_Lab
                     #region 加载参数
                     ParamManager.ReadAndLoadParams(window);
                     #endregion
+// ★ 路径 B′：事件驱动上报只读设备镜像（非轮询；DeviceMirror.Enabled 默认 false 时为空操作）
+                    DeviceMirror.Publish();
 
                     Dispatcher.Invoke(() =>
                     {
@@ -566,6 +584,8 @@ namespace ODMR_Lab
                     win.Show();
                 });
                 string result = DeviceDispatcher.AppendDevices();
+                // ★ 路径 B′：事件驱动上报只读设备镜像（非轮询；DeviceMirror.Enabled 默认 false 时为空操作）
+                DeviceMirror.Publish();
                 Dispatcher.Invoke(() =>
                 {
                     win.Close();
